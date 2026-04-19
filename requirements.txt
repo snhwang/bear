@@ -1,0 +1,55 @@
+# Core dependencies
+pyyaml>=6.0
+numpy>=1.24
+pydantic>=2.0
+
+# PyTorch with CUDA 12.8 (required for Blackwell/sm_120 GPUs)
+# Install with: uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+torch>=2.11
+torchvision>=0.26
+
+# Embedding model
+sentence-transformers>=2.2
+
+# LLM backends (at least one needed for generation)
+openai>=1.0              # OpenAI-compatible API (also works with Ollama, vLLM, llama.cpp, LM Studio)
+anthropic>=0.30          # Anthropic Claude API
+google-generativeai>=0.5 # Google Gemini API
+ollama>=0.2              # Ollama native client
+
+# .env file loading
+python-dotenv>=1.0
+
+# 2D village demo
+pygame>=2.5
+
+# Web-based demos (pet_sim, etc.)
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+
+# Embedding / vector-store backends
+faiss-cpu>=1.7           # Use faiss-gpu via conda for GPU acceleration
+chromadb>=0.4
+# pinecone-client>=3.0  # Requires Pinecone account
+
+# Evaluation scripts (paper reproducibility)
+scipy>=1.10
+matplotlib>=3.5
+# MLX embeddings (Apple Silicon only — optional, falls back to sentence-transformers)
+# mlx-embeddings>=0.0.5
+
+# GPU acceleration (CUDA only — optional, improves Nemotron-Embed-8B performance)
+flash-attn>=2.6           # Requires CUDA; install with: uv pip install flash-attn --no-build-isolation
+
+# Evaluation baselines (optional — only needed for paper reproducibility)
+instruction-tool-retrieval>=0.1.1  # ITR baseline/integration comparison
+tiktoken>=0.4                        # Token counting for efficiency analysis
+
+# Development
+pytest>=7.0
+pytest-asyncio>=0.21
+
+
+python-multipart
+google-genai

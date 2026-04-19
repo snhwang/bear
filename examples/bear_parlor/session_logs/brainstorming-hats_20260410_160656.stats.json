@@ -1,0 +1,16 @@
+{
+  "topic": "crispr",
+  "condition": "naive",
+  "started": "2026-04-10 16:06:56",
+  "last_updated": "2026-04-10 16:12:23",
+  "elapsed_seconds": 327.0,
+  "n_turns": 35,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 108,
+  "n_diffusion_skipped": 0,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260410_160656.md",
+  "completed": true,
+  "ended": "2026-04-10 16:12:32",
+  "duration_seconds": 335.9
+}

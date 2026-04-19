@@ -1,0 +1,38 @@
+{
+  "topic": "ms",
+  "condition": "naive",
+  "started": "2026-04-11 05:39:00",
+  "last_updated": "2026-04-11 05:44:46",
+  "elapsed_seconds": 345.9,
+  "n_turns": 38,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 126,
+  "n_diffusion_skipped": 0,
+  "ingestions": [
+    {
+      "time": "05:40:12",
+      "turn": 7,
+      "hat": "White",
+      "title": "DMT",
+      "chunks": 46
+    },
+    {
+      "time": "05:42:08",
+      "turn": 20,
+      "hat": "White",
+      "title": "remyelination",
+      "chunks": 60
+    },
+    {
+      "time": "05:43:15",
+      "turn": 27,
+      "hat": "White",
+      "title": "anderhalten%20emerging%20MRI%20and%20biofluid%20biomarkers",
+      "chunks": 15
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_053900.md",
+  "completed": true,
+  "ended": "2026-04-11 05:44:59",
+  "duration_seconds": 359.7
+}

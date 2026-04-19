@@ -1,0 +1,38 @@
+{
+  "topic": "glp1",
+  "condition": "bear",
+  "started": "2026-04-11 06:16:36",
+  "last_updated": "2026-04-11 06:22:28",
+  "elapsed_seconds": 351.6,
+  "n_turns": 37,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 48,
+  "n_diffusion_skipped": 38,
+  "ingestions": [
+    {
+      "time": "06:17:45",
+      "turn": 7,
+      "hat": "White",
+      "title": "Uriti%20systemic%20effect%20of%20GLP-1",
+      "chunks": 30
+    },
+    {
+      "time": "06:19:40",
+      "turn": 19,
+      "hat": "White",
+      "title": "deanfield%20semaglutide",
+      "chunks": 42
+    },
+    {
+      "time": "06:20:51",
+      "turn": 26,
+      "hat": "White",
+      "title": "tzang%20metabolic%20rebound%20after%20GLP-1%20receptor%20agaonist%20discontinuation",
+      "chunks": 62
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_061636.md",
+  "completed": true,
+  "ended": "2026-04-11 06:22:36",
+  "duration_seconds": 359.2
+}

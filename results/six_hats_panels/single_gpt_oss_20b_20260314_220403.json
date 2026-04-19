@@ -1,0 +1,35 @@
+[
+  {
+    "puzzle_id": "SP-0",
+    "question": "Mr. and Mrs. Mustard have six daughters and each daughter has one brother. But there are only 9 people in the family, how is that possible?",
+    "correct_index": 1,
+    "correct_answer": "Each daughter shares the same brother.",
+    "model_answer_idx": 1,
+    "model_answer": "Each daughter shares the same brother.",
+    "correct": true,
+    "response": "B",
+    "model": "gpt-oss-20b"
+  },
+  {
+    "puzzle_id": "SP-1",
+    "question": "A woman shoots her husband. Then she holds him underwater for over 5 minutes. Finally, she hangs him. But 5 minutes later, they both go out and enjoy a wonderful dinner together. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "model_answer_idx": 2,
+    "model_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "correct": true,
+    "response": "We need to solve puzzle: A woman shoots her husband. Then she holds him underwater for over 5 minutes. Finally, she hangs him. But 5 minutes later, they both go out and enjoy a wonderful dinner together.\n\nWe have answer choices: A. The woman gets arrested for murder after dinner. B. The woman gets a new partner. C. The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry. D. None of above.\n\nWe need lateral thinking: \"shoots\" could mean taking a photo, \"holds him underwater for over 5 minutes\" could be developing film in water? Actually developing film uses chemicals, not water. But \"holds him underwater\" could be a fish? Or maybe it's about cooking: She shoots her husband (shoots as in \"shooting\" a fish? No). Or maybe it's about photography: She shoots him (takes picture), holds him underwater (developing in water?), hangs him (hangs the photo to dry). Then 5 minutes later they go out for dinner. But that seems plausible: She is a photographer, she shoots her husband (takes photo), develops it in water for 5 minutes, hangs the picture to dry. Then they go out.\n\nBut answer C says \"The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.\" That matches. But the puzzle says \"holds him underwater for over 5 minutes\" - developing film uses chemicals, not water. But maybe it's a photo of him underwater? Or \"holds him underwater\" could be like she holds his picture in water? But the answer C says she developed it. That is plausible.\n\nBut maybe there's a better lateral solution: She shoots her husband (shoots as in \"shooting\" a fish? No). Or maybe it's about photography: She shoots him (takes picture), holds him underwater for over 5 minutes (the photo is in a water-based developing solution). Then she hangs him (hangs the picture to dry). 5 minutes later they go out for dinner. That fits.\n\nBut answer C says \"The woman was a photographer.\" So likely correct answer is C. But we need to think if any other answer fits better.\n\nOption A: The woman gets arrested for murder after dinner. That would be weird because they go out and enjoy dinner together, so she wouldn't get arrested",
+    "model": "gpt-oss-20b"
+  },
+  {
+    "puzzle_id": "SP-2",
+    "question": "Samuel was out for a walk when it started to rain. He did not have an umbrella and he wasn't wearing a hat. His clothes were soaked, yet not a single hair on his head got wet. How could this happen?",
+    "correct_index": 1,
+    "correct_answer": "This man is bald.",
+    "model_answer_idx": 1,
+    "model_answer": "This man is bald.",
+    "correct": true,
+    "response": "We need to solve puzzle: Samuel was out for a walk when it started to rain. He did not have an umbrella and he wasn't wearing a hat. His clothes were soaked, yet not a single hair on his head got wet. How could this happen? Options: A. His hair is dyed. B. This man is bald. C. This man walk upside down to avoid rain. D. None of above.\n\nWe need lateral thinking: The obvious answer is likely wrong. Consider wordplay, double meanings, unconventional interpretations.\n\nWe need to think: \"not a single hair on his head got wet\" could mean he had no hair, or the hair didn't get wet because it's not a single hair? Wait: \"not a single hair on his head got wet\" could mean he had no hair, or the hair didn't get wet because it's not a single hair? The phrase \"not a single hair\" could be interpreted as \"no hair at all.\" So the answer might be B: He is bald. But puzzle says \"obvious answer likely wrong.\" So maybe the trick is that he was walking in a place where rain fell from above but his hair didn't get wet because it's not a single hair? Wait.\n\nMaybe the answer is that he was walking in a place where it rained but his hair didn't get wet because the rain fell on his clothes, not on his head. But if he had no hat and no umbrella, how did his hair stay dry? Maybe because he was walking on a roof or inside a building. But the puzzle says \"out for a walk when it started to rain.\" So maybe he was walking on a roof or inside a building? But \"out for a walk\" implies outside. Could be that he was walking on the roof of a building, so rain fell on his clothes but not on his head because he was walking upside down? Option C says \"walked upside down to avoid rain.\" That seems improbable but lateral.\n\nAlternatively, maybe he was walking in a place where the rain fell from below? Or he had hair that is not wet because it's \"not a single hair\" meaning there are no hairs. So answer B: He is bald. But puzzle says \"obvious answer likely wrong.\" The obvious answer would be B: He is bald. But maybe the trick is that he had hair but it didn't get wet because it's not a single hair? Wait, \"not a single hair on his head",
+    "model": "gpt-oss-20b"
+  }
+]

@@ -1,0 +1,1304 @@
+[
+  {
+    "puzzle_id": "SP-0",
+    "question": "Mr. and Mrs. Mustard have six daughters and each daughter has one brother. But there are only 9 people in the family, how is that possible?",
+    "correct_index": 1,
+    "correct_answer": "Each daughter shares the same brother.",
+    "majority_answer_idx": 1,
+    "majority_answer": "Each daughter shares the same brother.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-1",
+    "question": "A woman shoots her husband. Then she holds him underwater for over 5 minutes. Finally, she hangs him. But 5 minutes later, they both go out and enjoy a wonderful dinner together. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "majority_answer_idx": 2,
+    "majority_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-2",
+    "question": "Samuel was out for a walk when it started to rain. He did not have an umbrella and he wasn't wearing a hat. His clothes were soaked, yet not a single hair on his head got wet. How could this happen?",
+    "correct_index": 1,
+    "correct_answer": "This man is bald.",
+    "majority_answer_idx": 1,
+    "majority_answer": "This man is bald.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      3,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "We need lateral thinking. \"Not a single hair on his head got wet\" could mean he had no hair (bald). But that's obvious. Lateral: He was walking in a place with no rain? Or he had hair that is not wet because it's \"dry\" hair? Could be a man with \"hair\" but it's actually a \"hair\" of a plant? Or he was walking on a boat? Could be he had hair but it didn't get wet because it's \"dry\" due to being a \"hair dryer\"? Wait: He was walking in a place where rain fell but he had an umbrella? No. Another angle: He was \"walking\" in a picture, or a painting? Or he had hair but it didn't get wet because it's \"dry\" hair. The question says \"not a single hair on his head got wet\". Could be he had no hair. But that's obvious answer B. Lateral: He was walking on a beach where the rain fell but he had hair that is \"hair\" of a plant? Or he was walking in a \"rain forest\" but the rain is on the ground not his head. Hmm.\n\nWordplay: \"Samuel was out for a walk when it started to rain.\" He did not have an umbrella and he wasn't wearing a hat. His clothes were soaked, yet not a single hair on his head got wet. How could this happen? Could be he was walking in a place where the rain fell on his clothes but not his hair because he had \"hair\" that was \"dry\" due to being a \"bald\" but not hair. Wait, maybe he had a \"hair\" that is actually a \"hair of the dog\"? Or his hair was \"dry\" because he had a \"hair dryer\" on his head? Hmm.\n\nMaybe it's a trick: He was walking in the \"rain\" of a \"waterfall\" but his head was above water. Or he walked in the rain on a boat, so his clothes soaked but hair didn't because it's above water. But then hair would still get wet from rain. Unless he had a \"hair\" that is actually a \"dry hair\" like a \"brush\"? Not.\n\nCould be that he was walking in a \"rainstorm\" but it was actually a \"rain of dust\" or \"rain of stars\"? Wait.\n\nMaybe the answer is D: None of above. But puzzle says lateral thinking, double meanings.",
+      "B",
+      "B",
+      "We need lateral thinking. Not a single hair got wet, but clothes soaked. Could be he's bald: no hair to get wet. But the puzzle says \"not a single hair on his head got wet.\" If bald, no hairs. That fits. But lateral might be he was wearing a hat? It says he wasn't wearing a hat. Could be he's wearing a hairless scalp but hair on head? Maybe he had a \"hair\" in the sense of hair on his body? But answer B seems obvious. Lateral: He was walking upside down, so rain hits his feet? But clothes soaked. If upside down, clothes wet but hair above ground? He could be walking on a roof? But still hair gets wet. Maybe he had a \"hair\" as in hair of someone else? Wait: He was walking on the roof of a building, so rain falls behind him; his clothes soaked from rain falling onto them but hair above? Not.\n\nMaybe he was walking on a treadmill in a gym with water spray? No.\n\nCould be that his hair is dyed, but dyed doesn't prevent wetness. So A wrong.\n\nC: walking upside down to avoid rain - improbable but lateral.\n\nD none of above maybe correct if answer is something else: He was walking in a tunnel? Rain falls from ceiling, clothes soaked but hair above ground? If he walked under a roof with no rain on his head because the roof is angled. But hair still above? Not.\n\nMaybe he was walking in a place where rain falls from the ground but his hair is covered by a hat or umbrella? But says no hat.\n\nMaybe he was walking on the roof of a moving train, so rain hits his clothes but not head because he's facing downwards? Eh.\n\nCould be that he had a \"hair\" meaning hair on his head but it's all shaved. So bald.\n\nThus answer B seems likely. But puzzle says lateral thinking, obvious wrong. Maybe the trick: He was walking on a plane (airplane) where rain falls inside but his hair is protected? No.\n\nMaybe he was walking in a place with no wind, rain falls but his hair is wet? Hmm.\n\nWait: \"not a single hair on his head got wet\" could mean he had no hair. So bald. That is straightforward.\n\nBut lateral: He was walking on a roof of a building, so rain falls behind him but his hair is above the water line? Eh.\n\nProbably"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-5",
+    "question": "Five apples are in a basket. How do you divide them among five girls so that each girl gets an apple, but one apple remains in the basket?",
+    "correct_index": 2,
+    "correct_answer": "Give the fifth girl her apple in the basket.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Give the fifth girl her apple in the basket.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-6",
+    "question": "Tom and his younger sister were fighting. Their mother was tired of the fighting and decided to punish them by making them stand on the same piece of newspaper in such a way that they couldn't touch each other. How did she accomplish this?",
+    "correct_index": 0,
+    "correct_answer": "Tom's mother slid a newspaper under a door, each sibling standing on each side.",
+    "majority_answer_idx": 1,
+    "majority_answer": "Tom and his younger sister stand on the newspaper back-to-back.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "We need lateral thinking. They stand on same piece of newspaper but cannot touch each other. Maybe they are standing on opposite sides of the paper? But same piece, can't touch. Could be that mother put them on a newspaper that was printed with their names? Or they stand on the same piece but one is inside? Wait: \"stand on the same piece of newspaper\" maybe means stand on the paper as a whole, but not touching each other because they are on different parts of same piece? But they would still be near. Maybe \"stand\" means stand up, like standing on top of the paper? They could be standing on top of each other but one is inside the fold? Huh.\n\nOption A: slide newspaper under a door, each sibling standing on each side. That would be same piece? No.\n\nOption B: back-to-back: they stand on the same paper but back to back, so they can't touch. That seems plausible.\n\nOption C: folded multiple times and ended with a special shape. Not sure.\n\nMaybe the trick is that they are standing on the newspaper but one is inside a hole in the paper? Or maybe they stand on opposite sides of the same piece, like one stands on top and other on bottom? But paper is thin.\n\nCould be that they are standing on the newspaper, but one is on top of it (like standing on a stack) and other is below? Not.\n\nMaybe the answer is B: back-to-back. Because they are on same piece but not touching because they're facing opposite directions, so they cannot touch each other.\n\nBut lateral: maybe mother used a newspaper that was printed with a blank space between them? Hmm.\n\nOption D none of above. Might be trick: The mother put the newspaper on a table and told them to stand on it, but they can't touch because they are standing on opposite sides of the same piece? Wait.\n\nActually \"stand on the same piece of newspaper\" could mean stand on top of it, but if they are standing back-to-back, they can't touch each other. So B seems straightforward.\n\nBut puzzle says lateral thinking, obvious answer likely wrong. Maybe it's that the mother put them on a newspaper that was printed with their names, so they are standing on the same piece but not touching because one is inside a hole? I'm leaning D.\n\nLet's think: The mother wants them to stand on the same piece but cannot touch. She could place a newspaper between them"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-7",
+    "question": "A horse is tied to a five-meter rope in front of an old saloon. Ten meters behind the horse is a bale of hay. Without breaking his rope, the horse is able to eat the hay whenever he chooses.\nHow is this possible?",
+    "correct_index": 1,
+    "correct_answer": "The rope is not tied to anything else.",
+    "majority_answer_idx": 1,
+    "majority_answer": "The rope is not tied to anything else.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      3,
+      3,
+      1,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "We need lateral: horse tied to 5m rope in front of saloon. Ten meters behind the horse is bale hay. How can he eat? Maybe rope tied to his own tail? Or rope attached to horse's neck but not to anything else? Actually \"in front of an old saloon\" maybe the horse is tied to a post in front of saloon. The hay bale behind the horse 10m away. But if rope is tied to a post in front, horse can walk forward until rope slack? Wait: If rope is tied to the front of saloon, horse can move forward until rope slack? The hay bale behind him is 10m away. But if the horse moves forward, the distance to hay increases? Maybe the rope is tied to a post in front of saloon but the horse can walk around the saloon, going behind it to reach hay. The rope length 5m, but if he goes around the saloon, the path is longer? But rope length limited. Maybe the rope is tied to a pole on the saloon that is 5m away from horse but the hay bale is behind, so he can go around? Wait.\n\nMaybe answer D: none of above. But lateral: The horse is tied to a five-meter rope in front of an old saloon. Ten meters behind the horse is a bale of hay. Without breaking his rope, the horse is able to eat the hay whenever he chooses. How? Maybe the horse is tied to a rope that is 5 meters long but the rope is attached to a post behind him? Actually \"in front of an old saloon\" maybe means the horse is tied to a post in front of the saloon. The hay bale behind the horse 10 meters away. But if the rope is tied to a post that is 5m in front of horse, then the horse can move forward until rope slack? Wait.\n\nAlternate: The rope is tied to a post in front of the saloon, but the horse can walk around the saloon and reach hay because rope wraps around building? If rope is tied to a post, it can wrap around the saloon and the horse can walk behind? But rope length 5m, but building maybe small.\n\nMaybe trick: The horse is tied to a five-meter rope in front of an old saloon. Ten meters behind the horse is a bale of hay. The rope is tied",
+      "We need lateral. Horse tied to five-meter rope in front of old saloon. Ten meters behind the horse is bale of hay. How can he eat? Rope tied to front of saloon? Maybe rope attached to horse's collar, and other end is tied to the saloon front. The bale of hay behind horse relative to saloon? Actually \"in front of an old saloon\" means rope tied in front of saloon, so horse is at front. Hay is ten meters behind the horse. So rope length 5m, but hay 10m behind. But if rope tied to horse's collar and other end to saloon, the horse can move forward? Wait: If rope tied to front of saloon, and hay behind horse relative to the saloon? Maybe the bale is behind the horse but in front of the saloon? Hmm.\n\nCould be that rope is tied to a post behind the horse, and hay behind horse but rope can wrap around? Or maybe the bale is on a wagon that moves with horse?\n\nAlternatively, answer D. But think wordplay: \"in front of an old saloon\" could mean the rope is tied to the horse in front of a saloon, but hay is behind the horse. The rope is 5m. But if the horse is tied to a post that is at the front of saloon, but hay is behind the horse relative to the saloon? Actually if rope tied to post at front of saloon, horse can walk forward towards saloon. Hay behind the horse relative to the saloon? So hay is actually in front of the horse? No.\n\nMaybe the rope is tied to the horse, but the other end is not tied: \"The rope is not tied to anything else.\" That would allow horse to move freely. But puzzle says \"A horse is tied to a five-meter rope in front of an old saloon.\" That implies tied. But answer B says rope not tied to anything else, meaning only the horse is tied to rope but no anchor. Then he can walk anywhere. So answer B.\n\nBut maybe trick: \"ten meters behind the horse is a bale of hay\" but rope length 5m. But if the horse is tied to the saloon and bale of hay is behind horse relative to saloon, then hay is actually 5m in front? Wait: If rope tied to horse's collar and other end to saloon",
+      "B",
+      "We need lateral thinking: horse tied to five-meter rope in front of old saloon. Ten meters behind the horse is a bale of hay. How can horse eat hay? Likely rope tied to saloon? Actually \"in front of an old saloon\" meaning the horse is in front of a saloon, rope tied to something behind? Maybe rope tied to horse's collar and the other end to saloon. If the saloon is old, maybe it's a \"saloon\" meaning a bar? Could be that the horse is tied to a rope that is 5 meters long, but the hay bale is behind him. If the rope is tied to a stake in front of the horse, the horse can turn around? Wait: The rope is tied to a stake in front of the horse, but the hay bale behind. Horse can rotate 360 degrees, so it can reach? If rope is tied to a stake at the front of horse, the horse could turn around and reach hay behind. But rope length 5m; hay bale 10m away behind, so not reachable. Maybe the rope is tied to the horse's collar and the other end to a stake behind him? Actually \"in front of an old saloon\" could be a pun: \"old saloon\" is a bar. The horse is tied to a five-meter rope in front of an old saloon. Ten meters behind the horse is a bale of hay. Without breaking his rope, the horse is able to eat the hay whenever he chooses.\n\nCould be that the hay bale is inside the saloon? Wait: \"ten meters behind the horse\" could be behind the saloon. If rope is tied to a stake in front of the saloon, horse could walk around the saloon and get hay behind? But rope length 5m. Maybe the horse is tied to a rope that is tied to a stake at the front of the saloon, but the hay bale is behind the horse 10m. If the rope is tied to a stake at the front of the saloon, the horse could walk around the saloon and reach hay behind because the rope can wrap around the saloon? Actually if the horse goes around the back of the saloon, rope could wrap around the building and length increases. So horse can reach hay behind by going around building. That seems plausible.\n\nThus answer C: walls retract or collapse? No, it's about"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-8",
+    "question": "All of Mrs. Smith pets are dogs except one, and all her pets are cats except one. But Mrs.Smith only has 2 pets, how is that possible?",
+    "correct_index": 2,
+    "correct_answer": "Mrs. Smith has one cat and one dog.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Mrs. Smith has one cat and one dog.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral. All of Mrs Smith pets are dogs except one, and all her pets are cats except one. Only 2 pets. Could be that the \"one\" refers to the same pet: all pets are dogs except one (the cat), and all pets are cats except one (the dog). So answer C. But puzzle says obvious likely wrong. Maybe trick: \"pets\" plural includes the word \"pet\" meaning a person? Or \"Mrs Smith only has 2 pets\" could be that she has one pet dog and one cat, but the statements refer to \"all of Mrs Smith pets are dogs except one\" meaning all her pets (plural) are dogs, except one pet that is not a dog. That fits cat. Similarly all pets are cats except one (the dog). So C seems correct. But puzzle says lateral maybe \"pets\" refers to the word \"pet\" as in pet person? Could be she has one pet dog and one cat, but the \"one\" refers to the same animal? But that doesn't make sense. The trick might be that she has one dog and one cat, but the statements refer to \"all of Mrs Smith pets are dogs except one\" meaning all her pets are dogs, but she has only one pet that is not a dog (the cat). Similarly all her pets are cats except one. So answer C.\n\nBut maybe they want A: she has a pet that is neither dog nor cat, but only 2 pets. That would be impossible because then one pet would be neither dog nor cat, but all pets are dogs except one. That means there is exactly one pet that is not a dog: the other is dog. If she had a non-dog, non-cat, then that would be the one not a dog. Then all pets are cats except one: so there is exactly one pet that is not cat, which would be the dog. That fits with dog and non-cat. But then we need two pets: one dog, one non-cat (not a cat). That would satisfy both statements. But then the second statement \"all her pets are cats except one\" means all pets are cats except one pet that is not a cat. That could be the dog. So we have dog and non-cat (not cat). But then the first statement: all pets are dogs except one pet that is not a dog. That could be non-cat. So we have dog and",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-9",
+    "question": "The 22nd and 24th presidents of the United States of America had the same parents, but were not brothers. How can this be possible?",
+    "correct_index": 0,
+    "correct_answer": "They were the same man.",
+    "majority_answer_idx": 0,
+    "majority_answer": "They were the same man.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-10",
+    "question": "There were eight girls going to school. They were sharing one umbrella. How come all the girls did not get wet?",
+    "correct_index": 1,
+    "correct_answer": "Because it was not raining.",
+    "majority_answer_idx": 1,
+    "majority_answer": "Because it was not raining.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral thinking. Eight girls sharing one umbrella; all did not get wet. Could be that they were going to school in the evening, no rain. But puzzle expects trick: maybe they are \"girls\" meaning \"female students\", but could be that they were in a school bus, umbrella used as a shelter. Or \"sharing one umbrella\" could mean they were sharing a single umbrella but not all at once, e.g., taking turns. But that's too obvious.\n\nWordplay: \"girls\" could be \"girls\" as in \"female students\", but maybe it's about \"the girls were sharing one umbrella\" meaning they all shared it, but the answer: because they were going to school in a school bus and umbrella was used as a shelter. Hmm.\n\nMaybe the trick: They were \"going to school\" meaning they were going to a school for girls, but the umbrella was used as a \"shelf\" or something. Or maybe they were in a school that had no rain.\n\nDouble meaning: \"umbrella\" could be a legal umbrella, like insurance. They were sharing one umbrella (insurance policy) so none got wet because no claim.\n\nCould be that the girls were \"sharing\" one umbrella as in they were sharing a single umbrella brand, not physically. Or the answer: because the eight girls were \"sharing one umbrella\" meaning they shared a single umbrella, but not all at once. But puzzle says \"all the girls did not get wet\" meaning some didn't get wet? Wait: all did not get wet means none got wet. So they all stayed dry.\n\nMaybe the trick: They were \"going to school\" but it was a school for girls, and they had an umbrella shaped like a big hat. Hmm.\n\nCould be that the eight girls were \"sharing one umbrella\" meaning they were sharing an umbrella as a symbol for protection, like \"umbrella organization\". But not physically.\n\nMaybe the answer: Because they were in a school that had no rain, or because it was not raining. But puzzle says lateral thinking.\n\nWordplay: \"umbrella\" could be a \"covering\" like a legal umbrella. The girls were \"sharing one umbrella\" meaning they shared an umbrella for protection against something else, like a policy. But not wet.\n\nMaybe the trick: The eight girls were \"going to school\" meaning they were traveling to school, but the umbrella was used as a shelter for others. Or maybe \"",
+      "B",
+      "We need lateral thinking. Puzzle: eight girls going to school sharing one umbrella, how come all did not get wet? Likely answer: they were going to school in a group but umbrella was used by some before rain? Maybe the eight girls were on a bus, umbrella inside? Or they are going to school but not all at same time; or the umbrella was large enough. But puzzle expects trick: \"There were eight girls going to school\" maybe they are in a choir? The answer might be B: because it was not raining. That's too obvious but lateral? Could be \"They were going to school in a car\" etc. But answer options include B. The trick likely: They were going to school in the morning, but it was a dry day, so no wet. So answer B.\n\nBut puzzle says lateral thinking; obvious wrong. Option D none of above? Maybe they were all on a plane, umbrella inside? Or the eight girls are \"girl\" as in 'female' but could be \"girls\" meaning \"giraffes\"? No.\n\nMaybe the trick: They were going to school but not all at once; they used umbrella one by one. But that seems too trivial.\n\nCould be: They were going to school in a group but the umbrella was inside a car, so they didn't get wet. But that's not listed.\n\nOption C: exceptionally large umbrella could cover all eight. That could be answer but trivial.\n\nOption A: sharing at different times. Also trivial.\n\nThe puzzle says \"obvious answer is likely wrong\". The obvious answer would be B: not raining. So lateral thinking suggests something else.\n\nMaybe the eight girls were \"going to school\" meaning they were going to a school for girls, but they were all in a group that had a \"school\" like a school of fish? No.\n\nMaybe the word \"girls\" refers to \"female students\" but could be \"giraffes\"? No.\n\nMaybe the trick: They were going to school but they were all inside a bus, umbrella was on the roof. But none of above.\n\nMaybe answer D: None of above. So they used a raincoat? Wait, the puzzle says \"They were sharing one umbrella.\" How come all girls did not get wet? Maybe because they were going to school on a sunny day, so no rain. That's answer B.\n\nBut puzzle says lateral thinking: the obvious answer is likely wrong. So maybe it's not",
+      "B",
+      "We need lateral: \"eight girls\" could be 'girls' meaning 'girlfriends'? maybe they are in a group but umbrella shared by one. They didn't get wet because they were all inside the house? Or the word 'umbrella' could be a type of hat. Maybe they were sharing one umbrella meaning the umbrella was used to cover them all at once, like a big umbrella. But answer choices: A, B, C, D none above. We need correct. Likely answer B: not raining. But puzzle says lateral thinking, double meanings. \"Eight girls\" could be 'girls' meaning 'female students', but maybe they are all in a school and umbrella used for something else? Could be 'they were sharing one umbrella' meaning they shared the word \"umbrella\" like a phrase? Or 'umbrella' could be a brand of umbrella used as a symbol. The trick: They were sharing one umbrella - meaning they were sharing the word \"umbrella\" as in a metaphorical umbrella organization. But to avoid wetness, they were inside the school building? The answer likely D none of above. Because it's a trick: They didn't get wet because they were sharing one umbrella but it was not raining. So answer B? But puzzle says lateral thinking, double meanings. The obvious answer is likely wrong. So maybe the trick: They were sharing one umbrella because they were all inside a school bus? But no.\n\nMaybe \"umbrella\" could be a type of hat that can cover multiple people? Or 'sharing one umbrella' meaning they all shared the same umbrella in a group photo, but didn't get wet because it was sunny. The lateral answer: They were sharing one umbrella at different times (turns) - but that would still get wet if raining. But maybe they were sharing one umbrella because they all had umbrellas? Eh.\n\nMaybe the answer: They were sharing one umbrella because it was a \"school umbrella\" meaning a group of girls are under the same 'umbrella' as in protection, not physical. So they didn't get wet because it wasn't raining.\n\nThus answer B seems plausible but puzzle says obvious wrong. The trick: \"eight girls\" could be 'girls' meaning 'female students', but maybe they are all in a school building, so no rain. So B.\n\nBut lateral: The word \"umbrella\" could be a type of hat used in school to cover the head. They didn't get"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-11",
+    "question": "A black dog stands in the middle of an intersection in a town painted black. None of the street lights are working due to a power failure caused by a storm. A car with two broken headlights drives towards the dog but turns in time to avoid hitting him. How could the driver have seen the dog in time?",
+    "correct_index": 0,
+    "correct_answer": "It was during the daylight hours.",
+    "majority_answer_idx": 0,
+    "majority_answer": null,
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      3,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral: black dog in middle of intersection town painted black. None street lights working due to power failure storm. Car with two broken headlights drives towards dog but turns in time. How could driver have seen? Maybe the dog is black, town painted black, but intersection maybe white lines? The driver could have seen the dog because it's daytime (A). But puzzle says lateral. Maybe \"black dog\" refers to a black car? Or the driver saw the dog because it's a black dog but the town painted black, so dog is invisible? Wait: maybe the driver saw the dog because it's a \"black dog\" meaning a black car? Or the driver could have seen the dog because it was in daylight (A). But puzzle says obvious answer likely wrong. Maybe \"dog\" refers to a \"black dog\" meaning black dog as in the phrase \"black dog\" for depression. But maybe the driver saw a \"dog\" because it's a \"black dog\" but also \"a black dog stands in the middle of an intersection\" could be a \"black dog\" meaning a \"black dog\" as in a black dog that is actually a \"black dog\" (a black dog). The driver could have seen because the dog's reflection in the windshield? Hmm.\n\nMaybe it's about wordplay: \"black dog\" could be a \"black dog\" as in the phrase \"a black dog\" meaning \"a black dog\". The driver could have seen because it's a \"black dog\" but the town is painted black, so everything black. But maybe the intersection lines are white? The driver could see the dog because it's on a white crosswalk. But puzzle says none street lights working due to power failure storm. So maybe the driver saw because it's daytime (A). But they say obvious answer likely wrong. Could be that the dog is a \"black dog\" meaning a black dog, but the driver saw because it's actually a \"black dog\" as in a \"black dog\" meaning a black dog that is a \"dog\" but the driver saw because it's a \"black dog\" meaning a \"black dog\" that is actually a \"black dog\" but the driver saw because it's a \"black dog\" as in a \"black dog\" that is also a \"black dog\" meaning \"black dog\" is a \"black dog\" but the driver saw because it's a \"black dog\" that is also a \"black dog\" meaning \"dog\" but the",
+      "We need lateral thinking. Black dog in middle of intersection, town painted black. Power failure. Car with two broken headlights drives towards the dog but turns in time to avoid hitting him. How could driver have seen dog? Maybe it's a black dog, but town painted black so background same color. But maybe the dog is a \"black cat\"? Wait.\n\nMaybe it's during daylight (A). But puzzle says lateral thinking. Could be that the driver saw the dog because it was a \"black dog\" but also the driver is blind? Hmm.\n\nCould be that the dog is a \"black dog\" meaning \"black dog\" as in depression? Maybe it's not literal. The driver could have seen the dog because it was a \"black dog\" and the town painted black, but the intersection is a cross shape; maybe the dog was in the middle of intersection meaning center point; driver could have seen because the dog is a \"black dog\" but also the car had broken headlights, but driver could see because of reflection from something? Or because the dog was \"black\" meaning it's a black dog, but the driver sees it by its silhouette? But puzzle says answer likely wrong.\n\nMaybe the trick: The dog is black, but the town painted black - so no contrast. But maybe it's a \"black dog\" meaning a \"dog that is black\" but the driver saw it because the dog was actually a \"black cat\"? Wait.\n\nCould be that the driver is blind but can see via hearing (B). But lateral: The dog might have been a \"black dog\" but the driver saw it because of its barking? But the puzzle: \"How could the driver have seen the dog in time?\" The answer might be that the driver saw it because \"the dog was black, but the town painted black\" meaning there is no contrast. So driver saw it because the dog was a \"black dog\" but also black, but maybe the dog is actually a \"black cat\"? Hmm.\n\nMaybe it's about wordplay: The town painted black, meaning the streets are black. Intersection in a town painted black => \"black town\" maybe referencing \"Blacktown\" or \"Black City\". The dog stands in the middle of an intersection. Car with two broken headlights drives towards the dog but turns in time to avoid hitting him. How could driver have seen the dog? Maybe because it's daytime (A). But puzzle says lateral thinking. However maybe daylight is obvious answer but",
+      "We need lateral: black dog stands in middle of intersection in a town painted black. None street lights working due to power failure storm. Car with two broken headlights drives towards dog but turns in time to avoid hitting him. How could driver have seen the dog? Maybe the dog is a black dog, but town painted black so all dark. But maybe it's daytime (A). But puzzle says think lateral, wordplay. \"Black dog\" could be a black dog meaning a type of dog? Or \"black dog\" could refer to depression. Town painted black: maybe the town is called Black? Intersection? Could be that the driver saw a reflection in the broken headlights? Or the dog is black but the intersection painted black, so dog invisible. But driver saw it because of its movement? Or maybe the driver is blind but used GPS? Hmm.\n\nWordplay: \"black dog\" could be a black dog that is actually a police dog? Or the town painted black meaning it's a painting. The car with two broken headlights drives towards the dog but turns in time to avoid hitting him. How could driver have seen the dog? Maybe because it's daytime (A). But lateral: \"black dog\" might be a \"black dog\" meaning the driver saw the dog because it's a black dog that is actually a black dog (like a painting). Wait: \"town painted black\" maybe means the town is a painting, so it's an art piece. The dog stands in middle of intersection in a painted town (like a picture). So the driver is looking at a painting, not real. The car with broken headlights drives towards dog but turns in time to avoid hitting him because it's a painting? Eh.\n\nCould be that the driver saw it because of the reflection in the broken headlights, like a small amount of light (C). But puzzle says lateral. Maybe answer D.\n\nThink: The driver could have seen the dog because he had a flashlight? But none lights working. Maybe the dog is black but the town painted black so it's invisible, but driver saw it because of its reflection in a window? Or the dog is actually a black dog that is a \"black\" meaning \"dark\" but the driver saw it because of its tail? Hmm.\n\nWordplay: \"black dog\" could be a black dog that is actually a black dog. Intersection in a town painted black: maybe it's a \"black\" intersection, like a \"black spot\". The car with two",
+      "We need lateral thinking. Black dog stands in middle of intersection in a town painted black. None street lights working due to power failure caused by storm. Car with two broken headlights drives towards dog but turns in time to avoid hitting him. How could driver have seen dog? Maybe the town painted black means it's night, but \"black dog\" could be a traffic sign? Or \"dog\" is a black dog meaning a 'dog' as in a vehicle? Maybe the driver saw the dog because it was daylight (A). But lateral: The town painted black could mean it's a painting, not real. Or the dog is a \"black dog\" meaning a black dog statue? The driver could have seen it because the dog was in front of a streetlight that still worked? But no.\n\nWordplay: \"black dog stands in the middle of an intersection\" - In a town painted black, none street lights working due to power failure caused by storm. Car with two broken headlights drives towards dog but turns in time to avoid hitting him. How could driver have seen the dog? The answer: because it's daytime (A). But lateral: \"black dog\" could be a black dog in a painting; driver sees the painting? Or maybe it's a \"black dog\" meaning a 'black dog' is a type of car (like black dog as in 'Black Dog' brand). The driver saw the dog because it was a \"black dog\" meaning black dog in the sense of \"a black dog is a sign for parking\"? Hmm.\n\nConsider double meanings: Intersection could be intersection of roads, but also intersection of words. Dog could be a 'dog' meaning a 'black dog' as in the phrase \"black dog\" meaning depression. The driver saw the dog because it was a 'dog' as in a 'dog' is an animal. But lateral: The driver could have seen the dog because it was a 'black dog' meaning \"a black dog\" is a type of traffic sign: the \"dog\" symbol on a stop sign? No.\n\nMaybe it's about the word 'black' meaning 'dark', but if town painted black, maybe it's a painting of a town painted black. The driver saw the dog because it was in a painting? The car is in a movie set.\n\nWait: The puzzle says \"town painted black\". Could be that the town is literally a painting, like a canvas. The dog stands in middle of intersection in",
+      "We need lateral: black dog in town painted black. Intersection, no lights. How saw? Maybe it's a \"black dog\" meaning a police dog? Or the driver is blind? Wait: The puzzle likely uses wordplay: \"black dog\" could be a black dog, but \"town painted black\" maybe refers to the word \"black\" meaning \"dark\". But answer choices: A daylight, B hearing, C headlights emit light, D none. Lateral: maybe the driver saw the dog because it's a \"black dog\" meaning a \"black dog\" is a \"dog that is black\", but the town painted black means the entire town is black, so the dog stands out? But no lights. Could be that the driver saw the dog because they were driving a car with broken headlights but still had a front fog light? But answer choices only.\n\nMaybe the driver is a \"blind person\" who uses hearing. B says rely on hearing. That could be answer. But puzzle suggests lateral: maybe the driver is a \"dog\" itself? Wait: The dog stands in intersection, car with broken headlights drives towards the dog but turns in time to avoid hitting him. How could driver have seen the dog? Maybe because the driver is a \"dog\" too, so he hears bark. But answer choices: B is hearing.\n\nMaybe the driver saw the dog because it's a \"black dog\" but the town painted black, so the dog is invisible? But driver turned in time because they saw a \"shadow\"? Hmm.\n\nMaybe it's daytime: A. But puzzle says power failure due to storm, but daylight could still happen.\n\nBut lateral: The driver saw the dog because it's a \"black dog\" meaning \"a black dog that is actually a dark horse\"? No.\n\nMaybe the driver saw the dog because they were driving a car with broken headlights but had a rearview mirror that reflects? Or the dog is black and town painted black, so it's invisible except for its eyes reflecting headlights? But no lights.\n\nMaybe the driver saw the dog because they were driving a \"black car\" and the dog is black, but the driver sees its reflection in a window? Hmm.\n\nAlternatively, answer D none of above: maybe the puzzle expects that driver didn't see dog; they turned because they heard a bark? But B covers hearing.\n\nBut lateral: \"black dog\" could be a \"dog that is black\" but also refers to \"a black dog\""
+    ],
+    "model": "openai/gpt-oss:20b",
+    "is_tie": true
+  },
+  {
+    "puzzle_id": "SP-12",
+    "question": "On a fine sunny day a ship was in the harbor. All of a sudden the ship began to sink. There was no storm and nothing wrong with the ship yet it sank right in front of the spectators eyes. What caused the ship to sink?",
+    "correct_index": 0,
+    "correct_answer": "It was a Submarine.",
+    "majority_answer_idx": 0,
+    "majority_answer": "It was a Submarine.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      3,
+      3,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "D",
+      "We need lateral: ship in harbor sank right front of spectators. Maybe it's a \"ship\" as in a naval vessel but actually a \"ship\" meaning \"a ship of people\"? Could be that the spectators were watching a \"ship\" as in a stage play? Maybe it's a ship in a game? Or the word \"sink\" meaning to fall into water. Could be that the ship was a submarine: it sank because it lowered ballast? But no storm. Option A says it's a Submarine. That could be answer: submarine sinks intentionally. But puzzle expects lateral: maybe the ship was a \"ship\" in a game of chess? Actually spectators watching a \"ship\" maybe it's a \"ship\" as in a \"ship\" in the game of Battleship? It sank because it's a submarine (submarine is hidden). But maybe answer D none of above.\n\nThink: \"fine sunny day\" and spectators. Ship sank right in front of eyes. Could be that the ship was a \"ship\" as in a \"ship\" being a person? No.\n\nMaybe it's that the ship was on land and sank because of \"sinking\" as in falling into a pit? But no storm.\n\nCould be that the ship was a \"ship\" of a boat used for fishing, but the spectators were children playing with a toy ship that sank. But answer options limited.\n\nOption A: It was a Submarine. That seems plausible as submarine sinks purposely. But puzzle says no storm and nothing wrong with ship yet it sank right in front of spectators. Submarine would sink but it's a submarine, not a ship? But submarines are ships.\n\nOption B fish too many: maybe fish ate the hull? No.\n\nC spectators too many: crowd crush causing ship to sink? Not likely.\n\nD none of above. Maybe answer is D because it's a \"ship\" as in a \"ship\" on a stage? Or the ship was actually a \"sinking\" as in a \"sink\" like a sink in kitchen? Wait wordplay: ship sank right in front of spectators eyes. Could be that the ship was a \"ship\" in a game of \"Sinking Ship\" like a toy. The answer maybe D.\n\nI think the intended lateral is that the ship was actually a \"ship\" as in a \"ship\" of a person? Hmm.\n\nMaybe it's that the ship was a \"submarine\" because submarines sink intentionally. So answer",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-13",
+    "question": "A man who lived on the top floor of a twenty story building had to go up and down daily for work, and of course, for food and the other necessities. On most days he could only ride the elevator to the fifteenth story, and he would have to walk the rest of the way. When it rained, however, he could ride all the way up to the twentieth story. Why?",
+    "correct_index": 2,
+    "correct_answer": "The man wasn't tall enough to reach the button for the 20th floor. He could only reach the 15th story button on the elevator. When it rained, he brought his umbrella, and used it to press the 20th story button on the elevator.",
+    "majority_answer_idx": 2,
+    "majority_answer": "The man wasn't tall enough to reach the button for the 20th floor. He could only reach the 15th story button on the elevator. When it rained, he brought his umbrella, and used it to press the 20th story button on the elevator.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "We think: puzzle about rainy weather allows elevator to go up. Maybe because the building is on a hill? Actually man lives top floor, but elevator stops at 15th except rain. Could be because of \"rain\" meaning the word \"rain\" is an anagram? Actually maybe it's about a man with a broken elevator that only works when water present: like \"rain\" triggers the elevator to work due to humidity. Or maybe it's about a man who is blind? Wait: The trick: He lives on top floor, but elevator only goes to 15th. When it rains he can ride all the way up because \"rain\" is a word that when added to \"elevator\" becomes \"rain elevator\"? Hmm.\n\nMaybe it's about the man being a fish? No. Another lateral: The building is in the city of \"Rain\" or \"rain\" meaning the word \"rain\" indicates that it's raining outside, so elevator is open? Or maybe he uses umbrella to reach button (C). That seems plausible. But answer C says not tall enough, use umbrella to press 20th floor button when raining because he has umbrella. That is plausible.\n\nBut puzzle likely expects answer D: None of above. Because the trick might be that he lives on top floor but elevator only goes to 15th except when it's raining because the elevator is broken and only works in rain? Or maybe he's a short man who can't reach button but when it's raining he holds umbrella to press. That is exactly C.\n\nBut which is more lateral? The puzzle says \"consider wordplay, double meanings.\" Rain could be \"rain\" as in \"to rain\" meaning to fall. Maybe the elevator is only operational when water is present because it's a \"water elevator\" like in some old buildings. So answer A? Not.\n\nI think the intended lateral is that he lives on top floor but elevator stops at 15th because of a \"rain\" in the word \"rain\" meaning \"to rain\" as in \"to fall\", so he can only go up to 15th because the elevator is broken. When it rains, he can ride all the way up to 20th because the word \"rain\" is part of his name? Hmm.\n\nMaybe it's about a man who lives on top floor but the elevator is broken except when it rains because water triggers the motor. So answer A? But A says programmed to bypass certain floors above 15th"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-15",
+    "question": "Even if they are starving, natives living in the Arctic will never eat a penguin's egg. Why not?",
+    "correct_index": 0,
+    "correct_answer": "Penguins only live in Antarctica.",
+    "majority_answer_idx": 0,
+    "majority_answer": "Penguins only live in Antarctica.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral thinking. Penguins live in Antarctica, not Arctic. So natives living in Arctic would never eat a penguin's egg because they can't get it? But puzzle says \"Even if they are starving, natives living in the Arctic will never eat a penguin's egg.\" Why not? Could be because \"penguins\" are in Antarctica, so they don't exist in Arctic. So answer A seems obvious but puzzle says lateral thinking; maybe it's trick: \"penguin's egg\" could refer to something else. Penguins are in Antarctica, so Arctic natives can't get them. But lateral: \"penguin's egg\" could be a phrase meaning something like \"egg of a penguin\" which is 'penguin's egg' but maybe it's 'the word \"egg\"'? Or maybe they are starving, but they will never eat a penguin's egg because \"penguins\" are not in the Arctic, so they can't find them. That's straightforward.\n\nBut puzzle says \"obvious answer likely wrong.\" So maybe the trick: The natives living in the Arctic will never eat a penguin's egg because \"penguins\" are birds that lay eggs, but the word 'penguin' is a type of bird; their egg would be called \"egg\" but maybe the word 'penguin' is a type of fish? Actually, in some languages penguins are called \"penguins\" but maybe the word 'penguin' is a type of fish? No.\n\nMaybe it's about the phrase \"even if they are starving\" meaning \"they will never eat a penguin's egg because it's not part of their diet.\" But lateral: The natives living in the Arctic are \"natives\" meaning they are \"native speakers\"? Could be about language: The word \"penguin's egg\" could be \"egg of a penguin,\" but the phrase \"penguin's egg\" is not used in their language? Hmm.\n\nCould be about double meaning: \"penguin's egg\" could refer to the word 'egg' in a phrase like \"egg of a penguin\" which is a type of fish? Wait: In some contexts, 'penguin' refers to the 'penguin fish', a type of fish found in Arctic? Not sure.\n\nMaybe it's about \"penguins\" as a kind of bird that lays eggs, but the word 'egg' could be \"egg\" in another language meaning something else. But puzzle says consider wordplay",
+      "We need lateral. \"Even if they are starving, natives living in the Arctic will never eat a penguin's egg.\" Why not? Penguins live in Antarctica, so A. But puzzle says lateral: maybe because \"natives living in the Arctic\" refers to people who are native to the Arctic, e.g., Inuit. They will never eat a penguin's egg because they don't have penguins there, but also because \"penguin\" could be a brand of something? Or wordplay: \"natives living in the Arctic will never eat a penguin's egg\" because of the word \"penguin\" meaning 'a person who is clumsy'? Or maybe because it's a riddle: \"Even if they are starving, natives living in the Arctic will never eat a penguin's egg.\" Because \"penguins\" are birds that lay eggs, but the word 'egg' could refer to a part of a joke? Wait: Could be that \"penguin's egg\" is a phrase meaning 'a bad idea'?\n\nDouble meanings: Penguins live in Antarctica, so they are not found in the Arctic. So natives of the Arctic will never eat a penguin's egg because they can't find them. But that's too obvious.\n\nMaybe the trick: Penguins are birds that live in Antarctica, but there is a species called \"Arctic penguin\"? No. So answer A seems plausible.\n\nBut puzzle says lateral thinking, double meanings. Maybe \"penguin's egg\" refers to 'an egg that a penguin has laid', which is a \"penguin's egg\". But natives living in the Arctic will never eat a penguin's egg because they are \"native\" to \"Arctic\", and the word 'penguin' might refer to a brand of something like \"Penguins\" (the hockey team). But no.\n\nMaybe because the word 'egg' in this context refers to a \"penguin's egg\" as in the phrase \"to eat an egg\" meaning 'to be very hungry'? No.\n\nMaybe it's about language: In some languages, \"penguin\" translates to something else. But likely answer A.\n\nBut puzzle says 'obvious answer is likely wrong', so maybe the obvious (A) is wrong. So need lateral: Penguins only live in Antarctica, but that might be the obvious answer. They want something else.\n\nWhat if \"natives living in the Arctic\" refers to 'native' as in 'native",
+      "We need lateral: natives living in Arctic will never eat a penguin's egg. Penguins live in Antarctica, not Arctic. So answer A? But puzzle says lateral thinking; obvious wrong. Penguins live in Antarctica, so cannot be eaten by Arctic natives because they don't have them. But that's obvious; puzzle says likely wrong. Maybe wordplay: \"natives living in the Arctic\" could be \"Arctic natives\" meaning indigenous people of Arctic. They will never eat a penguin's egg because \"penguin's egg\" is \"egg of a bird that lives in the south\". So answer A seems correct but puzzle says likely wrong. Maybe double meaning: \"penguin's egg\" could be a slang for something else. Penguins eggs are white, but maybe \"egg\" refers to the word \"egg\". Arctic natives will never eat a penguin's egg because they don't eat eggs? That seems wrong.\n\nMaybe it's about \"natives living in the Arctic\" meaning \"native speakers of English\"? No.\n\nPerhaps it's a trick: Penguins are birds that live in the Southern Hemisphere, but they do not exist in the Arctic. So natives cannot eat them because they can't find them. But puzzle says lateral, so maybe answer D none of above? The reason could be that the word \"penguin\" refers to a type of bird but also slang for something like \"a person who is clumsy\". Penguins eggs might be toxic? Not.\n\nMaybe it's about wordplay: \"natives living in the Arctic\" could refer to \"Arctic natives\" meaning people who live near the North Pole. They will never eat a penguin's egg because they are \"starving\" but \"penguins\" are in the south, so can't reach. So answer A seems straightforward.\n\nBut puzzle says \"obvious answer likely wrong\". Could be that the puzzle uses double meaning: \"penguin's egg\" could mean \"egg of a penguin\", but maybe it's a pun: \"penguin's egg\" could be \"egg of a bird that lives in the South\". So answer A. But puzzle says lateral thinking, maybe it's about \"natives living in the Arctic\" meaning \"native speakers of English living in the Arctic\"? Eh.\n\nMaybe it's about \"penguin's egg\" being a phrase meaning \"a worthless thing\". So they won't eat it because it's worthless.\n\nAlternatively, maybe the answer is C: Penguins and their eggs are not part of traditional diet",
+      "We need lateral thinking. Even if starving, natives in Arctic will never eat a penguin's egg. Why? Penguins live in Antarctica; but wordplay: \"penguins\" could be a brand of coffee or something? Or \"natives living in the Arctic\" refers to Inuit. They might not eat penguin eggs because they are \"penguins\" which is a type of bird that only lives in the Southern Hemisphere. But that's too obvious. Lateral: The word \"penguin\" could be a brand of coffee or a type of fish? Penguins are also a kind of \"penguin\" in the game \"Penguins\"? Maybe it's about \"egg\" meaning a small item like an 'egg' in a game? Or the word \"penguin's egg\" could be \"penguin's egg\" meaning \"egg of a penguin\" which is called \"pinguin\"? The puzzle: Even if they are starving, natives living in the Arctic will never eat a penguin's egg. Why not? The answer likely is A: Penguins only live in Antarctica. But puzzle says lateral thinking, so maybe it's a pun: \"penguin's egg\" could be a \"penguin's egg\" which is an \"egg\" used in the game \"Minesweeper\"? Or \"penguin's egg\" could be a \"penguin's egg\" meaning a \"penguin's egg\" is a \"pinguin\"? Wait.\n\nMaybe it's about the word \"egg\": In some languages, \"egg\" means something else. Or maybe it's a reference to the phrase \"eating an egg\" meaning \"to eat an egg\" as in \"egg\"? Hmm.\n\nCould be that the natives living in the Arctic never eat a penguin's egg because they don't have any penguins, so they can't get the eggs. But that's too obvious.\n\nMaybe it's about \"natives living in the Arctic\" meaning \"Arctic natives\" like Inuit. They might have a taboo against eating eggs of animals that live in the south? Or maybe it's about \"penguins\" being a brand of coffee, and \"egg\" meaning \"coffee with egg\"? No.\n\nLateral: The puzzle might be about the word \"penguin's egg\" meaning a type of food called \"egg\" that is not edible because it's too hot? Wait.\n\nConsider double meanings: Penguins are also a brand of \"penguin\" (like the book publisher Penguin",
+      "We need lateral thinking. \"Even if they are starving, natives living in the Arctic will never eat a penguin's egg.\" Why not? Penguins live in Antarctica, so no access. But puzzle says \"even if starving\" suggests they can't get it because it's not in their area. Penguins only live in Antarctica, so they'd never have one. That's literal answer A. But puzzle says lateral thinking; obvious answer likely wrong. Maybe wordplay: \"penguin's egg\" could be \"egg of a penguin\" but maybe it's a phrase meaning \"a mistake\". Or natives living in the Arctic will never eat a penguin's egg because they are not allowed to eat \"penguins\" due to taboo? Penguins live in Antarctica, so the answer is A. But puzzle says lateral thinking: maybe \"penguin's egg\" refers to \"egg of a penguin\" which is the same as \"an egg that belongs to a penguin\". But natives in Arctic cannot eat because they are not allowed to eat \"penguins\" due to religious reasons? Or maybe it's about the word \"egg\" meaning \"error\". Penguins' eggs are toxic? Not true. Traditional diet: maybe they don't eat penguins because not part of culture, but they might eat other birds. But puzzle says even if starving they'd never eat a penguin's egg. That could be because they can't get them (no penguins). So answer A seems plausible.\n\nBut puzzle says lateral thinking, obvious answer likely wrong. Maybe the twist: \"natives living in the Arctic will never eat a penguin's egg\" because it's not a native food, but also \"penguins\" are only in Antarctica. So they'd never have one. But that's too obvious.\n\nMaybe it's a play on \"penguin's egg\" meaning \"egg of the word penguin\"? The word \"penguin\" starts with P, so maybe it's about letter? Or the phrase \"penguin's egg\" could be \"a mistake.\" The natives would never eat a mistake. But that's silly.\n\nCould it be that the answer is D: None of above, because it's a trick question. The puzzle says \"Think carefully about this puzzle. It requires lateral thinking \u2014 the obvious answer is likely wrong.\" So maybe the correct answer is D.\n\nLet's think: The natives in Arctic would never eat a penguin's egg because they don't have any penguins. That's obvious, but maybe the puzzle expects that"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-17",
+    "question": "There once was an evil wizard. He took 3 woman from their homes and turned them into rose bushes that looked exactly alike. He put them in his garden. One of the woman had a husband and children and begged the wizard to let her see them. He agreed. At night, he brought the woman to her house. In the morning he came and took her home. One day the husband decided to go rescue her. So he stuck into the wizard's garden. He looked and looked at the 3 identical rose bushes trying to figure out which could be his wife. Suddenly, he knew the answer and he took his wife home. How did he know which rose bush was his wife?",
+    "correct_index": 1,
+    "correct_answer": "The wizard brought the rosebush to her home at night and returned her to the garden in the morning. Therefore, she was the only plant without dew.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": true,
+    "votes": [
+      3,
+      3,
+      3,
+      1,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "D",
+      "D",
+      "B",
+      "D"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-18",
+    "question": "There are 3 apples for 2 sons and 2 fathers to eat. Each of them get their own apple. How is it numerically possible?",
+    "correct_index": 1,
+    "correct_answer": "They are one son, one father and one grandfather.",
+    "majority_answer_idx": 1,
+    "majority_answer": "They are one son, one father and one grandfather.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-20",
+    "question": "A man moved into a new house and decided he was tired after the journey and turned off all the lights and went to bed. The next morning he killed 365 people, he does not sleep walk he slept like a baby. How could this be?",
+    "correct_index": 2,
+    "correct_answer": "He lived in a light house.",
+    "majority_answer_idx": 2,
+    "majority_answer": "He lived in a light house.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      3,
+      2,
+      2,
+      0,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral. He killed 365 people next morning, but didn't sleepwalk. Maybe he turned off all lights -> turned off \"lights\" meaning \"light bulbs\" but also \"the lights\" as in \"light\" meaning \"lightness\"? He killed 365 people: maybe he turned off all the lights in a lighthouse? No. Maybe it's about \"killed 365 people\" meaning he killed all the days of a year? He turned off all lights = turned off \"light\" meaning \"daytime\"? He slept like a baby -> \"baby\" meaning \"sleeping child\". Could be he turned off all the lights in a cemetery? He killed 365 people = he \"killed\" (removed) all the light bulbs, which were representing people? Hmm.\n\nMaybe it's about \"lights\" as in \"light bulbs\" each representing a person. He turned off all lights, meaning he killed 365 people (the bulbs). But next morning he \"killed\" 365 people again? Wait.\n\nMaybe it's about a man who is a photographer and turned off all lights, then next morning he shot 365 photos of people? He \"killed\" them in photos. Or maybe it's about a man who is a baker: he turned off lights, then next morning he killed 365 people by making them eat his bread? Not.\n\nCould be about a man who is a \"calendar maker\" (option A). He killed 365 days. But he didn't sleepwalk; he slept like a baby (baby's day?). Hmm.\n\nOption C: He lived in a light house. That seems punny: lighthouse? He killed 365 people by turning off the lights that guide ships, causing shipwrecks. That fits: he turned off all lights (the lighthouse beacon) and next morning 365 people died in shipwrecks. He didn't sleepwalk, he slept like a baby (lighthouse keepers used to be called \"baby\"?). Not convincing.\n\nMaybe the answer is D: None of above. Lateral thinking: He killed 365 people by turning off all the lights in a hospital, causing patients to die? But he didn't sleepwalk. He slept like a baby: he was a night shift nurse?\n\nAlternatively, \"killed 365 people\" could mean he killed all the days of a year: He turned off all lights (time), slept like a baby (day). So he killed 365 days.",
+      "C",
+      "C",
+      "A",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-21",
+    "question": "Joe and Sally were sitting in their family room one night. While Joe was watching T.V, his wife Sally was reading. All of a sudden the power went out and Joe decided to go to bed, but Sally kept on reading. With no use of artificial light, Sally kept on reading. How?",
+    "correct_index": 1,
+    "correct_answer": "Sally was blind, she was reading a book by Braille.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Because it was daytime.",
+    "correct": false,
+    "any_correct": true,
+    "votes": [
+      2,
+      1,
+      1,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "B",
+      "B",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-22",
+    "question": "Two men were playing tennis. They played five sets and each man won three sets. How can this be possible?",
+    "correct_index": 0,
+    "correct_answer": "The two men were partners playing doubles.",
+    "majority_answer_idx": 0,
+    "majority_answer": null,
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      3,
+      3,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need explanation: two men playing tennis, five sets, each won three sets. Impossible unless sets counted differently. Maybe they played doubles? But two men playing tennis - could be singles, but five sets total, each won three: that sums to six wins. Maybe they played with a third person? Or maybe sets were counted as games? Could be that they played tennis in turns meaning one man served? Hmm.\n\nMaybe it's a trick: They were playing tennis with a ball that was in the middle, and each set counted as a game? Wait.\n\nCould be that they played five sets, but the sets were not all completed: each man won three sets meaning there was a tie? Actually five sets, so total wins 5. But they say each man won three sets: that's 6 >5.\n\nAnswer D maybe? Let's think lateral: Two men playing tennis could be a game of \"tennis\" as in the sport or the board game? Or maybe they played tennis with a third person who was not counted? But question: \"Two men were playing tennis. They played five sets and each man won three sets.\" How can this be possible? Maybe they were playing doubles with a third partner each time, so there are two teams of two, but only two men? Not.\n\nMaybe they played tennis in turns meaning each man served alternating sets? But still wins?\n\nCould be that one set was a tie? In tennis, no ties. Maybe they were playing \"tennis\" as in the game of \"Tennis\" which is a board game? Not.\n\nMaybe they played five sets, but each man won three sets because there were two men and a third person who was not counted? Wait.\n\nCould be that they played in a tournament where each set had a different opponent, but only two men? Hmm.\n\nPossibly answer D: none of above. But maybe the trick is that they played doubles with a third man (not counted). But question says two men were playing tennis. So only two participants.\n\nCould be that they played five sets, but each set had a different winner: first man wins 1, second wins 2, then first wins 3? That would be 4 sets. Not.\n\nMaybe they played five sets but each man won three sets because the fifth set was a tie? Not.\n\nMaybe they played five sets and each man won three sets because there were two men but the sets counted as games:",
+      "We need lateral: two men playing tennis, five sets, each won three sets. Impossible in singles best of 5. Maybe they were playing doubles with partners, so each man could win sets as part of team? But two men only. If they were partners, they'd be same team; sets won by team not individual. Option A maybe wrong. Wordplay: \"tennis\" could be a game of tennis? Maybe they were playing the sport in turns meaning they alternated sets, but each won three sets: 5 sets total, so one must win at least 3. Actually if they alternate turns to play a set, each could win sets? Wait: If they played tennis in turns meaning they took turns serving? Not.\n\nRound-robin format doesn't fit two players.\n\nMaybe the trick: They played five sets, each man won three sets. That means total 6 set wins but only 5 sets played, so impossible unless one set counted twice? Could be that they were playing against each other and also against a third person? No.\n\nMaybe it's tennis as in the game of \"tennis\" but with two men playing a different sport? Wordplay: The word tennis contains 'ten' and 'nis'. Two men playing tennis (the sport) but they played five sets and each man won three sets. Could be that they were playing a game of tennis (the board game) where scoring is different? Hmm.\n\nAlternate: They were playing doubles with partners, so each man could win three sets because they had different partners. But only two men? Could be that each set was played with a different partner, but still same two men? Not.\n\nMaybe they were playing tennis (the sport) but the sets are not standard; maybe they played five sets, and each man won three sets because one set was counted twice? Actually if they were playing tennis in turns, maybe each man served a set and then the other served, but sets counted as wins for both? Not.\n\nCould be that they were playing tennis in a tournament where each set was counted as win for both players? No.\n\nPerhaps answer D. Let's think lateral: They were playing tennis in turns meaning they alternated who served the ball; each man won three sets because they were playing a match where one set was a tiebreak counted as two? Eh.\n\nMaybe it's that they were playing tennis (the game) but the \"sets\" refer to sets of clothing",
+      "We need puzzle: two men playing tennis. They played five sets and each man won three sets. How possible? Two players, 5 sets, each wins 3 sets: total 6 set wins >5. So must involve something else: maybe one of the sets was a tie? Or they were playing doubles with partners, but only two men? Option A says partners playing doubles: that would be four players. But puzzle says two men were playing tennis. Could be they played five sets, each man won three sets: maybe they played in pairs? Wait.\n\nMaybe the trick: They were playing tennis but not a match; each man won three sets in separate matches? But they played five sets together? Maybe one set was a tiebreak counted as two sets? Hmm.\n\nMaybe answer D none of above. Let's think: could be they played five sets, but each set had a different opponent? But only two men. Could be that they played five sets, but one set was a \"no winner\" or a tie? But each man won three sets: that's 6 wins. Impossible unless one set counted twice.\n\nMaybe it's about \"sets\" meaning tennis sets, but they were playing doubles with a third person? Option A: two men were partners playing doubles. But then each man won three sets? In doubles, you win as a team; but maybe they counted individual wins? Not.\n\nMaybe it's about the word \"tennis\" meaning tennis in German? No.\n\nCould be that they were playing a game of tennis but not singles: they played five sets, each man won three sets. But maybe one set was a \"tie\" counted as win for both? That would give each 3 wins? Actually if one set counted as win for both, they'd have 4 sets? Not.\n\nMaybe it's a trick: They played five sets in total; each man won three sets, meaning that one set was a \"no winner\" or \"double win\"? Not.\n\nMaybe they played five sets, but each man won three sets in separate matches: they played two matches of 3-2? But only five sets total. Could be that the match was best-of-five, but they played two matches? No.\n\nWait maybe it's about \"two men were playing tennis\" meaning they are playing the sport but not in a match: each man won three sets of their own matches, but they played five sets together? Hmm.\n\nCould be",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b",
+    "is_tie": true
+  },
+  {
+    "puzzle_id": "SP-23",
+    "question": "A simple peasant bought a number of camels and is taking them to his farm. As he rides contentedly along he counts them - he counts 29. He was sure he had bought 30 camel, so in alarm he jumps off his camel and counts the camels again. To his delight there are 30. Half an hour later, he counts his camels and once more there are just 29. Confused, he climbs off his camel and counts again. Once more there are 30. Can you explain?",
+    "correct_index": 2,
+    "correct_answer": "When he is on the camel he omits to count it.",
+    "majority_answer_idx": 2,
+    "majority_answer": "When he is on the camel he omits to count it.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-24",
+    "question": "One day a little boy named John went over to his parents and said that he wanted to shoot people and blow them up. His parents were really proud of his career choice. keep in mind that his parents were not very violent people. Why?",
+    "correct_index": 0,
+    "correct_answer": "John wanted to be a photographer.",
+    "majority_answer_idx": 0,
+    "majority_answer": "John wanted to be a photographer.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-25",
+    "question": "Brad started through the dirty sort-shared window on the 22nd floor of the office tower. Overcome with depression he slid the window open and jumped through it. It was a sheer drop outside the building to the ground. Miraculously after he landed he was completely uninjured. Since there was nothing to cushion his fall or slow his descent, how could he have survived the fall?",
+    "correct_index": 1,
+    "correct_answer": "Brad was so sick and tired of window washing, he opened the window and jumped inside.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": true,
+    "votes": [
+      3,
+      2,
+      1,
+      3,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "We need lateral. Brad started through the dirty sort-shared window on 22nd floor of office tower. He slid window open and jumped through it. Sheer drop outside building to ground. Miraculously after he landed was uninjured. No cushion or slow descent. How could survive? Maybe the window is a \"window\" in a video game? Or he was inside building, jumped into office floor below? Maybe the window is on a moving elevator? Or he was in a \"window\" of a building that was actually a window into another dimension. Could be he jumped through the window into a lower floor, not outside ground. The puzzle mentions \"dirty sort-shared\" maybe an anagram? \"Dirty sort shared window\" is an anagram of something? Let's think: \"dirty sort-shared window\" maybe indicates it's a \"shared window\" meaning two windows? Or \"sort-shared\" means \"shared sort\"? Might be a pun: He jumped through the window of a building into a lower floor, not ground. Or he was on a \"window\" meaning a software window? He jumped into a computer screen? But landed uninjured.\n\nCould be that the window was actually on a moving elevator or a \"window\" of a plane? Or he jumped into a \"dead zone\"? The phrase \"dirty sort-shared\" maybe indicates that the window is a \"window in a door\"? Could be that he jumped into a \"window\" of a building that had a floor below, like the 21st floor. He didn't fall to ground.\n\nAnswer choices: A wet ground, B he opened window and jumped inside (makes no sense), C strong man. D none of above.\n\nProbably answer D: None of above, because lateral thinking: He jumped into a lower floor (the 21st) via the window. Or he was in an elevator that moved down, or it was a \"window\" of a building but actually the window is a \"door\" into a lower floor. Or he was on a \"window\" of an airplane? Wait: He started through the dirty sort-shared window on the 22nd floor of the office tower. Overcome with depression he slid the window open and jumped through it. It was a sheer drop outside the building to the ground. Miraculously after he landed he was completely uninjured. Since there was nothing to cushion his fall or slow his descent, how",
+      "B",
+      "D",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-26",
+    "question": "A horse jumps over a tower and the tower disappears. It's not an illusion or a dream. So where could this happen?",
+    "correct_index": 1,
+    "correct_answer": "On a chessboard.",
+    "majority_answer_idx": 1,
+    "majority_answer": "On a chessboard.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-27",
+    "question": "Dorothy has never expressed suicidal thoughts, but whenever she experiences feelings of sadness or depression, she makes arrangements to travel to a very high spot that she has visited on numerous occasions. Once there, she proceeds to jump from that great height. The fascinating fact though is she has never been injured from this leap, and in fact, she tells everyone that she feels much better afterward. If she\u2019s not suicidal, then what is going on here, and why has she never been injured, or even worse, died from her risky actions?",
+    "correct_index": 2,
+    "correct_answer": "Dorothy is a sky jumper.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Dorothy is a sky jumper.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral: Dorothy goes to high spot she visited many times, jumps but never injured. Maybe it's a \"high spot\" meaning a high place in the sense of a high score? Or she jumps from a \"high spot\" meaning a high place in a video game? Could be she is playing a video game where jumping from high spot doesn't hurt. Maybe it's a \"high\" as in \"high\" on drugs? Or she goes to a high spot meaning a high place like a cliff, but she jumps out of the window? But never injured because it's a \"high spot\" on a trampoline or a high platform that is safe? Maybe she goes to the roof of her house and jumps onto a trampoline or into a safety net. But why never injured? Could be she is a professional skydiver who uses parachute. But answer choices: A, B, C, D. Option C says Dorothy is a sky jumper. That fits but she would be injured sometimes? But maybe because she uses parachute, never injures. But puzzle says she hasn't been injured or died from risky actions. So skydiver with parachute would be safe. But why \"she makes arrangements to travel to a very high spot that she has visited on numerous occasions.\" That is like going to the top of a building or mountain. \"Once there, she proceeds to jump from that great height.\" She jumps but never injured because it's a \"high spot\" like the top of a building that has a safety net? Or maybe she goes to \"high spot\" meaning the high score on an arcade game, then jumps from that level. Could be wordplay: \"high spot\" = a high place in a video game, and she jumps but it's just a character moving. \"She tells everyone that she feels much better afterward.\" Could be that she goes to the roof of a building and jumps into a pool. So why not injured? Because it's a trampoline or safe landing.\n\nOption B: Consistent exercise has made him a very strong man. But Dorothy is female. Option A nonsense.\n\nThus likely answer C? But puzzle says lateral thinking: maybe it's a \"high spot\" meaning a high place in a video game, like the top of a level. She jumps from that spot meaning she presses jump button. She hasn't been injured because it's a game.\n\nThus answer D? But options: A, B, C, D. I'd choose C? But",
+      "C",
+      "C",
+      "We need lateral thinking. Dorothy jumps from high spots but never injured. Maybe she is a \"sky dancer\" or something? Could be that the high spot is a \"high seat\" like a high chair? Or she jumps from a \"high spot\" meaning high place in a game or board, like a high score? Or she jumps from the \"high spot\" meaning a high position on a ladder in a game, like a video game. Could be that she is playing \"Dungeons & Dragons\" and jumping from high spots in a role-playing game, no injury. Or she is \"a sky jumper\" but not suicidal; it's a hobby: BASE jumping? But she never injured because she uses parachute. But answer choices: A, B, C, D none of above. Option C says Dorothy is a sky jumper. That seems too obvious but maybe the trick: She jumps from high spots (like cliffs) but uses a parachute. But why never injured? Because she has never been suicidal, so it's an extreme sport. Option C seems plausible but puzzle says obvious answer likely wrong. Wordplay: Dorothy -> \"Dorothy\" from Wizard of Oz? She goes to a high spot (the Emerald City?) jumps? Maybe she is a \"sky dancer\" meaning she jumps from high spots in a video game, like Mario. The answer could be \"None of above\" because it's about her being a \"sky diver\" but not suicidal. But that's C. The puzzle says think lateral, double meanings. \"High spot\" could be a high seat on a bus? She jumps from the top of a building in a movie. But she never injured because it's a stunt double? Dorothy is a \"sky jumper\" meaning she jumps from high spots but uses a parachute. But answer C is too obvious? Maybe the trick: She is not jumping from real heights; she is playing a video game \"Sky Jump\" where you press space to jump. So she never injured because it's virtual. Dorothy is a \"sky jumper\" could be misdirection. Option D maybe correct.\n\nLet's think: The phrase \"high spot\" visited numerous occasions could be a \"high place\" like a high seat in a theater, she jumps from that? Or maybe it's a \"high spot\" meaning a high place in a board game like Monopoly. She jumps from that spot to another? She never injured because it's metaphorical.\n\nMaybe Dorothy is a \"sky",
+      "We need lateral. Dorothy jumps from high spots but never injured: maybe she is a \"skydiver\" but uses parachute? But says feels better. Could be she is at a \"high spot\" meaning high altitude like mountain top, but jumps into \"a very high spot that she has visited on numerous occasions\" maybe meaning she goes to a \"high place\" like a cliff, but jumps into a \"pool\" or \"water\"? But never injured? Maybe she is actually jumping onto a trampoline? Or the high spot is a \"high\" as in \"high score\" or \"high level\"? Maybe it's about the word \"high spot\" meaning a high place in a building, like a balcony. She jumps into a \"very high spot\" she has visited many times: maybe it's a \"high\" like \"high class\"? Could be she's a \"sky jumper\" but uses parachute. But answer C says Dorothy is a sky jumper. That seems too straightforward.\n\nMaybe it's about the word \"high\" meaning intoxicated? She goes to a high spot (like bar) and jumps into a \"high\" meaning she drinks? But not.\n\nMaybe it's about her jumping from a high spot into a \"very high spot\" she has visited many times: like she jumps onto a \"high\" as in \"the high place is a 'high' in the sense of 'high' meaning 'tall building', but she jumps onto a \"very high spot\" like a \"high\" as in 'the highest point of the building' - but she jumps onto a \"very high spot\" which is a 'high' meaning 'a high place' but she goes to a \"very high spot\" that she has visited many times: maybe it's the same place each time. She jumps from a high spot onto a \"very high spot\" meaning she leaps to the next floor? Wait.\n\nMaybe it's about \"high\" as in \"high score\" or \"high level\" in a video game. Dorothy plays a video game and jumps onto high platform; she never dies because it's virtual.\n\nAlternatively, maybe Dorothy is a \"sky jumper\" but uses a parachute; answer C. But puzzle says \"If she's not suicidal, then what is going on here?\" So she might be doing skydiving for therapy. But answer choices: A is nonsense, B says consistent exercise has made him a very strong man (but Dorothy is female). So"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-28",
+    "question": "A certain large animal lives happily and thrives here on Earth. One day, every single one of these writers is wiped out by a mysterious disease that affects only this particular animal. There are none left anywhere on earth -- they are all gone. About a year or so later, they begin to reappear on Earth again. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "The animal is the Mule. Since all Mules are born sterile, you can only get a Mule by crossing a donkey with a horse.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "We need lateral. \"writers\" wiped out by disease that affects only this animal. All gone, then reappear after year. Could be \"writers\" meaning \"pen\" animals? Maybe \"writer\" refers to \"bird that writes\"? Wait: large animal lives happily thrives. Could be \"dinosaur\" but disease only affects this animal? All gone then reappear after year. Could be \"migratory birds\" like \"mule\"? hmm.\n\nMaybe it's about \"writers\" meaning \"pen\" as in \"writing instruments\". They are wiped out by disease that affects only this particular animal. Could be \"pen\" as in \"penicillin\"? Not.\n\nMaybe the answer is D none of above. Let's think: large animal lives happily on Earth. Writers wiped out by disease that affects only this particular animal. All gone. About a year later they reappear. Could be \"writers\" meaning \"authors\". The disease could be \"writer's block\"? Wait.\n\nMaybe the animal is \"dinosaur\" but disease only affects them? No.\n\nWordplay: \"writers\" could be \"pen pals\"? The animal could be \"pig\" because of disease swine flu? But all gone then reappear after a year due to vaccination?\n\nMaybe it's about \"large animal\" meaning \"big cat\"? Writers wiped out by disease that affects only this particular animal. Could be \"mole\" as in \"writer's block\"? Eh.\n\nCould be about \"writers\" meaning \"people who write, like authors.\" The disease that affects only this animal is \"murder of crows\"? No.\n\nMaybe the answer: The animal is \"the dinosaur\" and writers are \"dinosaurs\" as in \"writer's dinosaurs\"? Not.\n\nLet's think lateral: \"large animal lives happily and thrives here on Earth\" could be \"the earth itself\"? Writers wiped out by disease that affects only this animal. All gone. About a year later they begin to reappear on Earth again. This could refer to \"writers\" meaning \"pen pals\"? The disease is \"penicillin\" affecting only the animal? Hmm.\n\nMaybe it's about \"mammoths\" and \"writers\" meaning \"pen pals\"? No.\n\nCould be about \"the animal is the 'dinosaur'\". Writers are \"dinosaurs\" as in \"dinosaurus\"? Not.\n\nMaybe the trick: The animal is \"the dinosaur\", but writers are \"writers\" meaning \"dinosaur writers\"? No.\n\n",
+      "D",
+      "D",
+      "We need lateral: \"writers\" maybe refers to writers of the animal? The disease affects only this particular animal. All gone, then reappear after a year. Maybe \"writers\" are \"writERS\": the animals that write? Could be \"pen\"? The animal is a \"pen\"?? Hmm.\n\nMaybe it's about \"writers\" meaning \"writERS\" = \"writers\" are the animals? The disease affects only this particular animal, all gone. Then reappear after a year: could be \"migratory birds\" like \"turtles\"? Wait.\n\nCould be about \"writers\" meaning \"the animal writes\" like a \"pen\". The disease affects only this particular animal: the pen? All gone, then reappear after a year: maybe \"pen\" as in \"pen\" used to write? The animal is the \"pen\"? No.\n\nMaybe it's about \"writers\" as in \"the writers of this animal\" meaning the species? The disease affects only that particular animal: maybe it's \"the writer\" is \"the author of the story\"? Eh.\n\nCould be about \"writer's disease\" like \"penicillin\"? The animal is \"penicillin\" produced by fungus? No.\n\nMaybe it's about \"writers\" meaning \"the writers of the animal\" i.e., the species name? The disease affects only this particular animal: maybe it's \"the word 'writer' contains 'write' + 'r', the r is removed? The animal is \"r\"?? No.\n\nAlternatively, think of wordplay: \"writers\" could be \"writERS\": the animal is \"ER\". The disease affects only this particular animal: all gone, then reappear after a year. Could be about \"the letter 'R'\". The animal is the \"r\" as in \"are\"? Hmm.\n\nMaybe it's about \"the writers are wiped out by a disease that affects only this particular animal.\" That could be a pun: \"All writers are wiped out by a disease that affects only this particular animal.\" Writers = \"authors\". The disease is \"author\"?? Not.\n\nCould be about \"the animal is the 'writer' itself: like a 'pen'. The disease affects only this particular animal: \"ink\"? All gone, then reappear after a year. Could be about 'pen' as in \"pen\" used to write? The disease is \"inkblot\"? Hmm.\n\nMaybe the answer D. Let's think of"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-29",
+    "question": "Four men were in a boat on the lake. The boat turns over, and all four men sink to the bottom of the lake, yet not a single man got wet! Why?",
+    "correct_index": 1,
+    "correct_answer": "Because they were all married and not single.",
+    "majority_answer_idx": 1,
+    "majority_answer": "Because they were all married and not single.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-31",
+    "question": "A horse travels a certain distance each day. Strangely enough, two of its legs travel 30 miles each day and the other two legs travel nearly 31 miles. It would seem that two of the horse's legs must be one mile ahead of the other two legs, but of course, this can't be true, since the horse is normal. How is this possible?",
+    "correct_index": 0,
+    "correct_answer": "The horse operates a mill and travels in a circular clockwise direction. The two outside legs will travel a greater distance than the two inside legs.",
+    "majority_answer_idx": 0,
+    "majority_answer": "The horse operates a mill and travels in a circular clockwise direction. The two outside legs will travel a greater distance than the two inside legs.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      2,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need puzzle: horse travels a certain distance each day. Two legs travel 30 miles, other two nearly 31 miles. How possible? Likely the horse is traveling around a circular path, like a race track, so outer legs travel more. But that's A. However puzzle says \"two of its legs travel 30 miles each day and the other two legs travel nearly 31 miles.\" Horse normal. How? Could be that measurements taken from different reference points: maybe one leg is measured on ground, other on a moving platform? Or the horse is walking in a circle: outer legs travel more. That's A. But puzzle says \"The obvious answer is likely wrong.\" So maybe it's wordplay: the horse's legs are \"legs\" of a clock? Wait, a horse traveling certain distance each day: maybe it's a \"horse\" as in the unit of speed? Or \"horse\" meaning \"horsepower\"? Hmm.\n\nCould be that the horse is traveling on a treadmill? Or it's a horse in a circus where it walks in circles. The answer likely C: measurements taken from different reference points? But that seems less clever.\n\nMaybe it's a horse on a treadmill, the legs travel different distances due to stride length differences? But normal horse.\n\nWordplay: \"two of its legs travel 30 miles each day and the other two legs travel nearly 31 miles.\" Could be referring to a horse that is in a race track, like a jockey's horse? Outer legs longer because of turning. That's A.\n\nBut puzzle says \"the obvious answer is likely wrong.\" So maybe the trick: The horse's legs are not walking on ground but on a moving platform like a treadmill or a carousel. The horse is on a merry-go-round, traveling in circle: outer legs longer.\n\nBut that's A. Maybe the trick is that the measurements are taken from different reference points: one leg measured on the ground, other on a moving car? That seems odd.\n\nCould be that the horse is traveling at 30 mph, but the legs travel different distances because of the stride length? Actually, each leg travels same distance as horse moves. So puzzle must be wordplay: \"legs\" could refer to legs of a clock? Or legs of a horse as in the part of a carriage? Wait, \"horse\" could be a unit of measurement: 1 horse = 4 feet? No.\n\nMaybe the puzzle refers to a \"horse\" as in",
+      "A",
+      "We need puzzle: horse travels a certain distance each day. Two legs 30 miles, other two nearly 31 miles. How possible? Answer likely \"horse is on a treadmill\" or \"the measurements are taken from different reference points\" maybe the legs measured relative to ground? Actually horse's legs length differ due to stride length differences. But puzzle expects lateral thinking: the horse is a \"clock\" or \"horse\" as in \"horse\" meaning \"a unit of time\"? Wait.\n\nTwo legs travel 30 miles each day and the other two nearly 31. The explanation: the horse is a \"horse\" meaning \"a unit of distance\"? No.\n\nMaybe it's about \"the horse moves around a circular track\" so outer legs travel longer distance than inner. But answer choice A says that. That seems plausible: a horse walking in a circle, outer legs longer path. But puzzle says \"two of its legs travel 30 miles each day and the other two legs travel nearly 31 miles.\" That difference is about 1 mile. On a circle, outer vs inner path difference depends on radius difference of legs (~0.5m). For 30 miles, circumference ~188.5 km. Outer vs inner difference maybe small but could be 1 mile? Let's compute: circumference = 30 miles = 48000 ft. Radius r= C/(2\u03c0)=~15240 ft (~4.6 km). Outer leg radius = r+0.5m? Actually horse legs length ~1 m, difference in path maybe 2*leg length? Outer radius = r+0.5m ~15240 ft +1.6ft? difference negligible. So not 1 mile.\n\nMaybe the horse is \"a clock\" with hands? Two legs are hour hand and minute hand? No.\n\nMaybe the puzzle uses word \"horse\" as in \"a unit of measurement\" like a horse is 4 feet? Not.\n\nCould be that the measurements are taken from different reference points: e.g., one leg measured relative to ground, another relative to something else. Option C.\n\nBut lateral: The horse travels a certain distance each day, but the legs travel different distances because the horse is on a treadmill that moves? Or the horse is walking in a circle, but difference 1 mile improbable.\n\nMaybe it's about \"horse\" as in \"a horse on a treadmill that moves backwards\", but then all legs same.\n\nCould be about",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-32",
+    "question": "A man walking along a railroad track sees a train laundering at high speed towards him. Instead of immediately jumping off the track, he charges directly at the train for about ten feet and only then gets off the track. Why?",
+    "correct_index": 1,
+    "correct_answer": "The man was on a bridge when he first saw the train so he couldn't jump off the track immediately.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      3,
+      0,
+      3,
+      3,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "We need lateral. \"train laundering\" maybe laundry train? He charges ten feet then gets off track: maybe he is in a video game? Or he's a train conductor? \"laundering\" pun: laundering as cleaning clothes. He sees train laundering (washing clothes) at high speed. He charges ten feet and then gets off track: maybe he's a horse? Actually \"laundering\" could be laundering money. So train is laundering money, high speed. He charges ten feet to avoid being caught by law? Maybe he's a magician? Could be wordplay: \"train laundering\" = train that washes clothes, like a washing machine. He charges ten feet to get off track: maybe he's on a moving walkway? Wait.\n\nCould be that the man is a \"train conductor\" and he charges at the train to get off track because he's actually on a platform? Hmm.\n\nMaybe it's about a \"man walking along a railroad track\" but he's actually on a moving train? He charges ten feet to get off track meaning he steps onto the platform. The answer might be D none.\n\nLet's think: \"laundering at high speed\" could refer to a train that does laundry (like a mobile laundromat). He charges at it to get off track because the train is moving fast and he wants to avoid being hit by its front, but answer A says that. But lateral: He charges because he's a \"train conductor\" and the train is washing clothes, he needs to get off track to avoid being hit by the front? Maybe it's about a \"train\" as in \"train of thought\". He sees train laundering (laundering = cleaning) at high speed => his thoughts are being cleaned. He charges at it to get off track meaning he stops thinking.\n\nMaybe it's about a \"man walking along a railroad track\" but he's actually on a train? He charges ten feet to get off track meaning he jumps onto the platform. The answer might be B: on a bridge.\n\nBut puzzle says lateral thinking, wordplay. \"laundering\" could be laundering money. So train is a money-laundering operation, high speed = fast. He charges ten feet to get off track because he's a \"laundering\" agent? Eh.\n\nMaybe it's about a \"train\" as in a train of thought, and \"laundering\" meaning cleaning. He charges at the train to get off track because he's a convict? Not",
+      "D",
+      "D",
+      "We need lateral thinking. Man walking along railroad track sees train laundering at high speed towards him. \"laundering\" maybe laundry? Train laundering? Could be train that washes clothes: a washing machine train. He charges ten feet then gets off track. Why? Maybe he's on a moving walkway? Or it's a joke: He is a laundry worker, he needs to get off track to avoid being hit by washing machine? Or \"laundering\" meaning money laundering: a train of money? He charges to get off track because he is a bank robber? Wordplay: \"laundering\" could be \"washing clothes\". The train is a washing machine? He charges at it to get off track because he's in the middle of a laundromat? Actually maybe it's a pun: \"train laundering\" could be a train that is washing clothes, so it's a laundry truck. He charges at it to get off track because he's a laundry worker? Hmm.\n\nMaybe the trick: He's on a train that is washing clothes, so it's moving fast. He charges at it to get off track because he's on a bridge? Option B says that.\n\nBut lateral: He charges ten feet to get off the track because he's actually a train conductor? Or he is on the wrong side of the track, he charges to get off because he's in a movie? The answer likely D none.\n\nThink: \"laundering\" is a pun for \"washing clothes\". The train is washing clothes, so it's actually a laundry truck. He charges at it to get off track because he's a thief? No.\n\nMaybe the key: The man sees a train laundering at high speed towards him. He charges directly at the train for about ten feet and only then gets off the track. Why? Because he's on a bridge, but that seems obvious.\n\nWordplay: \"laundering\" could be \"washing money\". So the train is laundering money, i.e., a bank. He charges at it to get off track because he's a thief? No.\n\nMaybe it's about the phrase \"train laundering\" meaning \"laundering clothes on a train\". He charges at it to get off track because he's in the middle of a washing machine and he needs to exit before being washed.\n\nCould be about the phrase \"laundering at high speed\" meaning \"washing clothes quickly\". He charges ten feet to get off track because he's on a moving walkway that will push him? Hmm.\n\nOption"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-34",
+    "question": "There were 5 men traveling down a road and it started to rain and 4 men sped up, the 5th did not, but they all arrived at the same place at the same time but all of them were wet besides the 5th. How is that possible?",
+    "correct_index": 1,
+    "correct_answer": "He was dead and in a coffin.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": true,
+    "votes": [
+      3,
+      2,
+      1,
+      3,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral. 5 men traveling down a road, it started to rain and 4 sped up, the 5th did not, but they all arrived at same place same time but all were wet except 5th. How? They are on a train? Or they are in a boat? Maybe the 5th was walking under an umbrella? But all wet except him. Could be they were on a moving train and the 5th was inside? Or it's about \"men\" being letters in word \"men\"? Could be a riddle: 5 men traveling down a road (the word 'road'?) It started to rain and 4 men sped up, the 5th did not. They all arrived at same place same time but all were wet besides 5th. Could be that they are on a boat, the road is a river? Or it's about \"men\" meaning 'gods'?\n\nMaybe they were on a bus, the 5th was a driver? But all wet except him because he was inside. Wait: The answer likely is D none of above, because the trick is that they were in a train and 5th was on top? Actually think: They are on a train, they all arrived same time. The 5th didn't speed up because he was the driver? But still wet? Hmm.\n\nMaybe it's about \"men\" being 'people' but 5th is a 'flying man'? Or they were on a moving walkway? Could be about \"men\" being letters in the word 'men', traveling down a road (the word 'road'?) The 4 sped up, the 5th didn't. All arrived same place same time but all wet except 5th because he was a 'rain man'?\n\nWait: Could be that they were on a boat and the 5th was the captain, staying inside cabin? But all wet except him.\n\nMaybe it's about \"men\" being 'gods' and 5th is the sun? No.\n\nMaybe it's about them traveling down a road that was a 'rainforest' and 4 sped up to avoid rain, but the 5th didn't because he was a 'rain man' (like the guy who gets wet). But all were wet except him. So he was dry.\n\nCould be that they were on a train and the 5th was in the front carriage, which had a",
+      "We need lateral. 5 men traveling down a road, it started to rain and 4 sped up, the 5th did not, but they all arrived at same place same time but all wet except 5th. How? They are on a boat? Rain outside, they were in a car? Maybe 5th was inside a tent or umbrella? Wait all wet except 5th. So 5th stayed dry. Maybe they were on a train? The 5th was the driver? Or maybe the 5th is a statue? Lateral: The road was a river, they were boats. Rain fell on the boat but 5th was inside cabin? But all arrived same time.\n\nCould be that they were on a plane, but 5th was the pilot? Hmm.\n\nMaybe it's about \"men\" meaning letters in word \"men\"? 5 men traveling down a road (letters M E N?) Not.\n\nCould be they were in a car and 5th was the driver inside? But driver also wet.\n\nMaybe the trick: They were in a tunnel, 5th was inside a car? Hmm.\n\nCould be that the 4 sped up because they were on a treadmill? No.\n\nMaybe it's about \"men\" meaning people, but 5th is a statue or mannequin? Or he was in an umbrella.\n\nAnswer choices: A. The 5th man beated them at the end. B. He was dead and in a coffin. C. The 5th man walked slowly to dodge the raining. D. None of above.\n\nNone seems right. The lateral answer: They were traveling down a road that was inside a building (like an underground tunnel). It started to rain outside, but the 5th was inside a boat? Wait.\n\nMaybe they were on a train; 4 sped up because the train accelerated, but 5th was in a car? No.\n\nCould be that they were traveling down a road of water (river) and 5th was on a boat? All arrived same time. The 4 were in a car, the 5th was inside an umbrella? Hmm.\n\nMaybe it's about the word \"men\" meaning letters M, E, N traveling down a road (a line). Rain is the letter R? The 4 men sped up because they were on a treadmill. I'm stuck.\n\nBetter: They were traveling down a road in a",
+      "We need lateral thinking. 5 men traveling down a road, it started to rain and 4 sped up, the 5th did not. They all arrived same place same time but all wet except 5th. How? Maybe they were on a boat, or the road is inside building? Or 5th was in a car? Wait: \"sped up\" maybe meaning they increased speed. The 5th did not, but all arrived same time: implies the 5th had something like a raincoat or umbrella? But he was not wet. He didn't speed up but arrived same time because maybe they were on a train? Or the 5th was in a truck that had no rain because it was inside? Maybe they were on a boat and the 5th was in a dry cabin. But puzzle likely answer: They were traveling on a boat, the road is a river? Or they were in a car and 5th was inside an elevator? Wait.\n\nMaybe the answer: They were traveling on a boat, but the road is a railway track? The 5th was in a coffin (dead) so not wet. But answer B says dead and in a coffin. That seems too dark.\n\nCould be they were traveling down a road inside a tunnel, rain outside but 5th had umbrella? But he didn't speed up.\n\nMaybe they were on a train and the 4 men left the train to run, but the 5th stayed inside. But all arrived same time? Hmm.\n\nMaybe it's a riddle: The 5th man was the driver of a car, and he didn't speed up because he drove at same speed but had a roof. But the 4 men were on a bicycle or something.\n\nLet's think lateral: \"5 men traveling down a road\" could be the five letters of the word \"men\"? No.\n\nMaybe they were on a boat traveling down a road (a river). Rain starts, 4 men speed up to avoid getting wet. The 5th didn't because he was a fish? No.\n\nCould be they were traveling down a road inside a weather station. The 5th man was the driver of a bus with an open roof? No.\n\nMaybe it's about a race: They are on a treadmill. The 5th didn't speed up because he was the referee.\n\nWait: \"All arrived at same place at same time but all of them were wet besides the",
+      "We need lateral: 5 men traveling down a road, rain starts. 4 sped up, 5th did not. All arrived same place same time but all wet except 5th. How? Maybe they were traveling in a boat, road is river, rain refers to 'rain' as in 'rain of bullets'? Or 5th man is a statue? Could be they were on a boat, rain is 'rain' meaning water falling from sky; 5th didn't get wet because he was inside a vehicle? But all arrived same time. Maybe they were on a train and 5th was a conductor? Wait: \"4 men sped up, the 5th did not\" could refer to cars? The answer likely: They were traveling on a boat, the road is a river, 5th man was a lifeguard? Hmm.\n\nCould be wordplay: \"rain\" could mean 'rain' as in 'to rain down', but also 'rain' can be a noun meaning 'to make someone wet'. 5th didn't get wet because he was in a raincoat? But all arrived same time.\n\nMaybe they were traveling on a boat, the road is a river; 5th man didn't speed because he was a captain? Not.\n\nCould be they were traveling in a car, 5th didn't speed because he was the driver? But all wet except him: maybe the 4 sped up and got wet from rain, but the 5th was inside a car? But he would be wet too if car open. Unless car closed.\n\nBut puzzle expects lateral: \"They were traveling down a road\" could be \"road\" as in 'riverbank', but maybe it's the word \"road\" meaning \"route\". 5th didn't speed because he was a 'pilot' on a plane? Hmm.\n\nMaybe answer D: None of above. But maybe correct is \"They were traveling on a boat, the road was a river, and they arrived at the same time because it's a train station; 5th didn't get wet because he was in a car.\" Not convincing.\n\nCould be that the 4 men were on a moving train, and the 5th was standing in front of the train? Wait: \"All arrived at the same place at the same time but all of them were wet besides the 5th.\" Means 4 wet, 5th dry. How? They",
+      "We need lateral. 5 men traveling down a road, it started to rain and 4 sped up, the 5th did not, but they all arrived same place same time but all wet except 5th. How? Maybe the road is under a bridge, they were inside car? Or the 5th was in a taxi? Wait: They all arrived at same place same time. The 4 sped up to catch up, but the 5th did not speed because he was already at destination? Maybe they were in a car and the 5th is driver, others passengers. Rain falls on them but driver inside? But all wet except 5th: maybe the 5th was wearing a raincoat or umbrella. But puzzle expects lateral: They were on a boat? Or they are traveling down a road (like a highway) but the 5th was in an airplane? Hmm.\n\nMaybe they are traveling down a road that is actually a riverbank; 5th was on a boat? Not.\n\nCould be that the road is a \"rain\" in a crossword? Or they are traveling down a road (like a road of a train track). 5th didn't speed because he was already at destination: maybe they are on a moving walkway? Wait.\n\nCould be that the 5th was a \"dead\" man in a coffin (answer B). But puzzle says all wet except 5th. If dead, they'd be dry? Not.\n\nMaybe the 5th was in a car that had an open roof? Hmm.\n\nConsider wordplay: \"road\" could be \"road\" as in \"road to the beach\"? The 5th did not speed because he was already at destination: maybe they were all in a car and the 5th is driver, but he didn't speed because he was driving? But then he'd still be wet.\n\nMaybe they were traveling down a road that is actually the \"road\" of a railway track. The 5th was on a train and didn't speed but still arrived same time? Not.\n\nCould be that the 5th was a \"snowman\"? No.\n\nMaybe they are traveling down a road that is actually a \"road\" in a video game, and the 5th was a character with invincibility.\n\nWait lateral: The 5th man did not speed because he was already at the destination (he had walked to the end earlier). But"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-35",
+    "question": "Three men sitting in a small motorboat one meter from the shoreline. The first is afraid of water, the second is afraid of drowning, and the third is afraid of sharks. The boat's motor is not operational and there is nothing to row with. How do they get to the shoreline?",
+    "correct_index": 1,
+    "correct_answer": "They can just walk onto its as the boat is one-meter inland.",
+    "majority_answer_idx": 1,
+    "majority_answer": "They can just walk onto its as the boat is one-meter inland.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      3,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral. Three men in small motorboat one meter from shoreline. Motor not working, nothing to row. How get to shoreline? They can walk onto boat? Actually boat is one meter from shore, so they could just walk to shore on foot? But boat is in water. Maybe they are on a boat that is one meter from shore, but it's a small motorboat, so maybe they can just walk out of boat onto shore because boat is close? But water depth? Maybe it's a motorboat on land? Could be that the boat is one meter from shore but actually on land? Or they are on a boat but it's not afloat? Maybe the answer: They can walk onto its as the boat is one-meter inland. That seems wrong.\n\nMaybe trick: The first afraid of water, second of drowning, third of sharks. But they are on a boat one meter from shore; the motor not working, nothing to row. How get to shoreline? They can just walk onto its as the boat is one-meter inland. That seems like answer B but wrong.\n\nMaybe they can just walk out of the boat onto shore because it's only one meter away. But water? If water depth is shallow, they can step out. So answer C: wait until water level high enough to safely step out onto shoreline. But that's weird.\n\nMaybe they can walk on the boat's hull like a small boat? Actually they are in boat, so to get to shore they'd need to exit the boat. If boat is one meter from shore, they can just walk out onto the shoreline because it's only a meter away. So answer B.\n\nBut puzzle says motor not operational, nothing to row. Lateral: The boat is on land? Maybe it's a \"motorboat\" but it's actually a toy motorboat in a pool? The trick: They are on the boat, so they can just walk onto the shore because it's only one meter away. So B.\n\nBut answer choices: A, B, C, D none of above. The obvious is likely wrong. Wordplay: \"motorboat\" could be a boat with a motor, but maybe it's a \"small motorboat\" meaning a small motor, not a boat. They could use the motor to drive? No.\n\nMaybe they can just walk onto its as the boat is one-meter inland. That seems nonsense.\n\nCould be that they are on a motorboat but it's not afloat; the boat is one meter",
+      "D",
+      "B",
+      "We need lateral. Three men in a small motorboat one meter from shoreline. They can't row, motor off. How get to shore? Maybe they are on a boat that is 1 meter from shore but actually the boat is on land? If motor off, they can walk out onto the boat since it's one meter inland? Wait: \"one meter from the shoreline\" could mean the boat is 1m away from shore, but they can just walk onto it? The answer B says \"They can just walk onto its as the boat is one-meter inland.\" That seems weird. Maybe trick: They are in a small motorboat but the boat is on land because it's a boat-shaped piece of furniture? Or they are in a small motorboat that is actually on land because the shoreline is the edge of a lake? Or maybe they are in a small motorboat that is actually on land because it's a toy boat on a table. They can just walk onto the shore because they're already on land? Wait: The puzzle might be about a \"motorboat\" that is actually a \"small motor boat\" meaning a small motorised vehicle, like a car. They can drive onto shore? But no.\n\nMaybe the trick: The boat is one meter from shoreline, but they can walk out onto shore because they are on a boat that is on land? Actually if the boat is one meter from shoreline, it's in water. But they can't row or motor. They could walk out onto the boat? No.\n\nCould be that the boat is a \"motorboat\" meaning a small motorized boat, but it's on land because it's a toy. So they can walk onto the shore (the board). So answer B.\n\nBut maybe it's D: None of above. Because they can simply walk out onto the shore because the boat is on land? But that's B.\n\nLet's think lateral: \"Afraid of water\" means he can't go in water. \"Afraid of drowning\" means cannot be submerged. \"Afraid of sharks\" means can't go near water. They can get to shore by walking out onto the boat? Actually they are in a small motorboat, but if the boat is on land, it's not water. So they can walk onto shore. The answer B says \"They can just walk onto its as the boat is one-meter inland.\" That implies they are on land. So answer B.\n\nThus final: B.",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-36",
+    "question": "A father and son were in a car accident where the father was killed. The ambulance brought the son to the hospital. He needed immediate surgery. In the operating room, a doctor came in and looked at the little boy and said I can't operate on him he is my son. Why?",
+    "correct_index": 2,
+    "correct_answer": "Because the doctor is the mother of the son.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Because the doctor is the mother of the son.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-37",
+    "question": "A beggar's brother died, but the man who died had no brother. How could that be?",
+    "correct_index": 2,
+    "correct_answer": "The beggar was the man's sister.",
+    "majority_answer_idx": 2,
+    "majority_answer": "The beggar was the man's sister.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "We need puzzle: A beggar's brother died, but the man who died had no brother. How could that be? The answer likely: beggar's brother is a woman (sister). So the beggar was male? Wait: \"beggar's brother died\" implies beggar had a brother who died. But the man who died had no brother. So the man who died is the beggar's brother? No, the man who died had no brother. So maybe the beggar is a woman; her \"brother\" is actually her sister? But phrase \"beggar's brother died\" could refer to the beggar's sibling, not necessarily male. But \"brother\" used generically? Alternatively: The beggar is a woman, her brother died; the man who died had no brother because he was a man with only sisters. Wait: The beggar's brother died, but the man who died had no brother. So the man who died is not the beggar's brother; rather, it's someone else. But \"beggar's brother died\" could mean the beggar had a sibling who died; that sibling was male? But then \"the man who died had no brother\" contradicts. So maybe the beggar's brother is a woman? But then \"brother\" would be wrong. Could be that the beggar's brother is a woman because of gender identity? Or \"brother\" refers to a relative like brother-in-law? The man who died had no brother because he was the beggar's sister? Wait.\n\nMaybe it's a trick: The beggar is a woman; her brother died. But the man who died had no brother because he was the beggar's sister? No.\n\nAlternate: The beggar is a man; his brother died. But the man who died had no brother because he was a man with only sisters? That would mean his brother is also a sister? Not.\n\nMaybe the answer: The beggar's brother died, but that man was the beggar himself. He had no brother because he was an only child? But then \"brother\" refers to the beggar's sibling, but if he is only child, no brother. Contradiction.\n\nBetter: The beggar's brother died; the man who died had no brother because he was a woman (the beggar's sister). So answer C: The beggar was the man's sister. That"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-38",
+    "question": "I dig out tiny caves and store gold and silver in them. I also build bridges of silver and make crowns of gold. They are the smallest you could imagine. Sooner or later everybody needs my help, yet many people are afraid to let me help them. Why?",
+    "correct_index": 1,
+    "correct_answer": "I am a dentist.",
+    "majority_answer_idx": 1,
+    "majority_answer": "I am a dentist.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-39",
+    "question": "How could a cowboy ride into town on Friday, stay two days, and ride out on Wednesday?",
+    "correct_index": 1,
+    "correct_answer": "His horse is named Wednesday.",
+    "majority_answer_idx": 1,
+    "majority_answer": "His horse is named Wednesday.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "Classic riddle: cowboy rides into town on Friday (horse named Friday), stays two days, rides out on Wednesday. Answer B: horse is named Friday? Wait he rides into town on Friday (horse named Friday). He stays two days, then rides out on Wednesday (horse named Wednesday?). Actually typical answer: horse named Friday. He rides into town on a horse called Friday, stays two days, then rides out on Wednesday (horse named Wednesday). But only one horse? Actually he could have two horses. The usual answer: He rides into town on a horse named Friday, stays two days, then rides out on his horse named Wednesday? But puzzle says \"ride out on Wednesday\" meaning the day. Actually answer: He rides into town on Friday (horse named Friday). He stays two days, then rides out on Wednesday (day). So answer B? Wait options: A. While in town, he stays in bed for two days. B. His horse is named Wednesday. C. Friday and Saturday are holidays. D. None of above.\n\nThe classic answer: He rides into town on Friday (horse named Friday). He stays two days, then rides out on Wednesday (day). So answer B? But horse named Wednesday? Actually the riddle: \"How could a cowboy ride into town on Friday, stay two days, and ride out on Wednesday?\" The answer: He rides in on a horse named Friday. He stays two days, then rides out on his horse named Wednesday? Wait the classic answer: He rides into town on a horse named Friday, stays two days, then rides out on his horse named Wednesday. But the puzzle says \"ride out on Wednesday\" meaning day? Actually typical riddle answer: He rides into town on Friday (horse named Friday). He stays two days, then rides out on Wednesday (day). So answer B? But the choices mention horse named Wednesday. That seems off.\n\nMaybe the trick: He rides into town on Friday (horse named Friday). He stays two days, then rides out on Wednesday (day). So answer B? But B says horse named Wednesday. That would be wrong.\n\nOption D none of above. The correct answer is not listed? Actually the classic answer: He rides into town on a horse named Friday, stays two days, then rides out on Wednesday (day). So the answer is B? Wait B says horse named Wednesday. The riddle answer involves horse named Friday, not",
+      "B",
+      "B",
+      "B",
+      "D"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-40",
+    "question": "There are three doors. In each door is a way to die. The first door has fire and lava. The second door has lions that haven't eaten in 5 years. In the third door, there is a 1,000-foot drop into an alligator. Which door will you likely survive?",
+    "correct_index": 2,
+    "correct_answer": "The second door with the lions. Since they haven't eaten in 5 years they will have died.",
+    "majority_answer_idx": 2,
+    "majority_answer": "The second door with the lions. Since they haven't eaten in 5 years they will have died.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      3,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "D",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-41",
+    "question": "A plane crashed, and every single person on board this flight was killed, yet there were survivors. Explain how?",
+    "correct_index": 1,
+    "correct_answer": "The married people lived and the singles died.",
+    "majority_answer_idx": 1,
+    "majority_answer": "The married people lived and the singles died.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-43",
+    "question": "One lady ordered a fast delivery pizza and her order came the next year. How is this possible?",
+    "correct_index": 1,
+    "correct_answer": "She ordered the pizza for New Year's Day.",
+    "majority_answer_idx": 1,
+    "majority_answer": "She ordered the pizza for New Year's Day.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      1,
+      3,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "B",
+      "D",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-44",
+    "question": "In Jamaica, if you drop a steel ball weighing five pounds from a height of 45 inches, it falls more rapidly through the water at 40 degrees Fahrenheit than water at 20 degrees Fahrenheit. How is that possible?",
+    "correct_index": 1,
+    "correct_answer": "At 20 degrees Fahrenheit the water would be ice.",
+    "majority_answer_idx": 1,
+    "majority_answer": "At 20 degrees Fahrenheit the water would be ice.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      3,
+      1,
+      1,
+      2,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral thinking. Jamaica? steel ball 5 pounds, height 45 inches. falls more rapidly through water at 40\u00b0F than at 20\u00b0F. In reality, colder water is denser so slower? But puzzle uses wordplay: Jamaica refers to song \"Jamaica\" or \"Jamaican\"? Maybe \"steel ball\" is a bowling ball? 5 pounds. Jamaica might refer to the word \"Jamaica\" meaning \"land of wood\"? Maybe it's about \"water at 40 degrees Fahrenheit\" meaning 40\u00b0F is 4.44\u00b0C, water density slightly less than at 20\u00b0F (-6.67\u00b0C). Actually below freezing it's ice, but water can be supercooled? But puzzle likely about \"water\" meaning \"the word 'water' at 40 degrees Fahrenheit\" maybe letter positions? 40\u00b0F is 40 in ASCII? Not.\n\nMaybe it's about \"Jamaica\" meaning the country where the ball is dropped? Could be about a \"steel ball\" being a bowling ball used in Jamaica? Or maybe it's about the word \"ball\" meaning dance? 5 pounds = weight, but in Jamaican slang maybe \"pound\"? The puzzle says \"How is that possible?\" So answer D none of above. But maybe B: At 20\u00b0F water would be ice, so ball wouldn't fall? Actually it would sink slower through ice? So answer B maybe. But puzzle says lateral thinking. 20\u00b0F water would be ice, so ball falls slower? So faster at 40\u00b0F. That is true physically: colder water denser so ball sinks slower? Actually denser fluid gives more buoyancy, so slower. So B seems plausible but puzzle says obvious answer likely wrong. Maybe trick: The water at 20\u00b0F is ice, so ball would not fall through? So cannot fall more rapidly. But the puzzle says it falls more rapidly at 40\u00b0F than at 20\u00b0F. That is true because ice slows? So B seems correct physically, but puzzle says lateral thinking: maybe it's about \"water\" meaning the word water at 20\u00b0F (temperature of the word?) Not.\n\nMaybe it's about \"Jamaica\" meaning a song \"Watermelon Sugar\"? Hmm.\n\nCould be about the word \"steel ball\" being a \"5-pound steel ball\" refers to a bowling ball weight. 45 inches height = 3.75 ft. In Jamaica, the ball is",
+      "B",
+      "We need lateral thinking. Drop steel ball 5 lb from 45 inches. Falls more rapidly through water at 40\u00b0F than at 20\u00b0F. In reality, higher temperature water less viscous so faster. But puzzle likely about wordplay: \"Jamaica\" maybe refers to song \"One Love\"? Or \"drop a steel ball weighing five pounds from a height of 45 inches\" maybe about the phrase \"five pound 45 inch drop\" referencing a golf club? In Jamaica, ball is a golf ball? 5 lb steel ball? Maybe about \"Jamaica\" meaning the place where \"steel ball\" is a type of music? Or \"drop\" as in drop the beat. 40\u00b0F vs 20\u00b0F: difference of 20 degrees, but maybe \"water\" refers to \"water\" as in \"water\" in the sense of a song? Or \"Jamaica\" refers to \"Jamaican 5-pound ball\" maybe a \"billiard ball\"? The puzzle: falls more rapidly through water at 40\u00b0F than water at 20\u00b0F. In reality, water at higher temperature less viscous so ball falls faster. So answer B: At 20\u00b0F the water would be ice. But puzzle says \"water\" but maybe it's actually \"ice\" at 20\u00b0F? So B seems plausible. But lateral: Jamaica is a country, but also \"Jamaica\" could be the song \"Water\" by someone? The answer choices: A, B, C, D. Probably trick: \"The temperature of the steel ball is more consistent with water in 40\u00b0F.\" That seems nonsense. B: At 20\u00b0F the water would be ice. That's physically correct but trivial. But puzzle says lateral thinking, obvious answer likely wrong. So maybe the answer is D: None of above. Because it's a trick: The ball falls faster in water at 40\u00b0F because the word \"water\" refers to a song, and at 40\u00b0F it's a different version? Hmm.\n\nMaybe \"Jamaica\" refers to the song \"Water\" by ... Actually, Jamaica is a country where you might drop a steel ball (steel drum?) from height 45 inches. Steel ball could be a \"ball\" in baseball? In Jamaica, they play \"steel drum\"? The phrase \"water at 40 degrees Fahrenheit\" could be a reference to the song \"Water\" by ... Not sure",
+      "We need lateral thinking. Drop steel ball 5 lb from 45 inches. Falls more rapidly through water at 40\u00b0F than at 20\u00b0F. In reality, colder water is denser so slower? Actually higher density increases drag? But puzzle suggests wordplay. Jamaica? Maybe referring to \"Jamaica\" as a place with beaches, water temperature 40\u00b0F vs 20\u00b0F? Could be about \"water\" meaning the word \"water\" as in \"water\" in a glass? 40\u00b0F water is warm, 20\u00b0F is cold. But ball falls faster through warm water because it's less dense? Actually density of water increases as temperature decreases, so colder water is denser -> more drag. So ball falls slower in cold water. Puzzle says faster in 40\u00b0F than 20\u00b0F, which matches physics: warm water less dense -> less drag. But puzzle says it's a lateral thinking: answer choices A, B, C, D none of above. Option B says at 20\u00b0F water would be ice. But 20\u00b0F is below freezing, so it's ice. So ball wouldn't fall through ice? It would sink in ice? Actually steel ball would sink into ice? But puzzle says falls more rapidly through water at 40\u00b0F than water at 20\u00b0F. If it's ice, ball wouldn't fall. So B is wrong.\n\nMaybe wordplay: \"water\" could mean \"the water in a cocktail\"? Jamaica? The phrase \"Jamaica\" maybe refers to the song \"Water\"? Not sure.\n\nCould be about \"water\" meaning \"the water in a bottle\", 40\u00b0F vs 20\u00b0F. In Jamaica, 20\u00b0F would be extremely cold water not found; but maybe it's about the word \"water\" meaning \"the liquid in a glass\", and 20\u00b0F water is too cold to drink? The ball falls faster through \"water\" because it's less dense? But answer D none of above.\n\nThe lateral thinking: The steel ball is dropped in \"water\" meaning the word water (the letters). At 40\u00b0F, it's like \"Fahrenheit\" sign? Eh.\n\nMaybe the trick: The ball is dropped in a \"water\" that is actually \"the water of a thermometer\"? 40\u00b0F vs 20\u00b0F. The ball falls faster through the \"water\" at 40\u00b0F because the water is actually a liquid that contains more air? I'm leaning answer D.\n\nBut maybe answer B",
+      "We need lateral thinking. Jamaica? steel ball 5 pounds, drop from 45 inches. Falls more rapidly through water at 40\u00b0F than at 20\u00b0F. In reality higher temp less viscosity, so faster. But puzzle expects trick: Jamaica refers to the song \"Jamaica\" or \"Jamaica\" as a word? Maybe it's about the phrase \"drop a steel ball\" meaning drop a ball of steel: in Jamaica, 40\u00b0F is warmer than 20\u00b0F? Actually water at 20\u00b0F is frozen. So maybe the ball falls faster through ice because it's solid? But answer B says at 20\u00b0F water would be ice. That seems plausible: ball falls through ice? Actually falling through ice is slower because it's solid. But the puzzle says it falls more rapidly through water at 40\u00b0F than water at 20\u00b0F. If at 20\u00b0F it's ice, then ball would fall slower? Wait: falling through ice is like falling through a solid; it might sink but maybe slower. So answer B could be correct: water at 20\u00b0F is ice, so ball falls more rapidly through water at 40\u00b0F. But they say \"water\" not ice. So trick: wordplay: Jamaica -> \"Jamaica\" as a song? Maybe the ball is dropped in a \"jelly\"? Hmm.\n\nMaybe it's about the phrase \"steel ball\" meaning a weight. 5 pounds is heavy. Drop from height of 45 inches. In Jamaica, the ball would be dropped onto a \"Jamaican\" beach? The answer could be D.\n\nConsider double meanings: Jamaica is a country; also \"Jamaica\" is a type of coffee? The ball dropping through water at 40\u00b0F vs 20\u00b0F: maybe the water is \"Jamaican\" meaning it's hot? Wait.\n\nMaybe the trick: The ball falls faster through water at 40\u00b0F because the water is less dense? Actually density decreases with temperature increase, so ball sinks faster. So physically correct: 40\u00b0F water is less dense than 20\u00b0F (ice). So answer B? But B says at 20\u00b0F water would be ice. That is true: water freezes at 32\u00b0F, so at 20\u00b0F it's ice. So ball falling through ice would be slower? Actually it might sink into ice but not fall through. So answer B seems plausible.\n\nBut puzzle says \"How is that possible?\" The answer"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-45",
+    "question": "Danny was driving his semi under an overpass when suddenly he came to a screening halt. Danny wasn't paying enough attention and inadvertently drove under the overpass that was just barely as high as his truck. The semi was wedge so tightly that he could not go forward or backward. A fellow tracker came by and told him how he could easily get the semi out from under the bridge. What did he suggest?",
+    "correct_index": 2,
+    "correct_answer": "He told Danny to let some air out of his tires.",
+    "majority_answer_idx": 2,
+    "majority_answer": "He told Danny to let some air out of his tires.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      0,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "We need lateral thinking. Danny stuck under overpass just barely as high as truck. Semi wedge so tightly cannot go forward/backward. A tracker suggests how to get out easily. Options: left the bridge? overturn track? let some air out of tires? None.\n\nMaybe trick: He was under overpass but actually on a bridge? Wait, \"under the overpass\" meaning he is under a bridge that passes over something else. To get out, he should \"turn right\" or \"go left\"? Hmm.\n\nMaybe the answer: He told him to drive forward until he reaches the end of overpass? But cannot.\n\nMaybe it's a wordplay: \"track\" meaning railroad track. He is on a truck, not train. Overpass maybe over railway tracks? The tracker says \"let some air out of his tires\" to reduce height. That seems plausible: lower the truck's clearance by deflating tires, then lift? But can't go forward/back.\n\nBut if he deflates tires, the truck will lower and maybe slip out? But wedge tight: cannot move. If he deflates, the truck lowers, but still stuck.\n\nMaybe \"overpass\" is a bridge over a road. He is under the bridge, but his truck height equals bridge clearance. To get out, he should drive forward until the front wheel clears? but can't.\n\nPerhaps lateral: He was driving a semi under an overpass that was just barely as high as his truck. The semi was wedge so tightly he could not go forward or backward. A fellow tracker came by and told him how he could easily get the semi out from under the bridge. What did he suggest? Maybe the answer is \"turn around and drive up\" but can't.\n\nMaybe trick: The overpass was just barely as high as his truck. So the clearance is zero. He can't move. The tracker suggests to \"stop\" and let some air out of tires so the truck lowers? But that would lower, not raise.\n\nWait: If the overpass is just barely as high as truck, meaning clearance zero. To get out, you need to lower the truck by deflating tires, so it fits under. But he is already under, cannot move. Lowering would allow him to slide out? But still stuck.\n\nMaybe the trick is that the truck driver was actually on a bridge (overpass) and the \"fellow tracker\" told him to \"turn left\" meaning",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-46",
+    "question": "A boy had just gotten out of the shower and was getting ready for his prom, shaved and with cologne, and there would be an after-party. And his mom and dad said to be home for the next sunrise and he was home for the next sunrise but with a full-grown beard. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "He lives in Alaska and sunrise are every six months.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      3,
+      3,
+      3,
+      null,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral: \"home for the next sunrise\" maybe means he stayed home until sunrise, but had a full-grown beard because it's winter? Maybe \"beard\" refers to \"beard\" as in \"bearded lady\"? Could be that he is a werewolf? Or the phrase \"full-grown beard\" means his beard grew overnight because he's a vampire? Wait: He was home for the next sunrise but with a full-grown beard. How can this be? Maybe he is a baby? No.\n\nMaybe the trick: He was \"home for the next sunrise\" meaning he stayed home until the next sunrise, but his beard grew because he was a \"beard\" meaning a person who holds someone else's reputation? Hmm.\n\nCould be that he is a \"beard\" as in a person who pretends to be someone else, but full-grown beard? Maybe it's a pun: \"full grown\" as in \"adult\". He was home for the next sunrise but with a full-grown beard because he is a \"bearded\" person? Wait.\n\nMaybe the answer: He was in a \"time loop\"? Or he is a \"sleeper\" who wakes up at sunrise? The puzzle maybe about wordplay: \"full-grown beard\" could be a \"beard\" as in a \"beard\" meaning a person who covers up another's identity. But no.\n\nMaybe the trick: He was home for the next sunrise meaning he stayed home until the next sunrise, but had a full-grown beard because he had \"grown a beard\" in the time between. How? He is a \"beard\" as in \"a person who is a beard of a lion\"? No.\n\nMaybe it's about the word \"shaved\" and \"full-grown beard\". He shaved but then his beard grew overnight because he was a \"hair transplant\"? Wait.\n\nCould be that the boy is a \"baboon\" or \"gorilla\". But puzzle likely answer D.\n\nLet's think: The phrase \"full-grown beard\" could refer to a \"beard\" that grows on a horse? No.\n\nMaybe the trick: He was home for the next sunrise but with a full-grown beard because he is a \"beard\" meaning a person who pretends to be someone else, but full-grown? Not.\n\nCould be that the boy is a \"lizard\" and beard refers to dew? No.\n\nMaybe it's about \"shaved\" meaning he shaved his",
+      "D",
+      "D",
+      "We need lateral thinking. Boy just out of shower, shaved, cologne, after-party. Mom and dad said to be home for next sunrise. He was home for next sunrise but with full-grown beard. How? Maybe he's a boy in a story about a boy who is actually a baby? Wait: He was home for next sunrise but with full-grown beard. Could be that he is a boy in the future? Or \"next sunrise\" meaning next day, but beard grew overnight because he is a boy in a story where he is an alien? Maybe \"next sunrise\" refers to the next sunrise of a different planet, like in Alaska sunrise every six months? But that's not correct.\n\nWordplay: \"full-grown beard\" could be a term for a person who has grown a beard fully. But he had just shaved. So maybe the phrase \"full-grown\" refers to something else: like a full-grown baby? Wait.\n\nCould be that he is a boy in the story of \"The Boy Who Cried Wolf\"? Not.\n\nMaybe it's about time travel: He went to a party, but the mom said be home for next sunrise. He was home for next sunrise but with a full-grown beard because he had grown a beard overnight by being in the future. So maybe \"next sunrise\" refers to his next birthday? No.\n\nWordplay: He was home for the next sunrise but with a full-grown beard. Maybe \"full-grown\" refers to a full grown plant? Like he had a beard of grass? Or maybe it's about the phrase \"full-grown\" meaning fully grown, but in terms of a beard being full? He had a beard that was \"full-grown\" meaning fully grown, but he had just shaved? So maybe the answer is that it's a boy in a story: He was a baby, but with a full grown beard? That seems weird.\n\nMaybe it's about the phrase \"next sunrise\" meaning next day, but he was home for the next sunrise with a full-grown beard because he grew his beard overnight due to being in a place where time passes differently, like on the moon? But not.\n\nCould be that \"full-grown beard\" refers to a full grown beard of a horse? No.\n\nThink lateral: The boy had just gotten out of the shower and was getting ready for his prom, shaved and with cologne. There would be an after-party. Mom and dad said to be home for the next sunrise.",
+      "We need lateral: \"home for the next sunrise\" maybe means he stayed home until the next sunrise, but with a full-grown beard. Maybe he is a baby? Actually \"full grown beard\" could be like a beard of a baby? Maybe he is a man who got into a time machine, or it's a pun: \"beard\" as in beard of a horse? Or \"full-grown beard\" meaning he grew a beard overnight because it's a 'beard' of the word? Could be that he is in a barber shop called \"Full-grown beard\" or \"beard\" as in 'beard' meaning a person who pretends to be someone else? Maybe the answer D.\n\nCommon lateral puzzle: The boy is a baby of a man who had a beard? No.\n\nMaybe the trick: \"home for the next sunrise\" meaning he is at home when it is sunrise again, i.e., he lives in a place with perpetual daylight like the North Pole. So \"full-grown beard\" could be 'beard' meaning a beard of a horse? Wait.\n\nOption C: lives in Alaska and sunrise every six months. That seems plausible but not lateral. Option B: beard grows fast. Option A: crazy with friends.\n\nProbably answer D: none of above, because it's a pun: He is a boy named \"Beard\" who grew? hmm.\n\nMaybe the answer: He was at home for the next sunrise, but with a full-grown beard because he is a boy who had just gotten out of the shower and was getting ready for prom; after party; mom says be home for next sunrise. He is a boy but has full grown beard because he is a 'boy' in the sense of 'young boy' but also 'beard' meaning 'a person who is a man'? Wait.\n\nMaybe it's about \"boy\" being a boy in the sense of 'a boy' but also 'boy' as a term for 'young man', but he had shaved and cologne. He is a boy with beard? Could be that the word \"boy\" refers to a horse (a boy). He is a horse. That seems far.\n\nMaybe the trick: \"full-grown beard\" refers to a 'beard' as in a horse's mane? No.\n\nPerhaps the answer: He is a boy who had just gotten out of the shower and was getting ready for prom, shaved and with cologne, and"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-48",
+    "question": "Why is it so cold on Christmas?",
+    "correct_index": 0,
+    "correct_answer": "Because it's in December.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "D",
+      "D",
+      "D",
+      "D"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-49",
+    "question": "Wednesday,Tom and Joe went to a restaurant and ate dinner. When they were done they paid and left. Tom and Joe didn't pay. Who did?",
+    "correct_index": 0,
+    "correct_answer": "Wednesday. The name of the third person in the group, not the day.",
+    "majority_answer_idx": 0,
+    "majority_answer": "Wednesday. The name of the third person in the group, not the day.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-50",
+    "question": "A magician had a water glass that was filled to the top. Holding the glass above his head he let it drop to the carpet without spilling a single drop of water. How could he manage to drop the glass from a height of six feet and not spill any water?",
+    "correct_index": 0,
+    "correct_answer": "The glass was filled, but not with water.",
+    "majority_answer_idx": 0,
+    "majority_answer": "The glass was filled, but not with water.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      2,
+      0,
+      0,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "We need lateral thinking. Glass filled to top, drop from head height 6 ft onto carpet without spilling. Could be that glass was empty? But says filled to the top. Maybe it's a \"water glass\" meaning a glass that holds water but actually is empty? Or the magician used a glass filled with water but it was upside down? Wait: He holds above head, drops to carpet without spilling. Could be that the glass was actually filled with a liquid that doesn't spill due to surface tension? But answer C says surface tension prevents water from spilling. Not likely.\n\nWordplay: \"water glass\" could be a glass that holds water, but maybe it's actually a drinking glass. He held it above his head, let it drop to carpet without spilling a single drop of water. How? He could have turned the glass upside down, so that water is inside but the opening faces upward; when he drops it, water stays due to surface tension? Hmm.\n\nAlternatively: The glass is filled with water but the water is frozen? If it's ice, no spill. But not in choices.\n\nMaybe he dropped it onto carpet but the glass was empty? The trick: He filled the glass with water, then he placed it on his head. When he let it drop onto carpet, the glass fell but water didn't spill because the glass was actually empty? But that contradicts filled.\n\nMaybe he used a \"water glass\" meaning a glass that holds water but actually it's a \"glass of water\" as in a glass containing water; he could have filled it, but then turned the glass upside down and let it drop. The water would stay due to surface tension? But with 6 ft, some spillage.\n\nAlternatively: He dropped the glass onto a carpet that is wet? The water spreads but doesn't spill? Hmm.\n\nCould be trick: He filled the glass with water, then put a piece of paper over it to hold water? Not.\n\nWordplay: \"Water glass\" could be a glass that holds water but the word \"water\" might refer to a \"glass of water\" meaning a glass that is filled with water. But maybe the answer: He was standing on a moving platform? No.\n\nOption D none of above. Likely lateral answer: He filled the glass with water, then turned it upside down so that the opening faces upward; when he drops it onto carpet, water stays because it's held by surface tension and the glass is too heavy",
+      "We need lateral. He drops glass from height of six feet and not spill any water. Could be that he holds it above his head, but the glass is upside down? Wait: He drops it onto carpet; if he holds it above his head and let it drop, maybe the glass is empty? But answer A says filled but not with water. Could be he fills with something else like air? Not.\n\nMaybe the trick: The glass is filled to the top but it's a \"water glass\" meaning a glass that holds water, not necessarily containing water. But the puzzle says filled to the top.\n\nCould be he drops it onto a carpet that is sticky? But water would still spill. Maybe the glass is filled with water but he drops it onto a carpet that is wet? No.\n\nThink lateral: He holds the glass above his head, let it drop to carpet without spilling a single drop of water. How? Because he is standing on a table and the glass falls onto his head? Hmm.\n\nMaybe answer D: none of above. But maybe trick is that the glass was filled with water but he dropped it from his head, and the carpet had a hole? Wait.\n\nCould be that the glass is filled to the top but he drops it onto carpet after rotating 180 degrees, so water stays inside. But dropping would cause tilt.\n\nMaybe the trick: He uses a magician's trick: The glass is filled to the top but he drops it onto the carpet, and because it's a \"water glass\" that is actually a \"glass of water\" meaning the glass contains water, but he uses a trick to keep it sealed? Could be that the glass is filled with water and then he covers it with a lid, but not mentioned.\n\nMaybe answer A: The glass was filled, but not with water. That seems too trivial. But lateral: He could fill it with ice? Still water.\n\nMaybe the trick is that the glass was filled to top but he drops it onto carpet, and the water doesn't spill because the carpet is wet? No.\n\nMaybe the answer: He drops it from a height of six feet, but he does not drop it onto carpet; he drops it onto his own head? That would spill.\n\nMaybe the trick: He holds the glass above his head, let it drop to carpet without spilling a single drop of water. How? He drops the glass onto the carpet, but because he holds it above his head, the",
+      "A",
+      "We need lateral: water glass filled to top, drop from head height 6ft onto carpet no spill. Could be a \"water glass\" meaning a glass of water, but maybe it's a \"glass\" like a drinking glass. He holds above head and drops to carpet, but no spill because he is holding it inverted? Or the glass was filled with something else. Option A: not water. But puzzle says water glass that was filled to the top. Could be \"filled with water\" but not spilled because he tipped it? Maybe it's a trick: He dropped the glass onto carpet, but the water didn't spill because he had a \"glass\" that is actually a \"water glass\" meaning a glass of water but the water was frozen? Or he dropped it from above his head onto carpet, but the glass is \"empty\" because it's filled with water but he had a trick: He was holding it above his head, then dropped it onto carpet, but the water didn't spill because he had a \"water glass\" that is actually a \"glass of water\" but the water was in a sealed container? Hmm.\n\nAnswer choices: A The glass was filled, but not with water. B The glass is too heavy. C Surface tension prevents water from spilling. D None of above.\n\nWe need lateral: maybe it's a \"water glass\" meaning a glass that holds water, but the glass is filled to top with water. He drops it onto carpet; no spill because he was standing on a rug? Wait: The trick is that the water glass is filled to top, but he holds it above his head and drops it onto carpet. He doesn't spill because the glass is upside down? If he holds it inverted, water stays inside due to surface tension? But at six feet drop, will spill. Unless the glass is a \"glass\" that has a lid? Or it's a \"water glass\" meaning a glass of water but the water is actually a liquid that doesn't spill, like a \"water glass\" filled with something else? Option A says not water. That seems plausible: it's filled with something else, like oil or syrup? But puzzle says \"water glass\" implying water. The trick: He holds the glass above his head, but he is standing on a rug? Wait.\n\nMaybe it's about \"water glass\" meaning the glass that holds water, but he didn't spill because he was holding it above his head and dropped onto carpet; the"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-51",
+    "question": "Craig died in Florida. Shortly after, Tracy died at sea. Nobody mourned, In fact, everyone was absolute delighted. Why?",
+    "correct_index": 0,
+    "correct_answer": "They were both hurricanes.",
+    "majority_answer_idx": 0,
+    "majority_answer": "They were both hurricanes.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "num_samples": 5,
+    "responses": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-52",
+    "question": "Morgan was making apricot jam. She put all the apricots in the pot and stirred them up. Then she remembered she had to add 1 ounce of lemon juice for every two apricots! How did she figure out how much lemon juice to put?",
+    "correct_index": 2,
+    "correct_answer": "She counted the pits of apricots.",
+    "majority_answer_idx": 2,
+    "majority_answer": "She counted the pits of apricots.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      3
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "We need lateral thinking. \"She put all the apricots in the pot and stirred them up. Then she remembered she had to add 1 ounce of lemon juice for every two apricots! How did she figure out how much lemon juice to put?\" Maybe she counted the pits of apricots? But maybe it's about \"pits\" meaning holes. She counts pits to get number of apricots? Or uses the word \"apricot\" meaning 'a-pricot' maybe 'pric-ot'? Another angle: \"She put all the apricots in the pot and stirred them up.\" Could be she used a measuring cup? She counted the apricots by stirring? Maybe she looked at the word 'apricot' and realized \"two apricots\" equals 8 letters? Not.\n\nMaybe the trick: She didn't need to count apricots; she used ratio 1 ounce per two apricots. She can weigh the pot? Actually if she knows weight of apricots? Hmm.\n\nAnswer choices: A good at physics, B excellent chef, C counted the pits of apricots, D None. Lateral: maybe she used a measuring cup and counted the pits? But answer likely C? But puzzle says lateral thinking. The pun: \"pits\" are holes; she counted pits to get number of apricots. But why would that help? If each apricot has one pit, counting pits equals number of apricots. So she counted the pits to know quantity. That seems plausible.\n\nBut maybe even more lateral: She didn't need to count apricots; she used the fact that 1 ounce per two apricots means 0.5 ounces per apricot. She could just add half an ounce per apricot, but she didn't know number of apricots. She could weigh the pot? But maybe she used her sense of taste: 1 ounce per two apricots is a ratio; she can add lemon juice until the mixture tastes right? No.\n\nOption D none of above maybe correct if lateral answer: She used a measuring cup and counted the pits? That is too straightforward. The puzzle says \"obvious answer likely wrong.\" So maybe none of above. Let's think: She used a calculator? No.\n\nMaybe she didn't actually count apricots; she just added lemon juice until the pot had 1 ounce per two apricots based",
+      "C",
+      "D"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-53",
+    "question": "A woman who lives in new york legally married three men, she did not get divorce, get an enrollment, or legally seperate. How is this possible?",
+    "correct_index": 2,
+    "correct_answer": "She is a minister.",
+    "majority_answer_idx": 2,
+    "majority_answer": "She is a minister.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-54",
+    "question": "George was cleaning the windows on the eighteenth floor of an office block when there was a massive power failure. The electric hoist on his platform was immoblized. So how did he manage to get down before the power was restored?",
+    "correct_index": 2,
+    "correct_answer": "George walked down the stairs. He was cleaning the inside of the windows.",
+    "majority_answer_idx": 2,
+    "majority_answer": "George walked down the stairs. He was cleaning the inside of the windows.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "C",
+      "We need lateral: cleaning windows on 18th floor, power failure, hoist immoblized. How get down before power restored? Maybe he was cleaning inside of windows, so he could walk down the interior glass? Or he used a ladder that was on ground. Maybe answer C: walked down stairs cleaning inside windows? But maybe trick: he was cleaning the windows from outside, but when power fails he can use a window to get down? Or he was cleaning the windows on 18th floor but actually that floor is ground floor (floor numbering). Or he was cleaning the windows of a building, but it's on 18th floor meaning the 18th floor is ground? Or he was cleaning windows on the 18th floor of an office block but that building is in a high-rise with no elevator, he used the electric hoist. But when power fails, he can use a manual winch? Hmm.\n\nMaybe answer D none of above. But lateral: He was cleaning windows on the 18th floor but he was inside the building, so he could walk down the stairs. But that's too obvious? The puzzle says answer likely wrong; consider wordplay, double meanings. \"Power failure\" could refer to electricity but also authority? Electric hoist immoblized. He got down before power restored: maybe he was cleaning windows on the 18th floor of an office block when there was a massive power failure. The electric hoist on his platform was immoblized. So how did he manage to get down before the power was restored? He could use a manual winch? Or he used a rope and climbed down. But the puzzle hints lateral: maybe \"the electric hoist\" is on his platform, but he was cleaning windows on the 18th floor of an office block. He could get down by stepping onto the roof and escape? Option A.\n\nBut wordplay: \"power failure\" could mean he lost his 'power' meaning authority, but still got down. Maybe \"he was cleaning the windows on the eighteenth floor\" - maybe that building is in a country where floors are numbered differently? Could be 18th floor is ground floor. So he was on ground, no hoist needed.\n\nAlternatively: He used a ladder that is attached to the building and he walked down. Option C says he was cleaning inside of windows, so he could walk down the interior? That seems weird.\n\nMaybe answer D",
+      "C",
+      "We need lateral thinking. George cleaning windows on 18th floor, power failure, hoist immoblized. How did he get down before power restored? Maybe he's cleaning the inside of windows, so he can walk on glass? Or he was on roof and escaped (A). B irrelevant. C says walked down stairs, cleaning inside windows? Hmm.\n\nMaybe answer is D none of above. But maybe trick: He was on the 18th floor, but office block is in a building where floors are numbered differently? Or he was cleaning windows on the 18th floor, but it's actually the 8th floor? Or he was cleaning windows of a building with no elevator, so he used the stairs. But power failure immobilized hoist; but he could use the fire escape? Or he was cleaning windows on the 18th floor of an office block, but it's actually a building with only 17 floors? Eh.\n\nMaybe the answer is C: He walked down the stairs because he was cleaning inside of windows. Inside of windows means he's on the interior side, so he can walk down? Not.\n\nMaybe lateral: He was cleaning windows of a windowless building? Or he used the elevator which was still working because it had backup power. But hoist immoblized.\n\nWait: The electric hoist on his platform was immobilised. So he can't go up or down by hoist. But he could get down by walking along the window sills? He was cleaning inside of windows, so he can walk on the glass. So C.\n\nBut answer choices: A roof escape; B lift heavy object; C walked down stairs cleaning inside windows; D none of above. The puzzle says think lateral, wordplay. \"George was cleaning the windows on the eighteenth floor of an office block when there was a massive power failure. The electric hoist on his platform was immoblized.\" Maybe the trick: He is cleaning windows of a building that has no 18th floor because it's a 17-floor building. So he was actually on the roof, which is the 18th floor? Or the word \"eighteenth\" could be a pun: He was cleaning windows on the 18th floor of an office block, but it's actually a building that has only 17 floors, so the 18th floor is the roof. So he can escape by going to roof? But answer A says get to roof and escape",
+      "We need lateral thinking. George cleaning windows on 18th floor, power failure, hoist immoblized. How get down before power restored? Maybe he was cleaning inside of windows, so could walk down the interior side of window? But answer C says he walked down stairs cleaning inside windows. He was cleaning the inside of the windows. That seems odd.\n\nMaybe he used a ladder? Or he is on ground floor? Wait: \"George was cleaning the windows on the eighteenth floor of an office block when there was a massive power failure. The electric hoist on his platform was immoblized.\" He could get down by walking down the stairs. But he was cleaning inside windows? Actually, maybe he was on a platform but could use the elevator? No power. He might have used the fire escape stairs. But answer C says he walked down the stairs, cleaning inside of windows. That seems plausible but not lateral.\n\nMaybe wordplay: \"power failure\" meaning electricity; platform immoblized. He got down before power restored because he was on the roof? Wait.\n\nMaybe \"George\" is a type of window cleaner - \"George\" refers to the brand of cleaning equipment? Or maybe he was a 'window cleaner' and used a rope ladder. But answer D none of above.\n\nThink lateral: The word \"platform\" could be a platform on the roof; he is cleaning windows of 18th floor. He might have used the window itself to climb down? Or maybe he was cleaning windows of 18th floor but actually on ground floor because the building is 18 floors tall? Eh.\n\nMaybe he was cleaning windows on the eighteenth floor of an office block. But maybe the building has 18 floors, but he was on the 18th floor of a building that is actually the ground floor? No.\n\nCould be he was cleaning windows on the 18th floor of a block, but the building is actually in reverse: ground floor is top. No.\n\nMaybe he was cleaning windows on the 18th floor, but he used a rope to descend. But power failure? He can still use rope.\n\nWait: \"The electric hoist on his platform was immoblized.\" He might have used a manual hoist or a rope. But the puzzle expects lateral: \"he was cleaning the inside of the windows\" so he could walk down the interior side of window? That seems unrealistic.\n\nMaybe answer D none. I think"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-55",
+    "question": "A man buys a rope from a woman for $3.00 and hands the woman a $10 bill. The woman goes into the grocery store next door to get change. She returns and gives the man $7.00. After the man leaves, the clerk from the store comes and says, \"Hey, that was a counterfeit bill you gave me.\" The woman gives the clerk a good bill. How much has the woman lost?",
+    "correct_index": 1,
+    "correct_answer": "Seven dollars plus the rope.",
+    "majority_answer_idx": 2,
+    "majority_answer": "Thirteen dollars.",
+    "correct": false,
+    "any_correct": true,
+    "votes": [
+      1,
+      2,
+      1,
+      2,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need to parse: man buys rope for $3, gives $10. Woman gets change 7 back. Later clerk says counterfeit, woman gives good bill to clerk. How much lost? The rope cost $3? She paid for it, so she got rope. She gave man $7 back. So net loss: she lost $7 cash, but gained rope worth? She paid for rope with counterfeit? Wait: The man gave her $10 counterfeit. She got change from store, giving him $7 real. So she had to pay $3 for rope? Actually she sold rope, so she should receive $3 real from man. But the $10 was counterfeit; she got change for it, so she gave him $7 real and kept $3. So she lost $7 cash but gained rope? Wait she sold rope, so she should have gotten $3 real; she did because she kept $3 from the change. So no loss of rope value. But then clerk says counterfeit, she gives good bill to clerk. She already gave $7 to man; she also must reimburse clerk? Wait she gave the clerk a good bill (presumably $10) to replace counterfeit. So she pays $10 real to clerk, but she had already given $7 to man and kept $3. So net cash outflow: gave $10 to clerk, gave $7 to man, but kept $3. So net loss = $14? Wait compute: Initially she had no cash. Received counterfeit 10, gave change 7 to man, kept 3. Then she gives clerk $10 good bill. So total outflow: 7 +10 =17, inflow: 3. Net loss $14. But she also lost rope? She sold rope, so no.\n\nThus answer: 14 dollars loss. Not in options. Maybe trick: She lost $7 and the rope? But rope she sold, so not loss. Actually she gave man rope, so lost rope. Wait she sold rope to man; she gave him rope in exchange for money (counterfeit). She kept $3 from change. So she lost rope but gained $3 real? Net: rope value maybe 3? But she lost rope, not money. So total loss = $7 cash + rope value? The rope cost maybe 3? So total loss 10? But options: B is seven dollars plus the rope. That",
+      "C",
+      "B",
+      "C",
+      "We need to parse: man buys rope for $3, gives $10. Woman gets change 7 back. Later clerk says counterfeit, woman gives good bill to clerk. So she had $10 counterfeit, gave 7 change to man, kept 3? Actually she sold rope for $3, so she had $10 fake, gave 7 to man, kept $3? But that $3 is from counterfeit. Then clerk demands real money; she gives good bill (say $10). So net: She lost rope? Wait she gave rope to man. She also lost $3 from counterfeit? Let's compute: Initially, woman had rope value maybe cost? She gave rope to man, got $10 fake. She gives back $7 real to man, keeping $3 from fake? But later she must reimburse clerk with good bill. So she gives real money to clerk equal to the counterfeit amount? She returns $10? Actually she gave good bill, maybe $10. So net: She lost rope (worth something) and also lost real money? She had to give $10 to clerk, but she didn't have that until she got from somewhere. So she lost $10 real plus rope value? But the answer choices: A 7 dollars, B 7 dollars plus rope, C 13 dollars. Maybe she lost $7? Let's think: She gave man rope ($3 value) and $7 real. So she lost $10 in real terms to the man. Then she had to give clerk a good bill, maybe $10? Wait she already gave $7 to man. She had no real money left. So she must have used her own funds to give clerk $10. So total loss: rope ($3) + $7 change = $10, plus $10 to clerk? But the clerk's demand is for the counterfeit bill: she must return $10? Actually she gave a good bill to replace the fake. So she lost $10 real. So total loss: rope ($3) + $7 change + $10 to clerk = $20. But answer choices not that.\n\nMaybe trick: The rope is worthless? Or the woman didn't lose anything because she got good bill from clerk? Wait: She had to give clerk a good bill. That is her loss of $10 real. But she already gave man rope ($3) and $7 real, so total loss $20. Not in options.\n\nMaybe"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-56",
+    "question": "Two camels were facing in opposite directions. One was facing due East and one was facing due West. They were in the desert so there was no reflection. How can they manage to see each other without walking around or turning around or moving their heads?",
+    "correct_index": 2,
+    "correct_answer": "The two camels were facing each other the entire time.",
+    "majority_answer_idx": 2,
+    "majority_answer": "The two camels were facing each other the entire time.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      2,
+      2,
+      2,
+      1,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "We need lateral thinking: Two camels facing opposite directions, one East, one West. How can they see each other without moving? They could be facing each other if they are on a round earth? Wait: If they are at the North Pole, facing East and West would be same direction? Actually at poles directions ambiguous. But desert no reflection.\n\nMaybe they are on a moving train? Or one is facing East, other West but they are in front of each other because they are on a circular track? Or maybe they are facing opposite directions but see each other because they are looking at the ground and the other is on the ground? Hmm.\n\nWordplay: \"Camels\" could be letters C A M E L S. Facing due East means the word spelled left to right? West meaning reversed? Two camels facing opposite directions could be two camel shapes? Could be a mirage? But no reflection.\n\nCould be that they are facing each other because one is on the left side of a mirror? No.\n\nMaybe they are in a desert but there is no reflection because it's sand. But how can they see each other? They could be in a tunnel? Wait.\n\nCould be that the camels are on opposite sides of a straight line but facing each other because one is facing East (to the right) and the other West (to the left). If they are standing on a straight line, facing each other means one faces east, the other west. So answer C: They were facing each other the entire time. But puzzle says they were facing in opposite directions, one due East and one due West. That indeed means they are facing each other if they stand on a line. So answer C seems trivial.\n\nBut puzzle says \"How can they manage to see each other without walking around or turning around or moving their heads?\" They can because they're facing each other. So answer C.\n\nBut puzzle says \"obvious answer likely wrong.\" Maybe it's a trick: They are on opposite sides of a circular track, facing each other means one East one West? Actually if they are on opposite sides of a circle and both facing center, they'd be facing each other but directions not East/West. So maybe answer D.\n\nWordplay: \"Camels\" could be the letters 'C' and 'M'. Facing East means reading left to right, West means right to left. Two camels could be the word \"camel\" in two directions? They",
+      "We need lateral thinking. Two camels facing opposite directions: one East, one West. How can they see each other without moving? Maybe they are in a mirror? No reflection. Desert no reflection. Could be they are facing each other because they are on a rotating platform? But can't move heads. Maybe they are in a circle? If one facing East, other West, but if they're on opposite sides of a circular track and the Earth rotates? Wait.\n\nCould be they are facing each other because one is facing East, the other West, but they are on opposite sides of a straight line? Actually if one faces East, the other West, and they are on opposite sides of a straight line, then each is facing the other's direction. But to see each other, they need to be looking at each other; if one faces East and the other West, they are facing opposite directions. For them to see each other without turning heads, they'd have to be in a tunnel? No.\n\nWordplay: \"Two camels were facing in opposite directions\" could refer to the words 'camel' as a word? Maybe they are on a playing card: camel faces? Or in the desert no reflection. Could be that they were facing each other because one was on the left side of the other; if you look at them from above, their 'faces' are opposite but they can see each other because of the sun? Hmm.\n\nMaybe answer C: The two camels were facing each other the entire time. But puzzle says one was facing due East and one due West. Facing each other would mean one east, other west if they are opposite sides of a straight line. Actually if two camels facing each other, one would face west (towards the other), the other east. So they are facing each other, but that is opposite directions? They face opposite directions relative to each other. So C seems plausible.\n\nBut the puzzle says they were in desert so no reflection. They cannot walk or turn heads. How can they see each other? If they're facing each other, they already see each other. So answer C trivial.\n\nBut puzzle expects lateral thinking: maybe the camels are in a photograph, and you can see them because of the camera? But no.\n\nMaybe they were facing opposite directions but not relative to each other: one facing East, the other West, but they are on opposite sides of a circle and can see each other via the",
+      "C",
+      "We need lateral thinking. Two camels facing opposite directions: one East, one West. How can they see each other without walking or turning? Maybe they are on a rotating planet? Or they are at the North Pole: east/west meaningless. But desert no reflection.\n\nMaybe they are in a mirrorless environment but can see each other because they are facing each other: the puzzle says one was facing due East and one due West. But if they are on a circle? Wait: If they are standing in the middle of desert, facing opposite directions but still see each other because they are looking at each other's eyes? But if facing East and West, they would not face each other. Unless \"facing due East\" means their front is toward east, but they could still see each other if the camels are very close and their eyes wide? But answer B says wide view.\n\nMaybe they are on a rotating carousel: The desert is on a planet that rotates? But no movement.\n\nMaybe the trick: They are in a \"desert\" meaning \"the desert is a place where there is no reflection\", but the camels are facing due East and West. But if they were standing on a \"mirror\" like the ground? No.\n\nMaybe it's about \"the desert\" meaning \"desert\" as in \"a place where there is no reflection\", but the camels are facing each other because they are on a \"desert\" that is actually the \"Desert of the Sahara\"? Hmm.\n\nCould be about a \"desert\" meaning \"a place where there is no reflection\" but they can see each other because they are looking at the \"reflection\" in their own eyes? No.\n\nAlternatively, think of \"camels\" as \"camel's humps\" maybe they are on a \"desert\" that is actually the \"Desert of the Sahara\", but they can see each other because they are standing on a \"desert\" that is actually the \"Desert of the Sahara\" and they are facing each other because the East-West direction is relative to their own orientation? Wait.\n\nMaybe answer C: The two camels were facing each other the entire time. But that contradicts one facing East, one West. However if they are standing on the equator of a rotating planet, east/west directions could be opposite but still facing each other? Not.\n\nMaybe answer D: None of above. Likely lateral thinking:",
+      "C"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-57",
+    "question": "A sharpshooter hung up his hat and put on a blindfolded. He then walked 100 yards, turned around, and shot a bullet through his hat. The blindfolded was a perfectly good one, completely blocking the man's vision. How did he manage this?",
+    "correct_index": 1,
+    "correct_answer": "He hung his hat on the barrel of his gun.",
+    "majority_answer_idx": 1,
+    "majority_answer": "He hung his hat on the barrel of his gun.",
+    "correct": true,
+    "any_correct": true,
+    "votes": [
+      1,
+      1,
+      3,
+      1,
+      1
+    ],
+    "num_samples": 5,
+    "responses": [
+      "B",
+      "B",
+      "D",
+      "B",
+      "B"
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-58",
+    "question": "Two cops walked into a room with no windows and found a dead man who obviously hung himself from the ceiling, though they couldn't figure out how. There was no chair beneath him that he might have jumped off of, or a table. Just a paddle of water. How'd he do it?",
+    "correct_index": 1,
+    "correct_answer": "He stood on a block of ice until it melted.",
+    "majority_answer_idx": 3,
+    "majority_answer": "None of above.",
+    "correct": false,
+    "any_correct": false,
+    "votes": [
+      3,
+      3,
+      2,
+      3,
+      2
+    ],
+    "num_samples": 5,
+    "responses": [
+      "D",
+      "D",
+      "We need lateral thinking. Dead man hung himself from ceiling, no chair/table, just a paddle of water. How? Maybe he was on the floor and used a 'paddle' as a lever to lift himself? Or he stood on block of ice until melted. But no chair. Maybe he used a 'paddle' as a lever to lift his body? Or maybe the room had water and he used it to float, then jumped? Wait: He could have been on the floor, but hung from ceiling by his feet using a rope? The paddle of water could be a 'paddle' meaning a boat paddle. He could have used it as a lever to lift himself? Or the answer: He was on a 'paddle' of water i.e., floating in a pool, then jumped? But no chair.\n\nMaybe the trick: He was standing on the floor and used a 'paddle' of water to create a raft, then jumped? Hmm.\n\nOption A: He positioned himself. B: block of ice until melted. C: The man sat on the floor. D: None.\n\nMaybe answer is B? He stood on block of ice until melted, then fell onto ceiling? No.\n\nMaybe the answer is D: none above. But we need explanation.\n\nThink wordplay: \"paddle of water\" could be a 'boat paddle' used to propel a boat. He could have been on a small boat, in a room? No.\n\nMaybe the man was in a bathtub. He hung himself from ceiling using his feet on the floor? Wait: If he was in a bathtub, water could be used to float and then he jumped onto ceiling? No.\n\nMaybe the trick: He was on a 'paddle' meaning a 'pallet', but spelled wrong? He could have used a pallet to stand on.\n\nOption A: He positioned himself. Could be meaning he positioned his body in a way to hang from ceiling using rope tied to his waist? But no chair.\n\nMaybe answer C: The man sat on the floor. How could that lead to hanging? He sat on floor, then used rope tied to his ankles and hung from ceiling. But no chair needed.\n\nBut the puzzle says \"no chair beneath him that he might have jumped off of, or a table. Just a paddle of water.\" So maybe the trick: He was on the floor, but used a 'paddle' of water as a lever",
+      "D",
+      "We need lateral. He hung himself from ceiling with no chair or table, just a paddle of water. Maybe he used the word \"paddle\" meaning to paddle boat? Could be that he was a fisherman and used a rope from a boat. Or maybe \"paddle of water\" refers to a \"water paddle\" as in a fishing rod? Actually maybe he was a sailor on a ship, hanging from ceiling of a cabin. But puzzle: no chair beneath him that he might have jumped off of, or a table. Just a paddle of water. How did he do it? Answer choices: A He positioned himself. B stood on block of ice until melted. C sat on floor. D none above.\n\nProbably answer D: None of above. Because he used a rope from ceiling and hung himself, but no chair needed. The puzzle maybe trick: He was on a boat, the ceiling is the water surface? Or he used his own body weight? Wait: He hung himself from the ceiling, but no chair. How could he get up to reach rope? Maybe he was lying on the floor and used a ladder made of water? Hmm.\n\nMaybe \"paddle\" refers to a paddle in a boat. He was on a boat, the ceiling is the water surface? Actually if there's no windows, it's like inside a boat. He could have been on the floor of a boat and used a rope to climb up, but no chair.\n\nOption A: He positioned himself. That seems vague.\n\nMaybe the trick is that he was a \"painter\" and used his body to position himself on the ceiling? Or he was suspended by a rope from the ceiling and hung, but no chair needed. The puzzle: how did he do it? He used a rope and climbed up using the floor as a step. But no chair.\n\nMaybe answer D: None of above. Because he didn't need chair; he could have used a ladder or rope.\n\nBut puzzle expects lateral: He was on a boat, the ceiling is the water surface? Actually if it's a room with no windows, but there is a paddle of water: maybe the room is a boat. The man hung himself from the ceiling of a boat, but no chair; he used the paddle to get up? He could have stood on the water (paddle of water) like a floating platform. So he positioned himself on the paddle, then hung.\n\nThus answer A: He positioned"
+    ],
+    "model": "openai/gpt-oss:20b"
+  }
+]

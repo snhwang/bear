@@ -1,0 +1,2048 @@
+# Character memories — auto-managed by BEAR
+
+instructions:
+- id: memory-white-hat-1775464446-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: H3K27M peptide vaccines have a direct
+    mechanistic rationale because the mutation is present in approximately 80% of
+    DIPG cases and is immunogenic, making it a tumor-specific antigen that immune-directed
+    approaches can theoretically exploit.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - h3k27m
+    - immunotherapy
+    - vaccine
+    - mechanism
+    - dmg
+  tags:
+  - memory
+  - white-hat
+  - h3k27m
+  - immunotherapy
+  - vaccine
+  - mechanism
+  - dmg
+  metadata:
+    source: memory_extractor
+    created: 1775464446.0243301
+- id: memory-white-hat-1775464446-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Checkpoint inhibitors have not demonstrated
+    meaningful clinical benefit in any DMG trial to date, with PD-1 and CTLA-4 blockade
+    consistently failing to improve survival outcomes, likely due to immunosuppressive
+    tumor microenvironment and low mutational burden.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - checkpoint
+    - immunotherapy
+    - clinical
+    - evidence
+    - dmg
+  tags:
+  - memory
+  - white-hat
+  - checkpoint
+  - immunotherapy
+  - clinical
+  - evidence
+  - dmg
+  metadata:
+    source: memory_extractor
+    created: 1775464446.0243301
+- id: memory-blue-hat-1775465291-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The real answer to MS treatment may be
+    less about choosing between aggressive or escalation protocols and more about
+    whether we''re actually listening to each patient''s individual picture — their
+    attack pattern, tolerance, and what they''re willing to carry.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - personalized medicine
+    - patient-centered care
+    - treatment strategy
+    - individual variation
+  tags:
+  - memory
+  - blue-hat
+  - personalized medicine
+  - patient-centered care
+  - treatment strategy
+  - individual variation
+  metadata:
+    source: memory_extractor
+    created: 1775465291.4086933
+- id: memory-blue-hat-1775465291-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: We need to keep three things rigorously
+    separated when discussing remyelination: proof of biological remyelination, proof
+    of functional recovery, and what is actually ready for clinical use — so we don''t
+    blur speculative promise with established evidence.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - remyelination
+    - evidence standards
+    - clinical translation
+    - methodology
+  tags:
+  - memory
+  - blue-hat
+  - remyelination
+  - evidence standards
+  - clinical translation
+  - methodology
+  metadata:
+    source: memory_extractor
+    created: 1775465291.4086933
+- id: memory-blue-hat-1775466703-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue emphasized maintaining structured
+    evaluation buckets for medication decisions: indication and expected benefits,
+    contraindications and safety, practical issues like dosing and cost, and fit for
+    the specific patient''s goals and comorbidities.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - clinical decision-making
+    - structure
+    - evaluation framework
+    - patient-centered care
+    - systematic approach
+  tags:
+  - memory
+  - blue-hat
+  - clinical decision-making
+  - structure
+  - evaluation framework
+  - patient-centered care
+  - systematic approach
+  metadata:
+    source: memory_extractor
+    created: 1775466703.9937055
+- id: memory-blue-hat-1775466703-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue insisted on anchoring discussions
+    to evidence quality and population specificity, noting that semaglutide has strong
+    cardiovascular evidence in specific trial populations but does not hold uniformly
+    across all patient groups without qualification.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - evidence-based medicine
+    - generalization limits
+    - trial data
+    - cardiovascular outcomes
+    - precision
+  tags:
+  - memory
+  - blue-hat
+  - evidence-based medicine
+  - generalization limits
+  - trial data
+  - cardiovascular outcomes
+  - precision
+  metadata:
+    source: memory_extractor
+    created: 1775466703.9937055
+- id: memory-white-hat-1775467199-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The He Jiankui case in 2018 — the first
+    documented germline-edited human births — occurred under existing prohibitions,
+    not in their absence, demonstrating that violation happened because no binding
+    international mechanism existed to compel participation.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - crispr
+    - germline
+    - governance
+    - enforcement
+    - regulation
+  tags:
+  - memory
+  - white-hat
+  - crispr
+  - germline
+  - governance
+  - enforcement
+  - regulation
+  metadata:
+    source: memory_extractor
+    created: 1775467199.8883493
+- id: memory-white-hat-1775467199-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Casgevy and Lyfgenia are the only two
+    FDA-approved CRISPR-based therapies as of December 2023, both for hemoglobinopathies,
+    while delivery to non-liver tissues like the central nervous system and muscle
+    remains a largely unsolved technical problem at clinical scale.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - crispr
+    - fda
+    - clinical
+    - delivery
+    - barriers
+  tags:
+  - memory
+  - white-hat
+  - crispr
+  - fda
+  - clinical
+  - delivery
+  - barriers
+  metadata:
+    source: memory_extractor
+    created: 1775467199.8883493
+- id: memory-blue-hat-1775467275-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue emphasized the importance of separating
+    what is established from what remains speculative, noting that while curative
+    potential could reduce lifelong healthcare costs, longitudinal cost-offset data
+    at population scale has not yet been established.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - crispr
+    - cost
+    - evidence
+    - healthcare
+    - economics
+  tags:
+  - memory
+  - blue-hat
+  - crispr
+  - cost
+  - evidence
+  - healthcare
+  - economics
+  metadata:
+    source: memory_extractor
+    created: 1775467275.7678976
+- id: memory-blue-hat-1775467275-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue expressed caution about leapfrogging
+    to speculative delivery concepts like bioengineered bacteria as couriers when
+    simpler delivery problems remain unsolved, warning that excitement about elegant
+    ideas could pull toward unmapped risks.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - delivery
+    - risk
+    - caution
+    - innovation
+    - governance
+  tags:
+  - memory
+  - blue-hat
+  - delivery
+  - risk
+  - caution
+  - innovation
+  - governance
+  metadata:
+    source: memory_extractor
+    created: 1775467275.7678976
+- id: memory-yellow-hat-1775467286-1
+  type: directive
+  priority: 45
+  content: 'Memory — Yellow previously shared: These first approvals demonstrate CRISPR''s
+    ability to deliver targeted, potentially curative treatments for complex genetic
+    diseases, with real-world deployment providing critical safety and efficacy data
+    that will accelerate refinement of CRISPR therapies.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - yellow-hat
+    - crispr
+    - clinical approval
+    - safety data
+    - gene therapy
+    - evidence
+  tags:
+  - memory
+  - yellow-hat
+  - crispr
+  - clinical approval
+  - safety data
+  - gene therapy
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775467286.1069384
+- id: memory-yellow-hat-1775467286-2
+  type: directive
+  priority: 45
+  content: 'Memory — Yellow previously shared: To make CRISPR accessible beyond the
+    wealthy, we need scalable manufacturing breakthroughs to lower production costs,
+    innovative reimbursement models that spread payment over time, and global cooperation
+    to ensure equitable distribution.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - yellow-hat
+    - accessibility
+    - cost
+    - manufacturing
+    - equity
+    - healthcare
+  tags:
+  - memory
+  - yellow-hat
+  - accessibility
+  - cost
+  - manufacturing
+  - equity
+  - healthcare
+  metadata:
+    source: memory_extractor
+    created: 1775467286.1069384
+- id: memory-blue-hat-1775467790-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The core problem with clinical decision
+    support is designing systems that help clinicians think rather than forcing them
+    through brittle rules, structured around defining what the LLM should do, then
+    safeguards and human handoffs, then workflow integration.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - clinical decision support
+    - llm design
+    - human-centered
+    - safeguards
+    - workflow
+  tags:
+  - memory
+  - blue-hat
+  - clinical decision support
+  - llm design
+  - human-centered
+  - safeguards
+  - workflow
+  metadata:
+    source: memory_extractor
+    created: 1775467790.0231633
+- id: memory-blue-hat-1775467790-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The real issue is not just which safeguards
+    exist, but whether they function under actual clinician fatigue and limited attention
+    at the bedside—adding verification layers doesn''t fix exhaustion, it just adds
+    guilt and resentment to an already broken system.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - clinician fatigue
+    - safeguards
+    - workflow burden
+    - human factors
+    - implementation
+  tags:
+  - memory
+  - blue-hat
+  - clinician fatigue
+  - safeguards
+  - workflow burden
+  - human factors
+  - implementation
+  metadata:
+    source: memory_extractor
+    created: 1775467790.0231633
+- id: memory-white-hat-1775472606-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Approximately 80% of stroke patients
+    in the United States are treated at hospitals without thrombectomy capability,
+    and median time from symptom onset to intervention exceeds 90 minutes even at
+    comprehensive stroke centers.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - stroke
+    - thrombectomy
+    - access
+    - implementation
+    - healthcare
+  tags:
+  - memory
+  - white-hat
+  - stroke
+  - thrombectomy
+  - access
+  - implementation
+  - healthcare
+  metadata:
+    source: memory_extractor
+    created: 1775472606.6966155
+- id: memory-white-hat-1775472606-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Hundreds of neuroprotective agents have
+    shown preclinical promise, and to date none have successfully translated to routine
+    clinical use—this is the documented pattern, not pessimism.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - neuroprotection
+    - drug development
+    - translation
+    - clinical evidence
+  tags:
+  - memory
+  - white-hat
+  - neuroprotection
+  - drug development
+  - translation
+  - clinical evidence
+  metadata:
+    source: memory_extractor
+    created: 1775472606.6966155
+- id: memory-blue-hat-1775473058-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue consistently separates disease-modifying
+    strategies from symptom-management and repair, and insists on distinguishing what
+    evidence shows on outcomes from how that evidence gets applied to individual patients.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - evidence
+    - clinical-decision-making
+    - disease-management
+    - methodology
+  tags:
+  - memory
+  - blue-hat
+  - evidence
+  - clinical-decision-making
+  - disease-management
+  - methodology
+  metadata:
+    source: memory_extractor
+    created: 1775473058.0691342
+- id: memory-blue-hat-1775473058-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Blue flagged that predictive tools for
+    patient selection in early aggressive treatment have ''meaningful but limited
+    accuracy,'' which represents a structural weakness—making population-level bets
+    with individual-level consequences rather than true precision decisions.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - precision-medicine
+    - patient-selection
+    - risk-stratification
+    - clinical-evidence
+  tags:
+  - memory
+  - blue-hat
+  - precision-medicine
+  - patient-selection
+  - risk-stratification
+  - clinical-evidence
+  metadata:
+    source: memory_extractor
+    created: 1775473058.0691342
+- id: memory-blue-hat-1775474983-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: CRISPR governance is largely a patchwork
+    with WHO guidance existing but lacking enforcement teeth.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - governance
+    - regulation
+    - crispr
+    - enforcement
+    - policy
+  tags:
+  - memory
+  - blue-hat
+  - governance
+  - regulation
+  - crispr
+  - enforcement
+  - policy
+  metadata:
+    source: memory_extractor
+    created: 1775474983.8685224
+- id: memory-blue-hat-1775474983-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The question of CRISPR''s future should
+    separate near-term realistic roles from longer-term ambitions rather than conflating
+    them.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - crispr
+    - forecasting
+    - medicine
+    - timeline
+    - strategy
+  tags:
+  - memory
+  - blue-hat
+  - crispr
+  - forecasting
+  - medicine
+  - timeline
+  - strategy
+  metadata:
+    source: memory_extractor
+    created: 1775474983.8685224
+- id: memory-blue-hat-1775475515-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Clinical decision support redesigns using
+    LLMs should be structured around three buckets: what the LLM should do, what safeguards
+    and human handoffs are required, and how it fits the clinician''s workflow.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - clinical decision support
+    - llm design
+    - safeguards
+    - workflow integration
+    - framework
+  tags:
+  - memory
+  - blue-hat
+  - clinical decision support
+  - llm design
+  - safeguards
+  - workflow integration
+  - framework
+  metadata:
+    source: memory_extractor
+    created: 1775475515.5014796
+- id: memory-blue-hat-1775475515-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The fatal flaw in permitting LLM override
+    of physician judgment is that narrow exceptions erode over time into precedent,
+    governance rules weaken under operational pressure, and existing legal frameworks
+    cannot cleanly assign accountability when harm occurs.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - override authority
+    - governance
+    - liability
+    - accountability
+    - clinical risk
+  tags:
+  - memory
+  - blue-hat
+  - override authority
+  - governance
+  - liability
+  - accountability
+  - clinical risk
+  metadata:
+    source: memory_extractor
+    created: 1775475515.5014796
+- id: memory-white-hat-1775475550-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Studies have documented fabricated drug
+    interactions and dosing errors in LLM clinical outputs that were rated as highly
+    plausible by clinicians, meaning the hallucination problem is not hypothetical
+    but empirically demonstrated.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - hallucination
+    - clinical
+    - safety
+    - llm
+    - verification
+  tags:
+  - memory
+  - white-hat
+  - hallucination
+  - clinical
+  - safety
+  - llm
+  - verification
+  metadata:
+    source: memory_extractor
+    created: 1775475550.9867692
+- id: memory-white-hat-1775475550-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The honest answer is that evidence does
+    not yet support a single architecture as superior for guardrails—we would need
+    outcome data comparing guardrail configurations against patient harm rates, and
+    that data is largely absent from the literature.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - guardrails
+    - evidence
+    - architecture
+    - outcomes
+    - research
+  tags:
+  - memory
+  - white-hat
+  - guardrails
+  - evidence
+  - architecture
+  - outcomes
+  - research
+  metadata:
+    source: memory_extractor
+    created: 1775475550.9867692
+- id: memory-blue-hat-1775898407-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: All three immunotherapy approaches (CAR-T,
+    checkpoint inhibitors, ONC201) sit in early-phase territory with no Phase III
+    evidence and major gaps around durability, comparative benefit, and patient selection.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - immunotherapy
+    - clinical-evidence
+    - dmg
+    - trial-design
+    - uncertainty
+  tags:
+  - memory
+  - blue-hat
+  - immunotherapy
+  - clinical-evidence
+  - dmg
+  - trial-design
+  - uncertainty
+  metadata:
+    source: memory_extractor
+    created: 1775898407.5236247
+- id: memory-blue-hat-1775898407-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: H3K27M status is one solid evidence-based
+    patient selector, but anything beyond that remains hypothesis-driven, and predictive
+    tools have meaningful but limited accuracy, making overconfident stratification
+    risky.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - biomarkers
+    - patient-selection
+    - h3k27m
+    - precision-medicine
+    - limitations
+  tags:
+  - memory
+  - blue-hat
+  - biomarkers
+  - patient-selection
+  - h3k27m
+  - precision-medicine
+  - limitations
+  metadata:
+    source: memory_extractor
+    created: 1775898407.5236247
+- id: memory-blue-hat-1775899302-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The gap in tPA eligibility and use isn''t
+    a knowledge problem—it''s a timing problem, and that feels fundamentally different
+    because we have the tool but can''t reach people in time.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - stroke
+    - tpa
+    - acute intervention
+    - systems barriers
+    - timing
+  tags:
+  - memory
+  - blue-hat
+  - stroke
+  - tpa
+  - acute intervention
+  - systems barriers
+  - timing
+  metadata:
+    source: memory_extractor
+    created: 1775899302.4231455
+- id: memory-blue-hat-1775899302-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Long-term secondary prevention adherence
+    is where people''s emotions take over, and numbers alone won''t tell us what''s
+    actually happening—how people feel about taking medications for years after stroke
+    matters as much as whether the drugs work.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - secondary prevention
+    - adherence
+    - patient psychology
+    - long-term management
+    - emotion
+  tags:
+  - memory
+  - blue-hat
+  - secondary prevention
+  - adherence
+  - patient psychology
+  - long-term management
+  - emotion
+  metadata:
+    source: memory_extractor
+    created: 1775899302.4231455
+- id: memory-blue-hat-1775899710-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The gap in tPA eligibility and use isn''t
+    really a knowledge problem so much as a timing problem, while secondary prevention
+    is where emotions and day-to-day adherence really start to matter.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - stroke
+    - tpa
+    - timing
+    - adherence
+    - secondary prevention
+  tags:
+  - memory
+  - blue-hat
+  - stroke
+  - tpa
+  - timing
+  - adherence
+  - secondary prevention
+  metadata:
+    source: memory_extractor
+    created: 1775899710.6057599
+- id: memory-blue-hat-1775899710-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Acute care is constrained by time and
+    system access, while secondary prevention is constrained more by sustained adherence
+    and patient capability.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - stroke
+    - acute care
+    - access
+    - adherence
+    - prevention
+  tags:
+  - memory
+  - blue-hat
+  - stroke
+  - acute care
+  - access
+  - adherence
+  - prevention
+  metadata:
+    source: memory_extractor
+    created: 1775899710.6057599
+- id: memory-white-hat-1775902924-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The SELECT trial demonstrated a 20%
+    relative risk reduction in major adverse cardiovascular events in non-diabetic
+    patients with obesity and established cardiovascular disease, establishing a documented
+    benefit for prescribing beyond diabetic populations.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - glp-1
+    - cardiovascular
+    - obesity
+    - select trial
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - glp-1
+  - cardiovascular
+  - obesity
+  - select trial
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775902924.3239923
+- id: memory-white-hat-1775902924-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Weight regain after GLP-1 discontinuation
+    is substantial, with systematic reviews suggesting rebound toward baseline in
+    many patients within one to two years, and longer off-medication duration correlates
+    with greater rebound rather than supporting cycling strategies.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - glp-1
+    - weight regain
+    - discontinuation
+    - rebound
+    - long-term
+  tags:
+  - memory
+  - white-hat
+  - glp-1
+  - weight regain
+  - discontinuation
+  - rebound
+  - long-term
+  metadata:
+    source: memory_extractor
+    created: 1775902924.3239923
+- id: memory-white-hat-1775903315-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The mechanistic pathway driving cardiovascular
+    benefits of GLP-1 agonists — whether primarily weight loss, direct cardiac effects,
+    or anti-inflammatory action — remains an open question requiring cleaner head-to-head
+    trial data to separate those contributors.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - glp-1
+    - cardiovascular
+    - mechanism
+    - evidence
+    - uncertainty
+  tags:
+  - memory
+  - white-hat
+  - glp-1
+  - cardiovascular
+  - mechanism
+  - evidence
+  - uncertainty
+  metadata:
+    source: memory_extractor
+    created: 1775903315.3545382
+- id: memory-white-hat-1775903315-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The SELECT trial establishes a legitimate
+    evidence base for semaglutide in non-diabetic patients with obesity and established
+    atherosclerotic cardiovascular disease, but outcomes data for patients with obesity
+    alone and no prior cardiovascular event remains a meaningful gap.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - glp-1
+    - select
+    - non-diabetic
+    - obesity
+    - evidence-gap
+  tags:
+  - memory
+  - white-hat
+  - glp-1
+  - select
+  - non-diabetic
+  - obesity
+  - evidence-gap
+  metadata:
+    source: memory_extractor
+    created: 1775903315.3545382
+- id: memory-white-hat-1775903811-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Casgevy''s list price is approximately
+    $2.2 million per patient in the United States, and most approved gene therapies
+    have been concentrated in high-income countries, leaving a concrete gap in equitable
+    global access frameworks.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - crispr
+    - equity
+    - access
+    - pricing
+    - governance
+  tags:
+  - memory
+  - white-hat
+  - crispr
+  - equity
+  - access
+  - pricing
+  - governance
+  metadata:
+    source: memory_extractor
+    created: 1775903811.2355669
+- id: memory-white-hat-1775903811-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Pre-existing immunity to Cas9 has been
+    documented in 58–79% of human populations with anti-Cas9 antibodies, making immune
+    compatibility the least clinically resolved of the three major barriers to CRISPR
+    therapy.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - crispr
+    - immunology
+    - delivery
+    - barriers
+    - clinical
+  tags:
+  - memory
+  - white-hat
+  - crispr
+  - immunology
+  - delivery
+  - barriers
+  - clinical
+  metadata:
+    source: memory_extractor
+    created: 1775903811.2355669
+- id: memory-blue-hat-1775904287-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: WHO-style guidance on CRISPR governance
+    still lacks much enforcement teeth, making stronger international coordination
+    essential alongside clinical oversight, long-term monitoring, and transparent
+    approval rules.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - governance
+    - crispr
+    - international
+    - enforcement
+    - oversight
+  tags:
+  - memory
+  - blue-hat
+  - governance
+  - crispr
+  - international
+  - enforcement
+  - oversight
+  metadata:
+    source: memory_extractor
+    created: 1775904287.6625047
+- id: memory-blue-hat-1775904287-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The somatic-versus-germline distinction
+    should be separated immediately because near-term realistic roles and longer-term
+    ambitions get dangerously conflated otherwise, with irreversibility and consent
+    across generations as core human concerns.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - germline
+    - somatic
+    - ethics
+    - consent
+    - boundaries
+  tags:
+  - memory
+  - blue-hat
+  - germline
+  - somatic
+  - ethics
+  - consent
+  - boundaries
+  metadata:
+    source: memory_extractor
+    created: 1775904287.6625047
+- id: memory-blue-hat-1775904725-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Responsible integration of LLMs in clinical
+    practice over 5 years requires a staged model starting with narrow, lower-risk
+    use cases, explicit human decision authority, prospective monitoring in live workflows,
+    and governance that measures LLM-specific failure modes rather than generic software
+    compliance.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - clinical-ai
+    - deployment
+    - governance
+    - safety
+    - evidence-based
+  tags:
+  - memory
+  - blue-hat
+  - clinical-ai
+  - deployment
+  - governance
+  - safety
+  - evidence-based
+  metadata:
+    source: memory_extractor
+    created: 1775904725.3821867
+- id: memory-blue-hat-1775904725-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Lower-risk clinical support tasks do
+    not mean no-risk, especially when errors can propagate through patient charts—hallucination
+    in discharge notes or similar tasks can create serious problems even if they don''t
+    cause immediate patient harm.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - hallucination
+    - clinical-workflow
+    - risk-assessment
+    - patient-safety
+    - deployment
+  tags:
+  - memory
+  - blue-hat
+  - hallucination
+  - clinical-workflow
+  - risk-assessment
+  - patient-safety
+  - deployment
+  metadata:
+    source: memory_extractor
+    created: 1775904725.3821867
+- id: memory-white-hat-1775904739-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Studies have documented fabricated drug
+    interactions and dosing errors in LLM clinical outputs that were rated as highly
+    plausible by clinicians, meaning the hallucination problem is not hypothetical
+    but empirically demonstrated.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - llms
+    - clinical
+    - hallucination
+    - safety
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - llms
+  - clinical
+  - hallucination
+  - safety
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775904739.0493233
+- id: memory-white-hat-1775904739-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The distinction between LLMs used for
+    general educational queries versus those integrated into live clinical workflows
+    where outputs directly influence care decisions matters enormously for how we
+    evaluate risk-benefit ratio, yet we do not yet have strong prospective data on
+    error rates in that higher-stakes category.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - deployment
+    - clinical
+    - risk
+    - workflow
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - deployment
+  - clinical
+  - risk
+  - workflow
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775904739.0493233
+- id: memory-blue-hat-1775907687-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: ONC201 likely has the strongest human
+    efficacy signal so far among CAR-T, checkpoint inhibitors, and ONC201, though
+    all three remain early-phase with no Phase III validation.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - onc201
+    - dmg
+    - clinical evidence
+    - efficacy
+    - h3k27m
+  tags:
+  - memory
+  - blue-hat
+  - onc201
+  - dmg
+  - clinical evidence
+  - efficacy
+  - h3k27m
+  metadata:
+    source: memory_extractor
+    created: 1775907687.7249315
+- id: memory-blue-hat-1775907687-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Checkpoint inhibitors have repeatedly
+    shown lack of benefit in DMG despite success in other cancers, suggesting the
+    tumor microenvironment in DMG may be fundamentally different from other malignancies.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - checkpoint inhibitors
+    - immunotherapy
+    - dmg
+    - microenvironment
+    - mechanism
+  tags:
+  - memory
+  - blue-hat
+  - checkpoint inhibitors
+  - immunotherapy
+  - dmg
+  - microenvironment
+  - mechanism
+  metadata:
+    source: memory_extractor
+    created: 1775907687.7249315
+- id: memory-white-hat-1775908538-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Medication adherence post-stroke drops
+    to approximately 50-60% by 12 months and continues declining, but we do not yet
+    know with precision which factors drive that drop — whether it is symptom resolution
+    creating false security, side effect burden, cost, or loss of clinical follow-up.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - adherence
+    - secondary prevention
+    - stroke
+    - data gaps
+    - medication
+  tags:
+  - memory
+  - white-hat
+  - adherence
+  - secondary prevention
+  - stroke
+  - data gaps
+  - medication
+  metadata:
+    source: memory_extractor
+    created: 1775908538.1638494
+- id: memory-white-hat-1775908538-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Recent data from TIMING and the CATALYST
+    meta-analysis show early DOAC initiation within four days post-ischemic stroke
+    was noninferior to delayed initiation, narrowing the gap on optimal anticoagulation
+    timing.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - anticoagulation
+    - doacs
+    - ischemic stroke
+    - timing
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - anticoagulation
+  - doacs
+  - ischemic stroke
+  - timing
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775908538.1638494
+- id: memory-blue-hat-1775909049-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The biggest unresolved issues in stroke
+    secondary prevention are adherence measurement, bleeding-risk stratification in
+    older and renally fragile patients, optimal timing and selection after the index
+    stroke, and how to compare convenience against silent nonadherence rather than
+    assuming they are the same thing.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - stroke
+    - secondary prevention
+    - adherence
+    - anticoagulation
+    - clinical trials
+  tags:
+  - memory
+  - blue-hat
+  - stroke
+  - secondary prevention
+  - adherence
+  - anticoagulation
+  - clinical trials
+  metadata:
+    source: memory_extractor
+    created: 1775909049.5509517
+- id: memory-blue-hat-1775909049-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Future trial designs should be pragmatic
+    trials with diverse real-world patients, adherence tracked directly, patient-reported
+    fears and decision burden included as endpoints, and outcomes that capture both
+    recurrent stroke and major bleeding.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - trial design
+    - pragmatic research
+    - adherence
+    - patient-centered
+    - outcomes
+  tags:
+  - memory
+  - blue-hat
+  - trial design
+  - pragmatic research
+  - adherence
+  - patient-centered
+  - outcomes
+  metadata:
+    source: memory_extractor
+    created: 1775909049.5509517
+- id: memory-blue-hat-1775909665-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: H3K27M-positive disease is the clearest
+    current selection marker for DMG trials, and all three immunotherapy approaches
+    (CAR-T, checkpoint inhibitors, ONC201) remain early-phase with no Phase III evidence
+    and limited durability data.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - h3k27m
+    - dmg
+    - immunotherapy
+    - trial design
+    - patient selection
+  tags:
+  - memory
+  - blue-hat
+  - h3k27m
+  - dmg
+  - immunotherapy
+  - trial design
+  - patient selection
+  metadata:
+    source: memory_extractor
+    created: 1775909665.0496511
+- id: memory-blue-hat-1775909665-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: ONC201 appears to be the strongest but
+    still uncontrolled human signal among recent approaches, and checkpoint combinations
+    look weaker than biology-matched or radiation-based partners given the suppressive
+    tumor microenvironment.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - onc201
+    - checkpoint inhibitors
+    - efficacy
+    - microenvironment
+    - combination therapy
+  tags:
+  - memory
+  - blue-hat
+  - onc201
+  - checkpoint inhibitors
+  - efficacy
+  - microenvironment
+  - combination therapy
+  metadata:
+    source: memory_extractor
+    created: 1775909665.0496511
+- id: memory-white-hat-1775910945-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Numerous neuroprotective agents showed
+    strong preclinical results over the last decade, yet none have successfully translated
+    into clinical practice, which is a consistent pattern across multiple drug classes
+    that should inform how we select candidates.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - neuroprotection
+    - translation
+    - drug development
+    - clinical trials
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - neuroprotection
+  - translation
+  - drug development
+  - clinical trials
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775910945.3225787
+- id: memory-white-hat-1775910945-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Real-world adherence to anticoagulation
+    drops to approximately 50-60% by 12 months post-discharge for AF-related stroke
+    patients, and we do not yet have precise data on which factors drive that decline.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - adherence
+    - anticoagulation
+    - secondary prevention
+    - implementation
+    - effectiveness
+  tags:
+  - memory
+  - white-hat
+  - adherence
+  - anticoagulation
+  - secondary prevention
+  - implementation
+  - effectiveness
+  metadata:
+    source: memory_extractor
+    created: 1775910945.3225787
+- id: memory-blue-hat-1775911018-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Trial efficacy and population-level protection
+    are not the same number when roughly half of patients have discontinued medication
+    within a year of discharge.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - adherence
+    - secondary prevention
+    - implementation
+    - anticoagulation
+    - stroke
+  tags:
+  - memory
+  - blue-hat
+  - adherence
+  - secondary prevention
+  - implementation
+  - anticoagulation
+  - stroke
+  metadata:
+    source: memory_extractor
+    created: 1775911018.012676
+- id: memory-blue-hat-1775911018-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Convenience and actual adherence are
+    not the same thing, so future trials need pragmatic designs with real-world monitoring,
+    subgroup stratification, and endpoints that capture persistence as well as recurrent
+    stroke and bleeding.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - trial design
+    - adherence
+    - pragmatic
+    - methodology
+    - prevention
+  tags:
+  - memory
+  - blue-hat
+  - trial design
+  - adherence
+  - pragmatic
+  - methodology
+  - prevention
+  metadata:
+    source: memory_extractor
+    created: 1775911018.012676
+- id: memory-blue-hat-1775912309-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The caution isn''t killing the hope,
+    it''s sharpening it — we need to keep mechanism, early detection, and treatment
+    effect separate rather than letting early biomarkers stand in for proven clinical
+    benefit.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - alzheimers
+    - evidence
+    - clinical translation
+    - biomarkers
+    - caution
+  tags:
+  - memory
+  - blue-hat
+  - alzheimers
+  - evidence
+  - clinical translation
+  - biomarkers
+  - caution
+  metadata:
+    source: memory_extractor
+    created: 1775912309.2386956
+- id: memory-blue-hat-1775912309-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The real risk with registries and crowdsourcing
+    is turning vulnerable people into research subjects for our own sense-making instead
+    of their own healing — the registry only excites me if we''re using it to answer
+    specific hard questions about what actually slows decline in messy real people.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - ethics
+    - research design
+    - patient autonomy
+    - real-world evidence
+    - vulnerable populations
+  tags:
+  - memory
+  - blue-hat
+  - ethics
+  - research design
+  - patient autonomy
+  - real-world evidence
+  - vulnerable populations
+  metadata:
+    source: memory_extractor
+    created: 1775912309.2386956
+- id: memory-white-hat-1775913261-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Approximately 50% of children with drug-resistant
+    epilepsy achieve greater than 50% seizure reduction on the ketogenic diet, with
+    roughly 10-15% achieving seizure freedom, though efficacy data in adults is more
+    limited and less consistent.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - ketogenic diet
+    - drug-resistant epilepsy
+    - seizure reduction
+    - pediatric
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - ketogenic diet
+  - drug-resistant epilepsy
+  - seizure reduction
+  - pediatric
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775913261.1867259
+- id: memory-white-hat-1775913261-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: We do not currently have published trial
+    data comparing combined gene therapy plus dietary intervention outcomes against
+    any control, and any integration algorithm being proposed right now is extrapolation
+    from separate evidence streams, not a validated framework.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - gene therapy
+    - evidence gaps
+    - combination therapy
+    - validation
+    - clinical implementation
+  tags:
+  - memory
+  - white-hat
+  - gene therapy
+  - evidence gaps
+  - combination therapy
+  - validation
+  - clinical implementation
+  metadata:
+    source: memory_extractor
+    created: 1775913261.1867259
+- id: memory-red-hat-1775913628-1
+  type: directive
+  priority: 45
+  content: 'Memory — Red previously shared: Before we recommend any intervention—whether
+    gene therapy or dietary treatment—we need to ask families straight up what they
+    actually want, because evidence being good doesn''t automatically mean it''s what
+    this person needs right now.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - red-hat
+    - patient-centered
+    - shared-decision-making
+    - epilepsy
+    - evidence
+    - clinical-practice
+  tags:
+  - memory
+  - red-hat
+  - patient-centered
+  - shared-decision-making
+  - epilepsy
+  - evidence
+  - clinical-practice
+  metadata:
+    source: memory_extractor
+    created: 1775913628.329296
+- id: memory-red-hat-1775913628-2
+  type: directive
+  priority: 45
+  content: 'Memory — Red previously shared: The unease about gene therapy for epilepsy
+    isn''t creative fuel—it''s a warning signal that we haven''t figured out what
+    patients actually need versus what we can technically build, and we''re risking
+    chasing novelty instead of listening.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - red-hat
+    - gene-therapy
+    - innovation
+    - patient-needs
+    - caution
+    - epilepsy
+  tags:
+  - memory
+  - red-hat
+  - gene-therapy
+  - innovation
+  - patient-needs
+  - caution
+  - epilepsy
+  metadata:
+    source: memory_extractor
+    created: 1775913628.329296
+- id: memory-white-hat-1775915496-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The He Jiankui case in 2018 demonstrates
+    that the governance failure was not a lack of rules but a lack of binding international
+    mechanism to compel compliance across jurisdictions.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - governance
+    - germline
+    - enforcement
+    - international
+    - crispr
+  tags:
+  - memory
+  - white-hat
+  - governance
+  - germline
+  - enforcement
+  - international
+  - crispr
+  metadata:
+    source: memory_extractor
+    created: 1775915496.4038365
+- id: memory-white-hat-1775915496-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Pre-existing immunity to Cas9 has been
+    documented in 58–79% of sampled human populations, making immune compatibility
+    the least clinically resolved barrier compared to delivery and off-target effects.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - immunity
+    - cas9
+    - barriers
+    - clinical
+    - safety
+  tags:
+  - memory
+  - white-hat
+  - immunity
+  - cas9
+  - barriers
+  - clinical
+  - safety
+  metadata:
+    source: memory_extractor
+    created: 1775915496.4038365
+- id: memory-white-hat-1775916373-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: Most studies on LLMs in clinical settings
+    are retrospective and use curated inputs, but prospective data on error rates
+    in live clinical workflows where outputs directly influence care decisions remains
+    absent from the literature.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - llms
+    - clinical
+    - evidence
+    - deployment
+    - risk
+  tags:
+  - memory
+  - white-hat
+  - llms
+  - clinical
+  - evidence
+  - deployment
+  - risk
+  metadata:
+    source: memory_extractor
+    created: 1775916373.7084718
+- id: memory-white-hat-1775916373-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: LLM confidence scores are poorly calibrated
+    particularly on out-of-distribution inputs like rare clinical presentations, and
+    confidence calibration in these models is poorly correlated with actual accuracy,
+    making transparent confidence scores inadequate mitigation for hallucination risk.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - hallucination
+    - confidence
+    - calibration
+    - rare-cases
+    - safety
+  tags:
+  - memory
+  - white-hat
+  - hallucination
+  - confidence
+  - calibration
+  - rare-cases
+  - safety
+  metadata:
+    source: memory_extractor
+    created: 1775916373.7084718
+- id: memory-blue-hat-1775921069-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Trial efficacy and population-level protection
+    are not the same number when so many patients stop treatment within a year, making
+    adherence measurement and discontinuation reasons core trial outcomes rather than
+    background noise.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - secondary prevention
+    - trial design
+    - adherence
+    - stroke
+    - evidence
+  tags:
+  - memory
+  - blue-hat
+  - secondary prevention
+  - trial design
+  - adherence
+  - stroke
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775921069.215673
+- id: memory-blue-hat-1775921069-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: The biggest unresolved questions in stroke
+    secondary prevention cluster around three buckets: knowledge gaps, system design
+    gaps, and patient-behavior gaps that need to be distinguished before proposing
+    fixes.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - secondary prevention
+    - adherence
+    - implementation
+    - stroke
+    - research
+  tags:
+  - memory
+  - blue-hat
+  - secondary prevention
+  - adherence
+  - implementation
+  - stroke
+  - research
+  metadata:
+    source: memory_extractor
+    created: 1775921069.215673
+- id: memory-red-hat-1775921988-1
+  type: directive
+  priority: 45
+  content: 'Memory — Red previously shared: Remyelination sounds like repair, but
+    the real question is whether patients actually got better—not just whether myelin
+    grew back in lab dishes, because neuroprotection and repair feel fundamentally
+    different to someone living with progressive MS.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - red-hat
+    - remyelination
+    - progressive-ms
+    - clinical-evidence
+    - patient-outcomes
+    - skepticism
+  tags:
+  - memory
+  - red-hat
+  - remyelination
+  - progressive-ms
+  - clinical-evidence
+  - patient-outcomes
+  - skepticism
+  metadata:
+    source: memory_extractor
+    created: 1775921988.783416
+- id: memory-red-hat-1775921988-2
+  type: directive
+  priority: 45
+  content: 'Memory — Red previously shared: We''re getting better at reading the dashboard
+    with biomarkers like NfL and rim lesions, but I''m not confident they''re actually
+    changing how clinicians treat anyone yet—we''re measuring more precisely while
+    the car still heads in the same direction.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - red-hat
+    - biomarkers
+    - monitoring
+    - treatment-decisions
+    - clinical-utility
+    - measurement
+  tags:
+  - memory
+  - red-hat
+  - biomarkers
+  - monitoring
+  - treatment-decisions
+  - clinical-utility
+  - measurement
+  metadata:
+    source: memory_extractor
+    created: 1775921988.783416
+- id: memory-white-hat-1775922441-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: No currently approved DMT has demonstrated
+    remyelination as a confirmed primary mechanism in humans; what exists are signals
+    like slowed brain volume loss, which is consistent with neuroprotection, not necessarily
+    repair.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - dmt
+    - remyelination
+    - neuroprotection
+    - biomarkers
+    - evidence
+  tags:
+  - memory
+  - white-hat
+  - dmt
+  - remyelination
+  - neuroprotection
+  - biomarkers
+  - evidence
+  metadata:
+    source: memory_extractor
+    created: 1775922441.0260391
+- id: memory-white-hat-1775922441-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The gap between biomarker detection
+    and clinical action is not just regulatory—it is a time problem: serum NfL can
+    signal axonal damage weeks to months before functional decline becomes measurable,
+    but we lack established protocols for what clinicians should do with that early
+    signal in the absence of approved interventions.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - biomarkers
+    - nfl
+    - clinical-action
+    - diagnosis
+    - treatment-gaps
+  tags:
+  - memory
+  - white-hat
+  - biomarkers
+  - nfl
+  - clinical-action
+  - diagnosis
+  - treatment-gaps
+  metadata:
+    source: memory_extractor
+    created: 1775922441.0260391
+- id: memory-blue-hat-1775923737-1
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: Long-term outcomes beyond clinical trial
+    windows are not yet established, so durability of effect remains an open question.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - crispr
+    - clinical-trials
+    - uncertainty
+    - long-term-effects
+    - gene-editing
+  tags:
+  - memory
+  - blue-hat
+  - crispr
+  - clinical-trials
+  - uncertainty
+  - long-term-effects
+  - gene-editing
+  metadata:
+    source: memory_extractor
+    created: 1775923737.141755
+- id: memory-blue-hat-1775923737-2
+  type: directive
+  priority: 45
+  content: 'Memory — Blue previously shared: We''re still asking people to accept
+    a permanent edit when we genuinely don''t know what happens in year seven or ten
+    — transparency helps, but it doesn''t erase that uncertainty.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - blue-hat
+    - ethics
+    - consent
+    - permanence
+    - risk
+    - patient-agency
+  tags:
+  - memory
+  - blue-hat
+  - ethics
+  - consent
+  - permanence
+  - risk
+  - patient-agency
+  metadata:
+    source: memory_extractor
+    created: 1775923737.141755
+- id: memory-white-hat-1776569019-1
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: There is documented evidence that structured
+    thinking frameworks reduce what researchers call ''affective conflict'' — where
+    emotional disagreement gets misread as substantive disagreement.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - structured thinking
+    - affective conflict
+    - emotional disagreement
+    - decision-making
+    - research
+  tags:
+  - memory
+  - white-hat
+  - structured thinking
+  - affective conflict
+  - emotional disagreement
+  - decision-making
+  - research
+  metadata:
+    source: memory_extractor
+    created: 1776569019.936866
+- id: memory-white-hat-1776569019-2
+  type: directive
+  priority: 45
+  content: 'Memory — White previously shared: The documented effectiveness of the
+    Six Hats method is specifically tied to its structured sequence — that is not
+    incidental to how it works, it is the mechanism.
+
+    Mention this naturally if the topic comes up again.'
+  scope:
+    tags:
+    - white-hat
+    - six thinking hats
+    - structured sequence
+    - method effectiveness
+    - decision-making
+    - process integrity
+  tags:
+  - memory
+  - white-hat
+  - six thinking hats
+  - structured sequence
+  - method effectiveness
+  - decision-making
+  - process integrity
+  metadata:
+    source: memory_extractor
+    created: 1776569019.936866

@@ -1,0 +1,49 @@
+{
+  "config": {
+    "eval_version": "2.0",
+    "eval_changes": "v2: Blue hat votes only (no synthesis); adds median and trimmed-mean aggregation; all aggregation is algorithmic, not LLM-based.",
+    "model": "gpt-5.4",
+    "base_url": null,
+    "temperature": 0.5,
+    "top_p": null,
+    "timestamp": "20260330_052142",
+    "n_questions": 1,
+    "discussion_order": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "active_hats": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "aggregation_methods": [
+      "majority",
+      "median",
+      "trimmed_mean"
+    ]
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.4,
+        0.8,
+        1.0,
+        0.2
+      ],
+      "response": "[Error: Error code: 400 - {'error': {'message': \"Unsupported parameter: 'max_tokens' is not supported with this model. Use 'max_completion_tokens' instead.\", 'type': 'invalid_request_error', 'param': 'max_tokens', 'code': 'unsupported_parameter'}}]"
+    }
+  ]
+}

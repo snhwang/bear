@@ -1,0 +1,38 @@
+{
+  "topic": "epilepsy",
+  "condition": "bear",
+  "started": "2026-04-11 11:56:25",
+  "last_updated": "2026-04-11 12:02:15",
+  "elapsed_seconds": 349.5,
+  "n_turns": 37,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 52,
+  "n_diffusion_skipped": 18,
+  "ingestions": [
+    {
+      "time": "11:57:38",
+      "turn": 8,
+      "hat": "White",
+      "title": "Epilepsy%20as%20a%20dynamic%20disease",
+      "chunks": 35
+    },
+    {
+      "time": "11:59:30",
+      "turn": 20,
+      "hat": "White",
+      "title": "State-of-the-art%20gene%20therapy%20in%20epilepsy",
+      "chunks": 36
+    },
+    {
+      "time": "12:00:40",
+      "turn": 27,
+      "hat": "White",
+      "title": "mishra%20drug%20resistant%20epilepsy%20and%20ketogenic%20diet",
+      "chunks": 37
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_115625.md",
+  "completed": true,
+  "ended": "2026-04-11 12:02:25",
+  "duration_seconds": 359.1
+}

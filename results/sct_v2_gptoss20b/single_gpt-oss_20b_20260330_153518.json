@@ -1,0 +1,2472 @@
+{
+  "config": {
+    "eval_version": "2.0",
+    "eval_changes": "v2: Blue hat votes only (no synthesis); adds median and trimmed-mean aggregation; all aggregation is algorithmic, not LLM-based.",
+    "model": "gpt-oss:20b",
+    "base_url": "http://192.168.1.176:11434/v1",
+    "temperature": 0.5,
+    "top_p": null,
+    "timestamp": "20260330_153518",
+    "n_questions": 174,
+    "discussion_order": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "active_hats": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "aggregation_methods": [
+      "majority",
+      "median",
+      "trimmed_mean"
+    ],
+    "rounds": 1
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.4,
+        0.8,
+        1.0,
+        0.2
+      ],
+      "response": "We need to evaluate how new information (diffuse coarse crackles in both lungs) affects the likelihood of the hypothesis: ordering a blood culture. The hypothesis is \"Ordering a blood culture\" i.e., the clinician is considering ordering a blood culture. The new information is that the patient has diffuse coarse crackles in both lungs. How does that affect the likelihood that we should order a blood culture? In a post-op patient with SOB, O2 sat 93% on 10L, crackles bilaterally. Could be pneumonia, pulmonary edema, ARDS, etc. Blood cultures are indicated for suspected infection, especially if sepsis or pneumonia. Diffuse crackles could suggest pulmonary edema or pneumonia. In a post-op patient with SOB, crackles, maybe pulmonary edema due to heart failure exacerbation. But also could be pneumonia. Blood cultures are more indicated if infection suspected. Diffuse crackles could be pulmonary edema, but also pneumonia. The presence of crackles might increase suspicion of pneumonia, which would increase the likelihood of ordering blood cultures. However, if it's pulmonary edema, blood cultures might not be indicated. But the presence of crackles is a sign of lung involvement. The question: does this new information make ordering a blood culture more or less likely? The scenario: 66-year-old male post-op, SOB, O2 sat 93% on 10L, mild fever 37.5. Diffuse coarse crackles bilaterally. That suggests pulmonary edema or pneumonia. In either case, blood cultures might be considered if infection suspected. But the presence of crackles might increase suspicion of pneumonia, thus increase likelihood of ordering blood cultures. But also could be heart failure exacerbation. But the patient has heart failure history. But the presence of crackles could be due to pulmonary edema. But the question: \"If you were thinking of: Ordering a blood culture\" - the hypothesis is that we are considering ordering a blood culture."
+    },
+    {
+      "question_id": 2,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.8,
+        0.6,
+        1.0
+      ],
+      "response": "The normal chest X\u2011ray does not significantly alter the suspicion for a pulmonary embolism in this postoperative patient. A normal CXR is common in PE and does not rule it out, so the likelihood of ordering a CTPA remains unchanged.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 3,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.2,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new info (pallor before loss of consciousness) affects the likelihood of the hypothesis: ordering an EEG. The hypothesis is that we think of ordering an EEG. The new info: patient went very pale before losing consciousness. Does pallor suggest syncope due to vasovagal or orthostatic hypotension, or maybe cardiac arrhythmia? Pallor is often seen in vasovagal syncope, orthostatic hypotension, or cardiac arrhythmia. EEG is used to evaluate seizures. The presence of pallor might suggest a non-epileptic cause of syncope, making seizure less likely. So ordering an EEG might be less likely. So rating: -1 or -2? The friend reports patient went very pale before losing consciousness. That is a sign of vasovagal syncope or orthostatic hypotension. That reduces suspicion of seizure. So the new info makes the hypothesis less likely. How much? Slightly less likely? The pallor is a fairly specific sign for syncope. So maybe -1 or -2. The question: \"Think through how the new information affects the hypothesis, then provide your rating.\" The new info is a sign that might reduce suspicion of seizure. So rating -1. But could it be -2? The friend reports pallor before loss of consciousness. That is a classic sign of vasovagal syncope. That strongly suggests syncope rather than seizure. So ordering an EEG might be less likely. I'd say -1 or -2. The difference: -2 is \"much less likely.\" The presence of pallor is a fairly strong indicator of syncope. So I'd lean -2. But the scenario also includes jerking movements during the brief loss. That could be a seizure. But pallor is more typical of syncope. So the new info reduces suspicion of seizure. I'd rate -1? The question: \"new information makes the hypothesis slightly less"
+    },
+    {
+      "question_id": 4,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (she had a stroke 1 year ago, workup revealed no arrhythmias) affects the likelihood of the hypothesis: ordering a Holter monitor. The hypothesis is that we should order a Holter monitor. The new info: prior stroke, no arrhythmias found. Does that make ordering a Holter more or less likely? The patient had a stroke, but no arrhythmias found. The current event: witnessed collapse, brief loss of consciousness, jerking movements. Could be syncope due to arrhythmia or other cause. The prior workup found no arrhythmias, but that was a year ago. The new event might still be arrhythmia. But the prior negative workup might reduce suspicion? But the event is new, and Holter could still be useful to detect arrhythmia. However, the prior negative Holter suggests low probability of arrhythmia? But the prior workup might have been a different test (maybe Holter or event monitor). The question: \"She had a stroke 1 year ago, the workup for which revealed no arrhythmias.\" That suggests that arrhythmias were considered as cause of stroke but not found. That might reduce the likelihood that arrhythmia is causing current syncope? But still possible. The new info might slightly reduce the likelihood of ordering Holter? But the event is new, and Holter is still indicated for unexplained syncope. The prior negative workup might not rule out arrhythmia now. But the fact that she had a stroke might increase suspicion of cardioembolic source? But no arrhythmias found. So maybe the new info slightly reduces the likelihood of ordering Holter? But the event is new, so still consider Holter. The prior negative workup might reduce the probability that arrhythmia is the cause, but not eliminate. So the new info might slightly reduce the likelihood of ordering Holter."
+    },
+    {
+      "question_id": 5,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "We need to evaluate how new information (severe motion sickness) affects the likelihood of the hypothesis: recommending sumatriptan. The scenario: 25-year-old female with headache, poorly localized, 2 days, not relieved by paracetamol/NSAIDs, frequent headaches over last month, BMI 32, neuro exam normal, CT normal. Hypothesis: recommending sumatriptan. New info: severe motion sickness.\n\nWe need to consider whether severe motion sickness is a contraindication or relative contraindication to sumatriptan. Sumatriptan is a triptan used for migraine. Contraindications: cardiovascular disease, uncontrolled hypertension, ischemic heart disease, stroke, etc. Motion sickness is not a direct contraindication. However, severe motion sickness might indicate that the headache could be vestibular migraine or motion sickness related. But sumatriptan can be used for vestibular migraine? Possibly. But severe motion sickness might be a side effect of triptans? Triptans can cause nausea, but not motion sickness. But if she has severe motion sickness, she might be prone to nausea and vomiting, which could be worsened by sumatriptan. But is that a reason to avoid sumatriptan? Not necessarily. But if she has severe motion sickness, she might have vestibular migraine, which can be treated with triptans. So the new info might slightly increase the likelihood that sumatriptan is appropriate? Or maybe not. Let's think.\n\nSumatriptan is indicated for migraine with or without aura. It can be used for vestibular migraine. Severe motion sickness might be a symptom of vestibular migraine. So sumatriptan might be beneficial. But also, severe motion sickness might cause nausea, which is a side effect of sumatriptan. But the question: \"Think through how the new information affects the hypothesis.\" The hypothesis is recommending sumatriptan. The new info: severe motion sickness"
+    },
+    {
+      "question_id": 6,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of bilateral papilledema strongly suggests increased intracranial pressure, which is a key indication for performing a lumbar puncture to measure opening pressure and to help diagnose conditions such as idiopathic intracranial hypertension. Given that the CT is normal and no mass lesion is identified, the risk of herniation is low, making LP a reasonable next step. Thus, this new information makes the hypothesis of performing a lumbar puncture much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 7,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "We need to evaluate how new information affects the likelihood of the hypothesis: \"Ordering a head CT\". The scenario: 67-year-old male with memory issues, broad-based unsteady gait. Hypothesis: ordering a head CT. New info: He had a fall 3 months ago that required no follow-up because he felt \"fine\" after getting up.\n\nWe need to think: Does this new info make ordering a head CT more or less likely? The fall could be due to underlying brain pathology (e.g., stroke, tumor, atrophy). But he had no follow-up, felt fine. That might suggest that the fall was not due to a serious intracranial bleed or mass. But memory issues and gait unsteadiness could be due to neurodegenerative disease (e.g., Parkinson's, normal pressure hydrocephalus, dementia). A head CT could be useful to rule out structural lesions. The fall 3 months ago might be a red flag for possible intracranial pathology, but the fact that he felt fine might reduce suspicion of acute bleed. However, a CT could still be indicated to evaluate for chronic changes, atrophy, hydrocephalus, etc. The new info might slightly increase suspicion of underlying brain pathology, but also might reduce urgency? The hypothesis is ordering a head CT. The new info: fall 3 months ago, no follow-up, felt fine. That suggests that the fall was not due to a serious acute event. But the presence of a fall in an older adult with memory issues and gait problems is a red flag for possible neurodegenerative disease or structural brain disease. So ordering a head CT remains reasonable. Does the new info increase or decrease the likelihood? The fall might support the need for imaging to rule out structural causes. But the fact that he felt fine might reduce the urgency but not the need. The question: \"If you were thinking of: Ordering a head CT\" - the new info:"
+    },
+    {
+      "question_id": 8,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "We need to evaluate how new information affects the hypothesis: \"Trialling an SSRI\" for this patient. The scenario: 67-year-old male with memory problems, broad-based unsteady gait. Hypothesis: trialing an SSRI. New info: During cognitive testing he refuses to engage, simply stating \"I can't\". That indicates possible depression, apathy, or cognitive impairment. SSRIs are used for depression, sometimes for mild cognitive impairment? But memory issues and gait unsteadiness might be due to Parkinson's disease, normal pressure hydrocephalus, or other neurodegenerative disease. The refusal to engage could be due to depression, but also could be due to cognitive impairment. SSRIs might help depression but not memory or gait. The new info: refusal to engage might suggest depression or apathy, which SSRIs could treat. But also could be a sign of severe cognitive impairment, making SSRI less likely to help. The question: does this new info make the hypothesis more or less likely? The hypothesis is \"Trialling an SSRI\". The new info: patient refuses to engage. That might indicate depression, which SSRIs treat. But also indicates that the patient may not be able to comply with therapy. SSRIs require adherence. If he refuses to engage, he might not take medication. So the new info might reduce the likelihood of trialing an SSRI because of poor compliance. But also could support depression. But the scenario: memory issues, gait unsteadiness. Could be early Parkinson's or dementia. SSRIs are not first-line for memory or gait. So the new info might not strongly support SSRI. The refusal to engage might be a sign of depression, but also could be due to cognitive impairment. The question: \"Think through how the new information affects the hypothesis.\" We need to rate: -2, -1, 0, +1, +2. Likely the new info makes the hypothesis slightly"
+    },
+    {
+      "question_id": 9,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "In disc prolapse with radiculopathy, the characteristic pattern is that pain typically **worsens with activity** (especially extension, coughing, or prolonged standing) and **relaxes with rest** or flexion. The fact that the patient\u2019s pain actually improves with exertion is the opposite of what would be expected for a radiculopathy. This new information therefore strongly argues against the disc prolapse hypothesis.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 10,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "Reactive arthritis is a seronegative spondyloarthropathy that often presents with asymmetric oligoarthritis (commonly affecting the lower limbs) and is frequently accompanied by extra\u2011articular features such as conjunctivitis, urethritis, and characteristic skin lesions. One of the classic dermatologic manifestations is **keratoderma blennorrhagicum**\u2014hyperkeratotic, scaly plaques that can appear pustular on the palms and soles. The presence of scaly pustular lesions on the palms and soles strongly supports the diagnosis of reactive arthritis and is considered a hallmark skin sign.\n\nThus, this new information substantially increases the probability that the patient\u2019s arthritis is reactive arthritis.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 11,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        0.3,
+        1.0
+      ],
+      "response": "The presence of a friction rub strongly suggests pericarditis, a condition that requires an ECG for diagnosis (diffuse ST\u2011segment changes, PR depression, etc.). Thus, this new finding makes ordering an ECG much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 12,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.1,
+        1.0,
+        0.2
+      ],
+      "response": "We need to evaluate how new information (malar rash worsens with sun exposure) affects the likelihood of the hypothesis: \"Recommending NSAIDs\" for this patient. The hypothesis is a management plan: recommending NSAIDs. The new info is a malar rash that worsens with sun exposure. That suggests systemic lupus erythematosus (SLE). In SLE, NSAIDs can be used for mild arthritis or pain, but caution due to potential renal involvement, etc. But the presence of malar rash indicates SLE, which may have pleuritic chest pain? The chest pain described is sharp left-sided, worse when lying down, relieved by sitting up and leaning forward. That is classic pleuritic pain, possibly pleurisy or pleural effusion. In SLE, pleuritis can occur. NSAIDs are often used for pleuritic pain. However, in SLE, NSAIDs are generally safe but may worsen renal function if lupus nephritis. But the presence of malar rash indicates SLE, which may have underlying pleuritis. So recommending NSAIDs might still be appropriate for pleuritic pain. But the presence of SLE might also raise concern for other treatments like steroids if severe. But the question: \"If you were thinking of: Recommending NSAIDs\" - does the new info make that more or less likely? The new info indicates SLE, which may cause pleuritic pain. NSAIDs are a first-line treatment for mild pleuritic pain in SLE. So the new info supports the hypothesis? But also SLE may have renal involvement; NSAIDs can worsen renal function. But the scenario: 28-year-old female with chest pain, no other symptoms. The malar rash suggests SLE. The chest pain is pleuritic. NSAIDs are recommended for pleuritic pain. So the new info makes recommending NSAIDs more likely? But we need to consider that"
+    },
+    {
+      "question_id": 13,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of generalized pruritus is a symptom that can accompany lymphoma (especially Hodgkin\u2019s lymphoma) and adds to the constellation of B\u2011symptoms (night sweats, weight loss, fatigue) already present with the neck lump. While it does not prove malignancy, it slightly increases the suspicion that the lymph node is pathological and therefore makes a biopsy more likely to be indicated.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 14,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of normal reflexes slightly reduces the classic clinical picture of hyperthyroidism (brisk reflexes are a common finding), but the patient still has significant symptoms (night sweats, weight loss, fatigue) and a neck lump that could represent a thyroid nodule. Therefore, the new information makes the decision to order thyroid function tests slightly less compelling, but it does not eliminate the need for testing.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 15,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (unilateral resting tremor and shuffling gait) affects the likelihood of the hypothesis: ordering a colonoscopy. The scenario: 70-year-old female with worsening constipation, fatigue. Hypothesis: ordering colonoscopy. New info: unilateral resting tremor and shuffling gait. That suggests Parkinson's disease or other neurodegenerative disease. Does that affect the likelihood of colonoscopy? The constipation could be due to Parkinson's. So colonoscopy might be less urgent? But still colonoscopy is indicated for constipation in older adults? The new info suggests a neurological cause for constipation, so colonoscopy might be less likely? But colonoscopy is still indicated for constipation in older adults >50, especially with new onset. But if Parkinson's is causing constipation, colonoscopy might be less likely? But colonoscopy is still recommended for older adults with constipation to rule out colorectal cancer. However, the presence of Parkinson's might explain constipation, but colonoscopy still recommended? The question: \"If you were thinking of: Ordering a colonoscopy\" - the new info: unilateral resting tremor and shuffling gait. Does that make colonoscopy more or less likely? It might reduce the likelihood because the constipation may be due to Parkinson's. But colonoscopy is still indicated for older adults with constipation. But the presence of Parkinson's might shift the differential. But the question is about the hypothesis of ordering colonoscopy. The new info might reduce the likelihood because the constipation is likely due to Parkinson's. But colonoscopy is still recommended for older adults with constipation. But the question is about the hypothesis: ordering colonoscopy. The new info might make it less likely? I'd lean slightly less likely: -1. Because the new info suggests a neurological cause, but colonoscopy is still indicated for older adults with constipation. But the question is about the hypothesis: ordering colonoscopy. The new info might reduce the urgency? But the question: \"Think through how"
+    },
+    {
+      "question_id": 16,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The new symptoms of polyuria and polydipsia strongly point toward a metabolic disturbance such as hypercalcemia, which is known to cause constipation, fatigue, and increased thirst/urination. This makes the idea of ordering a serum calcium level much more compelling.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 17,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "response": "Heavy chronic alcohol intake is a well\u2011established cause of dilated cardiomyopathy (alcoholic cardiomyopathy). The patient\u2019s history of 5\u20136 standard drinks daily for a decade strongly supports alcohol as a contributing factor to his cardiac dysfunction. Therefore, this new information makes the hypothesis of dilated cardiomyopathy much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 18,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "We need to evaluate how the new information (history of type 2 diabetes mellitus, erectile dysfunction, being investigated for cirrhosis) affects the likelihood of the hypothesis: Restrictive cardiomyopathy.\n\nWe need to consider whether these factors increase or decrease the likelihood of restrictive cardiomyopathy.\n\nRestrictive cardiomyopathy (RCM) is a rare form of cardiomyopathy characterized by stiff ventricles, impaired filling, normal systolic function. Causes include infiltrative diseases (amyloidosis, sarcoidosis, hemochromatosis, sarcoidosis, storage diseases), endomyocardial fibrosis, radiation, etc. Also can be due to systemic diseases like amyloidosis, sarcoidosis, hemochromatosis, etc. Diabetes mellitus can cause diabetic cardiomyopathy, but that is usually dilated cardiomyopathy, not restrictive. Erectile dysfunction is a vascular issue, not directly related. Cirrhosis can cause cardiac issues: cirrhotic cardiomyopathy, which is characterized by impaired contractility and diastolic dysfunction, but not classic restrictive cardiomyopathy. Cirrhosis can cause high-output heart failure, but not restrictive. However, cirrhosis can lead to hepatic amyloidosis? Not typical. Diabetes can cause amyloidosis? Not typical. Diabetes can cause amyloid deposition in heart? Possibly light chain amyloidosis? But type 2 diabetes is not a direct cause of restrictive cardiomyopathy. Erectile dysfunction is a vascular issue, not relevant. Cirrhosis can cause congestive hepatopathy, but not restrictive cardiomyopathy. So the new information likely does not support restrictive cardiomyopathy. It might slightly reduce the likelihood because these conditions are not typical causes. But could cirrhosis lead to cardiac amyloidosis? Not typical. So I'd rate -1: slightly less likely.\n\nBut let's think: Could the patient have restrictive cardiomyopathy due to amyloidosis? Amylo"
+    },
+    {
+      "question_id": 19,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a history of asthma is a significant relative contraindication to initiating a \u03b2\u2011blocker such as metoprolol, because even cardioselective agents can provoke bronchospasm in asthmatic patients. This new information therefore strongly reduces the appropriateness of starting metoprolol.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 20,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new information that the patient has chronic kidney disease and is on haemodialysis strongly contraindicates the use of rivaroxaban, as it is not recommended for patients with severe renal impairment or those on dialysis. This makes the hypothesis of commencing rivaroxaban much less likely.\n\nRating: -2"
+    },
+    {
+      "question_id": 21,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "We need to evaluate how the new information (50 pack-year smoking history) affects the likelihood of Lambert-Eaton myasthenic syndrome (LEMS). LEMS is often associated with small cell lung cancer (SCLC). Smoking is a risk factor for SCLC. So a heavy smoking history increases the likelihood of underlying SCLC, which is associated with LEMS. So the new information makes LEMS more likely. How much? Probably moderately more likely. So rating +1 or +2? The new info is a risk factor for SCLC, which is strongly associated with LEMS. So it increases the likelihood. I'd say +1 (slightly more likely) or +2 (much more likely). The question: \"She has a 50 pack-year smoking history.\" That is a strong risk factor for SCLC. LEMS is strongly associated with SCLC. So the presence of heavy smoking increases the probability that LEMS is due to SCLC. So the hypothesis of LEMS is more likely. I'd rate +1 or +2. The difference: +2 is \"much more likely.\" The presence of heavy smoking is a strong risk factor, but does it make LEMS much more likely? The baseline probability of LEMS is low. But heavy smoking increases risk of SCLC, which is strongly associated with LEMS. So I'd lean +2. But the question: \"Think through how the new information affects the hypothesis.\" The new info is a risk factor for SCLC, which is associated with LEMS. So it increases the likelihood. I'd say +1 or +2. I'd choose +1? The difference between +1 and +2 is subtle. The new info is a risk factor for SCLC, but not a direct diagnostic sign of LEMS. It increases the probability that LEMS is due to SCLC. So I'd say +1. But the question: \"If you were thinking of: Lambert-Eaton myasthen"
+    },
+    {
+      "question_id": 22,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of decreased deep\u2011tendon reflexes is not characteristic of myasthenia gravis (MG), where reflexes are typically normal. Hyporeflexia points more toward other neuromuscular or neuropathic conditions. Thus this new finding substantially lowers the probability that MG is the correct diagnosis.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 23,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.6,
+        1.0,
+        0.8
+      ],
+      "response": "The fact that she has recently completed a course of antibiotics for presumed bacterial sinusitis slightly reduces the pre\u2011test probability that an active bacterial infection is the cause of her seizure and also diminishes the diagnostic yield of a blood culture. Therefore, this new information makes the decision to order a blood culture somewhat less compelling.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 24,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.3,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.4,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (she is pregnant) affects the likelihood of the hypothesis: \"Ordering a head CT\" in this scenario. The scenario: 25-year-old female with witnessed seizure, likely generalized tonic-clonic. She is pregnant. The question: does pregnancy affect the likelihood that we should order a head CT? Usually, in a seizure patient, we consider CT to rule out intracranial pathology. Pregnancy may affect imaging decisions: CT involves radiation exposure, but the risk to fetus is low for a single head CT, but still we might consider MRI if possible. However, in an emergency, CT is often still indicated. Pregnancy might make us more cautious about radiation, but the benefit of diagnosing intracranial pathology outweighs risk. So the new information might slightly reduce the likelihood of ordering CT? Actually, we might still order CT but consider MRI if possible. But the hypothesis is \"Ordering a head CT\". The new info might slightly reduce the likelihood because we might prefer MRI to avoid radiation. But in emergency, CT is still standard. So maybe slight less likely: -1. But is it more likely? Pregnancy might increase suspicion of certain causes like eclampsia? But eclampsia seizures are usually in third trimester, but still CT might be indicated if suspect intracranial hemorrhage. But pregnancy doesn't change the need for CT. So maybe no effect: 0. But the question: \"Think through how the new information affects the likelihood of the hypothesis.\" The new info: pregnant. Does that change the likelihood of ordering a head CT? In practice, we might still order CT. But we might consider MRI if possible. But the standard of care: CT is still first-line. So the new info might not change the likelihood. So rating 0.\n\nBut we need to consider the risk of radiation to fetus: 0.1 mSv for head CT, below threshold of 50 mSv. So"
+    },
+    {
+      "question_id": 25,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.7
+      ],
+      "response": "In rhabdomyolysis, muscle breakdown releases myoglobin into the bloodstream, which is then excreted in the urine. The urine dipstick reacts to the heme group in myoglobin just as it does with hemoglobin, producing a positive \u201cblood\u201d result even though no red blood cells are present on microscopy. Thus, a +++ blood result on the dipstick is a classic laboratory finding that strongly supports the diagnosis of rhabdomyolysis (especially when accompanied by dark\u2011tinted urine). It is not a nonspecific finding; it directly points toward myoglobinuria rather than true hematuria.\n\n**Rating:** +2"
+    },
+    {
+      "question_id": 26,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new info (runny nose and cough for 4 days, starting 2 days before dark urine) affects the likelihood of post-streptococcal glomerulonephritis (PSGN). PSGN typically follows a streptococcal infection, usually pharyngitis or skin infection, with a lag of 1-3 weeks. The patient has a runny nose and cough, likely viral upper respiratory infection, not streptococcal pharyngitis. So this new info suggests a viral URI, not streptococcal infection. That would make PSGN less likely. The timing: 4 days of URI, dark urine started 2 days after onset of URI, so about 2 days after. PSGN would take weeks. So new info makes hypothesis less likely. How much? Slightly less likely? The presence of a viral URI strongly argues against streptococcal infection. So maybe -1 or -2? The new info is a strong negative. But it's not definitive; could still have streptococcal pharyngitis but with cough? But runny nose and cough are typical of viral. So I'd rate -1 or -2. The question: \"He has had a runny nose and a cough for the past 4 days (starting 2 days before the dark urine)\". That suggests a viral infection. So the new info makes PSGN less likely. I'd rate -1 (slightly less likely) or -2 (much less likely). The new info is fairly strong evidence against PSGN. I'd lean -1? But the question: \"Think through how the new information affects the hypothesis, then provide your rating.\" The new info is a viral URI, not streptococcal. So it reduces the likelihood. I'd say -1 or -2. The difference: -1 is slightly less likely, -2 is much less likely."
+    },
+    {
+      "question_id": 27,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a fixed splitting of S\u2082 is a classic sign of an atrial septal defect (ASD) and is not characteristic of mitral stenosis. This new finding strongly argues against mitral stenosis.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 28,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.8,
+        1.0,
+        0.0,
+        0.6,
+        0.0
+      ],
+      "response": "The new information of exertional shortness of breath is more suggestive of a clinically significant valvular lesion (e.g., aortic stenosis) or other cardiac pathology rather than the typically asymptomatic aortic sclerosis. Therefore, it slightly reduces the likelihood that the murmur is due to aortic sclerosis.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 29,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.7,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (she uses salbutamol and budesonide inhalers for asthma) affects the hypothesis: \"Treating with high-potency topical corticosteroids\" for her rash.\n\nWe need to consider whether the new information makes the hypothesis more or less likely. The hypothesis is a management plan: treat with high-potency topical corticosteroids. The new info: she uses inhaled corticosteroid budesonide. That indicates she is already on systemic or inhaled steroids. But inhaled budesonide is local to lungs, not systemic. However, inhaled steroids can have systemic absorption, but usually minimal. She is using budesonide inhaler for asthma. That might suggest she is already on steroids, but not necessarily topical. The question: does this new info affect the likelihood that high-potency topical steroids would be appropriate? Possibly, if she is already on systemic steroids, but inhaled budesonide is not systemic. But high-potency topical steroids are used for eczema, psoriasis, etc. The fact that she uses inhaled steroids might indicate she is already on steroids, but that doesn't preclude using topical steroids. However, it might raise concern about systemic side effects if she uses high-potency topical steroids. But the question is about the hypothesis: \"Treating with high-potency topical corticosteroids.\" The new info might make us think: She is already on steroids, so maybe we should consider that she might have steroid-induced skin changes? But the rash is on elbows, typical for eczema or psoriasis. The fact that she uses inhaled steroids might not change the likelihood that high-potency topical steroids are appropriate. It might slightly reduce the likelihood because she might be at risk of systemic side effects? But high-potency topical steroids are usually safe for localized use. The new info might not change the likelihood significantly. So rating 0.\n\nBut let's think: She uses budesonide inhaler. That is a corticosteroid"
+    },
+    {
+      "question_id": 30,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        0.1,
+        1.0,
+        0.3,
+        0.0
+      ],
+      "response": "The positive Mantoux test indicates latent tuberculosis infection, but it does not alter the safety or appropriateness of using topical dithranol for a psoriasis\u2011like rash on the elbows. Dithranol is not contraindicated in patients with latent TB, and the Mantoux result does not change the likelihood that dithranol would be an appropriate treatment for this rash.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 31,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.7,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that she is already on oral corticosteroids for rheumatoid arthritis strongly suggests that her Cushing\u2011like features are iatrogenic. In this setting, a low\u2011dose dexamethasone suppression test is not useful for diagnosing endogenous Cushing syndrome, so the hypothesis that this test should be ordered becomes much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 32,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "response": "The finding of low serum ACTH strongly suggests an ACTH\u2011independent source of cortisol excess, most commonly an adrenal adenoma or carcinoma. In such cases, imaging of the adrenal glands\u2014typically with an abdominal CT\u2014is the appropriate next step to locate the lesion. Therefore, this new information makes the decision to order an abdominal CT much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 33,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new information (negative fecal calprotectin) strongly argues against active intestinal inflammation, which is the key indication for initiating mesalazine and steroids. A negative calprotectin essentially rules out significant IBD activity, making the decision to treat with these agents much less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 34,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.3,
+        0.7,
+        1.0
+      ],
+      "response": "The pruritic vesicular rash on the left leg is classic for dermatitis herpetiformis, a skin manifestation of celiac disease. Celiac disease is a condition that is effectively managed with a strict gluten\u2011free diet. Therefore, the presence of this rash strongly supports the idea that dietary modification (specifically a gluten\u2011free diet) would be an appropriate treatment.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 35,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.2,
+        0.0
+      ],
+      "response": "The fact that the patient\u2019s father had a peptic ulcer suggests a familial predisposition to peptic ulcer disease, which is a potential source of chronic gastrointestinal bleeding that could explain the patient\u2019s iron\u2011deficiency anemia. This new information modestly raises the index of suspicion for an upper GI source and therefore makes the decision to order an endoscopy slightly more likely.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 36,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The patient\u2019s low MCV (75\u202ffL) indicates a microcytic anemia, which is not characteristic of vitamin\u202fB12 deficiency (which typically presents with macrocytosis). This finding strongly argues against B12 deficiency as the cause of his fatigue and pallor. Therefore, the likelihood of treating with B12 supplementation is considerably reduced.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 37,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "The fact that she was born in Vietnam adds a significant risk factor for hepatitis B infection, which makes it more likely that ordering hepatitis B serology would be clinically useful.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 38,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        1.0
+      ],
+      "response": "The new finding of an elevated AFP strongly raises suspicion for hepatocellular carcinoma (HCC) in the context of an enlarged, diseased liver. This makes imaging with an abdominal CT (or MRI) highly indicated to evaluate for a focal hepatic lesion. Therefore, the new information increases the likelihood of ordering an abdominal CT.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 39,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (diarrhea over past week) affects the likelihood of the hypothesis: \"Ordering urinary antigen assessment\". The hypothesis is a management plan: ordering urinary antigen assessment. The scenario: 45-year-old male with cough, fever, unwell, returned from overseas holiday. The urinary antigen assessment likely refers to urinary antigen test for Legionella pneumophila (urinary antigen test) or for Streptococcus pneumoniae? Usually urinary antigen test is for Legionella pneumophila serogroup 1. Also urinary antigen test for pneumococcus is available but less common. In context of cough, fever, travel, likely community-acquired pneumonia. Urinary antigen test for Legionella is indicated for patients with severe pneumonia, especially with travel, risk factors, or severe disease. Diarrhea is a symptom of Legionella infection (diarrhea is common). So diarrhea would support the hypothesis that Legionella is the cause, making urinary antigen assessment more likely. So the new information makes the hypothesis more likely. How much? Slightly more likely or much more likely? Diarrhea is a classic symptom of Legionella, so it increases suspicion. So rating +1 or +2? The new info is supportive but not definitive. It increases suspicion. I'd say +1 (slightly more likely). But could be +2? Let's think: The presence of diarrhea is a classic sign of Legionella pneumonia, which is a key indication for urinary antigen testing. So it strongly supports the hypothesis. So maybe +2. But the question: \"If you were thinking of: Ordering urinary antigen assessment\" The new info: diarrhea. That would increase the likelihood that you should order urinary antigen assessment. So rating +2. But the scale: -2: much less likely, -1: slightly less likely, 0: no effect, +1: slightly more likely, +2: much more likely. The presence of diarrhea is a"
+    },
+    {
+      "question_id": 40,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.0,
+        0.2,
+        1.0,
+        0.8,
+        0.4
+      ],
+      "response": "We need to evaluate how new information (recently treated for oral candidiasis) affects the likelihood of the hypothesis: \"Treating with trimethoprim-sulfamethoxazole\" (i.e., using TMP-SMX). The scenario: 45-year-old male with cough, fever, 10 days, returned from overseas. Likely infection: maybe atypical pneumonia, maybe bacterial pneumonia, maybe TB, maybe viral. TMP-SMX is used for Pneumocystis jirovecii pneumonia (PCP), certain bacterial infections like urinary tract, some atypical pneumonia (e.g., Mycoplasma, Chlamydia). Also used for prophylaxis in HIV. Oral candidiasis indicates possible immunosuppression, maybe HIV infection. If he has oral candidiasis, that suggests immunocompromise, maybe HIV infection. TMP-SMX is used for PCP prophylaxis and treatment. So presence of oral candidiasis might increase suspicion of HIV, which might increase the likelihood that his cough is PCP, which is treated with TMP-SMX. So new info makes hypothesis more likely. But also oral candidiasis indicates he might have been treated with fluconazole or other antifungals. That doesn't directly affect TMP-SMX. But the presence of oral candidiasis suggests immunosuppression, which might increase risk of PCP. So the new info makes the hypothesis more likely. So rating +1 or +2? \"Much more likely\" or \"slightly more likely\"? The presence of oral candidiasis is a strong indicator of immunosuppression, which is a risk factor for PCP. So I'd say it makes the hypothesis more likely, maybe +1 or +2. The question: \"If you were thinking of: Treating with trimethoprim-sulfamethoxazole\" - the new info: He has recently been treated for oral candidiasis. That suggests he might have had an immunocompromised state, maybe HIV. So"
+    },
+    {
+      "question_id": 41,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of elevated urinary catecholamine by\u2011products strongly suggests that the adrenal mass is a functional pheochromocytoma. In that case, the appropriate management is preoperative medical preparation (alpha\u2011blockade, possible beta\u2011blockade) followed by surgical resection, rather than simply monitoring with repeat CT scans. Thus, the new information makes the hypothesis of \u201cmonitoring adrenal mass with repeat CT\u201d much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 42,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "The new information that the adrenal lesion measures 6\u202fcm is highly significant. In adrenal masses, a diameter greater than 4\u202fcm is generally considered an indication for surgical resection because of the increased risk of malignancy and potential for hormonal activity. A 6\u202fcm lesion therefore strongly supports the decision to proceed with surgery.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 43,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.2
+      ],
+      "response": "The new information (tachycardia with a normal temperature) does not alter the clinical suspicion for pancreatitis or the need to obtain a serum lipase level. It neither strengthens nor weakens the rationale for ordering the test.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 44,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.3,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (previous cholecystectomy) affects the likelihood of the hypothesis: ordering an abdominal US. The hypothesis is a management plan: ordering an abdominal US. The new info: she had a cholecystectomy. Does that make ordering an abdominal US more or less likely? Let's think.\n\nThe scenario: epigastric pain radiating to back, nausea, vomiting. Differential: acute pancreatitis, peptic ulcer, etc. Abdominal US is often used to evaluate gallstones, biliary disease, etc. But she had cholecystectomy, so gallbladder removed. So US of abdomen may still be useful to evaluate pancreas, bile ducts, etc. But if gallbladder removed, gallstones are less likely cause. But US can still evaluate pancreas, bile ducts, liver, etc. However, after cholecystectomy, the gallbladder is gone, but the cystic duct may be removed. The US may still be useful to evaluate for biliary complications like common bile duct stones, pancreatitis, etc. But the main reason to order US in epigastric pain is to evaluate gallbladder disease. Since she doesn't have gallbladder, that reason is less relevant. But US can still be used to evaluate pancreas. However, CT is often preferred for pancreatitis. But US can be used to evaluate gallstones, but not relevant. So the new info reduces the likelihood of ordering US? But maybe still ordering US to evaluate pancreas? But US is less sensitive for pancreas. CT is better. So the new info might reduce the likelihood of ordering US. So rating: -1 or -2? Let's think: The new info reduces the likelihood slightly? The main reason to order US is gallbladder disease. Since she had cholecystectomy, that reason is gone. But US can still be used for other reasons. But the question: \""
+    },
+    {
+      "question_id": 45,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "The presence of a unilateral facial nerve palsy in a patient with a firm, immobile facial mass strongly suggests a lesion that may involve the facial nerve or adjacent structures. This clinical finding heightens concern for a potentially serious pathology (e.g., malignancy, nerve compression) and therefore increases the urgency and appropriateness of imaging. Consequently, the likelihood that ordering a head CT is warranted rises significantly.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 46,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "We need to interpret scenario: 66-year-old male with a firm, immobile, 1.5 cm mass inferior to ear, angle of mandible. Likely parotid tumor. Hypothesis: performing a superficial parotidectomy. New info: histology shows pleomorphic cells with glandular appearance. That suggests pleomorphic adenoma? Pleomorphic adenoma is benign mixed tumor of salivary glands, often in parotid. Histology: pleomorphic cells with glandular appearance. So the new info indicates a benign pleomorphic adenoma. That would support the need for superficial parotidectomy? For pleomorphic adenoma, recommended treatment is superficial parotidectomy with removal of tumor. So new info supports the hypothesis. But does it make it more likely? The hypothesis is \"performing a superficial parotidectomy\". The new info indicates a pleomorphic adenoma, which is treated by superficial parotidectomy. So it makes the hypothesis more likely. How much? Slightly more likely? The new info is fairly supportive. I'd rate +1. Because it's supportive but not definitive? Actually pleomorphic adenoma is the most common benign parotid tumor; the recommended treatment is superficial parotidectomy. So the new info strongly supports the hypothesis. But the question: \"rate how the new information affects the likelihood of the hypothesis\". The hypothesis is \"performing a superficial parotidectomy\". The new info indicates pleomorphic adenoma, which is treated by superficial parotidectomy. So the likelihood of performing superficial parotidectomy increases. I'd give +2? But maybe +1 because it's supportive but not absolute? The new info is a histological diagnosis that strongly indicates a benign tumor that is best treated by superficial parotidectomy. So it's a strong support. I'd lean +2. But the scale: -2, -1, 0, +1, +2. I'd"
+    },
+    {
+      "question_id": 47,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of halos around lights is a classic sign of acute angle\u2011closure glaucoma (or significant corneal edema). In such cases, mydriasis with atropine would worsen the angle closure and is contraindicated. Therefore, this new information strongly argues against using topical atropine for a detailed exam.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 48,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.7
+      ],
+      "response": "We need to evaluate how new info (pain at insertion of right Achilles tendon and left knee for 1-2 weeks) affects the likelihood of the hypothesis: \"Treating with intraocular steroid drops\" (i.e., we are considering using intraocular steroid drops for her red painful eye). The new info is about musculoskeletal pain at tendon insertions. Does that affect the likelihood of using intraocular steroid drops? Possibly indicates systemic inflammatory condition like rheumatoid arthritis or other autoimmune disease. Intraocular steroid drops are used for uveitis, allergic conjunctivitis, etc. But if she has systemic inflammatory disease, maybe the eye pain is due to inflammatory arthritis affecting the eye (e.g., scleritis, episcleritis). Intraocular steroids might be used. But the new info might also suggest she has a systemic inflammatory disease that could contraindicate steroid use? Actually, intraocular steroids are used for ocular inflammation. But systemic inflammatory disease might increase risk of steroid side effects? But intraocular steroids are local, minimal systemic absorption. However, if she has a systemic inflammatory disease, you might consider systemic steroids instead. But the question: \"Treating with intraocular steroid drops\" is a hypothesis. The new info: pain at insertion of Achilles tendon and left knee for 1-2 weeks. That suggests tendinopathy or enthesitis, maybe ankylosing spondylitis or psoriatic arthritis. That might be associated with ocular inflammation like uveitis. So the presence of enthesitis might increase suspicion of spondyloarthropathy, which can cause acute anterior uveitis. In that case, intraocular steroid drops are indicated. So the new info might increase the likelihood that the eye pain is due to inflammatory eye disease requiring steroids. So rating +1 or +2? The new info is somewhat supportive but not definitive. It suggests a systemic inflammatory disease that can cause ocular inflammation. So it slightly increases the likelihood that"
+    },
+    {
+      "question_id": 49,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The CT finding of an 8\u202fmm stone in the renal pelvis indicates a relatively large stone that is unlikely to pass spontaneously with medical expulsive therapy alone. While NSAIDs and an alpha\u2011blocker can still provide pain control, the likelihood that this regimen will resolve the obstruction without additional intervention (e.g., ureteroscopy, lithotripsy, or surgical removal) is significantly reduced.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 50,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "We need to evaluate how the new information (fever 39.2\u00b0C) affects the likelihood of the hypothesis: \"Managing with a ureteric stent\". The scenario: 49-year-old male with left flank pain, severe, waves, nausea, vomiting, dysuria, gross hematuria. Likely acute ureteric colic due to kidney stone. Fever suggests possible infection, maybe pyelonephritis or infected stone. If infection present, management may differ: might need antibiotics, possible drainage, maybe not stent alone. But stent can be used for obstructing stones, but if infection, you might need to treat infection first. So the presence of fever makes the hypothesis of \"managing with a ureteric stent\" less likely? Or maybe still possible but with antibiotics. The question: \"Managing with a ureteric stent\" is a management plan. Fever indicates infection, so you might need to treat infection first, maybe do imaging, maybe do percutaneous drainage. But stent can still be used to relieve obstruction while treating infection. But the presence of fever might shift priority to antibiotics and maybe urgent drainage. But stent is still a reasonable management for obstructing stone with infection. But the question: \"If you were thinking of: Managing with a ureteric stent\" - the new info: fever. Does that make the hypothesis more or less likely? I'd say slightly less likely because infection may require antibiotics and maybe urgent drainage, but stent can still be used. But the presence of fever indicates infection, so you might consider a percutaneous nephrostomy instead of stent. So I'd rate -1: slightly less likely. Or maybe -2? Let's think: In a patient with suspected ureteric stone and fever, you might suspect infected stone or pyelonephritis. The management might be antibiotics and drainage. Stent is a form of drainage. But the presence of"
+    },
+    {
+      "question_id": 51,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "The absent right brachial and radial pulse strongly suggests aortic involvement (e.g., dissection) and is a classic indication for CT angiography. This new finding makes the use of a CT angiogram much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 52,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The CTA finding of a double lumen in the ascending aorta (indicative of a type\u202fA aortic dissection) is a major contraindication to thrombolytic therapy. In the setting of an aortic dissection, thrombolytics can precipitate catastrophic bleeding and are therefore avoided. Thus, this new information strongly argues against proceeding with thrombolysis.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 53,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "The new information (eGFR\u202f=\u202f42\u202fmL/min/1.73\u202fm\u00b2) indicates moderate renal impairment. CT angiography requires iodinated contrast, which carries a higher risk of contrast\u2011induced nephropathy in patients with reduced kidney function. While an eGFR of 42 is not an absolute contraindication, it does warrant caution and may prompt consideration of alternative imaging modalities or pre\u2011emptive measures. Thus, the likelihood of proceeding with CT angiography is slightly reduced.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 54,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        1.0,
+        0.8,
+        0.0,
+        0.5,
+        0.3
+      ],
+      "response": "We need to evaluate how ankle-brachial index (ABI) of 1.4 bilaterally affects the likelihood of the hypothesis: \"vascular surgical intervention\" (i.e., suspect peripheral arterial disease requiring surgical intervention). ABI >1.4 indicates noncompressible arteries, often due to medial arterial calcification (common in diabetes). This suggests that ABI is not reliable; but a high ABI indicates that the patient may not have significant occlusive disease. However, in diabetic patients, high ABI can mask PAD. But the question: does this new information make the hypothesis more or less likely? The hypothesis is that vascular surgical intervention is needed. The new info: ABI 1.4 bilaterally. That suggests noncompressible arteries, but does not rule out PAD. However, the presence of high ABI may reduce suspicion of significant occlusive disease. But in diabetic patients, high ABI may be due to calcification, so PAD may still be present. But the question likely expects that a high ABI reduces likelihood of PAD requiring surgery. So the new info makes the hypothesis less likely. How much? Probably slightly less likely? But high ABI is a strong indicator of noncompressible arteries, which may mask PAD. But the question: \"If you were thinking of: Vascular surgical intervention\" and new info: ABI 1.4 bilaterally. That suggests that the patient may not have significant arterial occlusion. So the hypothesis is less likely. I'd rate -1 or -2? The new info is a strong negative indicator. But because diabetic patients can have high ABI but still have PAD, it's not definitive. So maybe slightly less likely: -1. But the question likely expects -2 because high ABI strongly suggests noncompressible arteries, making vascular surgery less likely. But the scenario: right side more severely affected, pain at night, diabetic. That could be PAD. But high ABI suggests noncompressible arteries. So I'd lean -1"
+    },
+    {
+      "question_id": 55,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The pathology report identifies the lesion as a dysplastic nevus, which is a benign but atypical melanocytic lesion. For dysplastic nevi, a 2\u2011mm excision margin is generally considered adequate,"
+    },
+    {
+      "question_id": 56,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The pathology shows a malignant melanoma with a Breslow thickness of 2\u202fmm. Current melanoma guidelines recommend a 1\u202fcm surgical margin for lesions 1\u20132\u202fmm thick, while a 2\u202fcm margin is reserved for thicker lesions (>2\u202fmm). Therefore, the new information suggests that a 2\u202fcm margin is unnecessarily wide and not required. This makes the hypothesis of performing a further excision with a 2\u202fcm margin slightly less appropriate.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 57,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new information indicates that the tumor is HER2\u2011negative. Trastuzumab is specifically used for HER2\u2011positive breast cancers, so a HER2\u2011negative status essentially rules out trastuzumab as an appropriate therapy. This makes the hypothesis that trastuzumab should be used much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 58,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Letrozole is an aromatase inhibitor that is effective only in post\u2011menopausal women, because it blocks peripheral conversion of androgens to estrogen. In premenopausal women, the ovaries produce the majority of estrogen, so letrozole alone is not an appropriate first\u2011line endocrine therapy. Therefore, the fact that the patient is premenopausal makes the hypothesis of treating with letrozole much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 59,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.3,
+        0.7,
+        0.7,
+        1.0,
+        0.7
+      ],
+      "response": "We need to evaluate how new information affects likelihood of medullary thyroid cancer (MTC). The scenario: midline neck mass, moves with swallowing, not with tongue protrusion. That suggests thyroid mass. MTC is a type of thyroid cancer arising from parafollicular C cells. Risk factors: MEN2A and MEN2B syndromes. MEN2A includes medullary thyroid carcinoma, pheochromocytoma, parathyroid adenoma/hyperplasia. MEN2B includes medullary thyroid carcinoma, pheochromocytoma, mucosal neuromas, marfanoid habitus. Also familial MTC. So pituitary adenoma is not part of MEN2. But pituitary adenoma could be part of MEN1 (multiple endocrine neoplasia type 1) which includes pituitary adenoma, parathyroid adenoma, pancreatic endocrine tumors. But MEN1 does not include medullary thyroid carcinoma. However, MEN1 can have pancreatic tumors, but father died of pancreatic cancer. That could be sporadic. But father died of pancreatic cancer might suggest familial pancreatic cancer, but not necessarily MEN1. But father died of pancreatic cancer could be incidental. The new info: pituitary adenoma and father died of pancreatic cancer. Does that increase or decrease likelihood of MTC? Pituitary adenoma is not associated with MTC. Father pancreatic cancer is not associated with MTC. So new info does not support MTC. It might suggest MEN1, but MEN1 does not include MTC. So new info makes MTC less likely. Slightly less likely? The presence of pituitary adenoma suggests MEN1, but MTC is not part of MEN1. So the new info reduces likelihood. But father pancreatic cancer might be incidental. So overall, new info makes MTC less likely. I'd rate -1 (slightly less likely). But maybe -2? Let's think: The presence of pituitary"
+    },
+    {
+      "question_id": 60,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.5,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new info (vocal hoarseness) affects likelihood of papillary thyroid cancer. The scenario: midline neck mass, moves with swallowing, not with tongue protrusion. That suggests thyroid mass. Papillary thyroid carcinoma is common in women, often presents as a nodule. Vocal hoarseness indicates possible recurrent laryngeal nerve involvement, which can occur with thyroid cancer, especially if tumor invades or compresses nerve. So vocal hoarseness increases suspicion of malignancy. So it makes hypothesis more likely. How much? Slightly more likely? Vocal hoarseness is a concerning sign. In papillary carcinoma, hoarseness is a sign of advanced disease. So it increases likelihood. I'd rate +1 or +2? The new info is a sign of possible nerve involvement, which is a red flag. That would increase suspicion. I'd lean +1 (slightly more likely) or +2 (much more likely). The question: \"Think through how the new information affects the hypothesis.\" The new info is a sign of possible malignancy. It increases the likelihood. I'd say +1. But could be +2? The scale: -2: much less likely, -1: slightly less likely, 0: no effect, +1: slightly more likely, +2: much more likely. Vocal hoarseness is a significant sign. It might push the suspicion higher. I'd say +2. But the scenario: midline neck mass, moves with swallowing, not tongue. That is typical thyroid. Vocal hoarseness indicates nerve involvement. That is a red flag for malignancy. So it makes papillary thyroid cancer more likely. I'd rate +2. But is it \"much more likely\"? The presence of hoarseness is a sign of possible recurrent laryngeal nerve involvement, which is a complication of thyroid cancer. So yes, it increases suspicion. I'd go +2. Let's answer"
+    },
+    {
+      "question_id": 61,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new finding of shooting pain in the neck is not characteristic of carpal tunnel syndrome and instead points toward a cervical radiculopathy or other cervical spine pathology that could explain the arm weakness. This information therefore reduces the plausibility of carpal tunnel syndrome as the cause.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 62,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "We need to evaluate how the new information (anterior shoulder dislocation) affects the likelihood of axillary nerve damage. The scenario: 27-year-old male with right arm weakness, repetitive job, shoulder dislocation 1 week ago. Hypothesis: axillary nerve damage. New info: shoulder dislocation was anterior.\n\nWe need to consider the relationship between anterior shoulder dislocation and axillary nerve injury. The axillary nerve runs around the surgical neck of humerus, near the glenoid. Anterior dislocation can injure axillary nerve, but it's more common with posterior dislocations? Actually, axillary nerve injury is most commonly associated with surgical neck fractures of humerus, and also with anterior dislocation of shoulder. Posterior dislocations can injure axillary nerve too? Let's recall: The axillary nerve is vulnerable to injury in anterior dislocation because the humeral head can damage the nerve as it moves posteriorly? Wait, let's recall: In anterior dislocation, the humeral head moves anteriorly and inferiorly, potentially injuring the axillary nerve. In posterior dislocation, the humeral head moves posteriorly, potentially injuring axillary nerve as well? Actually, posterior dislocation is less common but can injure axillary nerve. But the most common nerve injury with shoulder dislocation is axillary nerve injury, especially with anterior dislocation. So the new information that the dislocation was anterior supports the hypothesis. So rating +1 or +2? The new info is that the dislocation was anterior. That is a known risk factor for axillary nerve injury. So it increases the likelihood. How much? It is a moderate increase. I'd say +1 (slightly more likely). But could be +2? Let's think: The scenario already had a shoulder dislocation. The new info clarifies that it was anterior. Since axillary nerve injury is more likely with anterior dislocation, this increases the probability. But is"
+    },
+    {
+      "question_id": 63,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The ankle jerk reflex (Achilles reflex) is mediated by the S1 nerve root and the tibial nerve, not the common fibular (peroneal) nerve. Therefore, normal, symmetrical ankle jerk reflexes do not provide evidence against or in favor of a lesion of the right common fibular nerve. The new information does not change the likelihood of the hypothesis.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 64,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The upgoing plantar response (Babinski sign) is a classic indicator of an upper\u2011motor\u2011neuron or spinal cord lesion, not a peripheral nerve injury. A sural nerve lesion would produce sensory loss in its distribution but would not produce an upgoing plantar response. Therefore, this new finding strongly argues against the hypothesis of a right sural nerve lesion.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 65,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.4
+      ],
+      "response": "The new information that the patient had a visible lateral displacement of the patella (i.e., a patellar dislocation) strongly supports the need for imaging to confirm the dislocation, assess for associated fractures, and evaluate the extent of injury. This makes ordering plain knee x\u2011rays much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 66,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.5
+      ],
+      "response": "We need to evaluate how the new information (palpable knee effusion) affects the likelihood of the hypothesis: ordering a knee MRI. The scenario: 21-year-old female with knee pain after fall, difficulty weight bearing. Hypothesis: ordering a knee MRI. New info: palpable knee effusion.\n\nWe need to think: Does presence of effusion increase or decrease the likelihood that we would order an MRI? In general, knee effusion suggests intra-articular pathology, possibly meniscal tear, ligament injury, or other. MRI is useful for diagnosing meniscal tears, ligament injuries, cartilage damage. Effusion may indicate intra-articular injury. So presence of effusion might increase the suspicion of intra-articular injury, making MRI more likely. But also, if there's a large effusion, maybe we might consider aspiration or ultrasound first? But the question is about ordering MRI. Usually, if there's effusion, you might still order MRI to evaluate underlying cause. So new info likely increases the likelihood of ordering MRI. So rating +1 or +2? The effect: \"makes the hypothesis slightly more likely\" or \"much more likely\"? The presence of effusion is a sign of intra-articular pathology, which MRI is good for. So I'd say it makes ordering MRI more likely. Is it \"slightly\" or \"much\"? The presence of effusion is a fairly strong indicator of intra-articular pathology. But the decision to order MRI might also depend on other factors. But overall, I'd lean +1 (slightly more likely). But could be +2? Let's think: The baseline scenario: knee pain after fall, difficulty weight bearing. Without effusion, you might consider X-ray first, maybe MRI if suspicion of ligament or meniscal tear. With effusion, you might suspect intra-articular injury, so MRI is more indicated. So it's a moderate increase. I'd say +1. So rating: +1."
+    },
+    {
+      "question_id": 67,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of genital and perianal paresthesias is a classic red\u2011flag sign of cauda equina syndrome or significant spinal cord compression. In such a scenario, conservative management in a rural setting without surgical capability is no longer appropriate; urgent transfer for surgical decompression is indicated. Thus, this new information makes the hypothesis of conservative management much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 68,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The presence of a fever raises concern for an infectious or inflammatory process (e.g., epidural abscess, vertebral osteomyelitis) that would warrant urgent imaging. While it does not guarantee the need for a CT, it does increase the suspicion of a serious underlying pathology, making the decision to transfer for a spine CT slightly more likely.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 69,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Limited passive ROM in all directions is not characteristic of a supraspinatus impingement, where passive motion is usually preserved. This finding strongly argues against the impingement diagnosis.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 70,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "response": "The presence of type\u202f2 diabetes mellitus is a recognized risk factor for adhesive capsulitis, increasing the probability that the shoulder pain is due to a frozen shoulder rather than other causes.  \n**Rating: +1**"
+    },
+    {
+      "question_id": 71,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The statement that the patient will sue if not released does not provide any new evidence that he is a danger to himself or others, nor does it indicate that he is unable to care for himself. It is a threat of legal action, which is not a criterion for involuntary detention. Therefore, this new information neither increases nor decreases the likelihood that detaining the patient is appropriate.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 72,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.2
+      ],
+      "response": "The fact that the patient has recently used methamphetamines strongly supports the use of a benzodiazepine to manage his acute agitation and potential stimulant\u2011induced psychosis. Benzodiazepines are a first\u2011line agent for controlling agitation in stimulant intoxication, and the timing of the drug use (1\u20132\u202fhours ago) places him in the acute intoxication phase where sedation is most appropriate.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 73,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.0,
+        0.4,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how mild cognitive impairment affects the likelihood of recommending an SSRI. In a patient with depression, mild cognitive impairment may affect medication choice. SSRIs are generally safe, but cognitive impairment may increase risk of confusion, sedation, falls. But mild cognitive impairment is not a contraindication. SSRIs are still recommended. Might slightly reduce likelihood? But mild cognitive impairment may increase risk of side effects, but still recommended. The new info may slightly reduce likelihood? But overall still recommended. So rating maybe +1? Let's think: The hypothesis is recommending SSRI. New info: mild cognitive impairment. Does that make SSRI less likely? Mild cognitive impairment may increase risk of confusion, sedation, falls, but SSRIs are not major cause. But caution. Might slightly reduce likelihood. But still recommended. So rating maybe +1? Actually the question: \"Think through how the new information affects the hypothesis.\" The new info: mild cognitive impairment. Does it make SSRI less likely? It might slightly reduce likelihood because of potential cognitive side effects. But still recommended. So rating maybe +1? Wait, the scale: +2: much more likely, +1: slightly more likely, 0: no effect, -1: slightly less likely, -2: much less likely. So mild cognitive impairment might slightly reduce likelihood of SSRI? But is it a contraindication? No. But might cause caution. So maybe -1? But the question: \"If you were thinking of: Recommending a selective-serotonin reuptake inhibitor.\" The new info: mild cognitive impairment. Does that make the recommendation less likely? Possibly because of risk of confusion, sedation, falls. But mild cognitive impairment is not a major contraindication. But might still be considered. I'd lean slightly less likely: -1. But maybe no effect: 0. Let's consider guidelines: SSRIs are first-line for depression in older adults, even with mild cognitive"
+    },
+    {
+      "question_id": 74,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The presence of auditory hallucinations (the patient hearing a voice telling him to kill himself) indicates a psychotic component to his depression. Psychotic depression, especially with suicidal ideation, is a strong indication for electroconvulsive therapy. Thus this new information makes the recommendation of ECT much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 75,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of dry mouth suggests anticholinergic toxicity (e.g., from TCA or other medications), which is associated with cardiac conduction abnormalities and arrhythmias. This makes it more prudent to obtain an ECG to assess for potential cardiac effects.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 76,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.1,
+        1.0,
+        0.3,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (complaint of high pitched whining sound in both ears) affects the likelihood of the hypothesis: \"Giving N-acetylcysteine\" (NAC). The scenario: 24-year-old female, overdose, unknown meds. Past history: depression, Crohn's disease. New info: high pitched whining sound in both ears (likely tinnitus). We need to think: NAC is used for acetaminophen overdose, also for other indications like acetaminophen toxicity, but also for other overdoses? NAC is used for acetaminophen overdose, and also for other drug overdoses? It's used for acetaminophen, also for some other toxins like paraquat? But main is acetaminophen. Tinnitus is a symptom of acetaminophen overdose? Actually, tinnitus is a symptom of acetaminophen toxicity? Let's recall: Acetaminophen overdose can cause hepatic failure, but tinnitus is not a classic sign. However, tinnitus can be a sign of ototoxicity from certain drugs like aminoglycosides, cisplatin, loop diuretics, etc. But NAC is not used for those. But the presence of tinnitus might suggest that the overdose involved a drug that can cause ototoxicity, e.g., aspirin overdose (salicylate toxicity) can cause tinnitus. Aspirin overdose can cause tinnitus, hyperacusis, etc. NAC is not used for aspirin overdose. So the presence of tinnitus might suggest salicylate overdose, not acetaminophen. So the new information might reduce the likelihood that the overdose is acetaminophen, thus reduce the likelihood that NAC is indicated. So rating: -1 or -2? Let's think: The new info is a high pitched whining sound in both ears (tinnitus). That is a classic sign of salicylate toxicity. So if we suspect acetaminophen overdose, we might consider NAC. But tinnitus suggests salicylate overdose, for"
+    },
+    {
+      "question_id": 77,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of polycystic ovarian syndrome (PCOS) is a significant risk factor for metabolic complications such as insulin resistance, dyslipidemia, and weight gain. Olanzapine is well known to exacerbate these metabolic issues. Therefore, the new information strongly argues against using olanzapine in this patient.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 78,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.5,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (brother died unexpectedly at age 17 during a sporting event) affects the likelihood of the hypothesis: recommending risperidone to prevent further episodes of impulsive behavior (like gambling, shopping) after antidepressant-induced mania.\n\nWe need to consider whether this new info changes the likelihood of recommending risperidone. The new info is about family history of sudden death at age 17 during sporting event. That could suggest a possible underlying cardiac condition (e.g., arrhythmogenic right ventricular cardiomyopathy, long QT syndrome, hypertrophic cardiomyopathy, etc.) that predisposes to sudden death. This is relevant because some antipsychotics (including risperidone) can prolong QT interval, increasing risk of arrhythmia. So the new info might make us more cautious about prescribing risperidone due to potential cardiac risk. So the new info makes the hypothesis less likely (i.e., less likely to recommend risperidone). How much? The brother died unexpectedly at 17 during a sporting event. That is a strong family history of sudden cardiac death. Risperidone can cause QT prolongation, but risk is moderate. However, the presence of a family history of sudden death would be a contraindication or at least a reason to avoid antipsychotics that prolong QT. So the new info makes the hypothesis less likely. Is it slight or much? I'd say it makes it much less likely to recommend risperidone. So rating -2.\n\nBut let's consider: The brother died unexpectedly at 17 during a sporting event. That could be due to arrhythmogenic right ventricular dysplasia, long QT, hypertrophic cardiomyopathy, etc. Many of these conditions can be exacerbated by certain medications that prolong QT. Risperidone is known to cause QT prolongation, but the risk is relatively low compared to other antipsychotics like ziprasidone, thior"
+    },
+    {
+      "question_id": 79,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The bilateral limitation of lateral gaze is a classic ophthalmologic sign of Wernicke\u2019s encephalopathy, a condition that is treated with thiamine. This new finding strongly supports the need for thiamine administration.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 80,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.3,
+        0.3,
+        0.8,
+        1.0,
+        0.3
+      ],
+      "response": "We need to evaluate how new information (BP 190/120) affects the likelihood of the hypothesis: giving her a benzodiazepine. The scenario: 70-year-old female, confusion, possible alcohol use, agitation, possible delirium. Hypothesis: giving benzodiazepine. New info: BP 190/120 (hypertensive crisis). How does that affect giving benzodiazepine? In hypertensive crisis, benzodiazepines can be used to reduce anxiety and lower BP, but they are not first-line. However, if she is hypertensive, giving benzodiazepine might help reduce BP by reducing sympathetic tone. But also, benzodiazepines can cause respiratory depression, especially in alcohol withdrawal. But the question: does the new info make the hypothesis more or less likely? The new info is high BP. In delirium, benzodiazepines are used for alcohol withdrawal seizures, but not for hypertension. But high BP might be due to anxiety or agitation. Benzodiazepines can help reduce BP. But is it indicated? In hypertensive crisis, first-line is IV antihypertensives like labetalol, nitroprusside. Benzodiazepines are not first-line. But if she is agitated, benzodiazepines can help calm her and reduce BP. So the new info might slightly increase the likelihood of giving benzodiazepine because it can help lower BP. But also, high BP might be a sign of hypertensive emergency, requiring immediate antihypertensive therapy. Benzodiazepines alone are insufficient. So the new info might not strongly support giving benzodiazepine. It might slightly reduce the likelihood because you would want to treat hypertension first. But the question: \"If you were thinking of: Giving her a benzodiazepine\" - the new info: BP 190/120. Does that make the hypothesis more or less likely? I'd say it slightly reduces the"
+    },
+    {
+      "question_id": 81,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.4,
+        0.4,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "The new description of a crusted, weeping rash with surrounding erythema is classic for impetigo, a bacterial skin infection that is typically treated with oral cephalexin. This information strongly supports the decision to prescribe cephalexin.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 82,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new description of the rash as papules with central umbilication strongly points toward molluscum contagiosum, a viral infection. Topical fluconazole is an antifungal agent and is not an appropriate treatment for molluscum. Therefore, this new information makes the hypothesis of recommending topical fluconazole much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 83,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.1,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.1
+      ],
+      "response": "The fact that the infant coughs frequently after vomiting is a classic sign of aspiration risk. Thickened feeds are specifically used to reduce reflux\u2011related vomiting and prevent aspiration in infants. Therefore, this new information strongly supports the decision to recommend thickened feeds.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 84,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.4,
+        0.0
+      ],
+      "response": "The fact that the infant is already receiving formula does not change the overall appropriateness of recommending smaller, more frequent feeds for her vomiting. It neither strongly supports nor undermines that management plan.  \n\n**Rating: 0**"
+    },
+    {
+      "question_id": 85,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.6,
+      "expert_dist_norm": [
+        0.2,
+        0.2,
+        0.0,
+        1.0,
+        0.6
+      ],
+      "response": "The fact that the abdominal mass crosses the midline strongly points toward a neuroblastoma, which is known to secrete catecholamine metabolites. This makes the decision to order a 24\u2011hour urine catecholamine by\u2011product test much more compelling.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 86,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of an elevated serum AFP strongly suggests a malignant abdominal tumor (e.g., hepatoblastoma or yolk\u2011sac tumor) rather than a benign or incidental finding that could be safely observed. Therefore, the hypothesis of watchful waiting becomes much less plausible.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 87,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.0,
+        0.5,
+        1.0,
+        0.8,
+        0.3
+      ],
+      "response": "We need to evaluate how the new information (subcostal and intercostal recessions) affects the likelihood of the hypothesis: ordering a nasopharyngeal swab for viral PCR. The hypothesis is a management plan: ordering a viral PCR. The new info indicates signs of respiratory distress: subcostal and intercostal recessions. That suggests more severe respiratory illness. In a 10-month-old with cough and noisy breathing, subcostal and intercostal recessions indicate increased work of breathing, possibly lower respiratory tract infection or severe viral infection. The presence of these signs might increase the likelihood that a viral PCR is indicated, because you want to identify the pathogen to guide management, especially if severe. However, the presence of signs of respiratory distress might also prompt immediate supportive care and maybe empiric antibiotics if bacterial pneumonia suspected. But the question is about the likelihood of ordering a nasopharyngeal swab for viral PCR. In a child with signs of respiratory distress, you might be more likely to order a viral PCR to confirm viral etiology, especially if you suspect RSV or influenza. So the new info makes the hypothesis slightly more likely? Or maybe much more likely? Let's think: In a mild cough, you might not order a viral PCR. But with signs of respiratory distress, you might be more inclined to test. So the new info increases the likelihood. But is it \"slightly\" or \"much\"? The presence of subcostal and intercostal recessions indicates moderate to severe distress. That might push you to order a viral PCR to confirm RSV, which is common in infants. So I'd say +1 (slightly more likely). But could be +2? The question: \"If you were thinking of: Ordering a nasopharyngeal swab for viral PCR\" The new info: subcostal and intercostal recessions. That indicates increased work of breathing. That might increase the suspicion of viral"
+    },
+    {
+      "question_id": 88,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that the child\u2019s stridor is only present when upset suggests a milder, transient upper\u2011airway irritation rather than a severe, constant obstruction. This reduces the urgency for inpatient care.  \n**Rating: -1**"
+    },
+    {
+      "question_id": 89,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information affects the likelihood of recommending a bedwetting alarm. The scenario: 7-year-old male with nocturnal enuresis 3-4 nights per week. Hypothesis: recommending bedwetting alarm. New info: enuresis only for last 2 weeks, previously had no difficulties with continence for several years prior.\n\nWe need to consider whether bedwetting alarm is recommended for primary enuresis vs secondary. Bedwetting alarm is recommended for primary enuresis (no prior continence) and for secondary? Actually bedwetting alarm is recommended for primary enuresis (no prior continence) and for secondary enuresis? Let's recall guidelines: Bedwetting alarm is first-line for primary enuresis. For secondary enuresis, treat underlying cause first. But if secondary enuresis is due to stress or other cause, alarm may be used after addressing cause. But the new info indicates secondary enuresis (since previously continent). So bedwetting alarm may be less appropriate until underlying cause is addressed. So new info makes hypothesis less likely. How much? The new info indicates that the enuresis is recent (2 weeks) and previously continent. That suggests secondary enuresis. Bedwetting alarm is less effective for secondary enuresis. So the hypothesis is less likely. The magnitude: maybe slightly less likely? But guidelines: bedwetting alarm is first-line for primary enuresis; for secondary, treat underlying cause first. So the recommendation of alarm is less likely. The new info reduces the likelihood. How much? The new info is significant: indicates secondary enuresis. So rating -1 or -2? The question: \"new information makes the hypothesis much less likely\" vs \"slightly less likely\". The new info is quite relevant: it changes the type of enuresis. That would reduce the likelihood of recommending alarm. I'd say -1 or"
+    },
+    {
+      "question_id": 90,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (child has no difficulties with urinary continence during the day) affects the likelihood of the hypothesis: ordering a urine microscopy, culture and sensitivity. The hypothesis is a management plan: ordering urine microscopy, culture, sensitivity. The new info: child has no daytime urinary continence issues. Does that affect the likelihood that we should order urine microscopy? The presence of daytime continence suggests that the enuresis is not due to a urinary tract infection or obstruction? Usually, if a child has nocturnal enuresis but no daytime symptoms, it's likely primary enuresis or secondary. Urine culture is often ordered if there are signs of infection or daytime symptoms. But if no daytime symptoms, maybe less likely to have UTI. But still, you might order urine culture to rule out infection. The new info might slightly reduce the likelihood that a UTI is present, but does it reduce the need to order a urine culture? Many guidelines: For nocturnal enuresis, if no daytime symptoms, you might still do a urine dipstick to rule out infection. But the question: \"If you were thinking of: Ordering a urine microscopy, culture and sensitivity\" is the hypothesis. The new info: no daytime continence issues. Does that make the hypothesis less likely? Possibly slightly less likely, because if the child had daytime symptoms, you'd be more suspicious of UTI. But still, you might order a urine test to rule out infection. So the new info might slightly reduce the likelihood of ordering a urine culture. So rating -1. Let's think: The new info is that the child has no daytime urinary continence difficulties. That suggests that the enuresis is not due to a urinary tract infection or obstruction. So the probability that a UTI is present is lower. So the need to order a urine culture is less. So the hypothesis is slightly less likely. So rating -1."
+    },
+    {
+      "question_id": 91,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The presence of a fever (38.9\u202f\u00b0C) in a child with acute hip pain and a limp is a classic red\u2011flag sign that suggests a serious intra\u2011articular or peri\u2011articular infection (septic arthritis, osteomyelitis) or another urgent pathology. Fever markedly increases the urgency for evaluation and management in a hospital setting. Therefore, this new information makes the decision to transfer the child to hospital **much more likely**.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 92,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (past medical history of minimal change disease) affects the likelihood of the hypothesis: recommending simple analgesia and observation for a 10-year-old with acute hip pain and limp.\n\nWe need to consider whether minimal change disease (MCD) influences the management of acute hip pain. MCD is a kidney disease causing nephrotic syndrome, often treated with steroids. It can be associated with edema, hyperlipidemia, etc. Does it predispose to certain conditions? Could it be a risk factor for osteomyelitis? Not directly. But MCD may be treated with steroids, which can increase infection risk. But the patient hasn't been on steroids? The scenario doesn't mention current treatment. Past medical history of MCD might mean he has had nephrotic syndrome, maybe on steroids. Steroids can predispose to infection, including osteomyelitis. But the question: \"If you were thinking of: Recommending simple analgesia and observation\" - is that still appropriate? If the patient is immunosuppressed, maybe we should be more cautious. But we don't know if he's on steroids. Minimal change disease is often treated with steroids, but many patients go into remission. Past medical history alone may not change management unless current immunosuppression. But if he is immunosuppressed, risk of infection is higher, so we might consider more aggressive evaluation. But the question likely expects that minimal change disease is not directly relevant to hip pain, so the hypothesis remains unchanged. So rating 0.\n\nBut let's think: Minimal change disease can cause nephrotic syndrome, which can lead to hypercoagulability? Actually nephrotic syndrome can increase risk of venous thromboembolism, but not osteomyelitis. But immunosuppression can increase infection risk. But we don't know if he's on steroids. Past medical history alone may not change the plan. So rating 0.\n\nThus final"
+    },
+    {
+      "question_id": 93,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.4,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a fever (38.2\u202f\u00b0C) is a red flag for intra\u2011uterine infection (chorioamnionitis). Tocolysis with nifedipine is contraindicated in the setting of infection because it can worsen maternal and fetal outcomes. Therefore, this new information strongly argues against giving nifedipine.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 94,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        1.0
+      ],
+      "response": "The presence of a positive fetal fibronectin test in a patient with preterm labor at 31\u202fweeks is a strong predictor of imminent delivery (within 7\u202fdays). This makes the indication for antenatal corticosteroids much stronger, as the goal is to accelerate fetal lung maturation before preterm birth. Therefore, the new information increases the likelihood of giving corticosteroids.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 95,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The appearance of urticarial lesions with bullae around the umbilicus suggests a severe cutaneous reaction or bullous disease rather than the typical pruritus of intra\u2011hepatic cholestasis of pregnancy. This new finding makes the use of ursodeoxycholic acid (which is specifically indicated for ICP) much less likely.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 96,
+      "source": "Adelaide SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.1,
+        1.0,
+        0.3
+      ],
+      "response": "The new detail that the itching is mainly on the hands and feet is a classic sign of intra\u2011hepatic cholestasis of pregnancy (ICP). ICP is a serious condition that increases the risk of fetal distress and stillbirth, and the standard management at term (around 37\u202fweeks) is to induce labor to reduce that risk. Therefore, this information strongly supports"
+    },
+    {
+      "question_id": 97,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (past history of migraines) affects the likelihood of the hypothesis: recommending venlafaxine. Venlafaxine is an SNRI antidepressant used for depression, anxiety, and also for hot flashes? Actually venlafaxine is not first-line for hot flashes; SSRIs like paroxetine, sertraline, fluoxetine are used. Venlafaxine can cause increased blood pressure, but also can be used for hot flashes? Not typical. But the question: \"If you were thinking of: Recommending venlafaxine\" as a hypothesis. The new info: past history of migraines. Does that affect the likelihood of recommending venlafaxine? Venlafaxine can trigger migraines? Actually venlafaxine can cause headaches, but migraines? Venlafaxine is known to cause headaches as a side effect. Also, venlafaxine can lower the threshold for migraines? Not sure. But migraines are a contraindication? Not necessarily. But venlafaxine can cause increased blood pressure, but migraines are not a contraindication. However, venlafaxine can cause increased risk of migraine? Actually, some antidepressants can trigger migraines. But is there a known contraindication? Not a major one. But if she has migraines, maybe you might consider other options like SSRIs or gabapentin. But venlafaxine can cause headaches, so might worsen migraines. So the new info might slightly reduce the likelihood of recommending venlafaxine. So rating -1. But let's think: The hypothesis is recommending venlafaxine. The new info: past history of migraines. Venlafaxine can cause headaches, but migraines are a separate condition. But if she has migraines, you might want to avoid medications that can trigger migraines. Venlafaxine can cause headaches, but not necessarily migraines. But it's a risk factor. So I'd say slightly less likely. So rating -1"
+    },
+    {
+      "question_id": 98,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "The fact that she has had a hysterectomy but still has her ovaries means she does not have a uterus that could be at risk of endometrial hyperplasia or cancer from estrogen therapy. Therefore, estrogen\u2011only hormone replacement therapy is a safe and appropriate option for her hot flushes and associated symptoms. This new information strongly supports the hypothesis.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 99,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.0,
+        0.2,
+        0.2
+      ],
+      "response": "The irregularity of her cycles means that day\u202f21 may not reliably correspond to the luteal phase, reducing the usefulness of a single day\u201121 progesterone measurement.  \n**Rating: -1**"
+    },
+    {
+      "question_id": 100,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The history of pelvic inflammatory disease (PID) is a strong risk factor for tubal scarring or blockage, which is precisely what a hysterosalpingogram (HSG) is designed to evaluate. Therefore, this new information makes it much more likely that an HSG would be considered in the work\u2011up.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 101,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The presence of maternal gestational diabetes markedly increases the risk of neonatal hypoglycemia, making it much more likely that measuring the baby\u2019s blood sugar level is warranted.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 102,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.6,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The fact that the mother had limited antenatal care is a significant risk factor for early\u2011onset neonatal infection (e.g., group\u202fB streptococcal sepsis, chorioamnionitis). This strongly supports the decision to start empiric antibiotic therapy in a newborn presenting with respiratory distress.  \n**Rating: +2**"
+    },
+    {
+      "question_id": 287,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "Epicanthal folds are a classic, highly suggestive feature of Down syndrome. In the context of a newborn already showing abnormal tone, dysmorphic facial features, and a heart murmur, the presence of epicanthal folds strongly supports the diagnosis of trisomy\u202f21.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 288,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.375,
+        1.0
+      ],
+      "response": "The presence of a smooth philtrum is a classic, highly specific facial feature of fetal alcohol syndrome (FAS). In a newborn already showing abnormal tone, dysmorphic features, and a heart murmur, the addition of a smooth philtrum strongly supports prenatal alcohol exposure as the underlying cause. This new finding markedly increases the probability of the hypothesis.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 289,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.6666666666666666,
+        0.0,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "Macrocephaly is the opposite of the typical microcephaly seen in Trisomy\u202f18. This finding strongly argues against Edwards syndrome.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 290,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "The presence of a single umbilical artery is a strong indicator of possible renal anomalies (e.g., renal agenesis, dysplasia, or other structural abnormalities). In a newborn already showing abnormal tone, dysmorphic features, and a heart murmur, this finding heightens the suspicion for associated renal pathology and therefore makes ordering a renal ultrasound much more warranted.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 291,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.3333333333333333,
+        1.0,
+        0.5
+      ],
+      "response": "Brushfield spots are a classic ocular finding in infants with Down syndrome (trisomy\u202f21). Their presence strongly suggests a chromosomal abnormality and would prompt a clinician to confirm the diagnosis with cytogenetic testing. Therefore, this new finding makes the decision to order a karyotype much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 292,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.42857142857142855,
+        1.0,
+        0.14285714285714285,
+        0.0
+      ],
+      "response": "The new information that the cardiac exam is normal reduces the need for an echocardiogram, but does not eliminate it entirely because other findings (abnormal tone, dysmorphic features) still warrant cardiac evaluation. Thus the likelihood of ordering an echocardiogram is slightly decreased.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 293,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "The high serum TSH level indicates that the infant is likely hypothyroid, which is a common endocrine complication in Trisomy\u202f21. Therefore, the evidence strongly supports the need to initiate levothyroxine therapy.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 294,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        1.0,
+        0.42857142857142855,
+        0.14285714285714285,
+        0.0,
+        0.0
+      ],
+      "response": "Rating: -1"
+    },
+    {
+      "question_id": 295,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The scattered petechial rash is a classic sign of thrombocytopenia or platelet dysfunction, both of which are common in newborns with Trisomy\u202f21 (e.g., transient myeloproliferative disorder, immune\u2011mediated thrombocytopenia). Detecting a petechial rash strongly suggests that a platelet count and morphology should be evaluated. Therefore, the presence of this rash makes the decision to order a CBC with differential and blood smear **much more likely**.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 296,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.8333333333333334,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.8333333333333334
+      ],
+      "response": "The presence of allergic rhinitis and asthma in a 5\u2011year\u2011old strongly supports the atopic triad (atopic dermatitis, allergic rhinitis, asthma). These comorbid atopic conditions are classic risk factors for atopic dermatitis and make the diagnosis far more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 297,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.8333333333333334,
+        1.0
+      ],
+      "response": "The honey\u2011colored crusts over erythematous plaques in the popliteal creases are classic for impetigo. This new finding strongly supports the diagnosis and increases its likelihood considerably.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 298,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.25,
+        1.0,
+        0.5,
+        1.0,
+        0.0
+      ],
+      "response": "The new finding of a maculopapular rash involving the trunk and face is not characteristic of erythema multiforme, which typically presents with target lesions on the extremities and sometimes the face but rarely involves the trunk. This information therefore reduces the plausibility of EM as the diagnosis.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 299,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.375,
+        1.0
+      ],
+      "response": "The new description of scattered circular or"
+    },
+    {
+      "question_id": 300,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.1111111111111111,
+        0.0,
+        0.0,
+        1.0,
+        0.1111111111111111
+      ],
+      "response": "The new information (a rough truncal rash and a low\u2011grade axillary temperature of 99.6\u202f\u00b0F) does not support the presence of a streptococcal pharyngitis, which is the typical indication for a rapid streptococcal antigen test. It slightly reduces the clinical suspicion for strep infection.  \n\n**Rating: -1"
+    },
+    {
+      "question_id": 301,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        0.16666666666666666,
+        1.0,
+        0.5
+      ],
+      "response": "The presence of a tender, erythematous area with honey\u2011colored crust strongly suggests a bacterial superinfection (most commonly impetigo caused by *Staphylococcus aureus* or *Streptococcus pyogenes*). This makes obtaining a wound culture highly relevant for identifying the causative organism and guiding appropriate antibiotic therapy. Therefore, the new information makes the hypothesis that a wound culture is warranted much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 302,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.2,
+        0.4,
+        0.2,
+        1.0,
+        0.4
+      ],
+      "response": "We need to evaluate how new information (multiple areas of skin breakdown in affected areas) affects the likelihood of the hypothesis: prescribing a low potency steroid cream.\n\nWe have a child with chronic eczema (dry rough skin since birth, intermittent outbreaks). KOH negative. Itching. Recent scented soap. Now multiple areas of skin breakdown.\n\nWe need to consider whether prescribing low potency steroid cream is appropriate. Skin breakdown indicates more severe eczema, possible secondary infection. Low potency steroids may be used for mild eczema, but for more severe or skin breakdown, maybe higher potency or different management. But low potency may still be used for mild eczema, but if skin breakdown, maybe need to treat infection, use barrier creams, maybe moderate potency steroid. So new info might make the hypothesis less likely? The hypothesis is prescribing low potency steroid cream. Skin breakdown suggests more severe disease, maybe need higher potency steroid or other interventions. So the new info makes the hypothesis less likely. How much? Slightly less likely? Probably more likely to need higher potency or different therapy. So rating -1? Or -2? Let's think.\n\nThe new info: multiple areas of skin breakdown. That indicates more severe eczema, maybe secondary infection. Low potency steroid may not be sufficient. So the hypothesis of prescribing low potency steroid is less likely. The question: \"If you were thinking of: Prescribing a low potency steroid cream\" - new info: multiple areas of skin breakdown. That would reduce the likelihood of that hypothesis. How much? I'd say slightly less likely? But maybe more strongly less likely because skin breakdown indicates more severe disease. But still low potency steroid could be used for mild eczema. But with skin breakdown, maybe need to treat infection first, use barrier creams, maybe moderate potency steroid. So I'd rate -1 or -2. The difference: -1: slightly less likely; -2: much less likely. Skin breakdown is a significant change. I'd lean -2: much less likely"
+    },
+    {
+      "question_id": 303,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        0.2857142857142857,
+        1.0
+      ],
+      "response": "The fact that the child has not responded to prior topical steroids and immune\u2011suppressive treatments indicates that the condition is refractory to standard first\u2011line therapy and likely requires specialized evaluation and management. This strongly supports the need for a dermatology referral.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 304,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.25,
+        0.75,
+        0.75,
+        1.0
+      ],
+      "response": "The recent MRSA abscess strongly suggests a bacterial infection in the area of the rash, which would make antibiotic therapy a more appropriate and likely management step.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 305,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.125,
+        0.0,
+        1.0,
+        0.125
+      ],
+      "response": "We need to evaluate how new information (right sided compressible flank mass) affects the likelihood of the hypothesis: Dysplastic kidney.\n\nWe have a newborn with distended abdomen. Hypothesis: dysplastic kidney. New info: right sided compressible flank mass.\n\nWe need to consider whether a compressible flank mass is consistent with dysplastic kidney. Dysplastic kidney is a congenital anomaly where kidney is malformed, often small, non-functioning, may be cystic. Usually not compressible? A dysplastic kidney may be small, non-functioning, but may not be compressible. A compressible flank mass could be a cystic mass like a cystic dysplastic kidney? But typical dysplastic kidney is non-compressible? Let's think.\n\nIn newborn, a compressible flank mass could be a cystic mass like a cystic dysplastic kidney or a cystic renal mass. But compressible suggests fluid-filled. Dysplastic kidney may be cystic but often non-compressible? Actually, cystic dysplastic kidney may present as a cystic mass that may be compressible? But typical dysplastic kidney is small, non-functioning, may be cystic. But compressibility might be less typical. However, a compressible flank mass could be a cystic renal mass like a cystic dysplastic kidney or a cystic nephroma. But the presence of a compressible flank mass might support a cystic dysplastic kidney? But the question: \"If you were thinking of a diagnosis of: Dysplastic kidney\" and new info: right sided compressible flank mass. Does that make the hypothesis more likely or less likely? Let's analyze.\n\nDysplastic kidney: congenital anomaly, often unilateral, small, non-functioning, may be cystic. It can present as a palpable mass? Usually the kidney is small and non-palpable. But a cystic dysplastic kidney may present as a cystic mass. But compressibility? A cystic"
+    },
+    {
+      "question_id": 306,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "The presence of classic Down\u2011syndrome features (upward\u2011slanting palpebral fissures and a single palmar crease) strongly suggests trisomy\u202f21. Down syndrome is well known to be associated with congenital intestinal obstructions\u2014most notably duodenal atresia (the \u201cdouble\u2011bubble\u201d sign) and, less commonly, Hirschsprung disease or malrotation. Therefore, identifying these dysmorphic features markedly increases the probability that the infant\u2019s abdominal distension is due to an intestinal obstruction rather than another cause.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 307,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "We need to evaluate how new information (sacral dimple with hair tuft) affects the likelihood of the hypothesis: Distended bladder. The scenario: 36-hour-old full-term infant with distended abdomen. Hypothesis: Distended bladder. New info: sacral dimple with hair tuft.\n\nWe need to think: sacral dimple with hair tuft is a marker for spinal dysraphism, e.g., tethered cord, spina bifida occulta, meningomyelocele, etc. It can be associated with urinary tract anomalies, including neurogenic bladder leading to distended bladder. So the presence of sacral dimple with hair tuft increases suspicion of spinal cord anomaly, which can cause neurogenic bladder. So it makes the hypothesis of distended bladder more likely. But is it strongly associated? The presence of a sacral dimple with hair tuft is a sign of possible spinal dysraphism. That can cause neurogenic bladder. So yes, it increases the likelihood of distended bladder. So rating +1 or +2? The question: \"Think through how the new information affects the hypothesis.\" The new info is a sign of possible spinal cord anomaly. That could cause neurogenic bladder. So it makes the hypothesis more likely. But is it \"much more likely\" or \"slightly more likely\"? The presence of a sacral dimple with hair tuft is a red flag for spinal dysraphism. In a newborn with abdominal distension, you might suspect urinary retention due to neurogenic bladder. So the presence of this sign increases the suspicion. I'd say +1 (slightly more likely). But could be +2? Let's consider: The presence of sacral dimple with hair tuft is a strong indicator of spinal dysraphism. That is a known cause of neurogenic bladder. So it significantly increases the likelihood. But the question: \"If you were thinking of a diagnosis of: Distended bladder.\" The new info"
+    },
+    {
+      "question_id": 308,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.6,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The infant\u2019s poor feeding is a classic early sign of neonatal sepsis, especially in the context of a distended abdomen. This new information strongly supports the need for a blood culture to evaluate for infection.  \n**Rating: +2**"
+    },
+    {
+      "question_id": 309,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The presence of bilious vomiting in a newborn with a distended abdomen is a classic red\u2011flag sign of a possible intestinal obstruction (e.g., malrotation with volvulus, atresia, or other obstruction). An abdominal radiograph is a key initial diagnostic study to evaluate for obstruction, pneumoperitoneum, or other abdominal pathology. Therefore, this new information strongly supports the decision to order an abdominal radiograph.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 310,
+      "source": "Open Medical SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of normal urine output does not change the clinical suspicion that the infant\u2019s abdominal distension may be due to an intra\u2011abdominal pathology (e.g., intestinal obstruction, malrotation, meconium ileus). It mainly rules out a urinary tract obstruction but does not alter the need to evaluate the abdomen with imaging. Therefore, the new information has no effect on the likelihood of ordering an abdominal ultrasound.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 311,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.1111111111111111,
+        1.0
+      ],
+      "response": "The presence of a distended bladder on ultrasound strongly suggests a neurogenic component (e.g., spinal dysraphism, tethered cord, or other spinal cord lesion) that often requires neurosurgical evaluation and intervention. This new finding therefore makes the need for referral to pediatric neurosurgery much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 312,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        0.14285714285714285
+      ],
+      "response": "We need to evaluate how new information (multiple renal cysts on ultrasound) affects the likelihood of the hypothesis: initiating antibiotic therapy. The scenario: 36-hour-old full-term infant with distended abdomen. No history of abdominal conditions, prenatal course unremarkable. The hypothesis: initiating antibiotic therapy. The new info: multiple renal cysts on ultrasound.\n\nWe need to think: In a newborn with abdominal distension, differential includes intestinal obstruction, meconium ileus, malrotation, Hirschsprung, necrotizing enterocolitis, etc. Antibiotics might be started empirically for suspected sepsis or NEC. Renal cysts: multiple cysts could be part of a syndrome like autosomal recessive polycystic kidney disease (ARPKD) or other cystic disease. ARPKD can present with abdominal distension due to enlarged kidneys, but also can have hepatic fibrosis. But antibiotic therapy? Renal cysts are not an indication for antibiotics unless there's infection. The presence of renal cysts might suggest a congenital anomaly, but not necessarily infection. So the new info might reduce the likelihood that antibiotics are needed, unless there's suspicion of infection. But the scenario: infant with abdominal distension. The presence of renal cysts might explain the distension (enlarged kidneys). So maybe antibiotics are less likely needed. So the new info makes the hypothesis less likely. How much? Slightly less likely? Probably -1. Because it's not a strong contraindication but suggests alternative cause. So rating -1.\n\nBut let's consider: In a newborn with abdominal distension, you might start antibiotics empirically for sepsis or NEC. But if you find renal cysts, that might explain the distension, but you still might consider infection. But the presence of cysts might not change the need for antibiotics if you suspect sepsis. But the question: \"If you were thinking of the following management: Initiating antibiotic therapy.\" The new"
+    },
+    {
+      "question_id": 313,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The double\u2011bubble sign on the abdominal radiograph is classic for a proximal intestinal obstruction (most commonly duodenal atresia). In such cases, the first step in management is to decompress the stomach and proximal bowel with a nasogastric tube. Thus, the new imaging finding strongly supports the decision to insert a nasogastric tube.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 314,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of frequent vomiting is a classic feature of viral gastroenteritis and reinforces the likelihood of this diagnosis rather than contradicting it. It does not dramatically change the probability but makes the diagnosis a bit more plausible.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 315,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.2857142857142857,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "The presence of blood in the stool is a classic red\u2011flag sign for invasive bacterial pathogens (e.g., Shigella, Campylobacter, Salmonella, EHEC). In a 12\u2011month\u2011old with diarrhea, this finding markedly increases the probability that the cause is bacterial rather than viral or other etiologies.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 316,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a fever (38.1\u202f\u00b0C rectally) argues against lactose intolerance, which is a non\u2011infectious, non\u2011inflammatory condition and does not typically cause fever. This new information therefore makes the lactose\u2011intolerance hypothesis much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 317,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of ketones in the urine suggests significant dehydration or a metabolic disturbance (e.g., ketoacidosis) in a child with diarrhea. This strongly increases the clinical need to assess electrolyte status and acid\u2013base balance. Therefore, the new information makes ordering serum electrolytes much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 318,
+      "source": "Open Medical SCT",
+      "rating": 0,
+      "score": 0.14285714285714285,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "We need to evaluate how new information (green tinge to emesis) affects the likelihood that we should order an abdominal radiograph. The scenario: 12-month-old with 3 days diarrhea, intermittent abdominal pain, day care exposure. Hypothesis: ordering abdominal radiograph. New info: green tinge to emesis (vomiting). Green emesis indicates bile, suggests obstruction or ileus? In infants, green vomit can be due to bile reflux, or obstruction. But in a child with diarrhea, green vomit could be due to bile. Radiograph might be indicated if obstruction suspected. But green vomit alone is not a strong indicator of obstruction; could be due to rapid transit. The presence of green emesis might slightly increase suspicion of obstruction or ileus, but still mild. The scenario: diarrhea and abdominal pain, day care. Likely viral gastroenteritis. Green vomit could be due to bile, but not necessarily obstruction. Radiograph might not be needed. So new info slightly less likely to order radiograph? Actually green emesis might raise suspicion of obstruction, but the overall picture still viral. So maybe slight increase? But the question: \"If you were considering ordering the following study: Abdominal radiograph\" The new info: green tinge to emesis. Does that make ordering radiograph more or less likely? Green emesis can be due to bile, which can be seen in obstruction. But in a child with diarrhea, green vomit could be due to rapid transit. Radiograph might be considered if obstruction suspected. But the scenario: 3 days diarrhea, intermittent abdominal pain, day care. The green emesis might be a sign of bile, but not necessarily obstruction. So maybe it slightly increases the likelihood? But the overall scenario still suggests viral gastroenteritis. Radiograph is not indicated. So the new info does not change the decision much. So rating 0. But we need to think:"
+    },
+    {
+      "question_id": 319,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a pet snake is a well\u2011known risk"
+    },
+    {
+      "question_id": 320,
+      "source": "Open Medical SCT",
+      "rating": 0,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The hematocrit (40%) and hemoglobin (12\u202fg/dL) are within normal limits for a 12\u2011month\u2011old child and do not suggest significant anemia or hemoconcentration that would alter the management plan. Therefore, this new laboratory data neither supports nor undermines the decision to send the child home with oral rehydration instructions.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 321,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.2857142857142857,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "The child\u2019s rapid 10\u202f% weight loss over two days is a clear indicator of significant fluid deficit and dehydration. This finding reinforces the need for aggressive fluid replacement, making the decision to initiate intravenous hydration much more compelling.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 322,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The negative stool PMN (lactoferrin) indicates an absence of neutrophilic inflammation in the gut, which is highly suggestive of a non\u2011bacterial (most likely viral) etiology for the diarrhea. Antibiotic therapy is generally reserved for confirmed bacterial infections or specific bacterial pathogens. Therefore, this new information substantially reduces the likelihood that antibiotics are warranted.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 323,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "The presence of an erythematous pharynx and enlarged anterior cervical lymph nodes is a classic finding in streptococcal pharyngitis. This new information therefore makes the diagnosis of strep pharyngitis more plausible, though it is not definitive on its own.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 324,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.0,
+        0.5,
+        0.0
+      ],
+      "response": "The new finding of multiple firm, painless posterior cervical lymph nodes is less characteristic of acute lymphadenitis, which typically presents with tender, often erythematous nodes. While reactive lymphadenopathy or other causes (e.g., viral infection, lymphoma) could explain painless nodes, the absence of pain makes lymphadenitis slightly less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 325,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "The description of a single, 3\u202fcm, flocculent (fluffy/fluctuant) mass on the anterior aspect of the neck is consistent with the typical presentation of a branchial cleft cyst in a young child. This new finding therefore slightly increases the plausibility of that diagnosis.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 326,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "The child\u2019s increasing fatigue over the past three weeks is a classic symptom of infectious mononucleosis caused by Epstein\u2011Barr virus. Combined with the neck swelling and intermittent fevers, this new information supports the possibility of EBV infection and therefore makes ordering EBV titers a more reasonable consideration.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 327,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        1.0,
+        0.5,
+        0.0
+      ],
+      "response": "The new information (high\u2011grade fevers and persistent pharyngeal redness) strongly suggests a significant inflammatory or infectious process. Serum C\u2011reactive protein is a sensitive marker that rises markedly in such situations, so the likelihood that measuring CRP would be clinically useful increases substantially.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 328,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.0,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "The presence of two cats in the household raises the possibility of cat\u2011scratch disease (Bartonella henselae), which commonly presents with a self\u2011limited regional lymphadenitis that is usually managed empirically with antibiotics rather than requiring a biopsy. Thus, this new information slightly reduces the likelihood that a biopsy of the enlarged lymph node would be necessary.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 329,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        0.2857142857142857,
+        1.0
+      ],
+      "response": "The new finding of a diffuse erythematous truncal rash along with swollen hands and feet strongly points toward Kawasaki disease\u2014a vasculitis that typically presents with fever, cervical lymphadenopathy, rash, and extremity changes. IVIG is the cornerstone of treatment for Kawasaki disease to prevent coronary artery aneurysms. Thus, this new information makes the decision to initiate IVIG much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 330,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The new laboratory data (marked leukocytosis with a predominance of lymphocytes and the presence of atypical cells) strongly suggests a hematologic malignancy such as leukemia or lymphoma. In such cases, a bone marrow biopsy is a key diagnostic step to confirm the diagnosis and guide treatment. Therefore, this new information makes the decision to perform a bone marrow biopsy much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 331,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.125,
+        0.0,
+        0.125,
+        1.0
+      ],
+      "response": "The presence of a localized erythematous papule with ipsilateral tender axillary lymphadenopathy strongly suggests a bacterial skin infection that is likely spreading to regional lymph nodes. This clinical picture is highly compatible with bacterial cervical lymphadenitis, for which antibiotic therapy is the standard treatment. Thus, the new information increases the likelihood that starting antibiotics is the appropriate management.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 332,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.125,
+        1.0,
+        0.125
+      ],
+      "response": "The presence of a recent runny nose and congestion is a classic antecedent to acute otitis media, as viral upper\u2011respiratory infections commonly lead to eustachian tube dysfunction and subsequent middle\u2011ear infection. This new information therefore makes the diagnosis of acute otitis media more plausible, though it does not completely rule out other causes of ear pain.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 333,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.16666666666666666,
+        0.0,
+        0.0
+      ],
+      "response": "The absence of recent swimming removes a key risk factor for acute otitis externa, slightly lowering its plausibility but not ruling it out entirely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 334,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.1111111111111111,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a fever (38.5\u202f\u00b0C) is not typical for a simple foreign body in the external ear canal and suggests an infectious process such as otitis externa or otitis media. Therefore, this new information slightly reduces the likelihood that a foreign body is the cause of the symptoms.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 335,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1111111111111111,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of bilateral myringotomy tubes indicates that the child has already undergone tympanostomy tube placement, which is a definitive intervention for recurrent acute otitis media. Ear canal irrigation is generally not indicated in patients with tubes because irrigation can introduce fluid into the middle ear through the tubes, potentially causing infection or other complications. Therefore, the new information makes the use of ear canal irrigation much less likely.\n\nRating: -2"
+    },
+    {
+      "question_id": 336,
+      "source": "Open Medical SCT",
+      "rating": 0,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        0.2857142857142857,
+        0.0,
+        0.0,
+        0.14285714285714285
+      ],
+      "response": "We need to evaluate how new information (purulent, erythematous tympanic membranes) affects the likelihood of the hypothesis: \"Complete blood count with differential\" as an intervention. The hypothesis is that we are considering ordering a CBC with differential. The new information is a finding of purulent, erythematous tympanic membranes. How does that affect the likelihood that we should order a CBC? In a child with acute otitis media, purulent, erythematous TM indicates acute infection. Usually, a CBC is not routinely indicated for uncomplicated AOM unless there are red flags or severe illness. The presence of purulent, erythematous TM indicates typical AOM. Does that increase or decrease the likelihood of ordering a CBC? Usually, a CBC might be considered if the child is ill-appearing, has fever, or if there are complications. The presence of purulent TM indicates infection but not necessarily systemic. The mother reports previous episodes requiring antibiotics. The child is 2 years old. The new info indicates typical AOM. The question: does this new info make us more or less likely to order a CBC? In general, for uncomplicated AOM, a CBC is not indicated. The presence of purulent TM is typical; it doesn't change the need for CBC. So the new info has no effect on the hypothesis. So rating 0.\n\nBut let's consider: The mother has given acetaminophen with temporary improvement. The child has had multiple previous episodes requiring antibiotics. The exam shows purulent, erythematous TM. That suggests acute infection. The question: Should we order a CBC? Usually, no. But if the child had fever >38.5, or if the child is ill-appearing, or if there are signs of systemic infection, we might order CBC. But we don't have that info. The new info is just the exam. So it doesn't change the decision. So rating 0.\n\nThus"
+    },
+    {
+      "question_id": 337,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.42857142857142855,
+        1.0
+      ],
+      "response": "The presence of left\u2011sided post\u2011auricular swelling and erythema strongly suggests a complication of acute otitis media, most commonly acute mastoiditis. In a child with recurrent AOM who now has signs of mastoid involvement, imaging\u2014particularly a CT scan of the temporal bone or head\u2014is routinely recommended to assess the extent of infection, rule out intracranial spread, and guide management. This new finding therefore makes the decision to obtain a CT scan much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 338,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.25,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of an erythematous, swollen external ear canal with white discharge strongly suggests an external ear infection (otitis externa) rather than a middle\u2011ear infection. Oral amoxicillin for 10\u202fdays is the standard treatment for acute otitis media, not for otitis externa. Therefore, this new information makes the hypothesis of prescribing oral amoxicillin for 10\u202fdays much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 339,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.42857142857142855,
+        1.0
+      ],
+      "response": "The finding of a mobile, non\u2011tender tympanic membrane with a serous effusion is classic for otitis media with effusion (OME), not acute otitis media. OME is typically managed with supportive care (pain control, observation) rather than antibiotics. Thus this new information strongly supports the hypothesis that supportive pain control is the appropriate management plan.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 340,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.75,
+        1.0,
+        0.25,
+        0.5,
+        0.0
+      ],
+      "response": "The new information indicates that the child has had only two episodes of acute otitis media in the past eight months. Current guidelines for tympanostomy tube placement typically recommend referral for children with **\u22653 episodes in 6 months or \u22654 episodes in 12 months** (i.e., recurrent AOM). Two episodes in eight months fall below this threshold, making the indication for bilateral myringotomy tubes less compelling. Thus, the likelihood of pursuing ENT referral for tube insertion is slightly reduced.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 341,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.8333333333333334,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The new information (left\u2011lower\u2011quadrant abdominal pain that improves with defecation) is not characteristic of gastroesophageal reflux disease and suggests a different gastrointestinal process (e.g., constipation, IBS, or colonic pathology). It does not directly confirm GERD, but it does make GERD a less likely explanation for the vomiting.  \n**Rating: -1**"
+    },
+    {
+      "question_id": 342,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.125,
+        1.0,
+        0.25
+      ],
+      "response": "The fact that the patient has an upcoming high\u2011school cheerleading tryout introduces a potential body\u2011image pressure and a possible trigger for disordered eating behaviors, which could slightly raise the suspicion for bulimia. It does not strongly confirm or rule out the diagnosis, but it nudges the likelihood upward.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 343,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.16666666666666666,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.6666666666666666,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "The fact that her last menstrual period ended 23 days ago places her in the early first\u2011trimester window (approximately 9\u201310 days after ovulation), which is a time when pregnancy\u2011related symptoms such as nausea and vomiting can appear. This new information therefore makes the pregnancy hypothesis more plausible, though it does not definitively confirm it.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 344,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.1,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (patient denies sexual activity) affects the likelihood of the hypothesis: \"If you were considering the following laboratory study: A rapid urine HCG test\". The hypothesis is that we are considering doing a rapid urine HCG test. The new info: patient denies sexual activity. How does that affect the likelihood of the hypothesis? The hypothesis is about ordering a test. The new info is about sexual activity. In a teen with vomiting after meals, we might suspect pregnancy? But vomiting after meals could be many things. The patient denies sexual activity, which reduces the probability of pregnancy. So the likelihood that we need to do a urine HCG test is lower. So the new info makes the hypothesis less likely. How much? Probably slightly less likely? But the patient denies sexual activity, which is a strong negative for pregnancy. But still, pregnancy could be possible even if denies sexual activity? But it's a strong negative. So the new info makes the hypothesis less likely. On the scale: -1 or -2? The question: \"Think through how the new information affects the hypothesis, then provide your rating.\" The hypothesis is \"If you were considering the following laboratory study: A rapid urine HCG test\". The new info: patient denies sexual activity. That reduces the likelihood that we need to do the test. So rating: -1 or -2? The new info is fairly strong. But the scenario: vomiting after meals for a month. Could be pregnancy, but also could be other. Denying sexual activity reduces pregnancy probability. So the test is less likely needed. I'd rate -1 (slightly less likely). But maybe -2? The question: \"makes the hypothesis much less likely\" vs \"slightly less likely\". Denial of sexual activity is a strong negative for pregnancy. But still, pregnancy could be possible if she had unreported sexual activity. But the question is about the hypothesis of ordering a rapid urine H"
+    },
+    {
+      "question_id": 345,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.2,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The resting heart rate of 51\u202fbpm is lower than the typical range for a 16\u2011year\u2011old (60\u2013100\u202fb"
+    },
+    {
+      "question_id": 346,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.8333333333333334,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.8333333333333334
+      ],
+      "response": "Lanugo is a classic sign of severe malnutrition, often seen in eating disorders such as anorexia nervosa. The presence of lanugo strongly suggests that the patient\u2019s nutritional status is compromised. Prealbumin is a sensitive marker of recent changes in protein\u2011energy status and would be expected to be low in this setting. Therefore, the new finding makes it much more likely that measuring a prealbumin level is clinically relevant.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 347,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.5,
+        0.16666666666666666,
+        1.0,
+        0.0,
+        0.16666666666666666
+      ],
+      "response": "The patient\u2019s request for confidentiality strongly undermines the feasibility of involving her parents in the discussion about bulimia and anorexia. This new information makes the hypothesis of discussing her concerns with her parents much less likely.\n\nRating: -2"
+    },
+    {
+      "question_id": 348,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        0.5,
+        0.16666666666666666,
+        1.0
+      ],
+      "response": "The finding of a mild hyponatremia (132\u202fmmol/L) suggests that the patient is experiencing some degree of fluid and electrolyte imbalance, which is a medical concern in the context of restrictive eating and purging. This abnormality increases the risk of complications if the patient were to be managed solely outpatient, and it supports the need for close monitoring"
+    },
+    {
+      "question_id": 349,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.125,
+        0.25
+      ],
+      "response": "We need to evaluate how new information affects the likelihood of the hypothesis: \"Referring her to an eating disorder expert in the psychiatry department.\" The new info: patient does not feel she has a problem and promises to stop after the competitive cheer season.\n\nWe need to consider: The hypothesis is that we should refer her to an eating disorder expert. The new info indicates she denies having a problem and promises to stop after the season. That suggests she may not be ready for referral or may not be recognized as having an eating disorder. This reduces the likelihood that referral is appropriate? But we still suspect an eating disorder. The new info indicates denial and a promise to stop after season. That might reduce the urgency or the likelihood that she needs immediate referral. But the underlying condition may still exist. The new info indicates she is not acknowledging the problem, which might reduce the likelihood that referral is appropriate now. So rating: -1? Or -2? Let's think.\n\nThe hypothesis: \"Referring her to an eating disorder expert.\" The new info: She does not feel she has a problem and promises to stop after the season. That suggests she is not ready for referral, but the underlying condition may still be present. The new info reduces the likelihood that referral is appropriate now. But does it make it less likely that she has an eating disorder? No, it doesn't change the underlying risk. But it reduces the likelihood that referral is appropriate. The question: \"If you were thinking of: Referring her to an eating disorder expert in the psychiatry department.\" The new info: She does not feel she has a problem and promises to stop after the season. That reduces the likelihood that referral is needed now. So rating -1? Or -2? The new info is somewhat negative but not huge. She denies problem, but still has behaviors. The referral might still be needed. But the new info indicates she is not ready. So I'd rate -1: slightly"
+    },
+    {
+      "question_id": 350,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of a bulging anterior fontanelle (or petechiae) in a 3\u2011week\u2011old infant with fever is a classic red flag for bacterial meningitis or sepsis. These findings are far more characteristic of a bacterial etiology than a viral one. Therefore, the new information substantially lowers the probability that the illness is due to a viral infection.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 351,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of copious clear nasal secretions is more characteristic of a viral upper\u2011respiratory infection rather than a bacterial one (bacterial infections usually produce purulent, yellow/green discharge). Thus this new finding slightly decreases the likelihood that the infant\u2019s fever is due to a bacterial infection.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 352,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of a vesicular rash on an erythematous base strongly supports the possibility of neonatal HSV infection, as this is a classic cutaneous manifestation of HSV in infants. Therefore, the new information makes the hypothesis of HSV infection much more likely.\n\nRating: +2"
+    },
+    {
+      "question_id": 353,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.25,
+      "expert_dist_norm": [
+        0.0,
+        0.25,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We have a scenario: 3-week-old female infant, 2-hour history of rectal temperature 101.5F. Born at 33 weeks gestation, just released from NICU 3 days ago. Hypothesis: ordering a urine culture or ordering a CBC with diff. New information: urine dip negative for nitrates; maternal history of negative group B strep serology.\n\nWe need to rate how new information affects the likelihood of the hypothesis. The hypothesis is \"Ordering a urine culture\" or \"Ordering a CBC with diff\". Actually the prompt says \"If you were considering: Ordering a urine culture (Ordering a CBC with diff)\". It seems two separate hypotheses? The new information includes urine dip negative for nitrates and maternal history negative GBS. We need to evaluate how this new info affects the likelihood of the hypothesis. Likely we need to give rating for each hypothesis? The instruction: \"After your reasoning, state your final rating in the format: Rating: X\". It seems we need one rating. But we have two hypotheses. Maybe we need to choose one? The scenario: 3-week-old febrile infant. We consider ordering a urine culture. New info: urine dip negative for nitrates. That makes a urinary tract infection less likely. So ordering a urine culture is less likely to be useful. So rating -1 or -2? Negative nitrates suggests no UTI. But in neonates, dipstick may be unreliable. But negative nitrates reduces likelihood of UTI. So ordering a urine culture is less likely to be useful. So rating -1 or -2? \"Much less likely\" would be -2. \"Slightly less likely\" -1. I'd say -1 because negative nitrates reduces but not eliminates possibility. Also maternal GBS negative reduces risk of neonatal GBS sepsis. So overall less likely to need urine culture. So rating -1.\n\nNow for ordering a CBC with"
+    },
+    {
+      "question_id": 354,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.75,
+        1.0,
+        0.75
+      ],
+      "response": "We need to evaluate how new information (respiratory rate 62 at rest with no retractions) affects the likelihood of the hypothesis: ordering a chest radiograph. The scenario: 3-week-old infant, 2-hour history of rectal temperature 101.5F, born at 33 weeks gestation, just released from NICU 3 days ago. Hypothesis: ordering a chest radiograph. New info: respiratory rate 62 at rest with no retractions.\n\nWe need to think: In a 3-week-old preterm infant, tachypnea is a sign of possible respiratory infection or pneumonia. Respiratory rate 62 at rest: what's normal? For infants, normal RR is 30-60 breaths per minute. At 3 weeks, 62 is slightly above upper limit but not severely tachypneic. No retractions indicates no significant respiratory distress. So the new info suggests mild tachypnea but no distress. Does that increase or decrease the likelihood of ordering a chest radiograph? If the infant has fever, but no respiratory distress, maybe chest X-ray is less urgent. But still, fever in a preterm infant is concerning for sepsis or pneumonia. But the lack of respiratory distress might reduce the need for chest X-ray. However, the infant is preterm, febrile, and recently discharged from NICU. The threshold for imaging might be lower. But the new info: RR 62, no retractions. That suggests mild tachypnea but no distress. So maybe the need for chest radiograph is less urgent. So the new info slightly reduces the likelihood of ordering chest radiograph. So rating -1.\n\nBut we need to consider: The hypothesis is \"Ordering a chest radiograph.\" The new info: respiratory rate 62 at rest with no retractions. Does that make ordering a chest radiograph more or less likely? If the infant had severe tachypnea or retractions, that"
+    },
+    {
+      "question_id": 355,
+      "source": "Open Medical SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how the new information (positive RSV rapid test) affects the likelihood of performing a lumbar puncture. The scenario: 3-week-old infant, 2-hour fever, born at 33 weeks, NICU discharge 3 days ago. Hypothesis: performing a lumbar puncture. The new info: positive RSV test.\n\nWe need to think: In a febrile neonate, we consider meningitis. The decision to perform LP depends on risk factors. RSV is a viral infection that can cause fever but is not a direct indication for LP. However, a positive RSV test might reduce suspicion for bacterial meningitis, but still, in a 3-week-old, we still consider LP because bacterial meningitis can present with fever. But if RSV is confirmed, maybe we can be less aggressive? But guidelines: In infants <3 months with fever, LP is recommended regardless of viral test because bacterial meningitis can coexist. However, if RSV is confirmed, some clinicians might still do LP because of high risk. But the new info might slightly reduce the likelihood of performing LP? But guidelines say still do LP. So the new info might slightly reduce the likelihood? But the question: \"rate how the new information affects the likelihood of the hypothesis.\" The hypothesis is \"Performing a lumbar puncture.\" So we need to see if the new info makes performing LP more or less likely. Positive RSV test indicates viral infection, but doesn't rule out bacterial meningitis. In a 3-week-old, we still do LP. So the new info might slightly reduce the likelihood? But guidelines: In infants <3 months, any fever warrants LP. So the new info does not change the recommendation. So rating 0: no effect. But maybe some clinicians might think less likely to do LP because RSV is a known cause of fever. But guidelines say still do LP. So I'd lean 0. But we need to consider the nuance: The new info"
+    },
+    {
+      "question_id": 356,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.1111111111111111,
+      "expert_dist_norm": [
+        1.0,
+        0.1111111111111111,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "We need to evaluate how new information (no growth of bacteria in urine culture) affects the likelihood of the hypothesis: ordering a renal ultrasound. The scenario: 3-week-old female infant, fever 101.5F, born at 33 weeks, NICU discharge 3 days ago. Blood, urine, CSF sent. The hypothesis: ordering a renal ultrasound. The new info: no growth of bacteria in urine culture. So the urine culture is negative. That suggests no urinary tract infection. Renal ultrasound is often ordered to evaluate for structural abnormalities if UTI is suspected, or if there is pyelonephritis, or if recurrent UTIs, or if there is suspicion of obstruction, etc. In a neonate with fever, a urine culture is part of sepsis workup. If urine culture negative, less likely UTI. But still, a renal ultrasound might be ordered for other reasons: to evaluate for congenital anomalies, obstruction, reflux, etc. But the negative urine culture reduces the urgency of ordering a renal ultrasound specifically for UTI evaluation. However, the infant is preterm, NICU, maybe had urinary catheterization? But no growth suggests no infection. The question: does this new info make ordering a renal ultrasound more or less likely? Likely less likely, because the main indication for ultrasound is to evaluate for UTI or structural abnormalities. If no UTI, less reason. But still, if the infant has fever, you might still want to evaluate kidneys for other reasons? But the main reason for ultrasound is to evaluate for UTI or obstruction. Without UTI, less likely. So rating: -1 or -2? The new info reduces the likelihood somewhat. But does it make it much less likely? Probably slightly less likely. So rating -1. Let's think: The hypothesis is \"ordering a renal ultrasound.\" The new info: no growth of bacteria in urine culture. That suggests no UTI. So the"
+    },
+    {
+      "question_id": 357,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The brief seizure-like episode is a classic sign of central nervous system involvement in a neonate with fever. In this age group, HSV encephalitis is a leading concern when seizures occur, and empiric acyclovir therapy is strongly indicated. Thus, the new information substantially increases the likelihood that acyclovir should be started.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 358,
+      "source": "Open Medical SCT",
+      "rating": null,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.8,
+        0.2,
+        0.0
+      ],
+      "response": "The infant\u2019s fever and recent NICU discharge still place her at high risk for bacterial sepsis, so empiric antibiotics remain a standard recommendation.  \nHowever, the positive influenza PCR suggests a viral etiology, which slightly lowers the pre\u2011test probability of a bacterial infection. Impaired renal function does not negate the need for antibiotics; it merely influences dosing and choice. Overall, the new data modestly reduce the urgency"
+    }
+  ]
+}

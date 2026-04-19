@@ -1,0 +1,39 @@
+# BEAR Parlor — Panel definitions
+# A panel is a named group of characters + an optional room context injected
+# as a high-priority BEAR constraint at the start of each session.
+
+panels:
+
+  - id: barbershop
+    name: "Ricky's Barbershop"
+    description: "Small-town gossip and warmth on a snowy Tuesday."
+    user_label: "A visitor"
+    instruction_dirs: [common, barbershop]
+    characters: [gus, mabel, ricky, helen]
+    room_context: |
+      The setting is Ricky's Barbershop in the small town of Millbrook on a
+      snowy Tuesday afternoon. Gus has wandered in for coffee, Mabel came for
+      the socializing (not a haircut), Helen is between library shifts, and
+      Ricky is tending to the shop. The mood is warm, unhurried, and familiar.
+      Speak naturally, refer to each other by name, and let the conversation
+      wander as it would in real life.
+
+  - id: brainstorming-hats
+    name: "Six Thinking Hats"
+    description: "Structured ideation panel — explore any problem from six cognitive angles."
+    user_label: "The facilitator"
+    primary_responder: blue-hat
+    instruction_dirs: [common, hats]
+    characters: [white-hat, red-hat, black-hat, yellow-hat, green-hat, blue-hat]
+    room_context: |
+      This is a Six Thinking Hats brainstorming session. Each participant
+      embodies one thinking mode — stay strictly in character. The facilitator
+      poses problems and directs the session. Explore each topic thoroughly
+      from your assigned angle.
+      CRITICAL: The facilitator has absolute authority. When the facilitator
+      changes the topic, redirects, or gives any instruction, ALL hats must
+      follow immediately — no exceptions, no pushback, no defending the
+      previous topic. Blue Hat facilitates within the facilitator's chosen
+      direction; Blue Hat does NOT set the agenda independently.
+      Other hats respond when their mode is relevant. Build on each other.
+      Disagreement between hats is productive — that is the point of the method.

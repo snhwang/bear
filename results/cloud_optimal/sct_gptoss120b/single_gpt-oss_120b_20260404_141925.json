@@ -1,0 +1,2473 @@
+{
+  "config": {
+    "eval_version": "2.0",
+    "eval_changes": "v2: Blue hat votes only (no synthesis); adds median and trimmed-mean aggregation; all aggregation is algorithmic, not LLM-based.",
+    "model": "gpt-oss:120b",
+    "base_url": "https://ollama.com/v1",
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": null,
+    "timestamp": "20260404_141925",
+    "n_questions": 174,
+    "discussion_order": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "active_hats": [
+      "white",
+      "red",
+      "black",
+      "yellow",
+      "green",
+      "blue"
+    ],
+    "aggregation_methods": [
+      "majority",
+      "median",
+      "trimmed_mean"
+    ],
+    "rounds": 1
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.0,
+        0.4,
+        0.8,
+        1.0,
+        0.2
+      ],
+      "response": "The presence of diffuse coarse crackles bilaterally is more suggestive of fluid overload/pulmonary edema from his heart failure (or postoperative atelectasis) rather than a focal infection such as pneumonia. This makes an infectious etiology\u2014and thus the need for blood cultures\u2014somewhat less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 2,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.6,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.8,
+        0.6,
+        1.0
+      ],
+      "response": "The chest X\u2011ray is normal. In a postoperative patient with acute dyspnoea, many alternative diagnoses (pneumonia, pulmonary oedema, atelectasis, pneumothorax) would often show abnormalities on the film, whereas a pulmonary embolism frequently has a completely normal CXR. Therefore a normal CXR makes PE relatively more plausible and thus makes the decision to obtain a CTPA somewhat more justified.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 3,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.2,
+        0.0,
+        0.0
+      ],
+      "response": "The description of the patient becoming very pale just before the collapse points toward a vasovagal or cardiac\u2011related syncope rather than a primary seizure event.\u202fSince an EEG is most useful when a seizure is suspected, this new detail makes the need for an EEG considerably less compelling.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 4,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.1,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that an extensive cardiac work\u2011up was already performed after her stroke and no arrhythmia was detected makes an arrhythmic cause of her current syncopal episode less likely, though a longer\u2011term monitor could still reveal intermittent events that were missed previously. This new information therefore lowers, but does not eliminate, the rationale for ordering a Holter monitor.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 5,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "The presence of severe motion sickness does not constitute a contraindication to triptan therapy and does not meaningfully change the assessment of whether sumatriptan would be appropriate for her headache. It may slightly raise concern about nausea/vomiting, but overall it does not alter the decision.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 6,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of bilateral papilloedema indicates raised intracranial pressure. In a patient with a normal head CT this finding strongly points toward conditions such as idiopathic intracranial hypertension, where a lumbar puncture is both diagnostic (to measure opening pressure) and potentially therapeutic. Therefore, discovering papilloedema makes the decision to perform a lumbar puncture much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 7,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The history of a fall a few months ago raises the possibility of a delayed intracranial lesion (e.g., chronic subdural hematoma) that could explain the new memory problems and gait disturbance. This makes obtaining a head CT substantially more warranted.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 8,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "The patient\u2019s refusal to cooperate with cognitive testing and statement \u201cI can\u2019t\u201d suggest poor motivation or possible depressive apathy rather than purely an organic memory disorder. This makes a depressive component\u2014and therefore a trial of an SSRI\u2014somewhat more plausible.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 9,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The typical pattern for a disc prolapse with radiculopathy is pain that worsens with activity and is relieved by rest. Finding that the pain *improves* with exertion runs opposite to this expected pattern, substantially decreasing the likelihood that a disc prolapse is the correct diagnosis.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 10,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "The pustular, scaly lesions on the palms and soles are characteristic of keratoderma blennorrhagicum, a classic mucocutaneous manifestation of reactive (Reiter\u2019s) arthritis. Their presence strongly supports the hypothesis rather than merely nudging it upward.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 11,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        0.3,
+        1.0
+      ],
+      "response": "The finding of a pericardial friction rub strongly points toward pericarditis, a condition for which an ECG is a key diagnostic test (showing diffuse ST\u2011segment elevation and PR\u2011segment depression). This physical\u2011exam finding therefore makes ordering an ECG considerably more appropriate.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 12,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.1,
+        1.0,
+        0.2
+      ],
+      "response": "The finding of a malar rash that worsens with sun exposure points toward systemic lupus erythematosus, an inflammatory condition that can cause pericarditis. NSAIDs are the first\u2011line treatment for inflammatory pericarditis, even when the underlying cause is autoimmune. Knowing there is an inflammatory/autoimmune etiology therefore makes the choice of NSAIDs somewhat more appropriate, though it would not preclude adding steroids or other agents.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 13,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of generalized pruritus is a recognized \u201cB\u2011symptom\u201d often associated with Hodgkin lymphoma, adding further support to the suspicion that the neck lump may be malignant and that tissue diagnosis is warranted. This makes the consideration of a lymph\u2011node biopsy somewhat more compelling.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 14,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of normal reflexes makes hyper\u2011thyroidism slightly less likely (hyper\u2011thyroidism often produces brisk reflexes). While the neck lump and systemic symptoms still warrant evaluation, the new finding modestly lowers the suspicion that thyroid dysfunction is driving the picture, and therefore makes ordering thyroid function tests slightly less compelling.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 15,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The unilateral resting tremor and shuffling gait point toward Parkinson\u2019s disease, which can cause constipation through autonomic dysfunction. This provides an alternative explanation for the patient\u2019s bowel symptoms, making an urgent colonoscopic evaluation less compelling, though it does not completely rule out colorectal pathology in a 70\u2011year\u2011old.  \n\n**Rating:** -1 (the new information makes ordering a colonoscopy slightly less likely)."
+    },
+    {
+      "question_id": 16,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The presence of polyuria and polydipsia is a classic manifestation of hypercalcemia (along with constipation and fatigue). This new information strongly supports the possibility that the patient\u2019s symptoms are due to elevated calcium, making the decision to check a serum calcium level considerably more warranted.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 17,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "response": "The chronic heavy alcohol intake is a well\u2011established cause of alcoholic dilated cardiomyopathy. Knowing that the patient has been drinking 5\u20116 drinks daily for a decade strongly reinforces the possibility that his ventricular dysfunction is due to a dilated cardiomyopathy rather than another etiology.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 18,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "The past history of type\u202f2 diabetes, erectile dysfunction, and an ongoing work\u2011up for cirrhosis does not point toward a classic restrictive cardiomyopathy (which is more often linked to infiltrative diseases such as amyloidosis, sarcoidosis, hemochromatosis, etc.). While a possible link via hemochromatosis could modestly raise suspicion, the information overall leans toward more common causes of diastolic dysfunction (e.g., diabetes\u2011related HFpEF) and does not strongly support a primary restrictive cardiomyopathy.  \n\n**Rating: -1**"
+    },
+    {
+      "question_id": 19,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.3,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The patient\u2019s history of asthma raises safety concerns about using a \u03b2\u2011blocker, even a \u03b21\u2011selective agent such as metoprolol, because \u03b2\u2011blockade can precipitate bronchospasm. In practice, clinicians often avoid \u03b2\u2011blockers in asthmatic patients or choose another rate\u2011control drug (e.g., a calcium\u2011channel blocker) unless the asthma is very mild and the \u03b21\u2011selectivity is deemed acceptable. Therefore, the asthma history makes the plan to start metoprolol less attractive, though not absolutely prohibitive.\n\n**Rating: -1** (the new information makes the hypothesis slightly less likely)."
+    },
+    {
+      "question_id": 20,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The patient\u2019s new detail that he has end\u2011stage renal disease requiring haemodialysis markedly changes the safety profile of rivaroxaban. Rivaroxaban is cleared renally, and current prescribing information recommends against its use in patients with a creatinine clearance\u202f<\u202f15\u202fmL/min or who are on dialysis; dose\u2011adjustment data are lacking and bleeding risk is higher. Therefore, the presence of chronic kidney disease on dialysis makes the decision to start rivaroxaban far less attractive, shifting the clinician toward alternative anticoagulants (e.g., apixaban with dose reduction, warfarin) or reconsidering anticoagulation altogether.\n\n**Rating: -2** (the new information makes the hypothesis much less likely)."
+    },
+    {
+      "question_id": 21,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "The presence of a heavy smoking history (50 pack\u2011years) strongly raises suspicion for an underlying small\u2011cell lung carcinoma, which is the classic paraneoplastic association with Lambert\u2011Eaton myasthenic syndrome. This makes LEMS considerably more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 22,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Decreased deep\u2011tendon reflexes are not a typical feature of myasthenia gravis, where reflexes are usually preserved. Their presence therefore makes the diagnosis of MG somewhat less plausible, though it does not outright rule it out.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 23,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.6,
+        1.0,
+        0.8
+      ],
+      "response": "The recent completion of an antibiotic course for presumed bacterial sinusitis suggests that a bacterial infection is less likely to be the current driver of the seizure and reduces the suspicion of ongoing bacteremia. This makes ordering a blood culture slightly less warranted.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 24,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.3,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.4,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that the patient is pregnant introduces a concern about fetal radiation exposure from a CT scan. While a head CT may still be indicated if there is a strong suspicion of an intracranial lesion, clinicians will generally be more hesitant and will consider alternative imaging (e.g., MRI) first. Thus, pregnancy makes ordering a head CT **somewhat less likely**, though not categorically ruled out.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 25,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.7
+      ],
+      "response": "The presence of a strongly positive \u201cblood\u201d reaction on the urine dip\u2011stick is a classic finding in myoglobinuria from rhabdomyolysis (the dip\u2011stick detects heme\u2010related activity, whether from hemoglobin or myoglobin). While it is not specific\u2014it could also represent true hematuria\u2014it does make rhabdomyolysis more plausible in the context of dark urine. Thus the new information modestly increases the likelihood of the rhabdomyolysis hypothesis.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 26,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "The timing of the current upper\u2011respiratory symptoms (starting only 2\u202fdays before the dark urine) is much shorter than the typical 1\u20113\u2011week latent period after streptococcal pharyngitis that precedes post\u2011streptococcal glomerulonephritis. While an infection can be a trigger, a non\u2011specific viral\u2011like cough and runny nose does not specifically point toward a recent streptococcal throat infection, and the short interval makes PSGN less plausible.  \n\n**Rating: -1** (the new information makes the hypothesis slightly less likely)."
+    },
+    {
+      "question_id": 27,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Fixed splitting of S2 is a classic sign of an atrial septal defect and is not a feature of mitral stenosis. Its presence therefore strongly argues against mitral stenosis as the cause of the murmur.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 28,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.8,
+        1.0,
+        0.0,
+        0.6,
+        0.0
+      ],
+      "response": "Shortness of breath on exertion suggests that the murmur may be hemodynamically significant, which is more characteristic of aortic stenosis rather than simple aortic sclerosis (which is usually asymptomatic). This new symptom therefore reduces the plausibility of aortic sclerosis being the primary explanation for the murmur.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 29,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.7,
+        0.0
+      ],
+      "response": "The fact that she already uses an inhaled corticosteroid (budesonide) indicates she is receiving some systemic steroid exposure, which makes clinicians a bit more cautious about adding another potent steroid\u2014especially a high\u2011potency topical one that can be systemically absorbed. However, inhaled steroids are usually low\u2011dose and are not a strong contraindication to topical therapy, so the information does not rule it out, just makes it somewhat less attractive.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 30,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        0.1,
+        1.0,
+        0.3,
+        0.0
+      ],
+      "response": "The finding of a positive Mantoux test does not directly influence the appropriateness of using dithranol for a rash that appears consistent with psoriasis. A positive skin test suggests latent\u202fTB infection but does not contraindicate dithranol, nor does it specifically support an alternative diagnosis that would change management. Thus the new information has essentially no effect on the hypothesis.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 31,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.7,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The recent diagnosis of rheumatoid arthritis with initiation of oral corticosteroids provides a clear alternative explanation for her rapid weight gain, muscle weakness, and purple striae\u2014iatrogenic Cushing syndrome from exogenous steroids. In this context, performing a low\u2011dose dexamethasone suppression test would be unnecessary and its results would be difficult to interpret. Therefore, the new information makes ordering the test much less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 32,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0
+      ],
+      "response": "The low serum ACTH indicates an ACTH\u2011independent (adrenal) source of Cushing\u2019s syndrome. When Cushing\u2019s is ACTH\u2011independent, the next appropriate imaging study is an abdominal CT to evaluate the adrenal glands for an adenoma or carcinoma. Thus this new information strongly supports the decision to order an abdominal CT, making the hypothesis much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 33,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Fecal calprotectin is a sensitive marker of neutrophilic inflammation in the gut; a negative result makes active inflammatory bowel disease (the main indication for mesalazine and steroids) unlikely. Since the hypothesis hinges on the presence of IBD, the negative test substantially reduces the likelihood that mesalazine\u202f+\u202fsteroids is the appropriate management.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 34,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.3,
+        0.7,
+        1.0
+      ],
+      "response": "The pruritic vesicular rash on the leg is characteristic of dermatitis herpetiformis, which is strongly associated with celiac disease. Celiac disease often presents with diarrhoea, weight loss, and fatigue, and the definitive treatment is a gluten\u2011free diet\u2014a specific form of dietary modification. Thus, the presence of this rash makes dietary modification a much more plausible and appropriate intervention.\n\n**Rating:** +2"
+    },
+    {
+      "question_id": 35,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.2,
+        0.0
+      ],
+      "response": "The father\u2019s history of a peptic ulcer suggests a possible familial or hereditary predisposition to upper\u2011GI pathology, which could be a source of occult blood loss in the patient\u2019s anemia. While this information is not decisive, it modestly increases the relevance of investigating the upper gastrointestinal tract with an endoscopy.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 36,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "A low MCV (microcytosis) is characteristic of iron\u2011deficiency or other microcytic anemias, whereas vitamin\u202fB12 deficiency typically produces a macrocytic picture (high MCV). The finding therefore strongly argues **against** B12 deficiency and makes B12 supplementation an inappropriate treatment.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 37,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "The fact that the patient was born in Vietnam raises the pre\u2011test probability of chronic hepatitis\u202fB infection, because endemic rates are higher in that region. This makes it somewhat more reasonable to check hepatitis\u202fB serology.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 38,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        1.0
+      ],
+      "response": "Elevated AFP strongly points toward hepatocellular carcinoma, a condition for which cross\u2011sectional imaging (especially contrast\u2011enhanced CT) is the next essential step for diagnosis and staging. This makes ordering an abdominal CT considerably more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 39,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.0
+      ],
+      "response": "The presence of diarrhoea is a classic extrapulmonary manifestation of Legionella infection, which makes a Legionella urinary antigen test more relevant in this patient\u2019s work\u2011up. This additional clue therefore increases the likelihood that the clinician would order the urinary antigen assessment, though it does not make it an absolute certainty.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 40,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.2,
+        1.0,
+        0.8,
+        0.4
+      ],
+      "response": "The presence of recent oral candidiasis suggests the patient may be immunocompromised (e.g., HIV), which raises the possibility of opportunistic infections such as Pneumocystis jirovecii pneumonia\u2014an illness for which trimethoprim\u2011sulfamethoxazole is the treatment of choice. This makes the consideration of TMP\u2011SMX more plausible, though the finding is not definitive proof of such an infection.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 41,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of elevated urinary catecholamine metabolites strongly suggests that the adrenal mass may be a functional pheochromocytoma. In such cases, the standard approach is further biochemical confirmation, appropriate medical preparation (alpha\u2011blockade), and usually surgical removal rather than passive imaging surveillance. Therefore, the new information makes the plan of simply monitoring the mass with repeat CT far less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 42,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "A 6\u202fcm adrenal lesion is above the size threshold where observation is generally considered safe; lesions >4\u20136\u202fcm carry a higher risk of malignancy and are usually recommended for surgical excision. Thus, knowing the mass is 6\u202fcm strongly supports proceeding with surgery.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 43,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.2
+      ],
+      "response": "The tachycardia and low\u2011grade temperature are consistent with an inflammatory process such as acute pancreatitis and therefore make the consideration of checking serum lipase slightly more appropriate.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 44,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.3,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that she has already had her gallbladder removed eliminates the main reason for ordering an abdominal ultrasound (evaluation for gallstones/cholecystitis). While an ultrasound can still assess the biliary ducts or pancreas, its relevance is reduced and other imaging (e.g., CT) would be more appropriate for suspected pancreatitis. Therefore, this information makes ordering an abdominal US slightly less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 45,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "The presence of a unilateral facial nerve palsy strongly suggests that the facial mass may be involving or compressing the facial nerve, raising concern for a malignant or infiltrative process. This makes cross\u2011sectional imaging (e.g., head CT) much more indicated to assess the lesion\u2019s extent, bony involvement, and relation to adjacent structures.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 46,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The histology showing pleomorphic cells with a glandular appearance strongly points toward a salivary\u2011gland neoplasm, most likely malignant. This makes surgical removal of the parotid tissue far more indicated, increasing the likelihood that a superficial parotidectomy would be the chosen management.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 47,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The report of halos around lights is a classic sign of corneal edema/acute angle\u2011closure glaucoma. In that situation pupil dilation with a mydriatic such as topical atropine is contraindicated because it can worsen the angle closure and increase intra\u2011ocular pressure. Therefore, the new information makes the idea of using atropine to facilitate examination much less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 48,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.7
+      ],
+      "response": "The presence of recent enthesitis\u2011type pain (Achilles and knee) raises the possibility of an underlying systemic inflammatory disorder such as an HLA\u2011B27 spondyloarthropathy, which is frequently associated with anterior uveitis. If the red painful eye is indeed uveitis, intra\u2011ocular steroid drops become an appropriate therapy. While the tendon/knee pain does not prove the eye diagnosis, it makes the uveitic etiology (and thus the steroid\u2011drop treatment) somewhat more plausible.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 49,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The CT confirms a relatively large (8\u202fmm) stone located in the renal pelvis. Stones of this size, especially when situated in the renal pelvis rather than the distal ureter, are much less likely to pass spontaneously with medical expulsive therapy (NSAIDs\u202f+\u202f\u03b1\u2011blocker). Consequently, the proposed management strategy becomes considerably less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 50,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The high fever suggests infection in the obstructed urinary tract, which makes urgent decompression necessary. Placing a ureteric stent is one of the primary ways to achieve that drainage, so the fever makes this management option slightly more attractive.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 51,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.4,
+        1.0
+      ],
+      "response": "The absent right brachial/radial pulse with a preserved left pulse suggests a unilateral arterial compromise, most consistent with a proximal aortic dissection involving the right subclavian artery. This finding shifts the clinical suspicion away from a straightforward inferior ST\u2011elevation myocardial infarction toward an aortic emergency, for which a CT angiogram (CTA) is the diagnostic test of choice.  \n\n**Rating:** +2 (the new information makes the hypothesis much more likely)"
+    },
+    {
+      "question_id": 52,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The CTA shows an ascending\u2011aortic dissection (double\u2011lumen appearance). In the setting of an aortic dissection, thrombolytic therapy is contraindicated because it markedly increases the risk of catastrophic hemorrhage and can worsen the dissection. Thus, the discovery of an aortic dissection makes the consideration of thrombolysis far less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 53,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "The patient\u2019s eGFR of\u202f42\u202fmL/min/1.73\u202fm\u00b2 indicates moderate chronic kidney disease. CTA requires iodinated contrast, and using it in someone with reduced renal function raises the risk of contrast\u2011induced nephropathy. This makes the decision to obtain a CTA less attractive, though it is not an absolute contraindication (the test could still be performed if the clinical benefit outweighs the risk). Thus the new information slightly lowers the likelihood of ordering a CT angiography.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 54,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.8,
+        0.0,
+        0.5,
+        0.3
+      ],
+      "response": "The markedly elevated ankle\u2011brachial index (1.4) suggests that there is no significant peripheral arterial occlusion (and in fact may indicate non\u2011compressible, calcified vessels). This makes a need for vascular surgical intervention for ischemic limb disease much less likely.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 55,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "A dysplastic nevus is a benign lesion (albeit with atypia). Standard management after an adequate excisional biopsy is usually observation or a modest\u2010margin re\u2011excision if margins are positive, not a wide 1\u2011cm margin that is reserved for melanoma. Therefore, learning that the pathology is a dysplastic nevus strongly argues **against** the need for further wide excision.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 56,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The pathology confirming a malignant melanoma of Breslow thickness\u202f2\u202fmm directly indicates that a wide local excision is required. Current melanoma guidelines recommend a 1\u20132\u202fcm margin for lesions \u22642\u202fmm thick, and many surgeons will use the maximal 2\u202fcm margin for a 2\u202fmm lesion. Thus, this new information strongly supports the need for further excision with a 2\u202fcm margin.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 57,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The cancer is HER2\u2011negative, and trastuzumab is effective only in HER2\u2011positive disease. This makes using trastuzumab highly unlikely.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 58,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "Letrozole (an aromatase inhibitor) is effective mainly in post\u2011menopausal women because it blocks peripheral conversion of androgens to estrogen, which is the dominant source of estrogen after ovarian function ceases. In premenopausal women the ovaries continue to produce large amounts of estrogen, so aromatase inhibition alone does not sufficiently lower estrogen levels. Standard endocrine therapy for premenopausal, estrogen\u2011receptor\u2011positive breast cancer is tamoxifen (or tamoxifen\u202f+\u202fovarian suppression), not letrozole by itself. Therefore discovering that the patient is premenopausal makes the choice of letrozole far less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 59,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.3,
+        0.7,
+        0.7,
+        1.0,
+        0.7
+      ],
+      "response": "The history of a pituitary adenoma points toward a MEN\u202f1\u2013type syndrome rather than the RET\u2011related MEN\u202f2 syndromes that include medullary thyroid carcinoma, and a father\u2019s death from pancreatic cancer (not a typical MEN\u202f2 tumor) does not specifically support MTC. While sporadic medullary thyroid cancer remains possible, the new family and personal history makes this diagnosis somewhat less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 60,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.5,
+        0.0,
+        0.0
+      ],
+      "response": "The new detail of vocal hoarseness suggests involvement of the recurrent laryngeal nerve, which raises concern for a malignant thyroid lesion rather than a benign nodule. While this finding does not uniquely point to papillary carcinoma (any invasive thyroid cancer could cause hoarseness), it does make a malignant thyroid process\u2014including papillary carcinoma\u2014more plausible than before.\n\n**Rating: +1** (the information makes the hypothesis slightly more likely)."
+    },
+    {
+      "question_id": 61,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of \u201cshooting\u201d neck pain suggests a proximal source (e.g., cervical radiculopathy) rather than compression of the median nerve at the wrist, which is characteristic of carpal tunnel syndrome. This new symptom therefore detracts from the likelihood that the clinician\u2019s hypothesis of carpal tunnel syndrome explains the presentation, though it does not entirely rule it out.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 62,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The axillary nerve runs around the surgical neck of the humerus and is vulnerable when the humeral head is forced out of the glenoid. An anterior shoulder dislocation is the classic mechanism that can stretch or compress the axillary nerve, often producing deltoid weakness and sensory loss over the lateral shoulder. Knowing that the dislocation was anterior therefore strongly supports the possibility of axillary nerve injury.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 63,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The ankle\u2011jerk (Achilles) reflex assesses the tibial nerve (S1\u2011S2) and is not mediated by the common fibular (peroneal) nerve. A normal, symmetric ankle\u2011jerk therefore does not provide information about the integrity of the right common fibular nerve. It neither supports nor argues against a lesion of that nerve.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 64,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of an upgoing plantar (Babinski) response indicates an upper\u2011motor\u2011neuron lesion affecting the corticospinal tract, which is a central nervous system sign. A lesion of the right sural nerve is a purely peripheral sensory nerve injury and would not produce a Babinski sign. Therefore this new finding strongly argues **against** a sural nerve lesion.  \n\n**Rating: -2**."
+    },
+    {
+      "question_id": 65,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.4
+      ],
+      "response": "The finding of a visible lateral displacement of the patella strongly suggests a patellar dislocation, which is often accompanied by intra\u2011articular fractures (e.g., osteochondral fragments) or other bony injury. In the setting of an acute knee trauma, this makes plain radiographs\u2014typically AP, lateral, and sunrise views\u2014an essential part of the work\u2011up to confirm the dislocation, assess reduction, and look for associated fractures. Therefore, this new information markedly increases the desirability of ordering knee x\u2011rays.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 66,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.5
+      ],
+      "response": "The presence of a palpable knee effusion suggests an intra\u2011articular process (e.g., ligament or meniscal injury) that is often evaluated with MRI, especially when physical examination is limited. This makes ordering an MRI more appealing, though not definitively required yet (plain radiographs may still be obtained first).  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 67,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The perianal/genital paresthesia points toward involvement of the sacral nerve roots (S2\u2011S4) and raises concern for **cauda equina syndrome**.  \nCauda equina syndrome is a neurosurgical emergency that requires prompt surgical decompression; it cannot be safely managed conservatively, especially in a facility without surgical capability.  \n\nTherefore, this new finding strongly argues **against** conservative management in the rural hospital.\n\n**Rating: -2** (much less likely)."
+    },
+    {
+      "question_id": 68,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The presence of fever raises the possibility that the back pain is due to an infectious process (e.g., epidural abscess, discitis) rather than a simple traumatic fracture. In that context, a CT scan is less useful than MRI, and the clinician may be less inclined to arrange a CT transfer and instead focus on infection work\u2011up and arrange appropriate imaging elsewhere. Thus the new information makes the hypothesis of \u201ctransferring the patient for a spine CT\u201d slightly less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 69,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "In supraspinatus (rotator\u2011cuff) impingement the hallmark is painful **active** elevation with relatively **preserved passive** range of motion\u2014passive movement is usually normal because the joint capsule and glenohumeral articulation are not restricted.  \n\nFinding **limited passive ROM in all directions** suggests a capsular or intra\u2011articular problem (e.g., adhesive capsulitis, glenohumeral arthritis) rather than a focal supraspinatus impingement. This new information therefore makes the impingement hypothesis considerably less probable.\n\n**Rating:** -2"
+    },
+    {
+      "question_id": 70,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      "response": "Adhesive capsulitis (frozen shoulder) is strongly associated with metabolic disorders, especially diabetes mellitus. Epidemiologic studies show that people with type\u202f2 diabetes have a several\u2011fold higher incidence of frozen shoulder compared with non\u2011diabetic individuals, and the condition often presents at a younger age and may be more severe in diabetics. Therefore, the discovery that this patient has type\u202f2 diabetes markedly increases the probability that her shoulder pain is due to adhesive capsulitis rather than another etiology.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 71,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The patient's threat to sue if not released suggests he is actively resisting being held and implies there is no immediate safety concern that would compel involuntary detention. This makes the decision to detain him somewhat less compelling, though it does not completely rule it out.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 72,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.2
+      ],
+      "response": "The report of recent methamphetamine use points toward stimulant\u2011induced agitation/psychosis, for which benzodiazepines are a first\u2011line, evidence\u2011based treatment to calm the patient and reduce sympathetic over\u2011activity. This makes the option of giving a benzodiazepine considerably more appropriate.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 73,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.4,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of mild cognitive impairment does not contraindicate the use of an SSRI and would not substantially change the reasoning that an SSRI is an appropriate first\u2011line treatment for depression in this setting. It might raise a minor concern about medication adherence or side\u2011effects, but overall it does not markedly shift the likelihood of choosing an SSRI.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 74,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.7,
+        1.0
+      ],
+      "response": "The presence of command auditory hallucinations (\u201cthe voice of the devil\u2026\u201d) indicates a severe, psychotic, highly suicidal depression. Psychotic features and acute suicidality are strong indications for rapid\u2011acting treatment such as electroconvulsive therapy. This new information therefore makes recommending ECT much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 75,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The complaint of dry mouth suggests possible anticholinergic toxicity (e.g., tricyclic antidepressant overdose), a situation where obtaining an ECG is especially important to assess for cardiac conduction abnormalities. This makes ordering an ECG somewhat more indicated.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 76,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.1,
+      "expert_dist_norm": [
+        0.1,
+        1.0,
+        0.3,
+        0.0,
+        0.0
+      ],
+      "response": "Tinnitus (high\u2011pitched ringing in the ears) is a classic early sign of salicylate (aspirin) toxicity, not acetaminophen poisoning. The presence of this symptom makes an acetaminophen overdose\u2014and therefore the need for N\u2011acetylcysteine\u2014much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 77,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of polycystic ovarian syndrome adds a substantial metabolic risk (weight gain, insulin resistance, diabetes), which is a well\u2011known adverse effect of olanzapine. Because olanzapine could markedly worsen the patient\u2019s metabolic profile, clinicians would be much less inclined to choose it.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 78,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 0.5,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.5,
+        0.0,
+        0.0
+      ],
+      "response": "The death of her brother is a significant psychosocial stressor but does not directly influence the suitability of risperidone for managing a possible bipolar spectrum disorder, nor does it provide any pharmacologic contraindication or strong reason to favor another treatment. Therefore, this new information does not change the likelihood of recommending risperidone.\n\n**Rating: 0**"
+    },
+    {
+      "question_id": 79,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The bilateral limitation of lateral gaze is an ophthalmoplegia, one of the classic features of Wernicke encephalopathy (confusion\u202f+\u202fophthalmoplegia\u202f+\u202fataxia). In an older patient with chronic heavy alcohol use, new\u2011onset confusion, and impaired cognition, this ocular finding strongly points toward thiamine deficiency as the underlying cause. Therefore the new information makes the decision to give intramuscular thiamine much more likely.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 80,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.3,
+        0.3,
+        0.8,
+        1.0,
+        0.3
+      ],
+      "response": "The blood pressure of\u202f190/120\u202fdoes not markedly change the consideration of a benzodiazepine. While benzodiazepines can cause modest hypotension, they are not contraindicated in severe hypertension and may even help reduce agitation\u2011related sympathetic excess. Therefore the new information has essentially no effect on the likelihood of giving a benzodiazepine.  \n\n**Rating: 0**"
+    },
+    {
+      "question_id": 81,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.4,
+        0.4,
+        0.0,
+        1.0,
+        0.2
+      ],
+      "response": "The description of a crusted, weeping rash with surrounding erythema is classic for bacterial impetigo, a condition that is often treated with oral cephalexin when lesions are extensive or not amenable to topical therapy. This new finding strongly supports the need for an oral antibiotic, making the recommendation of cephalexin much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 82,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of papules with central umbilication is classic for molluscum contagiosum, a viral (poxvirus) infection, not a fungal infection. Topical fluconazole is an antifungal agent and would not be appropriate for this presentation. Therefore, this new detail makes the hypothesis that we should recommend topical fluconazole much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 83,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.1
+      ],
+      "response": "The cough occurring after vomiting suggests that the reflux may be reaching the airway (extra\u2011esophageal reflux). This makes an intervention aimed at reducing the volume of reflux \u2013 such as thickening feeds \u2013 more relevant and therefore slightly increases the likelihood that thickened feeds would be recommended.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 84,
+      "source": "Adelaide SCT",
+      "rating": 0,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.4,
+        0.0
+      ],
+      "response": "The fact that the infant is already receiving formula does not substantially change the reasoning about whether smaller, more\u2011frequent feeds would help the vomiting. The recommendation could be applied to formula\u2011fed or breast\u2011fed infants alike, so the new information is essentially neutral regarding this hypothesis.  \n\n**Rating: 0**"
+    },
+    {
+      "question_id": 85,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.2,
+        0.2,
+        0.0,
+        1.0,
+        0.6
+      ],
+      "response": "The fact that the mass crosses the midline makes a neuro\u2011blastic tumor such as neuroblastoma more likely (these lesions frequently cross the midline, whereas Wilms tumor usually does not). Because a 24\u2011hour urine catecholamine assay is used to detect neuroblastoma, this new finding increases the relevance of ordering that test.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 86,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of an elevated serum AFP in an 18\u2011month\u2011old with an abdominal mass strongly suggests a malignant tumor (e.g., hepatoblastoma or yolk\u2011sac germ\u2011cell tumor). This makes a non\u2011interventive strategy such as watchful waiting far less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 87,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.0,
+        0.5,
+        1.0,
+        0.8,
+        0.3
+      ],
+      "response": "The presence of subcostal and intercostal recessions indicates that the child is in significant respiratory distress. In this setting, clinicians are more likely to focus on immediate supportive measures (airway, oxygen, possible nebulized epinephrine or steroids) rather than obtaining a viral PCR, especially since viral testing rarely changes acute management in severe cases. Thus the new finding makes ordering a nasopharyngeal viral PCR somewhat less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 88,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.1,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of stridor only when the child is upset (and not at rest) indicates a mild degree of airway obstruction, typical of mild croup. Mild croup is usually managed outpatient with oral steroids and close follow\u2011up, and admission is generally reserved for patients with stridor at rest, significant retractions, hypoxia, or progressive symptoms. Therefore, this finding makes hospital admission considerably less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 89,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.7,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The very recent onset (only 2\u202fweeks) suggests secondary nocturnal enuresis rather than the chronic primary enuresis for which a bed\u2011wetting alarm is most effective. This makes the alarm option considerably less appropriate until the acute cause is investigated.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 90,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The fact that the child is continent during the day strongly suggests a primary, monosymptomatic nocturnal enuresis rather than an underlying urinary tract infection or other pathology that would be identified by urine microscopy, culture, and sensitivity. This makes ordering those urine tests considerably less warranted.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 91,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.3,
+        1.0
+      ],
+      "response": "The presence of a high fever (38.9\u202f\u00b0C) in a child with an acute painful limp strongly points toward an urgent infectious process such as septic arthritis, which requires prompt hospital evaluation, imaging, IV antibiotics and possible surgical drainage. This makes the decision to transfer the child to hospital considerably more compelling.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 92,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.7,
+      "expert_dist_norm": [
+        0.0,
+        0.7,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The knowledge that the child has minimal\u2011change disease (often treated with steroids and associated with a hyper\u2011coagulable state) raises concern for steroid\u2011related avascular necrosis or thrombotic complications affecting the hip. This makes a \u201csimple analgesia and watch\u2011ful waiting\u201d approach less reassuring and suggests that more urgent investigation may be warranted.\n\n**Rating: -1** (the new information makes the hypothesis slightly less likely)."
+    },
+    {
+      "question_id": 93,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.4,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of fever raises concern for intra\u2011amniotic infection (chorioamnionitis). Tocolysis with nifedipine is generally contraindicated when infection is suspected because suppressing labor can worsen maternal and fetal outcomes. Therefore this new information makes the plan to give nifedipine much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 94,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        1.0
+      ],
+      "response": "A positive fetal fibronectin test indicates a high risk that the patient will deliver within the next week. In a woman at 31\u202fweeks with painful contractions, this strongly supports the need for antenatal corticosteroids to enhance fetal lung maturity. Therefore the new information makes the decision to give corticosteroids much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 95,
+      "source": "Adelaide SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.3,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of urticarial lesions with bullae around the umbilicus strongly points toward pemphigoid gestationis (or another dermatologic pregnancy\u2011related rash), not intra\u2011hepatic cholestasis of pregnancy. Since ursodeoxycholic acid is used to treat intra\u2011hepatic cholestasis, this new finding makes the recommendation of UDCA much less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 96,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 0.3,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.1,
+        1.0,
+        0.3
+      ],
+      "response": "The itching is localized to the palms and soles, a classic pattern for intra\u2011hepatic cholestasis of pregnancy. This condition carries a significant risk to the fetus and usually prompts early delivery (often by induction at 37\u201338\u202fweeks). Therefore, the new information strongly supports the consideration of induction.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 97,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.0
+      ],
+      "response": "Venlafaxine is often used to treat menopausal vasomotor symptoms and can also help with mood and pain.  \nHowever, headache is a common adverse effect of venlafaxine, and patients with a history of migraine may be more prone to experiencing worsening or more frequent migraine attacks when taking an SNRI. Although venlafaxine is occasionally used off\u2011label for migraine prophylaxis, the possibility of precipitating or aggravating migraine symptoms generally makes clinicians a little more cautious.\n\nBecause the past history of migraines introduces a modest concern that venlafaxine could worsen her headaches, it slightly lowers the attractiveness of this option, but it does not rule it out.\n\n**Rating: -1** (slightly less likely)."
+    },
+    {
+      "question_id": 98,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "The fact that she no longer has a uterus (hysterectomy) removes the need for a progestogen component to protect the endometrium. Therefore, estrogen\u2011only HRT becomes the preferred and safest option for managing her vasomotor symptoms. This new information strongly supports the hypothesis.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 99,
+      "source": "Adelaide SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.3,
+        1.0,
+        0.0,
+        0.2,
+        0.2
+      ],
+      "response": "The irregular and variable cycle length means that \u201cday\u202f21\u201d may not reliably correspond to the mid\u2011luteal phase for this patient, reducing the usefulness of a fixed\u2011day progesterone measurement. Thus this new information makes ordering a day\u201121 progesterone test slightly less appropriate.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 100,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The history of pelvic inflammatory disease raises concern for tubal damage or obstruction, which is precisely what a hysterosalpingogram evaluates. This makes pursuing an HSG considerably more appropriate.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 101,
+      "source": "Adelaide SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The presence of maternal gestational diabetes markedly raises the risk of neonatal hypoglycaemia, making it much more important to check the baby\u2019s blood sugar early.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 102,
+      "source": "Adelaide SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The fact that the mother had limited antenatal care raises the possibility that maternal infections (e.g., undetected GBS colonisation, chorioamnionitis) were not screened for or treated. This increases the risk that the newborn\u2019s respiratory distress could be due to early\u2011onset neonatal sepsis. Therefore, the new information makes starting empiric antibiotics somewhat more attractive, though it does not by itself guarantee infection.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 287,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.5714285714285714,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "Epicanthal folds are a classic facial feature associated with trisomy\u202f21, so their presence makes the diagnosis somewhat more plausible, though they are not exclusive to Down syndrome.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 288,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.375,
+        1.0
+      ],
+      "response": "A smooth philtrum is one of the classic facial dysmorphisms of fetal alcohol syndrome and markedly strengthens the suspicion for prenatal alcohol exposure.  \n**Rating: +2**"
+    },
+    {
+      "question_id": 289,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.6666666666666666,
+        0.0,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "**Reasoning:**  \nTrisomy\u202f18 (Edwards syndrome) characteristically presents with growth restriction and a small head (microcephaly). Macrocephaly is essentially the opposite of this typical finding and points toward other diagnoses rather than trisomy\u202f18. While phenotypic variability exists, the presence of a larger-than\u2011expected head size markedly reduces the plausibility of trisomy\u202f18.\n\n**Rating:** -2 (the new information makes the hypothesis much less likely)"
+    },
+    {
+      "question_id": 290,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "The presence of a single umbilical artery is a well\u2011recognized marker for congenital renal and urinary tract anomalies; it strongly increases the pre\u2011test probability that the infant has renal pathology that would be detected on imaging. Therefore, this finding makes ordering a renal ultrasound considerably more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 291,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.3333333333333333,
+        1.0,
+        0.5
+      ],
+      "response": "Brushfield\u2019s spots are a classic ocular finding associated with Down syndrome (trisomy\u202f21). Their presence adds additional evidence that the infant\u2019s dysmorphic features and heart murmur may be due to a chromosomal abnormality, thereby increasing the clinical rationale for obtaining a karyotype. This finding reinforces, but does not definitively confirm, the need for cytogenetic testing.\n\n**Rating:** +1"
+    },
+    {
+      "question_id": 292,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.42857142857142855,
+        1.0,
+        0.14285714285714285,
+        0.0
+      ],
+      "response": "The finding of a normal cardiac exam makes structural heart disease less likely, reducing the need for an echocardiogram, though other concerns (abnormal tone, dysmorphic features) may still keep it on the differential.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 293,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.5714285714285714,
+        1.0
+      ],
+      "response": "A high serum TSH level indicates primary hypothyroidism, which is a common and treatable problem in children with Trisomy\u202f21. Detecting an elevated TSH makes initiating levothyroxine therapy clearly indicated, rather than uncertain or optional. Therefore this new information strongly increases the likelihood that the infant should be started on levothyroxine.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 294,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        1.0,
+        0.42857142857142855,
+        0.14285714285714285,
+        0.0,
+        0.0
+      ],
+      "response": "The normal cervical spine screening makes atlanto\u2011axial instability unlikely, removing a common reason to involve a neurosurgeon in a child with Trisomy\u202f21. Therefore this new information makes referring the patient to a neurosurgeon less likely, though it does not completely eliminate all possible neurosurgical concerns.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 295,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The appearance of a petechial rash suggests possible thrombocytopenia or an underlying hematologic abnormality (e.g., transient myeloproliferative disorder, early leukemia) that is more common in children with Trisomy\u202f21. This finding makes it far more appropriate to obtain a CBC with differential and a peripheral smear to evaluate platelet count and look for abnormal cells.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 296,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.8333333333333334,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.8333333333333334
+      ],
+      "response": "Atopic dermatitis is part of the atopic (allergic) diathesis and commonly co\u2011exists with allergic rhinitis and asthma. Discovering that this child already has allergic rhinitis and asthma therefore strongly reinforces the likelihood that his rash represents atopic dermatitis rather than an unrelated condition.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 297,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.8333333333333334,
+        1.0
+      ],
+      "response": "The presence of honey\u2011colored crusts on erythematous plaques, especially in a flexural area (popliteal creases), is a classic finding for impetigo and markedly increases the likelihood of that diagnosis.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 298,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.25,
+        1.0,
+        0.5,
+        1.0,
+        0.0
+      ],
+      "response": "Erythema multiforme classically presents with target or \u201ciris\u201d lesions that are most prominent on the extremities and may involve mucosa, but it is not usually described as a diffuse maculopapular eruption involving the trunk and face. The appearance of a widespread maculopapular rash adds a pattern that is more typical of viral exanthems or drug eruptions rather than EM, therefore it reduces the plausibility of EM as the diagnosis, though not enough to rule it out completely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 299,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.375,
+        1.0
+      ],
+      "response": "The description of scattered circular/ovoid lesions **without** flaking or central clearing makes a classic fungal (tinea) pattern less likely. Since KOH preparation is mainly used to detect fungal elements, this new finding slightly reduces the utility of that test.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 300,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.1111111111111111,
+        0.0,
+        0.0,
+        1.0,
+        0.1111111111111111
+      ],
+      "response": "The presence of a rough papular truncal rash with only a low\u2011grade fever is more consistent with an eczema flare or a non\u2011streptococcal skin process rather than a classic streptococcal infection (which would present with pharyngitis, higher fever, and possibly a scarlet\u2011fever rash). This information therefore makes a rapid streptococcal antigen test slightly less useful.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 301,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        0.16666666666666666,
+        1.0,
+        0.5
+      ],
+      "response": "The finding of a tender, erythematous lesion with honey\u2011colored crust is classic for a bacterial super\u2011infection (impetigo) of the eczema. This makes obtaining a wound culture far more pertinent to guide antimicrobial therapy.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 302,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.2,
+      "expert_dist_norm": [
+        0.2,
+        0.4,
+        0.2,
+        1.0,
+        0.4
+      ],
+      "response": "The presence of multiple areas of skin breakdown indicates a more severe or complicated dermatitis. In such cases a low\u2011potency steroid is often insufficient and may even delay proper healing, so the plan to prescribe a low\u2011potency cream becomes considerably less appropriate.\n\n**Rating: -2** (much less likely)"
+    },
+    {
+      "question_id": 303,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        0.2857142857142857,
+        1.0
+      ],
+      "response": "The child\u2019s rash has not responded to standard treatments (topical steroids and even systemic immunosuppressants). Failure of these first\u2011line and more aggressive therapies is a clear indication that the primary\u2011care provider\u2019s management options are exhausted and that specialist input is needed. This makes the decision to refer the patient to pediatric dermatology considerably more compelling.\n\n**Rating:** +2 (the new information makes the hypothesis much more likely)"
+    },
+    {
+      "question_id": 304,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.75,
+      "expert_dist_norm": [
+        0.0,
+        0.25,
+        0.75,
+        0.75,
+        1.0
+      ],
+      "response": "The prior MRSA abscess suggests the child is at higher risk for bacterial colonisation or secondary infection of his eczematous lesions, making the consideration of antibiotics more attractive (especially an MRSA\u2011covering regimen). However, there are still no clear signs of an active infection, so the increase in likelihood is modest.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 305,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.125,
+      "expert_dist_norm": [
+        0.0,
+        0.125,
+        0.0,
+        1.0,
+        0.125
+      ],
+      "response": "The presence of a compressible flank mass points toward a fluid\u2011filled structure such as hydronephrosis rather than a dysplastic (typically small, non\u2011compressible) kidney. This makes the dysplastic kidney hypothesis less likely, though not completely ruled out.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 306,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "The dysmorphic features described (upward\u2011slanting palpebral fissures and a single transverse palmar crease) are classic for Down syndrome. Down\u2011syndrome infants have a markedly increased incidence of congenital gastrointestinal malformations, especially duodenal atresia, which presents with abdominal distension in the first days of life. Therefore, finding these features makes the consideration of an intestinal obstruction much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 307,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "The finding of a sacral dimple with an overlying hair tuft is a classic cutaneous marker of occult spinal dysraphism (e.g., spina bifida occulta or tethered cord). Such spinal anomalies can impair the neural control of the bladder, leading to a neurogenic bladder with urinary retention and consequent bladder distension. Therefore, this physical\u2011exam finding provides a strong anatomical explanation for why the infant\u2019s abdomen might be distended due to a full bladder, making the hypothesis of a distended bladder considerably more plausible.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 308,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The infant\u2019s poor feeding suggests a systemic problem such as infection or sepsis, which would increase the concern for a bacterial cause of the abdominal findings and make obtaining a blood culture more appropriate. However, poor feeding is a relatively nonspecific sign and does not definitively point toward infection.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 309,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The presence of bilious vomiting in a newborn with abdominal distension is a classic red\u2011flag that strongly raises suspicion for an intestinal obstruction or other surgically\u2011important pathology. In this context, obtaining an abdominal radiograph becomes a much more appropriate and urgent step to help identify the cause.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 310,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of normal urine output makes an obstructive urinary cause (e.g., posterior urethral valves, hydronephrosis) less likely, which decreases the need for an abdominal ultrasound focused on the urinary tract. It does not rule out other intra\u2011abdominal causes, so the impact is modest.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 311,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.1111111111111111,
+        1.0
+      ],
+      "response": "The finding of a distended bladder on ultrasound points toward a primary urologic problem (e.g., obstructive uropathy such as posterior urethral valves) rather than a central nervous system lesion that would require neurosurgical intervention. Therefore this information makes the consideration of a pediatric neurosurgery referral less appropriate, though not completely rule\u2011out a neurogenic cause.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 312,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.14285714285714285,
+        0.14285714285714285,
+        0.14285714285714285
+      ],
+      "response": "The discovery of multiple renal cysts points toward a structural renal abnormality as a cause of the abdominal distension rather than an infectious process. This makes the need for empiric antibiotic therapy less compelling, though it does not completely rule out infection.  \n\n**Rating: -1**"
+    },
+    {
+      "question_id": 313,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The double\u2011bubble sign indicates an upper gastrointestinal obstruction (e.g., duodenal atresia or malrotation). In such cases, immediate gastric decompression with a nasogastric tube is a key initial step in management, making the decision to place an NG tube far more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 314,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "Vomiting is a common feature of viral gastroenteritis, especially in young children, and therefore the presence of multiple episodes of vomiting supports this diagnosis rather than arguing against it. It modestly increases the likelihood of viral gastroenteritis.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 315,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "The presence of blood in the stool points toward an invasive or inflammatory cause of diarrhea, which is more characteristic of certain bacterial gastroenteritides (e.g., Shigella, Campylobacter, enterohemorrhagic\u202fE.\u202fcoli) and is uncommon in viral gastroenteritis. Therefore this finding makes bacterial gastroenteritis somewhat more plausible, though the amount of blood is modest and does not definitively confirm it.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 316,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of a fever indicates an active infectious process, which points more toward infectious gastroenteritis rather than primary lactose intolerance as the cause of the diarrhea and pain. While secondary lactose intolerance can follow an infection, the fever itself makes a simple lactose intolerance diagnosis slightly less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 317,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The presence of urinary ketones suggests that the child is dehydrated and possibly developing metabolic derangements (e.g., acidosis, electrolyte loss). This makes it more clinically appropriate to check serum electrolytes to assess the extent of electrolyte disturbance. The information therefore raises the probability that you would order serum electrolytes, though it does not make it an absolute certainty.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 318,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.2857142857142857,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "The presence of bilious (green\u2011tinged) vomiting in an infant raises concern for a possible obstructive or surgical intra\u2011abdominal process (e.g., intussusception, volvulus). This makes obtaining an abdominal radiograph considerably more warranted to look for signs of obstruction, perforation, or other abnormality.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 319,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "**Reasoning**\n\n- The child\u2019s diarrhea is currently most suggestive of a common viral outbreak in daycare (e.g., rotavirus, norovirus), which would usually not require stool bacterial cultures.  \n- A pet snake is a recognized reservoir for **Salmonella** species, and exposure to reptiles is a well\u2011documented risk factor for *Salmonella* gastroenteritis, especially in young children.  \n- This new exposure heightens the clinician\u2019s suspicion that the diarrheal illness could be bacterial (Salmonella) rather than viral.  \n- Because bacterial cultures are the appropriate test to detect *Salmonella* and other enteric bacteria, the presence of a pet snake makes ordering a stool bacterial culture considerably more justified.\n\n**Rating:** **+2** (the new information makes the hypothesis much more likely)"
+    },
+    {
+      "question_id": 320,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.8,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        0.8,
+        1.0
+      ],
+      "response": "The normal hematocrit (40\u202f%) and hemoglobin (12\u202fg/dL) indicate that the child is not markedly hemoconcentrated, suggesting that dehydration is likely mild rather than severe. This supports the safety of managing him as an outpatient with oral rehydration therapy.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 321,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.2857142857142857,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        1.0,
+        0.2857142857142857
+      ],
+      "response": "The child\u2019s 10\u202f% weight loss over two days is a clear sign of moderate\u2011to\u2011severe dehydration, which strongly supports the need for more aggressive fluid replacement. This makes the decision to start intravenous hydration much more likely.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 322,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.42857142857142855,
+      "expert_dist_norm": [
+        0.42857142857142855,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The negative stool lactoferrin indicates a non\u2011inflammatory (likely viral) diarrheal process, which makes a bacterial etiology\u2014and therefore the need for antibiotics\u2014considerably less probable.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 323,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ],
+      "response": "The finding of an erythematous pharynx together with enlarged anterior cervical lymph nodes is a classic feature of streptococcal pharyngitis and therefore makes the diagnosis more plausible, though it is not pathognomonic and could also be seen with viral infections. This information therefore **slightly increases** the likelihood of the hypothesis.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 324,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        1.0,
+        0.0,
+        0.5,
+        0.0
+      ],
+      "response": "The finding of **multiple firm, painless posterior cervical lymph nodes** is not typical for acute bacterial lymphadenitis, which usually presents with tender, soft, erythematous nodes. Painless, firm nodes are more suggestive of chronic inflammatory processes or neoplastic causes (e.g., tuberculosis, lymphoma). Therefore, this new information reduces the likelihood that the swelling is due to typical lymphadenitis, though it does not completely exclude all forms of lymphadenitis.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 325,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.42857142857142855
+      ],
+      "response": "The finding of a single, 3\u202fcm flocculent (cystic\u2011appearing) mass on the right anterior neck is consistent with the typical location and presentation of a branchial cleft cyst, although it is not pathognomonic and could represent other cystic neck lesions. This information therefore makes the hypothesis of a brachial cleft cyst slightly more likely.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 326,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.2,
+        1.0,
+        0.8
+      ],
+      "response": "The additional symptom of progressive fatigue is a classic feature of infectious mononucleosis caused by EBV, and it strengthens the clinical suspicion that the neck swelling and intermittent fevers may be due to EBV infection. While fatigue is not specific and could be seen with other pediatric infections, it does make ordering EBV serologies a bit more justified.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 327,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        1.0,
+        0.5,
+        0.0
+      ],
+      "response": "The presence of high\u2011grade fevers (\u223c39.5\u202f\u00b0C) together with persistent posterior pharyngeal redness strongly points toward an acute inflammatory/infectious process, making an elevated serum C\u2011reactive protein far more likely.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 328,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.0,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "The presence of two cats in the household makes an infectious etiology such as cat\u2011scratch disease a strong consideration for the neck lymphadenitis. This points toward a non\u2011invasive work\u2011up (history, serology, possibly antibiotics) rather than an immediate tissue diagnosis, thereby decreasing the likelihood that a lymph\u2011node biopsy is needed.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 329,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.14285714285714285,
+        0.2857142857142857,
+        1.0
+      ],
+      "response": "The appearance of a diffuse erythematous trunk rash together with swollen hands and feet is classic for Kawasaki disease, especially in a child who already has fever and cervical lymphadenopathy. Kawasaki disease is treated promptly with intravenous immunoglobulin (IVIG) to reduce the risk of coronary artery aneurysms. Thus, this new information markedly increases the likelihood that initiating IVIG therapy is the correct management.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 330,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.5,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "response": "The markedly elevated lymphocyte count with only a few atypical cells points toward a reactive (likely viral) process rather than a primary marrow pathology such as leukemia that would necessitate a bone\u2011marrow biopsy. This new laboratory data therefore makes the consideration of a bone\u2011marrow biopsy much less likely.  \n\n**Rating: -2**"
+    },
+    {
+      "question_id": 331,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.125,
+      "expert_dist_norm": [
+        0.0,
+        0.125,
+        0.0,
+        0.125,
+        1.0
+      ],
+      "response": "The erythematous papule with tender, enlarged ipsilateral axillary nodes suggests a localized bacterial skin infection that could be the source of a systemic or regional lymphadenitis. This finding raises the probability that the neck swelling is infectious in nature and therefore makes empiric antibiotic therapy more appropriate.\n\n**Rating:** +1"
+    },
+    {
+      "question_id": 332,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.125,
+        1.0,
+        0.125
+      ],
+      "response": "The presence of a recent upper\u2011respiratory\u2011tract infection (runny nose, congestion) is a well\u2011known precursor that promotes eustachian\u2011tube dysfunction and fluid accumulation in the middle ear, thereby increasing the probability that the ear pain is due to acute otitis media. While it does not confirm the diagnosis, it does shift the likelihood upward.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 333,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.5,
+        1.0,
+        0.16666666666666666,
+        0.0,
+        0.0
+      ],
+      "response": "The absence of a recent swimming exposure removes a common risk factor for otitis externa, making the diagnosis somewhat less likely, though other causes (e.g., canal trauma, eczema) remain possible. This modestly lowers the probability of acute otitis externa.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 334,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.1111111111111111,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "A fever of 38.5\u202f\u00b0C points more toward an infectious process (e.g., acute otitis media, otitis externa) rather than a simple mechanical irritation from a foreign body. While a foreign body could become infected and produce fever, the presence of a temperature this high makes that diagnosis less likely in the primary consideration.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 335,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.1111111111111111,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of bilateral myringotomy tubes indicates that the child already has tympanostomy tubes placed to manage recurrent otitis media. Ear canal irrigation is generally used for cerumen removal or external ear issues, and is not an appropriate or useful intervention when tubes are present (it could damage the tubes or be irrelevant to the current problem). Therefore, this new information makes the consideration of ear canal irrigation much less likely.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 336,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.2857142857142857,
+        0.0,
+        0.0,
+        0.14285714285714285
+      ],
+      "response": "The finding of a purulent, erythematous tympanic membrane strongly confirms acute otitis media, a condition that is usually diagnosed clinically without laboratory work\u2011up. This makes ordering a CBC with differential considerably less warranted.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 337,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.42857142857142855,
+        1.0
+      ],
+      "response": "The presence of post\u2011auricular swelling and erythema is a classic sign of acute mastoiditis, a serious complication of otitis media that generally warrants imaging\u2014typically a CT of the temporal bone/head\u2014to confirm the diagnosis and guide management. This finding strongly supports the need for a CT scan.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 338,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        1.0,
+        0.25,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The finding of an erythematous, swollen external ear canal with white discharge points toward otitis externa (or a perforated tympanic membrane with external canal involvement) rather than acute otitis media. Since oral amoxicillin for 10\u202fdays is the standard treatment for acute otitis media, this new information makes that management plan much less appropriate.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 339,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.42857142857142855,
+        1.0
+      ],
+      "response": "The finding of a mobile, non\u2011tender tympanic membrane with a serous effusion indicates that there is not an acute suppurative otitis media but rather an effusive (non\u2011infectious) process. This makes a simple supportive pain\u2011control strategy far more appropriate and reduces the need for antibiotics or more aggressive intervention.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 340,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.75,
+        1.0,
+        0.25,
+        0.5,
+        0.0
+      ],
+      "response": "The guideline for tympanostomy tube placement usually requires recurrent acute otitis media (e.g., \u22653 episodes in 6\u202fmo or \u22654 in 12\u202fmo). Two episodes in the preceding 8\u202fmonths fall short of these criteria, making tube placement less appropriate. This new detail therefore makes an ENT referral for bilateral myringotomy tubes slightly less likely.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 341,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.8333333333333334,
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The presence of left\u2011lower\u2011quadrant abdominal pain that is related to bowel movements suggests a colonic or functional disorder (e.g., IBS, constipation, or inflammatory bowel disease) rather than an esophageal problem. While GERD can coexist with other GI complaints, this specific symptom does not support reflux and modestly shifts thinking away from GERD.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 342,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.125,
+        1.0,
+        0.25
+      ],
+      "response": "The presence of an upcoming cheerleading tryout is a cue that the patient may feel pressure to maintain a certain body shape or weight for a sport in which appearance is emphasized. In adolescents, such performance\u2011related concerns are a known risk factor for binge\u2011eating and compensatory behaviors characteristic of bulimia nervosa. While this information does not definitively prove bulimia, it makes the diagnosis somewhat more plausible.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 343,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.6666666666666666,
+        0.16666666666666666,
+        0.0
+      ],
+      "response": "The fact that her last menstrual period ended 23\u202fdays ago means she is now roughly four weeks from her last menstrual start, which fits the early window for conception and early pregnancy\u2011related symptoms (e.g., nausea/vomiting). This timing makes pregnancy a far more plausible explanation for her vomiting.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 344,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.1,
+      "expert_dist_norm": [
+        0.0,
+        0.1,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The denial of sexual activity lowers the pre\u2011test probability that pregnancy is the cause of her vomiting, though it does not completely rule it out (especially in a teenager who may be reluctant to disclose activity). This makes ordering a urine\u202fhCG test slightly less compelling.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 345,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.6,
+      "expert_dist_norm": [
+        0.0,
+        0.2,
+        0.4,
+        1.0,
+        0.6
+      ],
+      "response": "The presence of a resting heart rate of 51\u202fbpm (bradycardia) in a teenage athlete who is vomiting raises concern for possible cardiac involvement (e.g., electrolyte\u2011related arrhythmia, QT prolongation) or physiologic athlete\u2019s heart, making an ECG more pertinent. This new information therefore increases the likelihood that an ECG would be ordered.  \n\n**Rating: +2**"
+    },
+    {
+      "question_id": 346,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.8333333333333334,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.8333333333333334
+      ],
+      "response": "The presence of lanugo on the trunk is a classic physical\u2011exam finding associated with chronic caloric restriction and malnutrition, especially in adolescents with eating\u2011disorder behaviors. Recognizing this sign would heighten the clinician\u2019s concern about the patient\u2019s nutritional status and therefore make a serum prealbumin measurement (a sensitive marker of protein\u2011calorie malnutrition) more appropriate and likely to be ordered.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 347,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.16666666666666666,
+      "expert_dist_norm": [
+        0.5,
+        0.16666666666666666,
+        1.0,
+        0.0,
+        0.16666666666666666
+      ],
+      "response": "The adolescent\u2019s request for confidentiality creates a clear barrier to involving her parents right away; it would tend to make the clinician more cautious about immediately bringing up concerns with the parents, even though the clinical issue is serious. Thus, the new information makes the hypothesis **somewhat less likely**.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 348,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.16666666666666666,
+      "expert_dist_norm": [
+        0.0,
+        0.16666666666666666,
+        0.5,
+        0.16666666666666666,
+        1.0
+      ],
+      "response": "The mild hyponatraemia (Na\u202f=\u202f132\u202fmEq/L) signals a degree of electrolyte disturbance and medical instability that often warrants closer monitoring and management in a controlled setting. This makes the need for inpatient admission for careful, supervised re\u2011feeding more plausible, though the abnormality is modest rather than severe.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 349,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.125,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        1.0,
+        0.125,
+        0.25
+      ],
+      "response": "The patient\u2019s lack of insight and her statement that she does not view her behavior as a problem suggest that she may not seek help on her own and that the clinician will need a specialist to assess and intervene. This makes the decision to refer her to an eating\u2011disorder expert somewhat more likely.  \n\n**Rating: +1**"
+    },
+    {
+      "question_id": 350,
+      "source": "Open Medical SCT",
+      "rating": -2,
+      "score": 0.4,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of a bulging anterior fontanelle (or petechiae) in a neonate with fever suggests increased intracranial pressure or systemic infection/meningitis, findings that are far more characteristic of bacterial meningitis or sepsis than of a simple viral infection. Thus this new information markedly decreases the probability that the fever is due to a viral infection.\n\n**Rating: -2**"
+    },
+    {
+      "question_id": 351,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of copious clear nasal secretions points toward a viral upper\u2011respiratory infection rather than a bacterial source. In a neonate with fever, this finding reduces (but does not eliminate) the suspicion for a bacterial infection.  \n\n**Rating: -1**"
+    },
+    {
+      "question_id": 352,
+      "source": "Open Medical SCT",
+      "rating": 2,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.4,
+        1.0,
+        0.4,
+        0.2,
+        0.0
+      ],
+      "response": "The presence of a vesicular rash on an erythematous base is a classic sign of neonatal HSV infection and markedly increases the likelihood that the fever is due to HSV.\n\n**Rating: +2**"
+    },
+    {
+      "question_id": 353,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.25,
+      "expert_dist_norm": [
+        0.0,
+        0.25,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The negative urine dip makes a urinary tract infection somewhat less likely, and the maternal negative GBS serology lowers the infant\u2019s risk of GBS\u2011related sepsis, both of which mildly diminish the need for immediate diagnostic testing.  \n\n**Rating: -1**"
+    },
+    {
+      "question_id": 354,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.0,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.75,
+        1.0,
+        0.75
+      ],
+      "response": "The infant\u2019s respiratory rate of 62 breaths per minute is at the upper limit of normal for this age, and the absence of retractions indicates there is no overt respiratory distress. Since chest radiographs are primarily ordered when there is clinical evidence of pulmonary involvement (e.g., tachypnea with distress, abnormal lung sounds, or signs of pneumonia), this relatively benign respiratory exam makes the need for a chest X\u2011ray less compelling.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 355,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "response": "The detection of RSV suggests a viral cause for the infant\u2019s fever, which modestly lowers the suspicion for bacterial meningitis and therefore makes a lumbar puncture slightly less compelling, especially given the infant\u2019s very young age and prematurity.  \n\n**Rating: -1**"
+    },
+    {
+      "question_id": 356,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 0.1111111111111111,
+      "expert_dist_norm": [
+        1.0,
+        0.1111111111111111,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "response": "The absence of bacterial growth in the urine culture reduces the suspicion that the fever is due to a urinary tract infection, which is the main reason to order a renal ultrasound in a neonate. While a renal ultrasound might still be considered for other reasons, the negative culture makes it somewhat less compelling.\n\n**Rating: -1**"
+    },
+    {
+      "question_id": 357,
+      "source": "Open Medical SCT",
+      "rating": 1,
+      "score": 0.25,
+      "expert_dist_norm": [
+        0.0,
+        0.0,
+        0.0,
+        0.25,
+        1.0
+      ],
+      "response": "The occurrence of a seizure\u2011like episode in a febrile neonate strongly suggests central nervous system involvement. While seizures can be caused by many infections (bacterial meningitis, viral encephalitis, etc.), HSV is a classic cause of neonatal encephalitis and would make empiric acyclovir more compelling. Therefore, this new information makes the hypothesis of starting acyclovir **slightly more likely**.\n\n**Rating: +1**"
+    },
+    {
+      "question_id": 358,
+      "source": "Open Medical SCT",
+      "rating": -1,
+      "score": 1.0,
+      "expert_dist_norm": [
+        0.0,
+        1.0,
+        0.8,
+        0.2,
+        0.0
+      ],
+      "response": "The finding of impaired renal function makes the clinician more cautious about using certain nephrotoxic antibiotics and may prompt dose adjustments, while a positive influenza PCR points toward a viral cause of fever, lowering the suspicion for a bacterial infection that would require antibiotics. In a very young, pre\u2011term infant the threshold for treatment remains low, so these data do not eliminate the need for antibiotics but do make the decision a bit less compelling.  \n\n**Rating: -1**"
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+_meta:
+  source: Diffusion Tensor Metrics as Biomarkers in Alzheimer's Disease.pdf
+  title: Diffusion Tensor Metrics as Biomarkers in Alzheimer's Disease
+  domain: ''
+  hats:
+  - white-hat
+instructions:
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-1
+  type: directive
+  priority: 60
+  content: 'Research shows that increased axial diffusivity and mean diffusivity are
+    the earliest detectable abnormalities in Alzheimer''s disease, first appearing
+    in mesial parietal and splenial white matter regions. These metrics remained relatively
+    static with advancing disease, indicating they function as ''state-specific''
+    markers suitable for early detection rather than disease progression monitoring.
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - axial-diffusivity
+    - mean-diffusivity
+    - early-biomarkers
+    - white-matter
+  tags:
+  - knowledge
+  - white-hat
+  - axial-diffusivity
+  - mean-diffusivity
+  - early-biomarkers
+  - white-matter
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-2
+  type: directive
+  priority: 60
+  content: 'The data indicates that increased radial diffusivity and decreased fractional
+    anisotropy emerge later in disease progression but become increasingly abnormal
+    as Alzheimer''s disease advances. In the splenium of the corpus callosum, these
+    metrics correlated significantly with dementia severity, making them ''stage-specific''
+    markers ideal for monitoring disease progression.
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - radial-diffusivity
+    - fractional-anisotropy
+    - disease-progression
+    - dementia-severity
+  tags:
+  - knowledge
+  - white-hat
+  - radial-diffusivity
+  - fractional-anisotropy
+  - disease-progression
+  - dementia-severity
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-3
+  type: directive
+  priority: 60
+  content: 'Studies have found that progressive abnormalities in radial diffusivity
+    and fractional anisotropy consistently occurred in brain areas that had first
+    shown increases in axial and mean diffusivity. This sequential pattern suggests
+    that increased axial diffusivity represents an upstream event preceding neuronal
+    loss, as the latter two metrics correlate with dementia severity while the former
+    do not.
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - diffusion-tensor-imaging
+    - neuronal-loss
+    - biomarker-evolution
+    - white-matter-integrity
+  tags:
+  - knowledge
+  - white-hat
+  - diffusion-tensor-imaging
+  - neuronal-loss
+  - biomarker-evolution
+  - white-matter-integrity
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-4
+  type: directive
+  priority: 60
+  content: 'The research examined 43 early-stage Alzheimer''s disease patients (21
+    very mild, 22 mild) and 26 matched controls using standardized diffusion tensor
+    imaging protocols, including both whole-brain tract-based spatial statistics and
+    region-of-interest analysis of the corpus callosum. A longitudinal subcohort of
+    16 patients was rescanned at 12 months to assess metric evolution over time.
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - study-design
+    - sample-size
+    - methodology
+    - longitudinal-analysis
+  tags:
+  - knowledge
+  - white-hat
+  - study-design
+  - sample-size
+  - methodology
+  - longitudinal-analysis
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-5
+  type: directive
+  priority: 60
+  content: 'Evidence suggests that previous conflicting results in diffusion tensor
+    imaging studies of Alzheimer''s disease may be explained by differential evolution
+    of tensor metrics over disease course. The paper notes that lack of standardization
+    in acquisition and analysis protocols has made interpretation of discrepancies
+    difficult, highlighting the importance of standardized approaches for biomarker
+    validation.
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - methodological-standardization
+    - conflicting-results
+    - biomarker-validation
+    - research-gaps
+  tags:
+  - knowledge
+  - white-hat
+  - methodological-standardization
+  - conflicting-results
+  - biomarker-validation
+  - research-gaps
+- id: knowledge-white-hat-diffusion-tensor-metrics-as-biomarkers-in-alzhei-6
+  type: directive
+  priority: 60
+  content: 'The longitudinal cognitive data revealed that memory was the most impaired
+    cognitive domain at baseline, followed by statistical trends toward fluency and
+    attention/orientation deficits over 12 months, while language and visuospatial
+    abilities remained relatively preserved. The 16-patient longitudinal cohort showed
+    significant decline in ACE-R scores from baseline (77.5±7.3) to 12 months (70.3±13.6).
+
+    '
+  scope:
+    tags:
+    - white-hat
+    - cognitive-decline
+    - longitudinal-outcomes
+    - memory-impairment
+    - neuropsychological-assessment
+  tags:
+  - knowledge
+  - white-hat
+  - cognitive-decline
+  - longitudinal-outcomes
+  - memory-impairment
+  - neuropsychological-assessment

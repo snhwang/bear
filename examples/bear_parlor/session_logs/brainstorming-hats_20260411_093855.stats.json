@@ -1,0 +1,38 @@
+{
+  "topic": "crispr",
+  "condition": "bear",
+  "started": "2026-04-11 09:38:55",
+  "last_updated": "2026-04-11 09:44:38",
+  "elapsed_seconds": 342.6,
+  "n_turns": 38,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 62,
+  "n_diffusion_skipped": 26,
+  "ingestions": [
+    {
+      "time": "09:40:01",
+      "turn": 7,
+      "hat": "White",
+      "title": "CRISPR%20ethics",
+      "chunks": 59
+    },
+    {
+      "time": "09:41:55",
+      "turn": 20,
+      "hat": "White",
+      "title": "fda_approval_of_casgevy_and_lyfgenia__a_dual.10",
+      "chunks": 17
+    },
+    {
+      "time": "09:43:06",
+      "turn": 27,
+      "hat": "White",
+      "title": "laurent%20CRISPR-based%20gene%20therapies",
+      "chunks": 66
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_093855.md",
+  "completed": true,
+  "ended": "2026-04-11 09:44:50",
+  "duration_seconds": 354.9
+}

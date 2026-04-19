@@ -1,0 +1,16 @@
+{
+  "topic": "glp1",
+  "condition": "naive",
+  "started": "2026-04-10 15:52:44",
+  "last_updated": "2026-04-10 15:58:16",
+  "elapsed_seconds": 332.6,
+  "n_turns": 36,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 108,
+  "n_diffusion_skipped": 0,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260410_155244.md",
+  "completed": true,
+  "ended": "2026-04-10 15:58:20",
+  "duration_seconds": 336.6
+}

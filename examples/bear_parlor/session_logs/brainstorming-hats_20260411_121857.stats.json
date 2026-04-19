@@ -1,0 +1,38 @@
+{
+  "topic": "llm-cds",
+  "condition": "naive",
+  "started": "2026-04-11 12:18:57",
+  "last_updated": "2026-04-11 12:24:53",
+  "elapsed_seconds": 356.2,
+  "n_turns": 38,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 126,
+  "n_diffusion_skipped": 0,
+  "ingestions": [
+    {
+      "time": "12:20:08",
+      "turn": 7,
+      "hat": "White",
+      "title": "dennstadt%20implementing%20LLMs%20in%20healthcare",
+      "chunks": 25
+    },
+    {
+      "time": "12:22:07",
+      "turn": 19,
+      "hat": "White",
+      "title": "Wang%20safety%20challenges%20of%20AI%20in%20medicine",
+      "chunks": 47
+    },
+    {
+      "time": "12:23:15",
+      "turn": 27,
+      "hat": "White",
+      "title": "arriola-omontenegro%20deterministic%20LLM%20framework",
+      "chunks": 64
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_121857.md",
+  "completed": true,
+  "ended": "2026-04-11 12:24:59",
+  "duration_seconds": 362.3
+}

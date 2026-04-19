@@ -1,0 +1,220 @@
+_meta:
+  source: machine learning for the classification of Alzheimer's disease and its prodromal
+    stage using brain diffusion tensor imaging data.pdf
+  title: machine learning for the classification of Alzheimer's disease and its prodromal
+    stage using brain diffusion tensor imaging data
+  domain: ''
+  hats:
+  - blue-hat
+instructions:
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-1
+  type: directive
+  priority: 60
+  content: 'The open question is whether the promising classification accuracies reported
+    in individual studies can be replicated across diverse, independent cohorts with
+    varying demographics and imaging protocols. Before applying these findings clinically,
+    we need to establish standardized DTI acquisition and preprocessing pipelines
+    that ensure reproducibility across institutions. The key unresolved issue is how
+    much of the reported performance is attributable to dataset-specific characteristics
+    rather than generalizable biomarkers.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - reproducibility
+    - standardization
+    - clinical-translation
+    - validation
+  tags:
+  - knowledge
+  - blue-hat
+  - reproducibility
+  - standardization
+  - clinical-translation
+  - validation
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-2
+  type: directive
+  priority: 60
+  content: 'The next step would be to develop a consensus framework for feature selection
+    in DTI-based AD classification, given that different studies prioritize different
+    measures such as FA, MD, DA, and DR with inconsistent results. Before applying
+    this systematically, we need to establish which DTI features are most robust across
+    analysis methods including voxel-wise, ROI-based, TBSS, and tractography approaches.
+    The open question is whether a unified feature set can be defined that performs
+    reliably across all these methodological variants.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - feature-selection
+    - dti-features
+    - methodology
+    - fractional-anisotropy
+  tags:
+  - knowledge
+  - blue-hat
+  - feature-selection
+  - dti-features
+  - methodology
+  - fractional-anisotropy
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-3
+  type: directive
+  priority: 60
+  content: 'The review covers only the period 2010–2019 and is limited to PubMed,
+    which raises the structural question of whether the evidence base is sufficiently
+    comprehensive to draw actionable conclusions. Before acting on these findings,
+    we need to establish whether extending the search to additional databases and
+    more recent literature would materially change the conclusions. The next step
+    would be to design a living systematic review that continuously updates as new
+    ML and DTI studies emerge.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - systematic-review
+    - evidence-base
+    - literature-search
+    - prisma
+  tags:
+  - knowledge
+  - blue-hat
+  - systematic-review
+  - evidence-base
+  - literature-search
+  - prisma
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-4
+  type: directive
+  priority: 60
+  content: 'A key unresolved issue is the exclusion of MCI-only studies from this
+    review, which limits the ability to systematically evaluate the prodromal detection
+    pipeline as a continuous spectrum from healthy controls through MCI to AD. The
+    next logical research step would be to conduct a complementary review focused
+    exclusively on MCI classification to fill this gap. Before applying these findings
+    to early detection programs, we need to establish how well the identified ML models
+    perform at the critical MCI-to-AD conversion prediction task.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - mild-cognitive-impairment
+    - early-detection
+    - prodromal-stage
+    - classification
+  tags:
+  - knowledge
+  - blue-hat
+  - mild-cognitive-impairment
+  - early-detection
+  - prodromal-stage
+  - classification
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-5
+  type: directive
+  priority: 60
+  content: 'The open question is how to systematically integrate multimodal data combining
+    DTI with structural MRI and other neuroimaging modalities to maximize classification
+    performance in a clinically deployable system. Before applying multimodal approaches,
+    we need to establish a structured protocol for data fusion that accounts for differences
+    in image resolution, acquisition timing, and missing modality scenarios. The next
+    step would be to design prospective studies that collect multimodal data under
+    controlled conditions to enable fair cross-study comparison.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - multimodal-analysis
+    - data-fusion
+    - structural-mri
+    - research-design
+  tags:
+  - knowledge
+  - blue-hat
+  - multimodal-analysis
+  - data-fusion
+  - structural-mri
+  - research-design
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-6
+  type: directive
+  priority: 60
+  content: 'The key unresolved issue is the lack of standardized reporting of performance
+    metrics across studies, with some reporting only accuracy while others include
+    sensitivity and specificity, making systematic comparison and meta-analysis difficult.
+    Before drawing definitive conclusions, we need to establish mandatory reporting
+    standards that include confidence intervals, sample size justifications, and cross-validation
+    strategies. The next step would be to develop a reporting checklist specific to
+    ML-based neuroimaging classification studies analogous to PRISMA for systematic
+    reviews.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - reporting-standards
+    - performance-metrics
+    - meta-analysis
+    - cross-validation
+  tags:
+  - knowledge
+  - blue-hat
+  - reporting-standards
+  - performance-metrics
+  - meta-analysis
+  - cross-validation
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-7
+  type: directive
+  priority: 60
+  content: 'The open question is whether support vector machines, which dominate the
+    reviewed literature, remain the optimal classifier for DTI-based AD classification,
+    or whether deep learning approaches would yield superior and more generalizable
+    results. Before transitioning to deep learning pipelines, we need to establish
+    minimum dataset size requirements given the typically small sample sizes observed
+    in the reviewed studies. The next logical step would be a head-to-head benchmarking
+    study comparing classical ML methods against deep learning on the same standardized
+    DTI datasets.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - support-vector-machine
+    - deep-learning
+    - benchmarking
+    - algorithm-selection
+  tags:
+  - knowledge
+  - blue-hat
+  - support-vector-machine
+  - deep-learning
+  - benchmarking
+  - algorithm-selection
+- id: knowledge-blue-hat-machine-learning-for-the-classification-of-alzhe-8
+  type: directive
+  priority: 60
+  content: 'The next step would be to define a structured pathway from research findings
+    to clinical deployment of DTI-based ML diagnostic tools, including regulatory
+    approval processes and integration with existing neuropsychological assessment
+    workflows. Before acting on these findings, we need to establish how computer-aided
+    diagnosis systems would complement rather than replace expert clinician judgment
+    in real-world settings. The key unresolved issue is how to handle the heterogeneity
+    of AD symptoms and progression modalities within a single automated classification
+    framework.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - clinical-deployment
+    - computer-aided-diagnosis
+    - translational-research
+    - decision-support
+  tags:
+  - knowledge
+  - blue-hat
+  - clinical-deployment
+  - computer-aided-diagnosis
+  - translational-research
+  - decision-support

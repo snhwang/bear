@@ -1,0 +1,38 @@
+{
+  "topic": "alzheimers",
+  "condition": "bear",
+  "started": "2026-04-11 08:53:42",
+  "last_updated": "2026-04-11 08:59:36",
+  "elapsed_seconds": 354.6,
+  "n_turns": 38,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 57,
+  "n_diffusion_skipped": 17,
+  "ingestions": [
+    {
+      "time": "08:54:55",
+      "turn": 8,
+      "hat": "White",
+      "title": "Alzheimer%27s%20disease%20etiology%20hypotheses%20and%20therapeutic%20strategies",
+      "chunks": 92
+    },
+    {
+      "time": "08:56:47",
+      "turn": 20,
+      "hat": "White",
+      "title": "Alzheimer%27s%20disease%20treatment%20challenges%20for%20the%20future",
+      "chunks": 20
+    },
+    {
+      "time": "08:57:54",
+      "turn": 27,
+      "hat": "White",
+      "title": "espay%20lecanemab%20and%20donanemab",
+      "chunks": 23
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_085342.md",
+  "completed": true,
+  "ended": "2026-04-11 08:59:39",
+  "duration_seconds": 357.0
+}

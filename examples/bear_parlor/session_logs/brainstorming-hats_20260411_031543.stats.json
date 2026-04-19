@@ -1,0 +1,13 @@
+{
+  "topic": "dmg",
+  "condition": "bear",
+  "started": "2026-04-11 03:15:43",
+  "last_updated": "2026-04-11 03:15:43",
+  "elapsed_seconds": 0.0,
+  "n_turns": 0,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 0,
+  "n_diffusion_skipped": 0,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_031543.md"
+}

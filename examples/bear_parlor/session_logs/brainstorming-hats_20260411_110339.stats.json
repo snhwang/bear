@@ -1,0 +1,38 @@
+{
+  "topic": "dmg",
+  "condition": "bear",
+  "started": "2026-04-11 11:03:39",
+  "last_updated": "2026-04-11 11:09:33",
+  "elapsed_seconds": 354.0,
+  "n_turns": 37,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 54,
+  "n_diffusion_skipped": 18,
+  "ingestions": [
+    {
+      "time": "11:04:51",
+      "turn": 8,
+      "hat": "White",
+      "title": "Liu%20et%20al%20adaptive%20immunotherapeutic%20paradigms%20in%20DMG",
+      "chunks": 54
+    },
+    {
+      "time": "11:06:43",
+      "turn": 20,
+      "hat": "White",
+      "title": "Nonnenbroich%20DMG%20from%20molecular%20mechanisms%20to%20targeted%20interventions",
+      "chunks": 41
+    },
+    {
+      "time": "11:07:58",
+      "turn": 27,
+      "hat": "White",
+      "title": "arrillaga-romany%20ONC201%20%28Dordaviprone%29",
+      "chunks": 75
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_110339.md",
+  "completed": true,
+  "ended": "2026-04-11 11:09:42",
+  "duration_seconds": 363.4
+}

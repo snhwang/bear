@@ -1,0 +1,3853 @@
+{
+  "config": {
+    "model": "gpt-oss:120b",
+    "base_url": "https://ollama.com/v1",
+    "n": 132,
+    "offset": 0,
+    "puzzle_type": "both",
+    "temperature": 1.0,
+    "hat_temps": {
+      "green": 1.0,
+      "white": 1.0,
+      "red": 1.0,
+      "black": 1.0,
+      "yellow": 1.0,
+      "blue": 0.2
+    },
+    "rounds": 1,
+    "confidence": false,
+    "thinking": false,
+    "thinking_tokens": 2048,
+    "timestamp": "20260404_182401"
+  },
+  "results": [
+    {
+      "puzzle_id": "WP-0",
+      "question": "How do you spell COW in thirteen letters?",
+      "correct_index": 1,
+      "correct_answer": "SEE O DOUBLE YOU.",
+      "majority_answer_idx": 1,
+      "majority_answer": "SEE O DOUBLE YOU.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        2,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "C",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-1",
+      "question": "If eleven plus two equals one, what does nine plus five equal?",
+      "correct_index": 1,
+      "correct_answer": "Two.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Two.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-2",
+      "question": "How can you take 2 from 5 and leave 4?",
+      "correct_index": 2,
+      "correct_answer": "FIVE. Remove the 2 letters F and E from five and you have in which is the Roman numeral for four.",
+      "majority_answer_idx": 2,
+      "majority_answer": "FIVE. Remove the 2 letters F and E from five and you have in which is the Roman numeral for four.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-4",
+      "question": "Tomorrow I am surely here, yesterday I am found as well. Today I am gone. Who am I?",
+      "correct_index": 0,
+      "correct_answer": "The Letter R.",
+      "majority_answer_idx": 0,
+      "majority_answer": "The Letter R.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "The only letter that occurs in both **tomo**r**r**ow and yeste**r**day but does **not** occur in today is **R**.  \n\nSo the answer is **A**.",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-5",
+      "question": "What can you find in the center of gravity?",
+      "correct_index": 0,
+      "correct_answer": "The letter V.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        2,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "C",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-6",
+      "question": "What is in seasons, seconds, centuries and minutes but not in decades, years or days?",
+      "correct_index": 2,
+      "correct_answer": "The letter N.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The letter N.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-7",
+      "question": "How many seconds are there in one year?",
+      "correct_index": 1,
+      "correct_answer": "12 of them: January 2nd, February 2nd, March 2nd, April 2nd, May 2nd, June 2nd, July 2nd, August 2nd, September 2nd, October 2nd, November 2nd, December 2nd.",
+      "majority_answer_idx": 1,
+      "majority_answer": "12 of them: January 2nd, February 2nd, March 2nd, April 2nd, May 2nd, June 2nd, July 2nd, August 2nd, September 2nd, October 2nd, November 2nd, December 2nd.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-8",
+      "question": "What arithmetic symbol can we place between 2 and 3 to make a number greater than 2 but less than 3?",
+      "correct_index": 1,
+      "correct_answer": "A decimal point.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        1,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "B",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-9",
+      "question": "Do you know anything that has four eyes?",
+      "correct_index": 0,
+      "correct_answer": "Mississippi.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Mississippi.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-10",
+      "question": "How can you spell \"enemy\" in three letters?",
+      "correct_index": 0,
+      "correct_answer": "F O E.",
+      "majority_answer_idx": 2,
+      "majority_answer": "N M Y.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        0,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "A",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-11",
+      "question": "Ben walked into a hardware store and asked the price of some items. The salesman said: One costs $1, Eight costs $1, Seventeen cost $2, One hundred four costs $3 and One thousand seventy two costs $4. What was Ben buying?",
+      "correct_index": 2,
+      "correct_answer": "Ben was buying home address numbers and they cost $1 per digit.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Ben was buying home address numbers and they cost $1 per digit.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-12",
+      "question": "What liquid is represented by 'hijklmno'?",
+      "correct_index": 1,
+      "correct_answer": "Water. Hijklmno is \"H to O\" in the alphabet. Water is H20.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Water. Hijklmno is \"H to O\" in the alphabet. Water is H20.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        3,
+        3,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "D",
+        "D",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-13",
+      "question": "How can you say rabbit without using the letter R?",
+      "correct_index": 1,
+      "correct_answer": "Bunny.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Abbit.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        2,
+        0,
+        0,
+        2,
+        3,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "A",
+        "A",
+        "C",
+        "D",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-14",
+      "question": "Which word in the English language becomes shorter when it is lengthened?",
+      "correct_index": 2,
+      "correct_answer": "Short.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Short.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        0,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "A",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-16",
+      "question": "What dress does everyone have, but no one wears?",
+      "correct_index": 1,
+      "correct_answer": "Address.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Address.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-17",
+      "question": "What letters of the alphabet come too late for supper?",
+      "correct_index": 0,
+      "correct_answer": "Those that come after T.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Those that come after T.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        3,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "D",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-18",
+      "question": "What changes a pear into a pearl in a second?",
+      "correct_index": 1,
+      "correct_answer": "The letter L.",
+      "majority_answer_idx": 1,
+      "majority_answer": "The letter L.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-20",
+      "question": "Is an old hundred dollar bill better than a new one?",
+      "correct_index": 1,
+      "correct_answer": "Yes, it's worth 99 more dollars.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "**D**",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-21",
+      "question": "What is in front of a woman and at the end of a cow?",
+      "correct_index": 1,
+      "correct_answer": "The letter W.",
+      "majority_answer_idx": 1,
+      "majority_answer": "The letter W.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-22",
+      "question": "How can you eat and study at the same time?",
+      "correct_index": 0,
+      "correct_answer": "Eat alphabet soup.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Eat alphabet soup.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": true,
+      "votes": [
+        0,
+        0,
+        3,
+        3,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "D",
+        "D",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-23",
+      "question": "What does a stone become when in the water?",
+      "correct_index": 0,
+      "correct_answer": "A whetstone.",
+      "majority_answer_idx": 0,
+      "majority_answer": "A whetstone.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-24",
+      "question": "What kind of sandwich sinks to the bottom of the tub?",
+      "correct_index": 1,
+      "correct_answer": "A submarine sandwich.",
+      "majority_answer_idx": 1,
+      "majority_answer": "A submarine sandwich.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        1,
+        1,
+        0,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "B",
+        "B",
+        "A",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-25",
+      "question": "What kind of nut has no shell?",
+      "correct_index": 1,
+      "correct_answer": "A Doughnut.",
+      "majority_answer_idx": 1,
+      "majority_answer": "A Doughnut.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        3,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "D",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-27",
+      "question": "What part of London is in France?",
+      "correct_index": 1,
+      "correct_answer": "The letter N.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        2,
+        3,
+        3,
+        3,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "C",
+        "D",
+        "D",
+        "D",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-28",
+      "question": "What kind of ant has a long history?",
+      "correct_index": 0,
+      "correct_answer": "An antique.",
+      "majority_answer_idx": 0,
+      "majority_answer": "An antique.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-29",
+      "question": "What do mathematics teachers like to eat?",
+      "correct_index": 1,
+      "correct_answer": "Pie.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-31",
+      "question": "What bird is very rude?",
+      "correct_index": 2,
+      "correct_answer": "Mocking bird.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        2,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "C",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-33",
+      "question": "What do you call peas which are crazy?",
+      "correct_index": 0,
+      "correct_answer": "Peanuts.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Peanuts.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-34",
+      "question": "Which side of the turkey has the most feathers?",
+      "correct_index": 1,
+      "correct_answer": "The outside.",
+      "majority_answer_idx": 1,
+      "majority_answer": "The outside.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-35",
+      "question": "What's 3/7 chicken, 2/3 cat, and 2/4 goat?",
+      "correct_index": 1,
+      "correct_answer": "Chicago.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Chicago.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-38",
+      "question": "What word contains all of the twenty six letters?",
+      "correct_index": 1,
+      "correct_answer": "Alphabet.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Alphabet.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        3,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "D",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-39",
+      "question": "What three letters change a girl into a woman?",
+      "correct_index": 0,
+      "correct_answer": "Remove G,I and R and add A,D and Y.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        0,
+        3,
+        0,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "A",
+        "D",
+        "A",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-40",
+      "question": "David is 5 years old. Fred is 4 years old. Ilina is also 5 years old. Daniel is 6 years old. Valentina is 9. How old is Ronnie?",
+      "correct_index": 2,
+      "correct_answer": "Ronnie is 6.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Ronnie is 6.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-41",
+      "question": "What kind of a band, never plays music?",
+      "correct_index": 1,
+      "correct_answer": "A rubber band.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        2,
+        3,
+        3,
+        2,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "D",
+        "D",
+        "C",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-42",
+      "question": "What 7 letter word becomes longer when the third letter is removed?",
+      "correct_index": 1,
+      "correct_answer": "Lounger.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Lounger.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-44",
+      "question": "What pets make stirring music?",
+      "correct_index": 2,
+      "correct_answer": "Trumpet.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-45",
+      "question": "How do you make a pirate angry?",
+      "correct_index": 0,
+      "correct_answer": "Take away the 'p'.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Take away the 'p'.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        0,
+        0,
+        2,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "A",
+        "A",
+        "C",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-46",
+      "question": "What 4 days in the week start with T?",
+      "correct_index": 1,
+      "correct_answer": "Tuesday, Thursday, Today and Tomorrow.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Tuesday, Thursday, Today and Tomorrow.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-47",
+      "question": "What kind of fish chases a mouse?",
+      "correct_index": 0,
+      "correct_answer": "Catfish.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Catfish.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": true,
+      "votes": [
+        0,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "D",
+        "D",
+        "D",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-48",
+      "question": "You are in a place called Wall's World and there is only one law. There is a mirror, but no reflection. There is pizza with cheese, but not sausage. There is pepper, but no salt. There is a door, yet no entrance or exit. What is the law?\n",
+      "correct_index": 2,
+      "correct_answer": "Each word in Wall's World must contain double letters.\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "Each word in Wall's World must contain double letters.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-49",
+      "question": "What does I RIGHT I mean? \n",
+      "correct_index": 2,
+      "correct_answer": "Right between the eyes.\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "Right between the eyes.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "D",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-50",
+      "question": "Which word is written incorrectly in the dictionary?\n",
+      "correct_index": 0,
+      "correct_answer": "The word \"incorrectly\".\n",
+      "majority_answer_idx": 0,
+      "majority_answer": "The word \"incorrectly\".\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-51",
+      "question": "What letters are easily found in every single day of the week?\n",
+      "correct_index": 1,
+      "correct_answer": "DAY.\n",
+      "majority_answer_idx": 1,
+      "majority_answer": "DAY.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "**B**"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-52",
+      "question": "If the red house is on the right side and if the blue house is on the left side, where's the white house?\n",
+      "correct_index": 1,
+      "correct_answer": "In Washington, D.C.\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "In the middle of red house and blue house.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-53",
+      "question": "I am the beginning of sorrow and the end of sickness. You cannot express happiness without me yet I am in the midst of crosses. I am always in risk yet never in danger. You may find me in the sun, but I am never out of darkness.",
+      "correct_index": 2,
+      "correct_answer": "The letter S.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The letter S.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "**C** \u2013 the letter **S**.",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-54",
+      "question": "Which room has no walls?\n",
+      "correct_index": 0,
+      "correct_answer": "A mushroom\n",
+      "majority_answer_idx": 0,
+      "majority_answer": "A mushroom\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-55",
+      "question": "What are the next three letters in this combination? OTTFFSS_.",
+      "correct_index": 2,
+      "correct_answer": "E N T.",
+      "majority_answer_idx": 2,
+      "majority_answer": "E N T.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-57",
+      "question": "What happens only in the middle of each month, in all of the seasons, except summer, and happens only in the night, never in the day? ",
+      "correct_index": 2,
+      "correct_answer": "The letter 'N'.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The letter 'N'.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "**C** \u2013 the letter **N**.  \n\n- It is the middle letter of the word **\u201cmonth.\u201d**  \n- The letter N appears in the names of the seasons **spring, autumn, winter**, but not in **summer.**  \n- N is present in the word **\u201cnight,\u201d** and absent from the word **\u201cday.\u201d**  ",
+        "D",
+        "**C** \u2013 the letter **N**.  \n\n- It is the middle letter of the word **month** (\u201cmo**n**th\u201d).  \n- It appears in the names of all the seasons except **summer**: **spring**, **autumn**, **winter** all contain an N, while *summer* does not.  \n- It is present in the word **night** but absent from the word **day**.  \n\nHence the answer is the letter **N**.",
+        "**C** \u2013 the letter **N**.  \n\n- In the word *month* the middle letter is **N** (\u201cthe middle of each month\u201d).  \n- The names of the four seasons are *spring, summer, autumn, winter*; **N** appears in spring, autumn and winter but not in summer (\u201cin all of the seasons, except summer\u201d).  \n- The word *night* contains **N**, while the word *day* does not (\u201conly in the night, never in the day\u201d).  \n\nHence the puzzle points to the letter **N**.",
+        "C",
+        "**C** \u2013 the letter **N**.  \n\n- **Middle of each month** \u2013 the word \u201cmonth\u201d has its middle (third) letter **N**.  \n- **All of the seasons, except summer** \u2013 \u201cspring\u201d, \u201cautumn\u201d, and \u201cwinter\u201d each contain **N**, while \u201csummer\u201d does not.  \n- **Only in the night, never in the day** \u2013 the word \u201cnight\u201d contains **N**, but the word \u201cday\u201d does not.  "
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-58",
+      "question": "If fish lived on land, where would they live?",
+      "correct_index": 2,
+      "correct_answer": "In Finland.",
+      "majority_answer_idx": 2,
+      "majority_answer": "In Finland.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-61",
+      "question": "What is the proper length for a lady's skirt?",
+      "correct_index": 0,
+      "correct_answer": "A little above two feet.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-63",
+      "question": "Mr. Red resides in a red home, Mrs. Pink resides in a pink home, and Mr. Blue resides in a blue home. The White House is inhabited by who?",
+      "correct_index": 3,
+      "correct_answer": "None of above.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-64",
+      "question": "There is a pink house made of pink  bricks, a blue house made of blue bricks, an orange house made of orange bricks. What color bricks is a greenhouse made of?",
+      "correct_index": 3,
+      "correct_answer": "None of above.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-65",
+      "question": "What comes once in a minute, twice in a moment, but never in a thousand years?",
+      "correct_index": 2,
+      "correct_answer": "The letter M.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The letter M.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-66",
+      "question": "Where does Christmas come before Thanksgiving?",
+      "correct_index": 0,
+      "correct_answer": "In the dictionary.",
+      "majority_answer_idx": 0,
+      "majority_answer": "In the dictionary.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-67",
+      "question": "How do you make the number 7 even without addition, subtraction, multiplication, or division?",
+      "correct_index": 2,
+      "correct_answer": "Drop the \"S\".",
+      "majority_answer_idx": 2,
+      "majority_answer": "Drop the \"S\".",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-68",
+      "question": "How do you spell candy in 2 letters?",
+      "correct_index": 1,
+      "correct_answer": "C' and 'Y'.",
+      "majority_answer_idx": 1,
+      "majority_answer": "C' and 'Y'.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-69",
+      "question": "How do you spell hard water with three letters?",
+      "correct_index": 1,
+      "correct_answer": "ICE.",
+      "majority_answer_idx": 1,
+      "majority_answer": "ICE.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        3,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "D",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-70",
+      "question": "What is one thing that all wise men, regardless of their politics or religion, agree is between heaven and earth?",
+      "correct_index": 2,
+      "correct_answer": "The word 'and'.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The word 'and'.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-72",
+      "question": "A man has Ten Horses and nine stables as shown here. [] [] [] [] [] [] [] [] [] The man wants to fit Ten Horses into nine stables. How can he fit Ten horses into nine stables?",
+      "correct_index": 1,
+      "correct_answer": "One letter for each stable. [T][E][N] [H][O][R][S][E][S].",
+      "majority_answer_idx": 1,
+      "majority_answer": "One letter for each stable. [T][E][N] [H][O][R][S][E][S].",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-73",
+      "question": "Always in visible, yet never out of sight.\nWhat are they?",
+      "correct_index": 0,
+      "correct_answer": "The letters I and S.",
+      "majority_answer_idx": 0,
+      "majority_answer": "The letters I and S.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-74",
+      "question": "What is the end of everything?",
+      "correct_index": 2,
+      "correct_answer": "The letter G.",
+      "majority_answer_idx": 2,
+      "majority_answer": "The letter G.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        3,
+        2,
+        2,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "D",
+        "C",
+        "C. The letter\u202fG.",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-75",
+      "question": "What can be seen in the middle of March and April that cannot be seen at the beginning or end of either month?",
+      "correct_index": 0,
+      "correct_answer": "The letter R.",
+      "majority_answer_idx": 0,
+      "majority_answer": "The letter R.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        3,
+        3,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "D",
+        "D",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-76",
+      "question": "How many letters are in the alphabet?",
+      "correct_index": 2,
+      "correct_answer": "There are 11 letters.",
+      "majority_answer_idx": 2,
+      "majority_answer": "There are 11 letters.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-77",
+      "question": "What starts with \"P\", ends with \"E\", and has many letters?",
+      "correct_index": 1,
+      "correct_answer": "Post Office.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Post Office.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-78",
+      "question": "What two things can you never eat for breakfast?",
+      "correct_index": 0,
+      "correct_answer": "Lunch and dinner.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-80",
+      "question": "What fruit always travels in groups of two?",
+      "correct_index": 0,
+      "correct_answer": "Pears.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Pears.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        3,
+        2,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "D",
+        "C",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-81",
+      "question": "What's the quickest way to make oil boil?",
+      "correct_index": 0,
+      "correct_answer": "Add the letter B.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Add the letter B.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-82",
+      "question": "On which side of a church is the graveyard always situated?",
+      "correct_index": 0,
+      "correct_answer": "Outside.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        2,
+        2,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D.",
+        "D",
+        "D",
+        "C",
+        "C",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-83",
+      "question": "When does a British potato change its nationality?",
+      "correct_index": 2,
+      "correct_answer": "When it becomes a french fries.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        2,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "C",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-84",
+      "question": "There are 10 dogs in a yard. 3 sleep, 4 run behind a tree, and 2 jump in the hole. How many are left?",
+      "correct_index": 3,
+      "correct_answer": "None of above. No dogs left the yard.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "The key is to notice that the word **\u201cleft\u201d** can be taken as a play on the phrase **\u201clet sleeping dogs lie.\u201d**  \nThe dogs that are \u201cleft\u201d (i.e., lying) are the ones that are sleeping.  \n\nThere are **3** dogs described as sleeping, so the number of dogs that are \u201cleft\u201d is **three**.\n\n**Answer: B**.",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-85",
+      "question": "What kind of cheese is made backwards?",
+      "correct_index": 1,
+      "correct_answer": "Edam cheese.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Edam cheese.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-89",
+      "question": "Where does a showman keep his money?",
+      "correct_index": 1,
+      "correct_answer": "In a snow bank.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-90",
+      "question": "What do you call unhappy cranberries?",
+      "correct_index": 1,
+      "correct_answer": "Blueberries.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Blueberries.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B.",
+        "B",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-91",
+      "question": "What sweets do geologists like?",
+      "correct_index": 2,
+      "correct_answer": "Rock candy.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        2,
+        0,
+        3,
+        3,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "C",
+        "A",
+        "**Answer: D**  \n\nThe \u201cobvious\u201d choice would be **C. Rock candy**, since geologists study rocks and \u201crock candy\u201d is a candy that looks like a rock.  \nHowever, the puzzle explicitly warns that the obvious answer is probably wrong and asks us to think laterally.  \n\n- \u201cRock candy\u201d isn\u2019t actually a sweet that a geologist would *prefer*; it\u2019s just a candy that happens to resemble a rock.  \n- The other two options (sugar candy and white chocolate) have no special geological association.  \n- Because none of the listed sweets captures a genuine, non\u2011punny preference of geologists, the correct answer must be that **none of the given choices are what geologists like**.  \n\nTherefore the best answer is **D \u2013 None of the above**.",
+        "D",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-92",
+      "question": "What type of music are balloons scared of?",
+      "correct_index": 2,
+      "correct_answer": "Pop Music.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Pop Music.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        3,
+        2,
+        3,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "D",
+        "C",
+        "D",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-93",
+      "question": "What driver never gets arrested?",
+      "correct_index": 1,
+      "correct_answer": "A screw driver.",
+      "majority_answer_idx": 1,
+      "majority_answer": "A screw driver.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-94",
+      "question": "What do you call a ghost without a host?",
+      "correct_index": 0,
+      "correct_answer": "G.",
+      "majority_answer_idx": 0,
+      "majority_answer": "G.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-95",
+      "question": "Which is the biggest jam in the world?",
+      "correct_index": 2,
+      "correct_answer": "A traffic jam.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "**D**",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-99",
+      "question": "What kind of bars won't keep a prisoner in jail?",
+      "correct_index": 0,
+      "correct_answer": "Chocolate bars.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-100",
+      "question": "What kind of can never needs a can-opener?",
+      "correct_index": 1,
+      "correct_answer": "A pelican.",
+      "majority_answer_idx": 1,
+      "majority_answer": "A pelican.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        3,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "D",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-102",
+      "question": "Why was 6 afraid of 9 on new years eve?",
+      "correct_index": 2,
+      "correct_answer": "Because 9 ate (eight) 7.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Because 9(night) is coming.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        1,
+        2,
+        1,
+        1,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "B",
+        "C",
+        "B",
+        "B",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-103",
+      "question": "What type of drum are you not able to play?",
+      "correct_index": 2,
+      "correct_answer": "Conundrum.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Conundrum.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-104",
+      "question": "What is in the middle of India?",
+      "correct_index": 2,
+      "correct_answer": "The letter 'd'.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-105",
+      "question": "Guess the next three letters in the series GTNTL.",
+      "correct_index": 2,
+      "correct_answer": "I, T, S.\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "I, T, S.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "The series \u201cGTNTL\u201d isn\u2019t a mysterious code at all \u2013 it\u2019s just the initials of the words in the sentence of the puzzle itself:\n\n**G**uess **T**he **N**ext **T**hree **L**etters\n\nThe next three words after \u201cletters\u201d in that same sentence are **I**n **T**he **S**eries, whose initials are **I,\u202fT,\u202fS**.\n\nTherefore the correct choice is:\n\n**C**. I, T, S.",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-106",
+      "question": "What letter comes next in the following sequence? D R M F S L T_",
+      "correct_index": 2,
+      "correct_answer": "D.\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "D.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C.",
+        "We need to solve the puzzle: sequence D R M ... We need to find the next letter. Options: A is E, B is T, C is D, D none of above.\n\nWe need lateral thinking, wordplay. Let's examine sequence: D R M F S L T ... Could be letters of something: maybe musical notes? D R M F S L T? Could be days of week? D=?? R=?? Not.\n\nCould be abbreviation for something: \"Do, Re, Mi, Fa, So(l), La, Ti, Do\". Indeed the solfege: Do, Re, Mi, Fa, So(l), La, Ti, Do. First letters: D R M F S L T D. Sequence given D R M F S L T _. They omitted the final D maybe? Options A: E (non-fitting), B: T (repeat?), C: D (the obvious? maybe answer is D). But they say lateral thinking; obvious answer likely D (because Do re mi...). But maybe letter is not D; maybe they intend something else.\n\nMaybe it's sequence of chemical element symbols' first letters? D=deuterium? No.\n\nCould be letters of the alphabet skipping? D (4), R (18), M (13), F (6), S (19), L (12), T (20). Not pattern.\n\nMaybe it's the first letters of words in a phrase? \"Doctor Reads My Funny Short Little Text\"? Not.\n\nLateral: Could be the first letters of each word in a commonly known phrase: \"D R M F S L T\" could be \"Do Reverse Mirror Flip\"? Not.\n\nSequence maybe \"D R M F S L T\" correspond to \"Days of the week\" in some language? In French: Dimanche D, Lundi L, Mardi M, Mercredi M, Jeudi J, Vendredi V, Samedi S. Not.\n\nMaybe it's the order of letters on a QWERTY keyboard's home row? D,R,F,T? Not.\n\nList: D,R,M,F,S,L,T. Could be the first letters of the 7 continents? No.\n\nCould be first letters of the 7 musical notes (C D E F G A B)? Not.\n\nSequence of letters in the word \"DRMFSLT\"? Could be skip pattern: D (+? ) to R (+14), to M (-5), to F (-7), to S (+13), to L (-7), to T (+8). No.\n\nMaybe it's the first letters of the words \"Don\u2019t read me for something left to?\" Not.\n\nCould be using the algorithm: each letter is the first letter of the previous letter's name: example D -> \"dee\" starts with D; no.\n\nConsider reading them as Roman numerals? D=500, R not numeral, M=1000, F not, S not, L=50, T not.\n\nMaybe they are letters on a dartboard: numbers 1-20 placed around? Not.\n\nThe puzzle says lateral thinking, double meanings, unconventional interpretations. Could the letters represent shapes? D is shape of half circle, R shape, etc? Not.\n\nCould be the sequence of letters representing the initial of each word in the phrase \"Do Re Mi Fa So La Ti\"? That's obvious. Then next would be \"Do\" again which is D. Option C is D. But they say obvious answer is likely wrong; maybe they want something else.\n\nMaybe it's not solfege, but something else: \"D R M F S L T\" could be the first letters of the US states in order of admission? Delaware (DE) - D, Rhode Island (RI) - R, etc. Indeed Delaware (DE) is 1st state, Pennsylvania (PA) 2nd, New Jersey 3rd... Not.\n\nBut D=Delaware, R=Rhode Island, M=Massachusetts, F=??? Florida? Not 4th? Actually 4th is Georgia (GA). So not.\n\nLet's think of descending order of something: \"D R M F S L T\" could be the descending order of musical notes on the treble clef: D, C, B? Not.\n\nMaybe the letters correspond to the last letters of the months? January (y) not.\n\nCould be the first letters of the seven deadly sins? Pride P, Envy E, etc. Not.\n\nMaybe it's the first letters of the seven colors of rainbow? D? Not.\n\nCould be initial letters of the seven dwarfs? Doc D, Grumpy G, etc. Not.\n\nCould be the sequence of letters after each other in the alphabet with some rule: D (4) then R (18) difference 14; M (13) diff -5; F (6) diff -7; S (19) diff 13; L (12) diff -7; T (20) diff 8. Not pattern.\n\nDifference pattern maybe +/-14, -5, -7, +13, -7, +8... Not.\n\nMaybe they represent numbers in Roman numerals and then some mapping: D=500, M=1000, L=50. Others are not roman numerals.\n\nMaybe it's a sequence of letters that are the second letters of the days of the week? Monday (o) no. Not.\n\nThe hint says \"double meanings, unconventional interpretations\". Could be that each letter stands for a word that also is a letter. For example \"D\" sounds like \"dee\", which is a letter; but maybe also a grade (D). \"R\" stands for \"are\", a verb. \"M\" stands for \"am\". \"F\" stands for \"eff\" meaning \"fail\"? \"S\" stands for \"ess\"? \"L\" for \"ell\"? \"T\" for \"tee\". The words \"dee\", \"are\", \"em\", \"eff\", \"ess\", \"ell\", \"tee\". These are the names of letters, also English words: \"are\" = verb \"to be\", \"am\" = first person singular of \"be\". So maybe the sequence of English words that are also letter names forming a phrase? \"Dee are em eff ess ell tee\". Could sound like something? \"D are M F S L T.\" Or maybe reading them: \"D R M F S L T\" could be the initial letters of the words \"Do Right, Make Friends, Stay Light, Try\"? Not.\n\nTake the letter names: D = \"dee\", R = \"are\", M = \"em\", F = \"eff\", S = \"ess\", L = \"ell\", T = \"tee\". The phrase could be \"Dee are em eff ess ell tee\" which could be read \"D R M F S L T\" again. But maybe the sequence is alphabetical order of letters that when spoken become English words (e.g., \"are\" = are, \"bee\" = be, \"see\" = see, \"dee\", \"gee\", \"jay\", \"kay\", \"pee\", \"queue\", \"are\"? Actually \"R\" is are, \"C\" is see, \"B\" is be, \"G\" is gee (as in \"gee whiz\"), \"J\" is jay (bird/jay), \"K\" is kay (okay), etc. So maybe it's letters whose names are also English words (homophones). Which letters are that? A (a), B (be), C (see), G (gee as expression), I (I), J (jay?), K (kay?), O (oh), P (pee), Q (queue), R (are), T (tea/tee), Y (why). Many. The given sequence D R M F S L T includes some that are NOT words: D (dee) maybe not word, M (em) maybe not, F (eff) not, S (ess) not, L (ell) not, but are they names of letters but also symbols etc. So maybe not.\n\nCould be musical notes again but using letter names for solfege in English: Do, Re, Mi, Fa, Sol, La, Ti. Their first letters: D R M F S L T (Sol sometimes \"S\" for So). That's exactly the sequence. So answer would be D reincluding \"Do\". But puzzle says obvious answer likely wrong, perhaps they want a different interpretation: maybe each letter stands for abbreviation of something else like \"D\" = \"Drive\", \"R\" = \"Republic\", etc. Could be the sequence of categories of US driver's license classification? Not.\n\nLet's think of letters that are the first letters of U.S. Presidents' last names in order? Washington (W) not D. So not.\n\nSequence might be first letters of the seven continents in order of size? Africa (A), Antarctica (A), Asia (A) no.\n\nMaybe it's the sequence of letters in the word \"DRMFSLT\" which is abbreviation for \"Dramflist\"? Not.\n\nI'll examine possible lateral twist: \"Letter comes next\" could be a literal letter that comes after the given letters in the alphabet layout (keyboard). On QWERTY, letters are arranged: D is two rows down and right of R etc? Not.\n\nMaybe we are looking at the first letters of the words in the phrase \"Do Re Mi Fa So La Ti\". That's the most straightforward. The puzzle typical answer would be \"D\". But they want indepth reasoning that maybe the \"obvious answer\" (D) is wrong due to double meaning. For instance, maybe we consider that the sequence is not about solfege but about \"D\" being the abbreviation for \"Doctor\", \"R\" for \"are\", \"M\" for \"am\", forming a sentence \"Doctor are am for something ...\"? Not.\n\nMaybe the twist: The sequence are letters that begin the names of the days of the week in French: Dimanche (D), ...? French days: Lundi (L), Mardi (M), Mercredi (M), Jeudi (J), Vendredi (V), Samedi (S), Dimanche (D). Not match.\n\nMaybe the sequence are the \"letters that are also chemical element symbols that are also...?\" D is deuterium (D). R is none, but maybe R is Rutherfordium (Rf) not.\n\nMaybe the letters stand for the positions of the letters in the alphabet that are prime numbers? Let's list primes up to 20: 2 B,3 C,5 E,7 G,11 K,13 M,17 Q,19 S. Not match.\n\nCould be letters that appear in the phrase \"Merry Christmas\"? Not.\n\nLet's think about \"double meanings\" and \"unconventional interpretations\". Could treat each letter as a Roman numeral value if applicable (D=500, M=1000, L=50). Sequence D (500), R (not numeral), M (1000), F (not), S (not), L (50), T (not). Not.\n\nMaybe treat each letter as chemical symbol: D (Deuterium sometimes H-2) not standard; R (Rhenium? Re), M (Molybdenum? Mo); Not.\n\nPotential lateral answer: The next letter is \"E\" (Option A) because maybe the sequence spells \"DRM FSLT\" which is one off from the phrase \"DRM FSLT...\"? Might be some phrase where each letter is the first letter after shifting each solfege letter by one position in alphabet? Let's shift: D->E, R->S, M->N, F->G, S->T, L->M, T->U. That would produce E S N G T M U. Not helpful.\n\nOption B: T. Maybe the pattern repeats after T: D R M F S L T T? Not.\n\nOption D: None of above. Could be the answer is something else like \"J\". But why? The joke puzzle may be that the sequence is 4, 18, 13,... pattern but the next is ... maybe \"H\"? Let's attempt to find numeric pattern: 4,18,13,6,19,12,20. Those are alternating high low? Maybe they are two interleaved sequences: positions 1,3,5,7: D (4), M(13), S(19), T(20) => increments +9, +6, +1 (descending increments). Even positions: R(18), F(6), L(12) => -12, +6. Not.\n\nIf we take differences: 14, -5, -7, 13, -7, 8. Not pattern.\n\nMaybe they correspond to letters that are one away from each other on QWERTY keyboard: D (next to S,F,E,R). However R is close to D? Not.\n\nPerhaps it's the sequence of letters that start the names of the seven basic SI units: meter (M), kilogram (K), second (S), ampere (A), kelvin (K), mole (M), candela (C). Not matching.\n\nSequence D R M F S L T - maybe stands for \"Dungeons & Dragons \"dice\" sides? Die with D4, D6, D8? Not.\n\nCould be the order of letters on a standard clock face when reading Roman numerals? No.\n\nWait maybe it's: \"D\" = \"Down\", \"R\" = \"Right\", \"M\" = \"Middle\", \"F\" = \"Forward\", \"S\" = \"South\", \"L\" = \"Left\", \"T\" = \"Top\". Next would be maybe \"B\" for \"Back\"? None of the provided. But they didn't list B.\n\nConsider phrase \"DRMFSLT\" maybe reading every other letter spells \"D M S T\" which are abbreviations for days of week: Mon, Tue? Not.\n\nMaybe each letter is the first letter of the numbers 1-7 in some language? In English numbers: One (O), Two (T), Three (T), Four (F), Five (F), Six (S), Seven (S). Not.\n\nGerman numbers: Eins (E), Zwei (Z), Drei (D), Vier (V), F\u00fcnf (F), Sechs (S), Sieben (S). Not.\n\nWhat about initial letters of planets in order from Sun? Mercury (M), Venus (V), Earth (E), Mars (M), Jupiter (J), Saturn (S), Uranus (U), Neptune (N). Not.\n\nMaybe it's \"D R M F S L T\" as the notes of the \"movable do\" solfege but using letter names (D=do, R=re, M=mi, F=fa, S=so(l), L=la, T=ti). So again D repeats. That's likely answer.\n\nBut puzzle says think laterally; maybe you realize that the \"letter\" refers to a letter of the alphabet that comes next after a blank space? For example, they are the first letters of the words \"Do\", \"Re\", etc., which themselves represent syllables that correspond to the alphabet letters themselves? Might be a trick: The sequence is the initial letter of each solfege syllable, and the next is \"D\". However, the puzzle's answer choices include D, but also \"None of above.\" They might expect the test taker to think D but then realize that the puzzle states \"letter comes next\" but indeed after \"T\" the musical scale cycles back to \"Do\" which is represented again by \"D\". So answer C (D). But they say obvious answer likely wrong; maybe the trick is that the puzzle wants you to think of solfege but actually the letters correspond to the first letters of the names of the days of the week in some language? Wait days in Romanian: Duminica (D), Luni (L), Marti (M), Miercuri (M), Joi (J), Vineri (V), Sambata (S). Not.\n\nObserve that letters D,R,M,F,S,L,T correspond to the first letters of the words in the phrase: \"Doctor, Revenge, Murder, ...\"? Not.\n\nMaybe reading them as positions on a dartboard numbers: 20 at top, then proceeding clockwise: 20 (T), 1 (A), 18 (R), 4 (D), 13 (M), 6 (F), 10 (J), 15 (O), 2 (B), 17 (Q), 3 (C), 19 (S), 7 (G), 16 (P), 8 (H), 11 (K), 14 (N), 9 (I), 12 (L), 5 (E). Not.\n\nBut if we look at that circle, the letters at those numbers? Not.\n\nAnother lateral: maybe the letters represent the first letters of the words in the line of the \"Gettysburg Address\": \"Four score and seven years ago...\" No.\n\nCould be that the letters are the first letters of the seven continents in order of size: Asia (A), Africa (A), North America (N), South America (S), Antarctica (A), Europe (E), Australia (A). Not.\n\nMaybe they represent the letters that are present in the word \"DRMFS L T\"? Could be something about the shape of the letters when rotated 90 degrees? D becomes a C shape, R becomes P, M becomes W, F becomes ?, S stays, L becomes etc.\n\nOption \"None of above\" perhaps because the puzzle expects the answer to be a number, not a letter, like \"the answer is 7\" etc. But they ask for letter.\n\nLet's consider the phrase \"What letter comes next in the following sequence?\" Might be a trick: The answer is the letter \"?\" maybe? Or the answer is \"?\" like the letter that is actually present in the question: they ask \"What letter comes next in the following sequence?\" The next letter could be the first letter of the answer choice? Or could be \"?\" Actually the phrase \"the following sequence? D R M F S L T_\" the blank underscores may indicate we need to fill. The puzzle might be referencing the \"alphabetical order of letters that are also musical notes\": In English, letters A-G are notes. D R M F S L T includes D and F which are notes, but others not.\n\nMaybe the letters are the first letters of the words in a commonly known phrase: \"Do, Re, Mi, Fa, So, La, Ti, Do\". So answer is D. But to be lateral, they warn \"double meanings\". The phrase \"Do, Re, Mi...\" are solfege syllables, but also each of those are two-letter words: \"Do\" is a verb, \"Re\" is a note \"re\" is a Spanish preposition meaning \"about\", \"Mi\" is a pronoun \"me\" in Spanish? Actually \"mi\" means \"my\" in Spanish. \"Fa\" is \"fa\", \"So\" is \"so\", \"La\" is \"la\", \"Ti\" is \"ti\". So each is a word. So maybe the puzzle expects you to think of a different set: The letters are the first letters of the \"Morse code\" of something? Not.\n\nDouble meaning could be that each letter is also a chemical symbol for a state abbreviation (US state). D for Delaware (DE). R for Rhode Island (RI). M for Maine (ME). F for Florida (FL). S for ... \"South\"? etc. Not.\n\nAnother angle: Could be referring to the \"British railway lines\" classification: D,R,etc.\n\nWhat about the phrase \"D R M F S L T\" stands for",
+        "C",
+        "C",
+        "C",
+        "The letters are the initial letters of the sol\u2011fa syllables of the diatonic musical scale:\n\n- **D**\u202f\u2192\u202fDo  \n- **R**\u202f\u2192\u202fRe  \n- **M**\u202f\u2192\u202fMi  \n- **F**\u202f\u2192\u202fFa  \n- **S**\u202f\u2192\u202fSo (or Sol)  \n- **L**\u202f\u2192\u202fLa  \n- **T**\u202f\u2192\u202fTi  \n\nAfter **Ti** the scale returns to **Do**, whose initial letter is **D** again.\n\nTherefore the next letter is **D**, which corresponds to choice **C**.  "
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-107",
+      "question": "What two words when combined hold the most letters?",
+      "correct_index": 0,
+      "correct_answer": "Post' and 'Office'.\n",
+      "majority_answer_idx": 0,
+      "majority_answer": "Post' and 'Office'.\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        0,
+        3,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "A",
+        "D",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-108",
+      "question": "I am an odd number, but if you take away just a single letter, I become even. Can you guess my number?",
+      "correct_index": 2,
+      "correct_answer": "Seven\n",
+      "majority_answer_idx": 2,
+      "majority_answer": "Seven\n",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        0,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "A",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-109",
+      "question": "I add six to eleven, and get five. Why is this correct?",
+      "correct_index": 1,
+      "correct_answer": "Because we are talking the time.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Because we are talking the time.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "**B**",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-110",
+      "question": "How do you make the number one disappear?",
+      "correct_index": 0,
+      "correct_answer": "Add a 'G' .",
+      "majority_answer_idx": 0,
+      "majority_answer": "Add a 'G' .",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-111",
+      "question": "How do you spell the word 'Panda' in two letters?",
+      "correct_index": 0,
+      "correct_answer": "P and A.",
+      "majority_answer_idx": 0,
+      "majority_answer": "P and A.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        3,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "D",
+        "A.",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-112",
+      "question": "What room do ghosts avoid?",
+      "correct_index": 1,
+      "correct_answer": "The living room.",
+      "majority_answer_idx": 1,
+      "majority_answer": "The living room.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        1,
+        1,
+        1,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "B",
+        "B",
+        "B",
+        "**D** \u2013 none of the above.  \n\nThe \u201cobvious\u201d answer (the living\u2011room, because ghosts are dead) is just a common joke.  In a true lateral\u2011thinking sense, ghosts don\u2019t shun any particular kind of room at all; they can haunt any space, so none of the listed rooms is avoided."
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-113",
+      "question": "Name one fish that one can never catch?",
+      "correct_index": 1,
+      "correct_answer": "Selfish.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Selfish.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-114",
+      "question": "What kind of money do vampires use?",
+      "correct_index": 0,
+      "correct_answer": "Blood money.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        2,
+        3,
+        2,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "C",
+        "D",
+        "C",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-115",
+      "question": "What TV program should you watch in the bathtub?",
+      "correct_index": 0,
+      "correct_answer": "Soap operas.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-116",
+      "question": "How did the champ fix the leaky facet?",
+      "correct_index": 1,
+      "correct_answer": "With a monkey wrench.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-117",
+      "question": "What starts with a T, ends with a T and has T in it?",
+      "correct_index": 2,
+      "correct_answer": "Teapot.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Teapot.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        3,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "D",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-118",
+      "question": "What begins with 'E', ends with 'E', and only has one letter in it?",
+      "correct_index": 2,
+      "correct_answer": "Envelope.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Envelope.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        3,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "The classic riddle answer is \u201cenvelope,\u201d but the wording \u201conly has one **letter** in it\u201d can be taken literally: the thing itself contains exactly one letter, not a mailed item.  \nIf we interpret \u201cletter\u201d as a written character, the only thing that both **begins with\u202fE**, **ends with\u202fE**, and **contains exactly one letter (itself)** is the single character **E**.  \n\nSince \u201cE\u201d is not among the listed options, the correct choice is:\n\n**D**.",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-119",
+      "question": "What falls down but never breaks?",
+      "correct_index": 0,
+      "correct_answer": "Nightfall.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Nightfall.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-120",
+      "question": "How can you make \"ten\" out of \"net\"?",
+      "correct_index": 0,
+      "correct_answer": "Just flip it around.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        0,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "A",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-121",
+      "question": "What is found at the beginning of eternity, the end of time and space, the start of every end and the end of every race?",
+      "correct_index": 0,
+      "correct_answer": "The letter 'E'.",
+      "majority_answer_idx": 0,
+      "majority_answer": "The letter 'E'.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "The clue is pointing to the same character in each phrase:\n\n- **the beginning of\u202f*eternity*** \u2192 the first letter is **E**  \n- **the end of\u202f*time* and\u202f*space*** \u2192 both words finish with **E**  \n- **the start of\u202f*end*** \u2192 the first letter is **E**  \n- **the end of\u202f*race*** \u2192 the last letter is **E**\n\nThus the thing that satisfies all four conditions is the letter **E**.\n\n**Answer: A**."
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-123",
+      "question": "What is the most shocking city?",
+      "correct_index": 2,
+      "correct_answer": "Electricity.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Electricity.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        3,
+        2,
+        2,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "D",
+        "C",
+        "C",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-126",
+      "question": "What kind of ship has two mates but no captain?",
+      "correct_index": 0,
+      "correct_answer": "Partnership.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Partnership.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        3,
+        0,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "D",
+        "A",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-128",
+      "question": "What kind of a cup doesn\u2019t hold water?",
+      "correct_index": 1,
+      "correct_answer": "A cupcake.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": true,
+      "votes": [
+        3,
+        1,
+        3,
+        1,
+        3,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "B",
+        "D",
+        "B",
+        "D",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-129",
+      "question": "What kind of house weighs the least?",
+      "correct_index": 0,
+      "correct_answer": "A lighthouse.",
+      "majority_answer_idx": 0,
+      "majority_answer": "A lighthouse.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-131",
+      "question": "What is a boxer\u2019s favorite drink?",
+      "correct_index": 1,
+      "correct_answer": "Punch.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        1,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "B",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-132",
+      "question": "What do you call a bear with no ear?",
+      "correct_index": 2,
+      "correct_answer": "\"B\" .",
+      "majority_answer_idx": 2,
+      "majority_answer": "\"B\" .",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-133",
+      "question": "What kind of beans won't grow in a garden?",
+      "correct_index": 2,
+      "correct_answer": "Jelly beans.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Jelly beans.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        2,
+        2,
+        3,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "C",
+        "C",
+        "D",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-135",
+      "question": "What's a computer's favorite snack?",
+      "correct_index": 1,
+      "correct_answer": "Chips.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        0,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "D",
+        "The \u201cobvious\u201d choice would be **chips** (because of computer chips), but the puzzle warns that the obvious answer is probably wrong and wants a lateral\u2011thinking wordplay.  \n\nA computer doesn\u2019t actually eat hardware; its \u201csnack\u201d is a play on the word **byte**\u2014a computer processes data in *bytes*, which sounds like *bites*. Since \u201cbyte\u201d (or \u201cbite\u201d) isn\u2019t among the listed options, the correct answer is:\n\n**D**.",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-136",
+      "question": "What type of butter can actually fly?",
+      "correct_index": 0,
+      "correct_answer": "Butterfly.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-138",
+      "question": "What kind of ring is square?",
+      "correct_index": 2,
+      "correct_answer": "A boxing ring.",
+      "majority_answer_idx": 2,
+      "majority_answer": "A boxing ring.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-139",
+      "question": "What type of bar doesn't serve alcohol?",
+      "correct_index": 1,
+      "correct_answer": "Sandbar.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-141",
+      "question": "What type of ham can you not eat?",
+      "correct_index": 0,
+      "correct_answer": "Birmingham.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Birmingham.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-142",
+      "question": "What type of lamp doesn't provide light?",
+      "correct_index": 0,
+      "correct_answer": "Clamp.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-143",
+      "question": "What kind of pot can't you cook anything in?",
+      "correct_index": 2,
+      "correct_answer": "Jackpot.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Jackpot.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-144",
+      "question": "What kind of case can't hold anything?",
+      "correct_index": 1,
+      "correct_answer": "Lowercase.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Lowercase.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-145",
+      "question": "What type of pool can you never swim in?",
+      "correct_index": 0,
+      "correct_answer": "Carpool.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": true,
+      "votes": [
+        3,
+        1,
+        3,
+        0,
+        0,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "B",
+        "D",
+        "A",
+        "A",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-146",
+      "question": "What kind of fast doesn't involve running?",
+      "correct_index": 2,
+      "correct_answer": "Breakfast.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Breakfast.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "The puzzle is playing on the two meanings of the word **fast**:  \n\n1. \u201cfast\u201d meaning quick \u2013 something that involves speed or running.  \n2. \u201cfast\u201d meaning a period of not eating.\n\nThe question asks for a *kind of fast* that does **not** involve running, so we need a meaning of \u201cfast\u201d that isn\u2019t about speed.  \n\n\u201cBreakfast\u201d literally contains the word **fast** (it is the meal that *breaks* a fast). It is a \u201cfast\u201d in the sense of the word appearing in it, but it has nothing to do with running or speed.  \n\nThus the answer that fits the lateral\u2011thinking clue is **C. Breakfast**.",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-147",
+      "question": "What type of board can't you play games on?",
+      "correct_index": 2,
+      "correct_answer": "Keyboard.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        0,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "D",
+        "D",
+        "D",
+        "A",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-148",
+      "question": "What type of bank doesn't hold money?",
+      "correct_index": 0,
+      "correct_answer": "Snowbank.",
+      "majority_answer_idx": 3,
+      "majority_answer": "None of above.",
+      "correct": false,
+      "any_correct": false,
+      "is_tie": false,
+      "votes": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "The only \u201cbank\u201d that truly doesn\u2019t have anything to do with money is a **riverbank** (or any other geographic bank). Since none of the listed choices refers to that meaning, the correct choice is:\n\n**D**. None of above.",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-149",
+      "question": "What type of root can't be eaten?",
+      "correct_index": 2,
+      "correct_answer": "Square root.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Square root.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        1,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "B",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-150",
+      "question": "What kind of mouse can't you feed cheese to?",
+      "correct_index": 0,
+      "correct_answer": "A computer mouse.",
+      "majority_answer_idx": 0,
+      "majority_answer": "A computer mouse.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        3,
+        3,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "D",
+        "D",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-151",
+      "question": "What kind of plant can't photosynthesize?",
+      "correct_index": 2,
+      "correct_answer": "A power plant.",
+      "majority_answer_idx": 2,
+      "majority_answer": "A power plant.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-152",
+      "question": "What kind of wood never gets chopped?",
+      "correct_index": 1,
+      "correct_answer": "Hollywood.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Hollywood.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-154",
+      "question": "What type of dish doesn't hold food?",
+      "correct_index": 0,
+      "correct_answer": "A satellite dish.",
+      "majority_answer_idx": 0,
+      "majority_answer": "A satellite dish.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        2,
+        0,
+        0,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "C",
+        "A",
+        "A",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-155",
+      "question": "What kind of bottle can't hold a liquid?",
+      "correct_index": 0,
+      "correct_answer": "A bottle neck.",
+      "majority_answer_idx": 0,
+      "majority_answer": "A bottle neck.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-156",
+      "question": "What kind of note can't be played?",
+      "correct_index": 1,
+      "correct_answer": "A footnote.",
+      "majority_answer_idx": 1,
+      "majority_answer": "A footnote.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": true,
+      "votes": [
+        1,
+        3,
+        3,
+        1,
+        3,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "D",
+        "D",
+        "B",
+        "D",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-158",
+      "question": "What kind of watch can't tell time?",
+      "correct_index": 2,
+      "correct_answer": "A watchdog.",
+      "majority_answer_idx": 2,
+      "majority_answer": "A watchdog.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "The word *watch* can refer to a time\u2011keeping device (pocket watch, wristwatch) **or** to someone/ something that \u201ckeeps watch\u201d \u2013 i.e., a guard.  \nA pocket watch and a wristwatch are both made to tell the time, so they don\u2019t fit the clue.  \n\nA **watchdog** is a dog that \u201ckeeps watch\u201d over a property; it is a type of *watch* in the sense of a guard, but it obviously cannot tell the time.  \n\nThus the kind of watch that can\u2019t tell time is the watchdog.\n\n**Answer: C**",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-159",
+      "question": "What type of pump doesn't inflate anything?",
+      "correct_index": 1,
+      "correct_answer": "Pumpkin.",
+      "majority_answer_idx": 1,
+      "majority_answer": "Pumpkin.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        1,
+        3,
+        1,
+        1,
+        1,
+        1
+      ],
+      "num_samples": 6,
+      "responses": [
+        "B",
+        "D",
+        "B",
+        "B",
+        "B",
+        "B"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-160",
+      "question": "What type of ink never leaves a stain?",
+      "correct_index": 0,
+      "correct_answer": "Link.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Link.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "num_samples": 6,
+      "responses": [
+        "A",
+        "A",
+        "A",
+        "A",
+        "A",
+        "A"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-161",
+      "question": "What type of art doesn't hang in a gallery?",
+      "correct_index": 2,
+      "correct_answer": "Tart.",
+      "majority_answer_idx": 2,
+      "majority_answer": "Tart.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-162",
+      "question": "What kind of bell doesn't make a sound?",
+      "correct_index": 2,
+      "correct_answer": "A dumbbell.",
+      "majority_answer_idx": 2,
+      "majority_answer": "A dumbbell.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ],
+      "num_samples": 6,
+      "responses": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "model": "gpt-oss:120b"
+    },
+    {
+      "puzzle_id": "WP-163",
+      "question": "What type of ice never melts?",
+      "correct_index": 0,
+      "correct_answer": "Dice.",
+      "majority_answer_idx": 0,
+      "majority_answer": "Dice.",
+      "correct": true,
+      "any_correct": true,
+      "is_tie": false,
+      "votes": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      "num_samples": 6,
+      "responses": [
+        "D",
+        "A",
+        "A",
+        "A",
+        "A",
+        "D"
+      ],
+      "model": "gpt-oss:120b"
+    }
+  ]
+}

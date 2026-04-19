@@ -1,0 +1,28 @@
+# Evolutionary Ecosystem — BEAR Demo
+# Install from the repo root first:
+#   pip install -e .
+# Then:
+#   pip install -r examples/evolutionary_ecosystem/requirements.txt
+#
+# Run:
+#   cd examples/evolutionary_ecosystem
+#   python -m server.app --creatures 4
+
+# Web server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+
+# Numeric / ML (used by gene_engine for embedding-based appearance extraction)
+numpy>=1.24.0
+
+# Optional: needed if bear is configured with sentence-transformers embedding backend
+# sentence-transformers>=2.6.0
+
+# LLM backend
+openai>=1.0            # required — used for OpenAI API and local servers (LM Studio, Ollama, vLLM)
+# anthropic>=0.30      # optional: Anthropic Claude
+# ollama>=0.2          # optional: Ollama native client
+
+# Optional: load .env for API keys
+python-dotenv>=1.0.0

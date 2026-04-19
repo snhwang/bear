@@ -1,0 +1,38 @@
+{
+  "topic": "stroke",
+  "condition": "naive",
+  "started": "2026-04-11 07:58:32",
+  "last_updated": "2026-04-11 08:04:18",
+  "elapsed_seconds": 346.6,
+  "n_turns": 36,
+  "n_pdfs_ingested": 3,
+  "n_diffusion_stored": 72,
+  "n_diffusion_skipped": 0,
+  "ingestions": [
+    {
+      "time": "07:59:43",
+      "turn": 7,
+      "hat": "White",
+      "title": "thrombectomy",
+      "chunks": 15
+    },
+    {
+      "time": "08:01:34",
+      "turn": 19,
+      "hat": "White",
+      "title": "neuroprotection",
+      "chunks": 46
+    },
+    {
+      "time": "08:02:43",
+      "turn": 25,
+      "hat": "White",
+      "title": "sposato%20ischemic%20stroke%20prevention",
+      "chunks": 60
+    }
+  ],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260411_075832.md",
+  "completed": true,
+  "ended": "2026-04-11 08:04:29",
+  "duration_seconds": 357.7
+}

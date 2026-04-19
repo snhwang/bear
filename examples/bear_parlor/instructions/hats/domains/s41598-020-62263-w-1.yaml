@@ -1,0 +1,175 @@
+_meta:
+  source: s41598-020-62263-w (1).pdf
+  title: s41598-020-62263-w (1)
+  domain: ''
+  hats:
+  - blue-hat
+instructions:
+- id: knowledge-blue-hat-s41598-020-62263-w-1-1
+  type: directive
+  priority: 60
+  content: 'The open question is whether the four identified AD phenotypes are stable
+    and reproducible across independent cohorts beyond ADNI. Before applying these
+    phenotypes clinically, we need to establish external validation in diverse, multi-site
+    datasets with different demographic and genetic compositions to confirm generalizability.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - validation
+    - reproducibility
+    - external-cohorts
+    - phenotyping
+  tags:
+  - knowledge
+  - blue-hat
+  - validation
+  - reproducibility
+  - external-cohorts
+  - phenotyping
+- id: knowledge-blue-hat-s41598-020-62263-w-1-2
+  type: directive
+  priority: 60
+  content: 'The key unresolved issue is how to translate computational phenotype membership
+    values into actionable clinical decision-making tools. The next step would be
+    to develop clear clinical thresholds or decision rules that allow practitioners
+    to assign patients to phenotypes at the point of care without requiring specialized
+    computational infrastructure.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - clinical-translation
+    - decision-support
+    - implementation
+    - phenotyping
+  tags:
+  - knowledge
+  - blue-hat
+  - clinical-translation
+  - decision-support
+  - implementation
+  - phenotyping
+- id: knowledge-blue-hat-s41598-020-62263-w-1-3
+  type: directive
+  priority: 60
+  content: 'Before applying these findings to treatment stratification, we need to
+    establish whether phenotype membership at baseline reliably predicts differential
+    treatment response in prospective clinical trials. The open question is whether
+    the four phenotypes identified here map onto biologically distinct mechanisms
+    that would respond differently to specific therapeutic interventions.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - treatment-stratification
+    - clinical-trials
+    - biomarkers
+    - precision-medicine
+  tags:
+  - knowledge
+  - blue-hat
+  - treatment-stratification
+  - clinical-trials
+  - biomarkers
+  - precision-medicine
+- id: knowledge-blue-hat-s41598-020-62263-w-1-4
+  type: directive
+  priority: 60
+  content: 'The next logical research step would be to integrate additional data modalities—such
+    as amyloid PET, tau imaging, cerebrospinal fluid biomarkers, and genetic data—into
+    the coupled NMF framework to determine whether richer multimodal inputs refine
+    or alter the phenotype structure. The open question is how many true biological
+    phenotypes exist when all available data streams are incorporated.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - multimodal-integration
+    - biomarkers
+    - nonnegative-matrix-factorization
+    - data-fusion
+  tags:
+  - knowledge
+  - blue-hat
+  - multimodal-integration
+  - biomarkers
+  - nonnegative-matrix-factorization
+  - data-fusion
+- id: knowledge-blue-hat-s41598-020-62263-w-1-5
+  type: directive
+  priority: 60
+  content: 'The process of selecting four representative phenotypes from 30 candidates
+    involved filtering steps based on statistical significance and expert review,
+    raising the unresolved methodological question of how sensitive the final phenotype
+    count is to these selection criteria. The next step would be to conduct a systematic
+    sensitivity analysis varying the selection thresholds to assess robustness of
+    the four-phenotype solution.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - methodology
+    - sensitivity-analysis
+    - phenotype-selection
+    - model-robustness
+  tags:
+  - knowledge
+  - blue-hat
+  - methodology
+  - sensitivity-analysis
+  - phenotype-selection
+  - model-robustness
+- id: knowledge-blue-hat-s41598-020-62263-w-1-6
+  type: directive
+  priority: 60
+  content: 'The open question is how longitudinal phenotype stability should be assessed—specifically,
+    whether patients transition between phenotypes over time and what such transitions
+    would mean clinically. Before acting on these findings, we need to establish a
+    systematic framework for tracking phenotype membership across multiple time points
+    rather than just two visits.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - longitudinal-analysis
+    - phenotype-stability
+    - disease-progression
+    - study-design
+  tags:
+  - knowledge
+  - blue-hat
+  - longitudinal-analysis
+  - phenotype-stability
+  - disease-progression
+  - study-design
+- id: knowledge-blue-hat-s41598-020-62263-w-1-7
+  type: directive
+  priority: 60
+  content: 'The next step would be to establish a standardized pipeline for preprocessing
+    MRI volumes and neuropsychological test scores so that the c-NMF method can be
+    applied consistently across different clinical and research settings. The key
+    unresolved issue is whether variability in data acquisition protocols across sites
+    would introduce systematic biases into phenotype assignments.
+
+    '
+  scope:
+    tags:
+    - blue-hat
+    - data-standardization
+    - preprocessing-pipeline
+    - mri
+    - multi-site-studies
+  tags:
+  - knowledge
+  - blue-hat
+  - data-standardization
+  - preprocessing-pipeline
+  - mri
+  - multi-site-studies

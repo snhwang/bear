@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pet Sim — BEAR Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="view-mode-label">Normal View</div>
+    <div id="rate-limit-warning">Too fast! Wait a moment...</div>
+
+    <div id="happiness-panel">
+        <div class="pet-happiness">
+            <span class="pet-icon">🐕</span>
+            <div class="happiness-bar-container">
+                <div class="happiness-bar" id="dog-happiness"></div>
+            </div>
+            <span class="happiness-value" id="dog-happiness-value">70%</span>
+            <span class="mood-indicator" id="dog-mood"></span>
+        </div>
+        <div class="pet-happiness">
+            <span class="pet-icon">🐈</span>
+            <div class="happiness-bar-container">
+                <div class="happiness-bar" id="cat-happiness"></div>
+            </div>
+            <span class="happiness-value" id="cat-happiness-value">50%</span>
+            <span class="mood-indicator" id="cat-mood"></span>
+        </div>
+    </div>
+
+    <!-- Thought bubble container -->
+    <div id="thought-bubble-dog" class="thought-bubble"></div>
+    <div id="thought-bubble-cat" class="thought-bubble"></div>
+
+    <!-- Evolution notification -->
+    <div id="evolution-notification" class="evolution-notif">
+        <span class="evo-sparkle">✨</span>
+        <span id="evo-text">New behavior learned!</span>
+    </div>
+
+    <!-- Brain Decision Log Panel -->
+    <div id="brain-panel">
+        <div id="brain-panel-header">
+            <span id="brain-panel-title">Brain Log</span>
+            <span id="brain-panel-badge">0</span>
+        </div>
+        <div id="brain-panel-body"></div>
+    </div>
+
+    <!-- Teach toast notification -->
+    <div id="teach-toast" class="teach-toast">
+        <span class="teach-toast-icon">&#x1F4A1;</span>
+        <span id="teach-toast-text">Learned something new!</span>
+    </div>
+
+    <!-- Learned behaviors panel -->
+    <div id="learned-panel">
+        <div id="learned-panel-header">
+            <span id="learned-panel-title">Learned Behaviors</span>
+            <span id="learned-panel-badge">0</span>
+        </div>
+        <div id="learned-panel-body">
+            <div class="learned-empty">No behaviors taught yet. Use the teach bar below!</div>
+        </div>
+    </div>
+
+    <div id="ui-overlay">
+        <div id="status-bar">
+            <div id="connection-status">
+                <div id="connection-dot"></div>
+                <span id="connection-text">Connecting...</span>
+            </div>
+            <div id="room-info">Room: <span id="room-name">--</span> | Players: <span id="player-count">0</span></div>
+        </div>
+        <div id="teach-bar">
+            <select id="teach-pet">
+                <option value="dog1">Dog</option>
+                <option value="cat1">Cat</option>
+            </select>
+            <input type="text" id="teach-input" placeholder="&quot;Sit!&quot; (Say) or &quot;spin when happy&quot; (Teach)" />
+            <button id="say-btn">Say</button>
+            <button id="teach-btn">Teach</button>
+        </div>
+        <div id="button-bar">
+            <button class="action-btn selected" id="btn-ball">Drop Ball</button>
+            <button class="action-btn" id="btn-treat">Place Treat</button>
+            <button class="action-btn" id="btn-window">Toggle Window</button>
+            <button class="action-btn" id="btn-view">View: Normal</button>
+            <button class="action-btn" id="btn-brain">Brain Log</button>
+            <button class="action-btn" id="btn-learned">Learned</button>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

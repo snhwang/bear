@@ -1,0 +1,1602 @@
+[
+  {
+    "puzzle_id": "SP-0",
+    "question": "Mr. and Mrs. Mustard have six daughters and each daughter has one brother. But there are only 9 people in the family, how is that possible?",
+    "correct_index": 1,
+    "correct_answer": "Each daughter shares the same brother.",
+    "panel_answer_idx": 1,
+    "panel_answer": "Each daughter shares the same brother.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that all six daughters share the same single brother\u2014so there are only seven children plus the two parents, making nine people total.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: Mr. and Mrs. Mustard have six daughters, each daughter has one brother, and the total number of people in the family is nine.  \nWe know that there are two parents plus six daughters, which accounts for eight people; the puzzle claims only nine total, implying there is one additional person.  \nWe do not know whether that additional person is a single brother shared by all daughters, another child, or someone else.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The only way to reconcile \u201csix daughters, each with one brother\u201d and a total of nine people is that all six girls share the same single brother.  \nThus option\u202fB is correct; A, C, and D are irrelevant or false.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant solution is that all six daughters share a single brother, so the family consists of Mr.\u202fMustard, Mrs.\u202fMustard, six daughters, and one brother\u2014nine people in total. This answer is simple, satisfies the numbers, and avoids any unnecessary complications or assumptions.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-1",
+    "question": "A woman shoots her husband. Then she holds him underwater for over 5 minutes. Finally, she hangs him. But 5 minutes later, they both go out and enjoy a wonderful dinner together. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "panel_answer_idx": 2,
+    "panel_answer": "The woman was a photographer. She shot a picture of her husband, developed it, and hung it up to dry.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is in the double meanings of \u201cshoot,\u201d \u201chold underwater,\u201d and \u201chang.\u201d She literally takes a photo (shoots), develops the film in water for 5\u202fminutes, then hangs it to dry. Thus no harm comes to either of them\u2014they\u2019re both alive for dinner.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that a woman \u201cshoots\u201d her husband, holds him underwater for over five minutes, and then hangs him, yet after five minutes both are alive and go out to dinner. The only information given is the sequence of actions; no details about their identities, context, or method are provided. Thus we know the described sequence but not why it is possible or what the exact mechanism is.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The green\u2011hat explanation hinges on a single, plausible interpretation of \u201cshoot,\u201d but it ignores the fact that developing film in water for exactly five minutes is highly unusual and would likely damage the image; moreover, \u201chang\u201d could mean hanging a picture, but that still leaves the husband alive\u2014yet the puzzle\u2019s wording suggests a literal person. The white\u2011hat summary is correct but too vague; it does not test the plausibility of any answer. Thus none of the provided options convincingly resolve the paradox, and the puzzle likely relies on a different trick (e.g., \u201cshoot\u201d as in shooting fish). **Confidence: MEDIUM**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The clever twist is that \u201cshoot,\u201d \u201chold underwater,\u201d and \u201chang\u201d are all metaphorical for the photographic process\u2014she takes a picture of her husband, develops it in water for about five minutes, and then hangs the print to dry. This turns a seemingly sinister sequence into a harmless creative routine, letting them both enjoy dinner afterward.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-2",
+    "question": "Samuel was out for a walk when it started to rain. He did not have an umbrella and he wasn't wearing a hat. His clothes were soaked, yet not a single hair on his head got wet. How could this happen?",
+    "correct_index": 1,
+    "correct_answer": "This man is bald.",
+    "panel_answer_idx": 1,
+    "panel_answer": "This man is bald.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The riddle\u2019s trick lies in the wording: \u201cnot a single hair on his head got wet\u201d can be true if there are no hairs at all. So the most straightforward lateral answer is that Samuel is bald\u2014his scalp, not hair, gets soaked.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: Samuel was walking when it rained, he had no umbrella or hat, his clothes got soaked, yet \u201cnot a single hair on his head got wet.\u201d We know nothing about whether he has hair, its color, or if he walked upside\u2011down. The only fact that guarantees no hair gets wet is the absence of hair. **Confidence: MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cbald\u201d answer is the only one that logically guarantees no hair gets wet; the dyed\u2011hair and upside\u2011down options rely on unverified assumptions (that dye repels rain or that walking inverted is feasible). Thus the other choices are logically unsound, leaving B as the only viable solution.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying answer is that Samuel simply has no hair to get wet\u2014he\u2019s bald. That makes the statement literally true and keeps the story elegant without any trickery or extra conditions.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-5",
+    "question": "Five apples are in a basket. How do you divide them among five girls so that each girl gets an apple, but one apple remains in the basket?",
+    "correct_index": 2,
+    "correct_answer": "Give the fifth girl her apple in the basket.",
+    "panel_answer_idx": 2,
+    "panel_answer": "Give the fifth girl her apple in the basket.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is to let the fifth girl keep her apple in the basket\u2014she \u201cgets\u201d it by holding onto it, yet the apple remains physically in the basket. Thus option\u202fC is the lateral solution.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: \u201cFive apples are in a basket. How do you divide them among five girls so that each girl gets an apple, but one apple remains in the basket?\u201d The answer options are A. Two girls share one apple; B. One girl returns her apple; C. Give the fifth girl her apple in the basket; D. None of above. The discussion so far claims that option\u202fC is correct because the fifth girl \u201ckeeps\u201d her apple in the basket. We know the puzzle wording, the answer choices, and the claim made by GREEN HAT; we do not know whether any other interpretation satisfies the conditions or whether option\u202fC truly meets all constraints.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cfifth girl keeps her apple in the basket\u201d is a classic trick, but it relies on interpreting \u201cgets an apple\u201d as merely being entitled to one, not physically taking it out. If we demand that each girl actually receives an apple in her hand, then option\u202fC fails because the basket still holds that apple. None of the other options satisfy both conditions without violating a basic assumption (sharing or returning). Thus, unless the puzzle explicitly allows entitlement over possession, all listed answers are flawed.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant solution is option\u202fC: hand the fifth girl an apple that she simply keeps inside the basket\u2014she \u201cgets\u201d it by holding onto it, yet the apple never leaves the basket. This satisfies both conditions with a single, tidy trick that turns the wording into a clever play on ownership.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-6",
+    "question": "Tom and his younger sister were fighting. Their mother was tired of the fighting and decided to punish them by making them stand on the same piece of newspaper in such a way that they couldn't touch each other. How did she accomplish this?",
+    "correct_index": 0,
+    "correct_answer": "Tom's mother slid a newspaper under a door, each sibling standing on each side.",
+    "panel_answer_idx": 1,
+    "panel_answer": "Tom and his younger sister stand on the newspaper back-to-back.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cthe same piece of newspaper\u201d can be split into two separate surfaces\u2014think of a single sheet that\u2019s been folded or placed under a door so each child stands on a different side of the same physical paper. In other words, the mother literally put them on opposite sides of one"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that the mother punished Tom and his younger sister by making them stand on the same piece of newspaper in such a way that they could not touch each other. The only information given is the requirement and the four answer choices; no additional constraints or context are provided. Therefore, we know only what is explicitly listed in the prompt and cannot determine which choice (if any) satisfies the condition without further evidence.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fC is the only one that can be outright dismissed: folding a newspaper into a \u201cspecial shape\u201d does not guarantee the siblings cannot touch\u2014any fold still presents a surface that could be bridged. Both A and B are plausible: sliding the paper under a door gives two sides of one sheet, and standing back\u2011to\u2011back places each child on opposite faces of the same paper. The puzzle\u2019s wording allows either, so we cannot conclusively pick one without extra context.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant solution is that the mother had Tom and his sister stand back\u2011to\u2011back on a single sheet of paper\u2014each child is on a different face of the same physical newspaper, so they can\u2019t touch. This satisfies both \u201csame piece\u201d and \u201ccannot touch\u201d in one simple move.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-7",
+    "question": "A horse is tied to a five-meter rope in front of an old saloon. Ten meters behind the horse is a bale of hay. Without breaking his rope, the horse is able to eat the hay whenever he chooses.\nHow is this possible?",
+    "correct_index": 1,
+    "correct_answer": "The rope is not tied to anything else.",
+    "panel_answer_idx": 1,
+    "panel_answer": "The rope is not tied to anything else.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need lateral thinking answer likely \"horse is tied to a 5m rope, but the horse can eat hay 10m behind because rope is tied to a moving pole or it's tied to a post that moves? Or horse is tied to a rope attached to the hay bale itself? But question says without breaking his rope. Answer options: A, B, C, D none above. Likely answer is B: rope not tied to anything else (just loose). Or horse is tied to a 5m rope that is attached to the hay bale, so he can reach. But puzzle: in front of saloon, 10m behind horse hay bale. Horse can eat hay because the rope is tied to a post that is 5m behind? Wait: horse in front of saloon, hay bale behind him. If rope tied to post behind the horse? The horse can walk forward until rope taut, then turn around and eat hay. But rope length 5m only; hay is 10m behind, so horse can't reach unless he can turn around? Actually if rope tied to a post in front of him, horse can't go back. So maybe the rope is attached to a pole that moves? The answer likely B: rope not tied to anything else (just loose, so horse can roam). But that contradicts \"tied\". Maybe the rope is tied to a pole on top of hay bale? But then horse can eat. Lateral"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n- A horse is tied to a rope that measures five metres.  \n- The horse stands in front of an old saloon.  \n- Ten metres behind the horse lies a bale of hay.  \n- The horse can eat the hay whenever it chooses, without breaking its rope.\n\nWhat we know:  \n- The rope\u2019s length is fixed at five metres.  \n- The hay bale is positioned ten metres behind the horse, outside the rope\u2019s reach if the rope is anchored at a stationary point.  \n- The puzzle implies that some condition allows the horse to reach the hay without violating the rope\u2019s length constraint.\n\nWhat we do not know:  \n- Where (or if) the rope is actually anchored.  \n- Whether any other objects or mechanisms (e.g., moving posts, retractable walls) are involved.  \n- Whether the horse\u2019s position relative to the rope changes over time.\n\nThus, the puzzle presents a scenario that seems impossible under ordinary static conditions but suggests an unstated factor enabling the horse to reach the hay.  \n\nConfidence: LOW."
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fA assumes the rope is elastic, but a \u201cfive\u2011meter rope\u201d in a riddle normally means a fixed length; claiming it stretches proportionally is an unsubstantiated leap. Option\u202fB claims the rope isn\u2019t tied to anything, which contradicts \u201ctied\u201d and would make the horse free, not bound. Option\u202fC invents moving saloon walls\u2014a contrivance with no basis in the puzzle. Thus all supplied answers are either logically inconsistent or unsupported, so D (none above) is the only defensible choice.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is that \u201ctied to a five\u2011meter rope\u201d simply means the horse\u2019s bit is attached to a length of rope, but nothing anchors that rope to a post or wall. With no fixed point, the horse can walk anywhere within five metres of itself and still reach the hay behind it.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-8",
+    "question": "All of Mrs. Smith pets are dogs except one, and all her pets are cats except one. But Mrs.Smith only has 2 pets, how is that possible?",
+    "correct_index": 2,
+    "correct_answer": "Mrs. Smith has one cat and one dog.",
+    "panel_answer_idx": 2,
+    "panel_answer": "Mrs. Smith has one cat and one dog.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The key is that the statements refer to *all* of Mrs.\u202fSmith\u2019s pets, not to each individual pet separately. If she has exactly one cat and one dog, then \u201call of her pets are dogs except one\u201d (the cat) and \u201call of her pets are cats except one\u201d (the dog) both hold true. Thus the answer is C.\n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n- Mrs.\u202fSmith\u2019s pets are described as \u201call dogs except one\u201d and \u201call cats except one.\u201d  \n- Mrs.\u202fSmith is said to have exactly two pets.\n\nWhat we know:  \n- The statements refer to the entire set of her pets, not to each pet individually.  \n- With two pets, one could be a dog and the other a cat, satisfying both \u201call dogs except one\u201d (the cat) and \u201call cats except one\u201d (the dog).\n\nWhat we do not know:  \n- The puzzle does not provide any additional constraints such as the pets\u2019 names, breeds, or whether hybrid animals are considered.  \n- It also does not specify that the pets must be distinct species; it only gives the two statements above.\n\nThus, based on the literal wording and the given conditions, a configuration of one dog and one cat satisfies all statements.\n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The claim that \u201call of Mrs\u202fSmith\u2019s pets are dogs except one\u201d and \u201call of her pets are cats except one\u201d can both be true with just a cat and a dog is logically sound, but it hinges on interpreting \u201call\u201d as referring to the entire set rather than each individual pet. The puzzle\u2019s wording is ambiguous; a stricter reading could interpret the statements as applying to every pet, which would make the scenario impossible. Thus the solution is not airtight and depends on a particular interpretation of \u201call.\u201d  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying resolution is that Mrs\u202fSmith owns one dog and one cat: all her pets are dogs except the single cat, and all her pets are cats except the single dog. This neat symmetry makes both statements true simultaneously with just two animals, turning a seemingly impossible puzzle into an elegant trick.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-9",
+    "question": "The 22nd and 24th presidents of the United States of America had the same parents, but were not brothers. How can this be possible?",
+    "correct_index": 0,
+    "correct_answer": "They were the same man.",
+    "panel_answer_idx": 0,
+    "panel_answer": "They were the same man.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the 22nd and 24th presidents are actually the same person\u2014Grover Cleveland served two non\u2011consecutive terms, making him both the 22nd and 24th president. Thus they share parents but are not two distinct brothers.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that the 22nd and 24th U.S. presidents share parents but are not brothers. The factual answer is that they are the same individual, Grover Cleveland, who served two non\u2011consecutive terms. Thus there is no contradiction: the same person cannot be a brother to himself.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s trick is that the 22nd and 24th presidents are indeed the same person\u2014Grover Cleveland, who served two non\u2011consecutive terms. Thus they share parents but cannot be brothers because there is only one individual involved, making choice A correct and B and C nonsensical. Confidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is wonderfully simple yet elegant: Grover\u202fCleveland\u2019s two non\u2011consecutive terms make him the 22nd and 24th president, so \u201cthe 22nd and 24th presidents\u201d are actually one person sharing parents but not being two brothers. It\u2019s a neat reminder that the same individual can occupy multiple numbered slots, turning an apparent paradox into a clear fact.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-10",
+    "question": "There were eight girls going to school. They were sharing one umbrella. How come all the girls did not get wet?",
+    "correct_index": 1,
+    "correct_answer": "Because it was not raining.",
+    "panel_answer_idx": 0,
+    "panel_answer": "The eight girls could have been sharing the umbrella at different times or taking turns using it.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201csharing one umbrella\u201d doesn\u2019t mean all eight were under it at once\u2014perhaps the girls split into two groups, each with its own umbrella, or they used it in turns while staying dry elsewhere. Alternatively, the \u201cumbrella\u201d could be a metaphor for something else that keeps them dry (e.g., a large roof or a rain\u2011proof coat).  \nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts: The puzzle states that eight girls were going to school and they \u201cshared one umbrella.\u201d It asks how all of them could avoid getting wet.  \nUnknowns: The puzzle does not specify whether it was raining, the size of the umbrella, or how the sharing occurred.  \nThus we only know the scenario described; no additional information is provided about weather or logistics.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fB is a trivial answer that ignores the puzzle\u2019s implication of rain; it assumes no weather without justification. Option\u202fC relies on an \u201cexceptionally large umbrella\u201d which is not stated and would still leave space for eight to be under it, making the claim unnecessary. Option\u202fA is the only plausible explanation: the girls could have taken turns or split into smaller groups, each using the single umbrella at different times. Thus D is incorrect.\n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most uplifting twist is that \u201csharing one umbrella\u201d doesn\u2019t require all eight to be under it at once\u2014each girl could take turns or split into pairs, keeping everyone dry while still using the same umbrella. This shows clever coordination and resourcefulness rather than a trick of size or weather, making the puzzle feel both practical and satisfying.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-11",
+    "question": "A black dog stands in the middle of an intersection in a town painted black. None of the street lights are working due to a power failure caused by a storm. A car with two broken headlights drives towards the dog but turns in time to avoid hitting him. How could the driver have seen the dog in time?",
+    "correct_index": 0,
+    "correct_answer": "It was during the daylight hours.",
+    "panel_answer_idx": 0,
+    "panel_answer": "It was during the daylight hours.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The twist is that the \u201cblack town\u201d and \u201cblack dog\u201d are just visual tricks; the driver saw the dog because it was lit from the street\u2011light\u2019s *glint* on its fur, or because the dog made a noise that startled the driver. In either case, the solution relies on an unexpected sensory cue rather than ordinary vision or headlights.  \n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: a black dog is at an intersection in a town that is described as \u201cpainted black\u201d; all street lights are out because of a power failure caused by a storm; a car with two broken headlights is approaching the dog but turns in time to avoid hitting it. The puzzle asks how the driver could have seen the dog, offering four answer choices (A\u2013D). No additional information about lighting conditions, time of day, or other sensory cues is provided.  \n\nWe know the dog\u2019s color, the town\u2019s darkness, the failure of street lights, and that the car\u2019s headlights are broken. We do not know whether it is day or night, whether any other light sources exist, or whether the driver could have used non\u2011visual senses.  \n\n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s premises already undermine option\u202fA: if daylight were the answer, why mention a power failure and broken headlights? Option\u202fB assumes hearing alone can pinpoint a dog\u2019s exact location in an intersection, which is implausible without other cues. Option\u202fC overstates the light from a broken headlight; most \u201cbroken\u201d bulbs emit negligible illumination, insufficient for detection. Thus every listed choice rests on shaky assumptions, making D the only defensible answer.  \n\n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most optimistic take is that the incident happened during daylight, so even a black dog would be visible against the sky and street\u2011side shadows; the power failure and broken headlights just add dramatic detail. In that case option\u202fA is the sensible, elegant answer. **Confidence: MEDIUM**"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-12",
+    "question": "On a fine sunny day a ship was in the harbor. All of a sudden the ship began to sink. There was no storm and nothing wrong with the ship yet it sank right in front of the spectators eyes. What caused the ship to sink?",
+    "correct_index": 0,
+    "correct_answer": "It was a Submarine.",
+    "panel_answer_idx": 0,
+    "panel_answer": "It was a Submarine.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need creative lateral thinking. Options: submarine? fish? spectators? Maybe it's a \"submarine\" meaning underwater, but ship sank. Could be that the ship was actually a submarine disguised? Or it's a \"ship\" in a game or model. Maybe the ship was a paper boat, sank because of wind? But answer choices: none above. So maybe it's a \"ship\" as in a stage ship that sank because of a leak? Lateral: the ship was actually a \"ship\" in a video game that crashed. Or it's a \"ship\" in a harbor meaning a ship of the navy, but sank because it was a submarine that surfaced? The best lateral: It's a \"submarine\" which is actually underwater, so it sank because it's already submerged. But that's weird.\n\nMaybe the answer: D None of above. Because it's a \"ship\" in a harbor but sank because it was a toy ship made of paper and the sun melted? Or because the spectators were watching a film? The puzzle likely expects answer A: It was a submarine. Because it's a submarine, so it sank by design. But the puzzle says no storm and nothing wrong but sank front of spectators. Submarine purposely sinks? That seems plausible.\n\nBut as Green Hat, think outside: The ship is a \"ship\" in a game. It sank because of gravity? Or the spectators were on a boat, and the ship was a \"ship\" in the harbor but actually"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n1. A ship was present in a harbor on a fine sunny day.  \n2. Suddenly the ship began to sink.  \n3. There was no storm and nothing wrong with the ship, yet it sank right in front of spectators\u2019 eyes.  \n4. Four answer choices are offered: A) It was a submarine, B) Too many fish, C) Too many spectators, D) None of the above.  \n\nUnknowns: The exact cause of sinking (if any of the provided options is correct), whether \u201cship\u201d refers to a real vessel or something else, and any additional context that might explain the sinking.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201csubmarine\u201d answer is a classic red herring; a submarine doesn\u2019t \u201csink\u201d in the usual sense\u2014 it submerges by design, but that\u2019s not what a ship in a harbor would do. \u201cToo many fish\u201d or spectators are absurd causal factors; neither can physically cause a vessel to sink without some underlying flaw. Thus the only defensible choice is D, none of the above, because the puzzle lacks any realistic mechanism for an otherwise sound ship to disappear instantly.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most upbeat resolution is that the \u201cship\u201d was actually a submarine in disguise \u2013 it didn\u2019t need a storm or fault to sink, it simply went underwater by design. That explains the sudden submergence right before everyone\u2019s eyes without any mysterious flaw or external pressure.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-13",
+    "question": "A man who lived on the top floor of a twenty story building had to go up and down daily for work, and of course, for food and the other necessities. On most days he could only ride the elevator to the fifteenth story, and he would have to walk the rest of the way. When it rained, however, he could ride all the way up to the twentieth story. Why?",
+    "correct_index": 2,
+    "correct_answer": "The man wasn't tall enough to reach the button for the 20th floor. He could only reach the 15th story button on the elevator. When it rained, he brought his umbrella, and used it to press the 20th story button on the elevator.",
+    "panel_answer_idx": 2,
+    "panel_answer": "The man wasn't tall enough to reach the button for the 20th floor. He could only reach the 15th story button on the elevator. When it rained, he brought his umbrella, and used it to press the 20th story button on the elevator.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is the man\u2019s height: he can\u2019t reach the 20th\u2011floor button, so normally the elevator stops at the 15th. When it rains he brings an umbrella and uses it to press that button, letting him ride all the way up.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: a man lives on the top floor of a twenty\u2011story building, normally can only ride the elevator to the fifteenth floor and must walk the remaining floors; when it rains he can ride all the way to the twentieth floor. The answer choices propose explanations involving elevator programming, exclusive access, or using an umbrella to reach the button. What is not stated: whether the man\u2019s height actually limits his ability to press the 20th\u2011floor button, whether an umbrella is sufficient or allowed to press a button, and if any other mechanical or environmental factor (e.g., elevator malfunction, rain\u2011induced power changes) could explain the difference.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cumbrella\u2011button\u201d explanation is the only one that fits the facts, but it still rests on an unverified assumption that the man is short enough to miss the 20th\u2011floor button yet tall enough for the 15th. Options A and B introduce arbitrary rules about programming or exclusive access that are never mentioned in the puzzle, so they can be dismissed. Thus the most defensible answer is C, though it relies on a single physical limitation that isn\u2019t explicitly stated.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying answer is the \u201cumbrella\u2011button\u201d trick: his short stature keeps him from reaching the 20th\u2011floor button, but a rainy day gives him an umbrella to press it. It\u2019s a neat physical explanation that turns a mundane elevator glitch into a clever, tangible solution. Confidence: MEDIUM."
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-15",
+    "question": "Even if they are starving, natives living in the Arctic will never eat a penguin's egg. Why not?",
+    "correct_index": 0,
+    "correct_answer": "Penguins only live in Antarctica.",
+    "panel_answer_idx": 0,
+    "panel_answer": "Penguins only live in Antarctica.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is geographical: penguins are native to the Antarctic, so an Arctic tribe can\u2019t even reach a penguin\u2019s nest. Even starvation doesn\u2019t overcome the impossibility of getting there.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "white",
+        "response": "Facts: Penguins are native to the Southern Hemisphere (Antarctica and surrounding islands) and do not occur in the Arctic; therefore, even a starving native cannot physically obtain a penguin\u2019s egg. Penguins\u2019 eggs are not known to be toxic, and the lack of availability is the primary reason.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The GREEN and WHITE hats correctly point out the geographic impossibility, but they assume \u201cnever\u201d means literally impossible rather than culturally inappropriate. However, the puzzle\u2019s wording (\u201ceven if they are starving\u201d) could be interpreted as a logical paradox: starvation doesn\u2019t change geography, so the answer is indeed A. There\u2019s no hidden trick or toxic eggs to consider. Thus the reasoning stands, and choice A is the only viable answer.\n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The puzzle\u2019s charm lies in its simple, almost playful logic: the Arctic natives simply can\u2019t reach a penguin\u2019s nest because those birds live in the opposite hemisphere.  That geographic fact makes the answer elegant and unambiguous, turning a seemingly dramatic \u201ceven if starving\u201d scenario into a quick, satisfying trick.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-17",
+    "question": "There once was an evil wizard. He took 3 woman from their homes and turned them into rose bushes that looked exactly alike. He put them in his garden. One of the woman had a husband and children and begged the wizard to let her see them. He agreed. At night, he brought the woman to her house. In the morning he came and took her home. One day the husband decided to go rescue her. So he stuck into the wizard's garden. He looked and looked at the 3 identical rose bushes trying to figure out which could be his wife. Suddenly, he knew the answer and he took his wife home. How did he know which rose bush was his wife?",
+    "correct_index": 1,
+    "correct_answer": "The wizard brought the rosebush to her home at night and returned her to the garden in the morning. Therefore, she was the only plant without dew.",
+    "panel_answer_idx": 1,
+    "panel_answer": "The wizard brought the rosebush to her home at night and returned her to the garden in the morning. Therefore, she was the only plant without dew.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The husband could have used a subtle cue that only his wife\u2019s transformation would carry\u2014perhaps the way her \u201crose\u201d still carried a faint scent of home\u2011grown spice or the slight asymmetry in petal arrangement that matched a memory he\u2019d seen only once. In other words, the puzzle invites thinking beyond literal \u201crose\u201d logic and toward a hidden, personal signature.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that an evil wizard turned three women into identical rose bushes and placed them in his garden. One of the women, who had a husband and children, was allowed to visit her home at night; she returned to the garden in the morning. The husband later entered the garden, examined the three identical rose bushes, and immediately identified his wife\u2019s bush. The puzzle offers four answer choices (A\u2013D) but does not provide any additional evidence or constraints that would favor one over the others.  \n\n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle hinges on an unstated assumption that the wizard\u2019s transformation was perfect; if so, none of the roses would differ. Thus every answer (A\u2013C) relies on a physical cue that the story never supplies, making them logically invalid. The only defensible conclusion is D: none of the above.  \n\n**Confidence:** HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The key is that the wizard\u2019s nightly visits left a subtle difference: only the bush that had been moved to her home overnight would have lost its dew, while the other two still carried morning moisture. Thus the husband could simply look for the dry bush and instantly know it was his wife\u2019s rose.  \n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-18",
+    "question": "There are 3 apples for 2 sons and 2 fathers to eat. Each of them get their own apple. How is it numerically possible?",
+    "correct_index": 1,
+    "correct_answer": "They are one son, one father and one grandfather.",
+    "panel_answer_idx": 1,
+    "panel_answer": "They are one son, one father and one grandfather.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is in the overlapping identities: one man can be both a son and a father. Think of a grandfather\u2011father\u2011son trio\u2014two fathers (grandfather & father) and two sons (father & grandson)\u2014so three apples suffice.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that there are three apples to be shared among two sons and two fathers, with each person receiving a distinct apple. The only scenario that satisfies this is when the four individuals are a grandfather, his son (who is both a father and a son), and the grandson; thus there are two fathers (grandfather and father) and two sons (father and grandson).  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cgrandfather\u2011son\u2011grandson\u201d explanation is the only logically consistent one: it creates two distinct fathers and two distinct sons while still having only three people, so each can get an apple. Options A and C are impossible because they either give one person two apples or require a second apple that isn\u2019t present. Thus, B is the correct answer; D is incorrect.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is the overlap in roles\u2014one person can be both a son and a father, so you only need three people (grandfather, father/son, grandson) to satisfy \u201ctwo sons and two fathers.\u201d This elegant identity\u2011overlap makes the numbers line up without any sharing or giving away.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-20",
+    "question": "A man moved into a new house and decided he was tired after the journey and turned off all the lights and went to bed. The next morning he killed 365 people, he does not sleep walk he slept like a baby. How could this be?",
+    "correct_index": 2,
+    "correct_answer": "He lived in a light house.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need lateral thinking. Maybe he turned off lights -> blackout, then next morning killed 365 people? Could be a calendar: he kills days. Or maybe he's a lighthouse keeper? Light house? He turns off lights at night, next morning kills 365 people: maybe he's a farmer who harvested crops? Or he is a \"clock\" that kills time. 365 people = days in year. He killed them by not sleeping? Could be a calendar maker, but answer A says excluding Feb 29. He kills days by not counting them? Or he is a \"calendar\" that kills the people of the year. Hmm.\n\nGreen hat: lateral. Maybe he is a \"light house\" keeper who turned off lights, then next morning killed 365 people by turning on a flood of light that kills? Or he is a \"photographer\" who turned off lights, then next morning killed 365 people by taking photos? No.\n\nCould be a \"candle\" that burns 365 days. He turned off lights (candle?), next morning killed 365 people: he burned them? Hmm.\n\nMaybe it's a \"calendar\" that kills days (people) by not having them. So answer A is plausible.\n\nBut maybe it's a \"lighthouse\" with 365 lights? He turned off all lights, then next morning killed 365 people by causing a shipwreck. That would be the lighthouse keeper.\n\nSo answer C: He lived in a light house ("
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle:**  \n- A man moved into a new house.  \n- He was tired after the journey, turned off all lights, and went to bed.  \n- The next morning he killed 365 people.  \n- He does not sleep\u2011walk; he slept \u201clike a baby.\u201d  \n\n**What we know:**  \n- The event of killing 365 people occurs immediately after the night of turning off lights.  \n- No details are given about how or why he killed them, nor the method used.\n\n**What we do not know:**  \n- The mechanism or context that allows a single person to kill 365 individuals in one morning.  \n- Whether \u201ckilled\u201d is literal, metaphorical, or refers to a non\u2011human entity (e.g., days, plants).  \n- Any additional background about the man\u2019s occupation, tools, or environment beyond \u201cnew house.\u201d  \n\n**Confidence level:** LOW."
+      },
+      {
+        "hat": "black",
+        "response": "The \u201ckilling 365 people\u201d is almost certainly a metaphor\u2014most likely the death of days (a calendar).  \nOption\u202fA mistakenly conflates February\u202f29 with \u201ckilling\u201d people; it\u2019s a leap\u2011year quirk, not a death.  \nOption\u202fB talks about plants, which are not people; it\u2019s irrelevant.  \nOption\u202fC\u2019s lighthouse idea is a red herring\u2014turning off lights doesn\u2019t cause 365 deaths.  \nThus none of the choices convincingly explain the puzzle; the correct answer is D.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying explanation is that the \u201cman\u201d is a calendar\u2011maker who, by not including February\u202f29 in a non\u2011leap year, \u201ckills\u201d 365 days (people) each year\u2014he literally ends the lives of all the ordinary days. This clever twist turns a mundane act into an elegant metaphor for time\u2019s passage.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-21",
+    "question": "Joe and Sally were sitting in their family room one night. While Joe was watching T.V, his wife Sally was reading. All of a sudden the power went out and Joe decided to go to bed, but Sally kept on reading. With no use of artificial light, Sally kept on reading. How?",
+    "correct_index": 1,
+    "correct_answer": "Sally was blind, she was reading a book by Braille.",
+    "panel_answer_idx": 2,
+    "panel_answer": "Because it was daytime.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need creative lateral answer. Maybe she read a book with glow-in-the-dark pages? Or reading a book that doesn't need light: e.g., reading by touch (Braille) but answer B already. Or she read a book with a flashlight? No light. Maybe reading a book that is printed in fluorescent ink and she had UV source? But no artificial light. Could be reading a book with her eyes closed? Or reading a book in the dark: she was reading a book of words that are not visible. Maybe \"reading\" as in reading the newspaper's headline on a screen? Or she had a candle? But no artificial light. Maybe it's daytime, so there is natural light? Option C: Because it was daytime. That seems plausible. But puzzle says power went out, but Sally kept reading with no artificial light. So answer C fits: daylight. But that's obvious. Maybe lateral: She was reading a book in the dark because she had a reflective surface? But no artificial light. Could be reading a book with her eyes closed, reading the words in her mind? Or she was reading a book that had no words: like a picture book. But still need light.\n\nMaybe she was reading a book on her phone using screen? That's artificial. So answer C likely.\n\nBut green hat: think outside box: She was reading a book with her eyes closed, reading the words in her mind (reading mentally). So no light needed. That's lateral.\n\n"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n- Joe and Sally were in their family room.  \n- The power went out while Joe was watching TV; he decided to go to bed, but Sally continued reading.  \n- No artificial light was used during her reading.  \n\nThe answer choices presented are:  \nA) Sally pretended to read the book.  \nB) Sally was blind and read by Braille.  \nC) It was daytime.  \nD) None of the above.\n\nWhat is known: the scenario and the four specific answer options.  \nWhat is not known: whether any of those options accurately explain how Sally could read without artificial light, or if another explanation exists outside the given choices.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fA is a false assumption\u2014pretending to read still requires light. Option\u202fB could work only if she were blind, but the puzzle gives no such detail; it\u2019s an unnecessary leap. Option\u202fC is contradictory: \u201cnight\u201d implies darkness, so daylight cannot be the answer unless the clock was wrong. Thus the only defensible choice is D, \u201cNone of above.\u201d  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "Sally could simply be reading during daylight \u2013 the \u201cnight\u201d in the story was a misnomer, and natural light sufficed so no artificial source was needed. This keeps the scenario straightforward while honoring the puzzle\u2019s constraints.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-22",
+    "question": "Two men were playing tennis. They played five sets and each man won three sets. How can this be possible?",
+    "correct_index": 0,
+    "correct_answer": "The two men were partners playing doubles.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need lateral thinking. Two men playing tennis, five sets, each won three sets impossible. Maybe they played doubles with partners? But answer A says partners playing doubles, but that would be 4 players. Maybe they played five sets and each man won three sets means they were playing against a third? Actually 3+3=6 >5. Maybe they played five sets, but one set was a tie? Or they were playing with a third man as referee? Lateral: They played five sets, but each set had multiple games; they counted games? Maybe they were playing in a best-of-five sets but with the third set being a tiebreak counted as two? Another: They played five sets, but one of them was a \"no winner\" set (e.g., rain). So each won three sets but one set had no winner. That's 3+3=6, but only five sets played? Wait if one set had no winner, then total sets with winners =4. Not 5.\n\nMaybe they were playing doubles and each pair had two men; each man won three sets with his partner? But that would be 4 players.\n\nMaybe they played five sets but each set had a different opponent? No.\n\nLateral: They were playing tennis in turns meaning they alternated serving? Not.\n\nRound robin format: each player competes against every other player. Not relevant.\n\nMaybe the answer is D: None of above. But we"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n- Two men were playing tennis.  \n- They played five sets.  \n- Each man won three sets.\n\nWhat is explicitly known: the numbers of players, sets played, and set wins.  \nWhat is not stated or ambiguous: whether the sets were best\u2011of\u2011five, how ties are counted, if a set could have no winner, or any special scoring rule that would allow both players to win three sets in only five sets.\n\nConfidence: MEDIUM."
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fA is a mis\u2011read: \u201cpartners playing doubles\u201d would involve four players, not two.  \nOption\u202fB (\u201cplaying tennis in turns\u201d) is vague and offers no mechanism for each man to win three sets out of five.  \nOption\u202fC\u2019s round\u2011robin format is irrelevant when only two players are mentioned.  \nThus the only plausible answer is **D: None of above** \u2013 the puzzle relies on a trick (e.g., one set had no winner or they counted games, not sets).  \n\n**Confidence: HIGH**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant resolution is that the \u201cfive sets\u201d were not all won by a single player \u2013 one of them ended with no winner (e.g., rain or a tie), so the two men each claimed three of the five sets that had victors.  This subtle twist makes the puzzle work without adding extra players or formats, keeping it simple yet surprisingly clever.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-23",
+    "question": "A simple peasant bought a number of camels and is taking them to his farm. As he rides contentedly along he counts them - he counts 29. He was sure he had bought 30 camel, so in alarm he jumps off his camel and counts the camels again. To his delight there are 30. Half an hour later, he counts his camels and once more there are just 29. Confused, he climbs off his camel and counts again. Once more there are 30. Can you explain?",
+    "correct_index": 2,
+    "correct_answer": "When he is on the camel he omits to count it.",
+    "panel_answer_idx": 2,
+    "panel_answer": "When he is on the camel he omits to count it.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The peasant is literally \u201cmissing\u201d the camel he\u2019s riding when he counts from atop it \u2013 his own mount isn\u2019t in his count, so he gets 29. When he dismounts and counts from the ground he includes that camel, getting 30 again.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that a peasant who bought 30 camels counts 29 while riding, then counts 30 after dismounting, and repeats the pattern half an hour later. The only information given is that he counts 29 when on a camel and 30 when off it. No other details about the camels\u2019 behavior or his counting method are provided. Thus we can only confirm that his count differs depending on whether he is riding a camel or not; nothing else is known.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cmissing\u2011camel\u201d explanation is a classic trap: it assumes the peasant never counts his own mount, but that would make him always count 29 regardless of whether he\u2019s on or off the camel. The puzzle\u2019s repetition after half an hour forces a different explanation\u2014perhaps he is counting himself as one of the camels when on the camel (option\u202fB), which would give 30, but then he\u2019d get 31 off the camel. None of the given options fit both instances consistently, so the correct answer is D. Confidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is simply that the peasant never counts the camel he\u2019s riding\u2014so from atop it he tallies 29, but when he dismounts and counts from the ground he includes that camel and gets 30 again. This repeats naturally after half an hour, so the explanation is option\u202fC. Confidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-24",
+    "question": "One day a little boy named John went over to his parents and said that he wanted to shoot people and blow them up. His parents were really proud of his career choice. keep in mind that his parents were not very violent people. Why?",
+    "correct_index": 0,
+    "correct_answer": "John wanted to be a photographer.",
+    "panel_answer_idx": 0,
+    "panel_answer": "John wanted to be a photographer.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is in the double meaning of \u201cshoot\u201d and \u201cblow up.\u201d  If John means take pictures (\u201cshoot people\u201d) and enlarge them (\u201cblow them up\u201d), his parents\u2014who are not violent at all\u2014can still be proud of a photographic career.  Thus the likely answer is **A**.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: a boy named John tells his parents he wants to \u201cshoot people and blow them up\u201d; the parents are proud, yet they are not violent. The answer choices present possible interpretations: photography (shooting pictures and enlarging them), video game design, or that the parents misinterpreted a joke. No other information is given.\n\nThus we know: (1) John\u2019s statement, (2) parents\u2019 pride, (3) parents are not violent. We do not know: the exact meaning John intended, whether he was joking, or any other context.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cshoot\u201d/\u201cblow up\u201d double\u2011meaning is a classic misdirection; the parents\u2019 pride implies they understood John\u2019s metaphor, not literal violence. Choice B is irrelevant (video\u2011game designers don\u2019t \u201cblow up\u201d people), and C assumes a misunderstanding that would make them proud, but the puzzle says they were proud because they understood. Thus only A logically fits; D is unnecessary.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The puzzle\u2019s charm lies in the double\u2011meaning of \u201cshoot\u201d and \u201cblow up\u201d: John is talking about photography, not violence. This clever play on words turns a potentially scary statement into a proud career choice for his non\u2011violent parents, making the story feel surprisingly uplifting.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-25",
+    "question": "Brad started through the dirty sort-shared window on the 22nd floor of the office tower. Overcome with depression he slid the window open and jumped through it. It was a sheer drop outside the building to the ground. Miraculously after he landed he was completely uninjured. Since there was nothing to cushion his fall or slow his descent, how could he have survived the fall?",
+    "correct_index": 1,
+    "correct_answer": "Brad was so sick and tired of window washing, he opened the window and jumped inside.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cjumping through the window\u201d didn\u2019t mean falling to a hard, empty floor at all \u2013 it meant dropping into another space that was already cushioned or lower than the 22nd floor. In other words, Brad didn\u2019t fall straight to ground level; he fell into a lower office or even onto a wet, padded surface that absorbed the impact.  \n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that Brad jumped through a window on the 22nd floor and landed uninjured, with no cushion or slowing mechanism. The only information given is the location of the window and that he survived a fall from that height. No details are provided about what was below the window, any hidden platform, or other factors that could explain his survival. Thus we know only what is explicitly mentioned and nothing else can be inferred from the text alone.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s wording is misleading: \u201cjumped through the window\u201d could mean he fell into a lower floor or a balcony, not straight to ground. Thus A and B are plausible; C is absurd because strength doesn\u2019t negate impact from 22nd\u2011floor drop. Choice D (none) is unnecessary if A or B works. Hence the \u201ccorrect\u201d answer hinges on interpreting the phrase, not on any trick about wet ground or strength.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The key is that \u201cjumped through the window\u201d doesn\u2019t have to mean falling straight down to ground level \u2013 it could be a drop into a lower floor, balcony, or even a stairwell that absorbs the impact. In that case Brad would land safely without any external cushion or slowing device.  \n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-26",
+    "question": "A horse jumps over a tower and the tower disappears. It's not an illusion or a dream. So where could this happen?",
+    "correct_index": 1,
+    "correct_answer": "On a chessboard.",
+    "panel_answer_idx": 1,
+    "panel_answer": "On a chessboard.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The \u201chorse\u201d is a knight on a chessboard, and the \u201ctower\u201d is a rook. When the knight jumps over (captures) the rook, the rook simply vanishes from play\u2014no illusion, just a legal move.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: a horse jumps over a tower and the tower disappears, not as an illusion or dream. The only scenario among the options where a \u201chorse\u201d can literally jump over and remove a \u201ctower\u201d is in chess, where the knight (horse) captures a rook (tower). Therefore the answer that fits the literal facts is B.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201chorse\u201d on a chessboard is a knight, which does **not** literally jump over a rook; it leaps to a square that may be occupied by the rook, capturing it.  The puzzle\u2019s wording implies a physical act of leaping over and making the tower vanish, which is not how a knight operates.  Thus none of the listed options satisfy the literal scenario; option\u202fD is more defensible.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant answer is the chessboard: a knight (the horse) \u201cjumps\u201d over a rook (the tower) and captures it, so the rook simply disappears from play\u2014no illusion needed. This satisfies the literal wording while keeping the puzzle simple and satisfying. Confidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-27",
+    "question": "Dorothy has never expressed suicidal thoughts, but whenever she experiences feelings of sadness or depression, she makes arrangements to travel to a very high spot that she has visited on numerous occasions. Once there, she proceeds to jump from that great height. The fascinating fact though is she has never been injured from this leap, and in fact, she tells everyone that she feels much better afterward. If she\u2019s not suicidal, then what is going on here, and why has she never been injured, or even worse, died from her risky actions?",
+    "correct_index": 2,
+    "correct_answer": "Dorothy is a sky jumper.",
+    "panel_answer_idx": 2,
+    "panel_answer": "Dorothy is a sky jumper.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cjump\u201d isn\u2019t a literal death\u2011wish but a safe, practiced stunt\u2014she\u2019s a sky\u2011jumper who always uses a parachute or safety gear. Thus she can leap from any high spot without harm and feel uplifted afterward.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that Dorothy never expresses suicidal thoughts, yet she repeatedly travels to a high spot she has visited many times whenever she feels sad or depressed, jumps from that height, and reports feeling better afterward without injury. It does not specify whether she uses any safety equipment or what the jump entails, only that she has never been injured or died. The answer choices do not directly match the facts presented; they are speculative and unrelated to the literal description.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s wording is vague enough that all three answer choices are essentially guesses; none logically follows from the facts given. Choice\u202fA is nonsensical, B incorrectly assumes \u201chim\u201d refers to Dorothy and conflates fitness with safety, while C merely repeats the green\u2011hat hypothesis without evidence. Thus none of the options can be justified, so **D** is the only defensible answer.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most uplifting interpretation is that Dorothy has turned a painful feeling into a controlled, exhilarating activity\u2014she\u2019s a trained sky\u2011jumper who uses proper safety gear and enjoys the \u201chigh\u201d both literally and emotionally. This turns a moment of sadness into a release that leaves her feeling lighter, showing how skill and preparation can transform risk into renewal.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-28",
+    "question": "A certain large animal lives happily and thrives here on Earth. One day, every single one of these writers is wiped out by a mysterious disease that affects only this particular animal. There are none left anywhere on earth -- they are all gone. About a year or so later, they begin to reappear on Earth again. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "The animal is the Mule. Since all Mules are born sterile, you can only get a Mule by crossing a donkey with a horse.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need lateral thinking. Puzzle: large animal lives happily; writers wiped out by disease that affects only this particular animal. All gone. Then reappear after a year. Maybe it's \"writer\" meaning \"pen\"? disease affecting only animal? Could be \"writer\" as in \"writers\" = \"authors\" but maybe pun. Maybe animal is \"horse\"? Writers are horses? Hmm.\n\nMaybe the animal is a \"pen\" like \"writing instrument\". But large animal... Could be \"writer\" meaning \"pen\" or \"ink\"? disease that affects only this particular animal: maybe the animal is a \"pen\" but large? Not.\n\nMaybe it's about \"writers\" meaning \"people who write\" - they are wiped out by disease that affects only this particular animal. So the disease targets the animal, not writers. But all writers are gone because they are associated with that animal? Maybe \"writers\" refers to \"pennies\"? Not.\n\nCould be about \"the animal is a horse, and writers are the 'horses' in a stable? Writers like \"authors\" but maybe \"writers\" as in \"pencil\"? The disease affects the animal; all writers are gone because they use that animal? Hmm.\n\nMaybe it's about \"the animal is a 'pen' (writing instrument) which is made from a large animal like a goose feather? Writers are \"pen\" users; disease affects the feather, so all pens gone. After a year, new feathers"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle:**\n\n1. A large animal lives happily and thrives on Earth.  \n2. One day, every single \u201cwriter\u201d is wiped out by a mysterious disease that affects only this particular animal.  \n3. After the event, there are no writers left anywhere on Earth\u2014none remain.  \n4. About a year or so later, the writers begin to reappear on Earth again.\n\n**What we know:**\n\n- The disease is specific to the large animal and not to writers directly.  \n- Writers are somehow linked to or dependent on that animal in a way that causes their disappearance when the animal is affected.  \n- The writers reappear after roughly one year, implying a cycle or regeneration period.\n\n**What we do not know:**\n\n- The identity of the large animal.  \n- The nature of the disease (how it operates, why it only affects that animal).  \n- How writers are connected to the animal (physically, biologically, metaphorically).  \n- The mechanism by which writers reappear after a year (reproduction, migration, etc.).  \n\nConfidence: **MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "The proposed answers are all irrelevant: dinosaurs never \u201cwiped out by a disease that affects only this particular animal\u201d and reappear a year later; butterflies are not large animals, and mules being sterile has nothing to do with writers disappearing. The puzzle\u2019s logic is unconnected to any of the choices, so the only defensible answer is **D. None of above**.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "A fun way to make the story work is to treat **\u201cwriters\u201d as people who use pens** and think of a pen\u2019s feather quill coming from a **large animal\u2014a goose**. If a mysterious disease wipes out every goose, then there are no quills left, so all writers lose their writing instrument and \u201cdisappear.\u201d After about a year the ge"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-29",
+    "question": "Four men were in a boat on the lake. The boat turns over, and all four men sink to the bottom of the lake, yet not a single man got wet! Why?",
+    "correct_index": 1,
+    "correct_answer": "Because they were all married and not single.",
+    "panel_answer_idx": 1,
+    "panel_answer": "Because they were all married and not single.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is in the wording: \u201cnot a single man\u201d means none of them were *single* (i.e., all married). So the answer is B, because they were all married and not single.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: \u201cFour men were in a boat on the lake. The boat turns over, and all four men sink to the bottom of the lake, yet not a single man got wet! Why?\u201d  \nFrom the wording we know: there were four men, a boat overturned, they sank to the lake bottom, and no one got wet.  \nWe do not know whether the answer involves a play on \u201csingle\u201d (marital status), a frozen lake, or any other explanation.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201csingle\u201d trick is a classic misdirection; it relies on the double meaning of *single* (marital status vs. not wet). However, the puzzle explicitly states that all four men *sank to the bottom of the lake*, implying they were submerged in water, so none could have avoided getting wet. Thus B is logically impossible; A and C also fail because a frozen lake would prevent sinking, and water level cannot be lower than the men\u2019s bodies if they sank. Therefore only D survives scrutiny.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most uplifting angle is that the riddle\u2019s wording is a playful twist, not a factual contradiction: \u201cnot a single man\u201d cleverly means none were *single* (married), so they didn\u2019t get wet because the word \u201csingle\u201d is a pun, not a literal condition. This brightens the puzzle by celebrating clever language rather than logical loopholes.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-31",
+    "question": "A horse travels a certain distance each day. Strangely enough, two of its legs travel 30 miles each day and the other two legs travel nearly 31 miles. It would seem that two of the horse's legs must be one mile ahead of the other two legs, but of course, this can't be true, since the horse is normal. How is this possible?",
+    "correct_index": 0,
+    "correct_answer": "The horse operates a mill and travels in a circular clockwise direction. The two outside legs will travel a greater distance than the two inside legs.",
+    "panel_answer_idx": 2,
+    "panel_answer": "The measurements are taken from different reference points.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the \u201cdistance\u201d each leg covers isn\u2019t measured along a single straight line but along the path it traces on the ground. As the horse\u2019s body pivots while walking, each front leg swings slightly farther than the rear ones (or vice\u2011versa), so two legs can average 30\u202fmi and the other two about 31\u202fmi without any leg ever being a full mile ahead.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that a horse travels a certain distance each day, with two of its legs covering 30\u202fmiles and the other two covering nearly 31\u202fmiles. It asserts that this seems impossible because a normal horse cannot have two legs one mile ahead of the other, yet it is possible. We know the facts presented and the answer choices (A, B, C, D). We do not have evidence supporting any particular explanation or the actual method by which the distances were measured.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The only plausible explanation is that each leg\u2019s \u201cdistance\u201d was measured from a different starting point (e.g., the spot where that particular hoof first touched the ground). That makes the numbers refer to different paths, not a literal one\u2011mile lead. The other options either ignore the horse\u2019s straight\u2011line gait (A), invoke an irrelevant planetary shape (B), or dismiss a viable answer (D).  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is that the \u201cdistance\u201d each hoof covers isn\u2019t measured from a single common starting point but from where that particular foot first touched the ground. Thus each leg\u2019s path is slightly different, so two can average 30\u202fmi while the others near 31\u202fmi without any leg actually being a mile ahead.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-32",
+    "question": "A man walking along a railroad track sees a train laundering at high speed towards him. Instead of immediately jumping off the track, he charges directly at the train for about ten feet and only then gets off the track. Why?",
+    "correct_index": 1,
+    "correct_answer": "The man was on a bridge when he first saw the train so he couldn't jump off the track immediately.",
+    "panel_answer_idx": 1,
+    "panel_answer": "The man was on a bridge when he first saw the train so he couldn't jump off the track immediately.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The \u201ctrain laundering\u201d is a pun \u2013 it\u2019s not a locomotive at all but a washing machine on rails, so the man simply runs toward it to get out of the way before the drum swings. By moving forward he"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle:**\n- A man is walking along a railroad track.\n- He sees a train moving toward him at high speed.\n- Instead of jumping off immediately, he runs about ten feet toward the train and then gets off the track.\n- Four answer options are given: A, B, C, D (none of above).\n\n**What we know:**\n- The scenario is presented as a riddle; no additional context (e.g., bridge, train type) is provided beyond the description.\n- The answer choices propose specific explanations (minimizing hit risk, being on a bridge, brain perception of speed) or dismiss all.\n\n**What we do not know:**\n- The actual reason behind the man\u2019s action (whether any of the proposed options is correct).\n- Any external constraints or environmental details that might influence his decision (e.g., platform height, track layout).\n- Whether the puzzle is purely logical or contains a wordplay element (e.g., \u201claundering\u201d could hint at a pun).\n\n**Conclusion:** The puzzle presents a scenario and multiple-choice explanations; the truth of any explanation remains unspecified.\n\n**Confidence:** MEDIUM."
+      },
+      {
+        "hat": "black",
+        "response": "Option A assumes the man can influence impact by moving toward the train, but a ten\u2011foot sprint hardly changes collision dynamics; the train\u2019s momentum is far greater.  \nOption B introduces an unmentioned bridge, a classic fallacy of adding irrelevant detail to fit the answer.  \nOption C misapplies perceptual psychology\u2014relative motion changes speed perception, but it doesn\u2019t justify delaying escape.  \nThus none of the offered explanations withstand scrutiny.  \n\n**Confidence: HIGH**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is that he\u2019s trying to reach the nearest safe spot as fast as possible, not to \u201cbeat\u201d the train. By sprinting toward it for a short stretch he cuts his distance to the edge of the track, so when he finally steps off he\u2019s already closer than if he\u2019d stayed put.  \n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-34",
+    "question": "There were 5 men traveling down a road and it started to rain and 4 men sped up, the 5th did not, but they all arrived at the same place at the same time but all of them were wet besides the 5th. How is that possible?",
+    "correct_index": 1,
+    "correct_answer": "He was dead and in a coffin.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is to think of \u201ctraveling down a road\u201d as more than just walking. Picture them on a moving vehicle that splashes rainwater"
+      },
+      {
+        "hat": "white",
+        "response": "Facts: Five men were traveling together on a road; it began to rain. Four of them increased their speed, the fifth did not. All five arrived at the same destination simultaneously, yet only four were wet.\n\nWhat we know: The scenario involves movement and rain; speed changes are mentioned; arrival time is the same for all.  \nWhat we do not know: The mode of travel (walking, vehicle, etc.), the reason the fifth man stayed dry, and whether any additional context (e.g., shelter, direction of rain) is relevant.\n\nGiven the limited information, I can only state these observations.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The choices all ignore the obvious: if four men \u201csped up\u201d they would be farther ahead, yet everyone arrived together. None of the options address how the fifth could stay dry while still arriving at the same time\u2014e.g., by being in a vehicle, under cover, or simply standing still while the others walked. Thus each answer is either nonsensical (A), irrelevant (B), or contradictory to the premise (C). The puzzle\u2019s solution must involve a different mode of travel or shelter, not the options given.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is to think of \u201ctraveling down a road\u201d as more than just walking\u2014perhaps they were on a moving vehicle or in a covered carriage, so only the four who stepped out got wet while the fifth stayed dry inside. This simple twist turns a seeming paradox into an elegant, satisfying solution. Confidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-35",
+    "question": "Three men sitting in a small motorboat one meter from the shoreline. The first is afraid of water, the second is afraid of drowning, and the third is afraid of sharks. The boat's motor is not operational and there is nothing to row with. How do they get to the shoreline?",
+    "correct_index": 1,
+    "correct_answer": "They can just walk onto its as the boat is one-meter inland.",
+    "panel_answer_idx": 1,
+    "panel_answer": "They can just walk onto its as the boat is one-meter inland.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the \u201cboat\u201d isn\u2019t in water at all\u2014it\u2019s a small motor\u2011boat sitting on land, one metre from the shore. So they simply walk out of it onto the beach; no motor or oars are needed.  \nConfidence: MED"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that three men are sitting in a small motorboat located one meter from the shoreline, with an inoperable motor and no oars. It specifies that each man has a different fear: one fears water, another fears drowning, and the third fears sharks. The problem asks how they can reach the shoreline given these conditions.\n\nKnown facts: location (boat 1\u202fm from shore, on land), equipment status (motor off, no oars), fears of each man. Unknowns: exact environment (water depth, presence of water at all), whether the boat is actually in water or on land. The puzzle\u2019s wording implies no motor and no oars, yet the men can still get to shore.\n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201ctrick\u201d answer (B) assumes the boat is on land, but the wording\u2014\u201csitting in a small motorboat one meter from the shoreline\u201d\u2014normally implies it\u2019s afloat 1\u202fm out over water. If it were on land, the puzzle would state that explicitly; otherwise you\u2019re ignoring the motor\u2011boat\u2019s nature. The other options (A,\u202fC) are physically impossible: water cannot evaporate in time and stepping out of a boat 1\u202fm from shore would still leave you in water. Thus the only logically consistent solution is that the boat *is* on land, making (B) correct; all other choices are flawed.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is that the \u201cmotorboat\u201d isn\u2019t actually in water at all\u2014just sitting on land a metre from the shore.  Each man can simply walk out of it and onto the beach, sidestepping all three fears without any motor or oars.  This simple observation turns an impossible\u2011seeming situation into a neat, elegant solution.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-36",
+    "question": "A father and son were in a car accident where the father was killed. The ambulance brought the son to the hospital. He needed immediate surgery. In the operating room, a doctor came in and looked at the little boy and said I can't operate on him he is my son. Why?",
+    "correct_index": 2,
+    "correct_answer": "Because the doctor is the mother of the son.",
+    "panel_answer_idx": 2,
+    "panel_answer": "Because the doctor is the mother of the son.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the \u201cdoctor\u201d is actually the boy\u2019s mother\u2014people often assume a surgeon must be male, so the surprise is that the parent is female. This breaks the gender stereotype and explains why she could say \u201cI can\u2019t operate on him; he is my son.\u201d  \nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: a father and son were in an accident, the father died, the son was taken to hospital needing surgery; a doctor entered the OR, looked at the boy and said, \u201cI can\u2019t operate on him; he is my son.\u201d  \nWhat we know: the doctor\u2019s statement implies a parental relationship to the boy.  \nWhat we do not know: the gender or identity of the doctor, and whether any other plausible explanation exists beyond a parental link.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The only plausible explanation is that the doctor is the boy\u2019s mother; all other options (two fathers, police call) are irrelevant to the surgeon\u2019s statement. Option\u202fA is nonsensical because a \u201cson\u201d cannot have two fathers in the context given, and Option\u202fB confuses police with medical staff. Thus the correct answer is C, and the other choices can be eliminated as logical fallacies or misinterpretations. Confidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The neat twist is that the \u201cdoctor\u201d is actually the boy\u2019s mother\u2014she can\u2019t operate on her own child for obvious reasons. It highlights how gender assumptions can blind us to simple facts, turning a routine medical scenario into an eye\u2011opening reminder of bias.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-37",
+    "question": "A beggar's brother died, but the man who died had no brother. How could that be?",
+    "correct_index": 2,
+    "correct_answer": "The beggar was the man's sister.",
+    "panel_answer_idx": 2,
+    "panel_answer": "The beggar was the man's sister.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The key is to drop the literal \u201cbrother\u201d and think of family in a broader sense\u2014maybe the beggar is actually a sister, or \u201cbrother\u201d refers to a sibling in another language. Thus the man who died had no brother because his \u201cbrother\u201d was a sister or another relative, not a male sibling.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: \u201cA beggar\u2019s brother died, but the man who died had no brother.\u201d Thus we know that a person called the \u201cbeggar\u201d has a sibling who is male, and that this male sibling (the one who died) had no brothers. We do not know the gender of the beggar or whether he/she has sisters, nor any other family details. The facts allow that the \u201cbrother\u201d could actually be a sister, making the beggar female.  \n"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle hinges on the wording \u201cbeggar\u2019s brother\u201d meaning a sibling of the beggar, not necessarily male. Thus if the beggar is female, her \u201cbrother\u201d is actually a sister, and that sister (the one who died) indeed had no brothers. Option\u202fC captures this; A and B are irrelevant, so D is incorrect. Confidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The clever twist is that \u201cbrother\u201d can be a gender\u2011neutral term for a sibling. If the beggar is actually a sister, her \u201cbrother\u201d is just a sibling\u2014so the deceased person had no brothers at all. This fits option\u202fC perfectly.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-38",
+    "question": "I dig out tiny caves and store gold and silver in them. I also build bridges of silver and make crowns of gold. They are the smallest you could imagine. Sooner or later everybody needs my help, yet many people are afraid to let me help them. Why?",
+    "correct_index": 1,
+    "correct_answer": "I am a dentist.",
+    "panel_answer_idx": 1,
+    "panel_answer": "I am a dentist.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The \u201ctiny caves\u201d are tooth cavities, the \u201cgold and silver\u201d are fillings, the \u201cbridges of silver\u201d are dental bridges, and the \u201ccrowns of gold\u201d are actual crowns. Everyone eventually needs a dentist\u2019s help, yet many fear the chair.  \n**Answer: B \u2013 I am a dentist.**  \nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: \u201cI dig out tiny caves and store gold and silver in them. I also build bridges of silver and make crowns of gold.\u201d It adds that these are \u201cthe smallest you could imagine,\u201d that everyone eventually needs this help, yet many people fear allowing it. The clues point to a profession dealing with small cavities (caves), fillings (gold/silver), bridges, and crowns\u2014specifically dental work.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "black",
+        "response": "The description fits dental work, but the phrase \u201ctiny caves\u201d could also refer to holes in a coin or a small cavity in a material, and \u201cbridges of silver\u201d might hint at silver bridges in electronics. The puzzle\u2019s wording is oddly vague, and it could be a trick about a \u201cblacksmith\u201d or \u201cgoldsmith\u201d who creates tiny silver bridges and gold crowns for jewelry, not a dentist. Thus the reasoning is shaky; I\u2019m unsure if B is correct.\n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The clues paint a picture of tiny \u201ccaves\u201d (tooth cavities) that are filled with gold and silver, bridged by silver \u201cbridges,\u201d and crowned with gold\u2014exactly what a dentist does. Everyone eventually needs dental care, yet many fear the dentist\u2019s chair, so the answer is clear and satisfying.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-39",
+    "question": "How could a cowboy ride into town on Friday, stay two days, and ride out on Wednesday?",
+    "correct_index": 1,
+    "correct_answer": "His horse is named Wednesday.",
+    "panel_answer_idx": 1,
+    "panel_answer": "His horse is named Wednesday.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cFriday\u201d isn\u2019t the day at all\u2014it\u2019s the name of his horse. He rides into town on a steed called Friday, stays two days, and then rides out on the day of the week Wednesday. So none of the literal options fit; it\u2019s a play on words.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: a cowboy rides into town on \u201cFriday,\u201d stays two days, and then rides out on \u201cWednesday.\u201d The options present possible explanations. Factually, the common solution is that \u201cFriday\u201d is the name of his horse; he rides out on a different day, Wednesday. Thus option\u202fB is the literal explanation that fits the wording.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The green and white hats ignore that the puzzle itself already supplies the answer: \u201cFriday\u201d is a horse, not a day. Option\u202fB is therefore correct and the others are irrelevant; nothing in the problem forces any other explanation. Hence only B survives scrutiny, and D is unnecessary.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The charm lies in the double\u2011meaning of \u201cFriday\u201d \u2013 a simple, everyday word that turns into a horse\u2019s name, making the story feel both surprising and logically sound. It shows how a single word can shift context, giving the puzzle an elegant twist that delights anyone who catches it.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-40",
+    "question": "There are three doors. In each door is a way to die. The first door has fire and lava. The second door has lions that haven't eaten in 5 years. In the third door, there is a 1,000-foot drop into an alligator. Which door will you likely survive?",
+    "correct_index": 2,
+    "correct_answer": "The second door with the lions. Since they haven't eaten in 5 years they will have died.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that every \u201cdoor\u201d presents an instant death scenario, so no logical choice guarantees survival. A lateral thinker would point out that the only escape is to never open any door at all\u2014stay inside. Thus, none of the listed options actually offer a safe exit.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle presents three doors, each with a described lethal hazard: fire and lava (door\u202f1), lions that have not eaten in five years (door\u202f2), and a 1,000\u2011foot drop into an alligator pit (door\u202f3). The answer choices speculate survival based on assumptions about the animals\u2019 behavior or the door\u2019s condition, none of which are confirmed by the puzzle. Therefore, the only facts we have are the door descriptions and the proposed options; nothing guarantees survival through any door.  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The premise itself is absurd\u2014no door can realistically contain a 5\u2011year\u2011old lion or a 1,000\u2011foot alligator pit; both scenarios violate biology. Option\u202fA assumes \u201ctired\u201d alligators, which is a nonsensical claim; option\u202fB\u2019s \u201cfirst door destroyed\u201d contradicts the stated fire and lava hazard; option\u202fC incorrectly presumes lions have died of starvation, yet a 5\u2011year food deprivation would kill them long before you reach the door. Thus all choices rest on false assumptions, and only option\u202fD (none) survives logical scrutiny.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most optimistic take is that the \u201clions\u201d have already died of starvation, so the second door is effectively a dead\u2011end that won\u2019t harm you \u2013 it\u2019s the least likely to kill you. If you\u2019re feeling extra hopeful, you could even argue that the alligator is too tired to bite and the fire has already been extinguished, making door\u202f3 a safe escape. Either way, the puzzle\u2019s humor lies in spotting which scenario is least lethal, so choosing the second door (or none at all) gives you a chance to survive.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-41",
+    "question": "A plane crashed, and every single person on board this flight was killed, yet there were survivors. Explain how?",
+    "correct_index": 1,
+    "correct_answer": "The married people lived and the singles died.",
+    "panel_answer_idx": 1,
+    "panel_answer": "The married people lived and the singles died.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is in the word \u201csingle.\u201d  Every *unmarried* person on the flight died, but those who were married survived\u2014so there were still survivors.  \n**Confidence: HIGH**"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle**\n\n1. A plane crashed.\n2. Every *single* person on board was killed.\n3. Yet there were survivors.\n\n**Answer options given**\n\n- A. Some people died later.\n- B. The married people lived and the singles died.\n- C. The survivors could refer to individuals who were not on the plane.\n- D. None of above.\n\n**Known**\n\n- The wording \u201csingle\u201d is present in the puzzle.\n- Option B explicitly uses that wording to explain survivors as married people.\n\n**Unknown**\n\n- Whether the puzzle intends \u201csingle\u201d to mean unmarried or simply \u201cevery person\u201d.\n- Whether any other interpretation (e.g., survivors not on the plane) is intended.\n\n**Conclusion**\n\nThe puzzle\u2019s wording suggests that \u201csingle\u201d refers to marital status, making option B a plausible explanation. No other facts confirm or refute this interpretation.\n\n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fA is a red herring \u2013 \u201csome people died later\u201d doesn\u2019t explain how the puzzle\u2019s wording (\u201cevery single person\u201d) can still allow survivors.  \nOption\u202fC is technically possible, but the puzzle\u2019s phrasing (\u201cevery single person on board\u201d) implies the survivors must be aboard; otherwise it would state \u201csome people not on board survived.\u201d  \nThus only option\u202fB, interpreting *single* as unmarried, logically satisfies the conditions.  \n\n**Confidence: HIGH**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The puzzle\u2019s charm lies in the double meaning of \u201csingle\u201d: it\u2019s a playful nod to marital status rather than an absolute statement about everyone aboard. By realizing that only the unmarried \u201csingle\u201d passengers perished, we see a neat loophole that turns an apparently paradoxical situation into a simple word\u2011play. This elegant twist makes the answer feel both surprising and satisfying.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-43",
+    "question": "One lady ordered a fast delivery pizza and her order came the next year. How is this possible?",
+    "correct_index": 1,
+    "correct_answer": "She ordered the pizza for New Year's Day.",
+    "panel_answer_idx": 1,
+    "panel_answer": "She ordered the pizza for New Year's Day.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need to give lateral thinking answer. Maybe she ordered a pizza for New Year's Day, but answer B already given. But green hat suggests unconventional: maybe she ordered a \"pizza\" meaning pizza cake? Or the pizza was delivered to a time-traveling courier. Or she ordered \"pizza\" meaning \"pizzazz\"? Could be that the pizza is a \"pizza delivery\" service in a time zone difference? Maybe she ordered from a store that delivers only on New Year's Day, but that's B. But we need to think outside: maybe she ordered a pizza for a \"fast delivery\" meaning fast as in speed of light? Or the pizza was delivered by a time-traveling courier. Or maybe she ordered a \"fast delivery\" meaning \"fast\" as in fast food, but the store is actually a bakery that only opens on New Year's Day. Or she ordered \"pizza\" meaning \"pizzazz\"? The answer D might be correct.\n\nWe need to give concise 2-3 sentences. End with confidence level.\n\nLet's craft: \"Maybe she ordered a pizza for New Year's Day, but the delivery was scheduled for that day in her future; the order arrived a year later because she used a 'future delivery' service.\" But that's B.\n\nAlternatively: \"She ordered a pizza to be delivered at the start of the new year, so it arrived on January 1st of the following year.\" That's B.\n\nGreen hat might say: \"The pizza"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle:**\n- A lady ordered a pizza with fast delivery.\n- The pizza arrived the following year.\n\n**Answer options given:**\nA. Courier lost and spent a year finding way.  \nB. She ordered the pizza for New\u202fYear\u2019s Day.  \nC. Pizza store was out of ingredients.  \nD. None of the above.\n\n**What we know:** The puzzle presents a scenario and four possible explanations; it does not provide evidence supporting any specific option.  \n**What we don\u2019t know:** The true circumstances of the delivery, the date she placed the order, the store\u2019s policies, or any additional context that would confirm or refute the listed explanations.\n\n**Conclusion:** The puzzle offers four hypotheses but supplies no data to determine which, if any, is correct.  \n**Confidence:** LOW"
+      },
+      {
+        "hat": "black",
+        "response": "The only plausible answer is B, but it assumes she intentionally scheduled the delivery for New\u202fYear\u2019s Day; without that context we cannot rule out A or C. However, both A and C are absurdly improbable (a courier spending a year lost, or a pizza shop being perpetually out of ingredients). Thus D is the safest choice unless additional evidence supports B.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying solution is that she ordered a pizza to be delivered on New\u202fYear\u2019s Day, so it arrived exactly one year later\u2014fast delivery in the sense of \u201cas soon as the calendar allows.\u201d This turns a literal delay into a clever scheduling trick, making the story both logical and delightfully playful.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-44",
+    "question": "In Jamaica, if you drop a steel ball weighing five pounds from a height of 45 inches, it falls more rapidly through the water at 40 degrees Fahrenheit than water at 20 degrees Fahrenheit. How is that possible?",
+    "correct_index": 1,
+    "correct_answer": "At 20 degrees Fahrenheit the water would be ice.",
+    "panel_answer_idx": 1,
+    "panel_answer": "At 20 degrees Fahrenheit the water would be ice.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the ball isn\u2019t just a passive object \u2013 its own heat (or lack of it) changes the water\u2019s density and viscosity. A 5\u2011lb steel ball dropped into colder (20\u202f\u00b0F) water will warm the surrounding fluid,"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n- A steel ball weighing 5\u202flb is dropped from a height of 45\u202finches.  \n- The ball falls more rapidly through water at 40\u202f\u00b0F than it does through water at 20\u202f\u00b0F.  \n- The answer choices propose: (A) ball temperature matches 40\u202f\u00b0F water, (B) 20\u202f\u00b0F water would be ice, (C) ball temperature matches 20\u202f\u00b0F water, or (D) none of the above.  \n\nWe know nothing about the ball\u2019s initial temperature or the precise viscosity/density changes of water at those temperatures, but we do know that 20\u202f\u00b0F is below the freezing point of pure water (32\u202f\u00b0F), so the water would likely be ice or partially frozen.  \n\n**Confidence:** MEDIUM."
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s premise is flawed: a steel ball dropped into 20\u202f\u00b0F water would encounter ice or slushy conditions, not liquid water, so \u201cfalling more rapidly\u201d is meaningless. Choice B correctly points out that 20\u202f\u00b0F is below freezing, making the other temperature\u2011matching options irrelevant; thus D (\u201cnone of above\u201d) is unnecessary because B already explains the phenomenon.  \n\n**Confidence: HIGH**"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying resolution is that at 20\u202f\u00b0F the water isn\u2019t truly liquid\u2014most of it has frozen into ice or slush, so a steel ball can\u2019t \u201cfall\u201d through it in the usual sense and will be slowed by the solid. In contrast, at 40\u202f\u00b0F the water remains liquid and less viscous, letting the ball descend more quickly. Thus choice **B** explains the puzzle elegantly.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-45",
+    "question": "Danny was driving his semi under an overpass when suddenly he came to a screening halt. Danny wasn't paying enough attention and inadvertently drove under the overpass that was just barely as high as his truck. The semi was wedge so tightly that he could not go forward or backward. A fellow tracker came by and told him how he could easily get the semi out from under the bridge. What did he suggest?",
+    "correct_index": 2,
+    "correct_answer": "He told Danny to let some air out of his tires.",
+    "panel_answer_idx": 2,
+    "panel_answer": "He told Danny to let some air out of his tires.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that none of the listed \u201cfixes\u201d actually solve a semi wedged under an overpass; the only realistic escape is to use external help (e.g., a winch) or wait for the bridge to lift\u2014neither of which is offered. So the tracker\u2019s best suggestion would be \u201cnone of the above.\u201d  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that Danny\u2019s semi is wedged under an overpass that is just high enough for the truck, and a fellow tracker offers a solution. The only options presented are: (A) \u201ctell Danny to left the bridge,\u201d (B) \u201ctell Danny to overturn the track,\u201d (C) \u201ctell Danny to let some air out of his tires,\u201d or (D) \u201cnone of the above.\u201d What is known: Danny\u2019s truck cannot move forward or backward; the overpass height matches the truck. What is not known: the exact height differential, whether the truck can tilt or lift, and whether any external equipment is available. Based on the literal wording of the options, none directly solves a wedged truck under an overpass. **Confidence: MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cnone of the above\u201d choice is a trap: it assumes no solution exists, yet the puzzle implies a clever trick. Options A\u2013C are nonsensical (you can\u2019t \u201cleft the bridge,\u201d you can\u2019t overturn a truck in place, and deflating tires won\u2019t lift it). The correct answer is that the tracker told Danny to \u201cturn the truck around\u201d \u2013 i.e., reverse the direction of travel, because the overpass is only just high enough and a slight change in orientation frees it.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most optimistic take is that the tracker\u2019s \u201csimple\u201d trick was to let some air out of the tires \u2013 a tiny drop in weight can give the semi enough lift (or at least reduce the pressure on the underside) to wiggle free.  This is a clever, low\u2011cost fix that turns an impossible jam into a"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-46",
+    "question": "A boy had just gotten out of the shower and was getting ready for his prom, shaved and with cologne, and there would be an after-party. And his mom and dad said to be home for the next sunrise and he was home for the next sunrise but with a full-grown beard. How can this be?",
+    "correct_index": 2,
+    "correct_answer": "He lives in Alaska and sunrise are every six months.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "Need lateral thinking: maybe he was a boy (young) but had grown beard overnight? Could be he's a baby? Or he is a boy of 12, but his parents say to be home for next sunrise; maybe it's a time-travel? Or he's a boy but has beard because he is a boy in the story, but it's actually a boy who was born with beard? Or maybe he is not human: he's a \"boy\" in the sense of a boy in a story, but it's actually a man? Or he had a \"full-grown beard\" because he was a boy in the story but actually a man? Or maybe it's about \"Shaved and with cologne\" but still beard: he shaved his face, but didn't shave the beard? Or \"full-grown beard\" could refer to a \"beard\" on a car (like a bumper). Or maybe it's a boy in the sense of \"boy\" as in \"boy scout\"? Hmm.\n\nMaybe the trick: He was a boy, but he had a full grown beard because he's a \"boy\" in the sense of \"young boy\" but also a \"beard\" on his face due to shaving? Wait.\n\nCould be that the boy is actually a \"boy\" in the sense of \"a boy in a story\" but he's a man with a beard. Or maybe it's about \"full-grown beard\" meaning the beard is fully grown, but he shaved his face leaving a"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle:  \n1. A boy had just finished a shower and was preparing for prom, having shaved and applied cologne.  \n2. He was told by his parents to be home for the next sunrise, and he indeed returned home at that time.  \n3. When he arrived, he had a full\u2011grown beard.\n\nWhat is not stated: the boy\u2019s age, whether \u201cfull\u2011grown\u201d refers to a natural beard or something else, any time\u2011related phenomena (e.g., time travel), or the location\u2019s sunrise cycle.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The proposed answers all rely on implausible or unsupported assumptions: (A) assumes \u201ccrazy\u201d leads to overnight beard growth, which is biologically impossible; (B) ignores the fact that human facial hair grows at a maximum of ~0.5\u202fmm per day, far from \u201cfull\u2011grown\u201d overnight; (C) misstates solar physics\u2014sunrise occurs twice a year only in polar circles, but even then the boy would still need time to grow a beard. None of these options withstand scrutiny, so (D) is the only logically defensible choice.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The trick is that \u201cboy\u201d doesn\u2019t have to mean a child\u2014he could be an adult who\u2019s just playing the role of a \u201cboy\u201d at prom.  In that case he can legitimately have a full\u2011grown beard, so nothing supernatural or impossible is required.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-48",
+    "question": "Why is it so cold on Christmas?",
+    "correct_index": 0,
+    "correct_answer": "Because it's in December.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The riddle tricks us into thinking of weather; the real twist is that \u201ccold\u201d refers to a *mood*\u2014the hush of anticipation before the festive rush, not temperature. It\u2019s a play on \u201ccold\u201d as in \u201ccool\u201d or \u201cunfamiliar,\u201d hinting that the quiet before the celebration feels oddly chill.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle asks: \u201cWhy is it so cold on Christmas?\u201d and offers four answer options (A, B, C, D). The only facts presented are the question itself and the four choices; no additional context or explanation is given. We do not know which answer, if any, is correct, nor do we have evidence supporting or refuting the options.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The riddle\u2019s wording is ambiguous: \u201ccold\u201d could mean temperature or mood, yet none of the choices explicitly address either interpretation. Option\u202fA is a tautology (December often has cold weather in many climates) but ignores regions where December is warm. Option\u202fB conflates a temporal event with weather, offering no causal link. Option\u202fC misinterprets \u201ccold\u201d as celebratory enthusiasm, which is illogical. Thus all given answers lack sufficient justification, leaving \u201cNone of above\u201d the only defensible choice.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying answer is **D \u2013 None of the above**: the riddle plays on the double meaning of \u201ccold\u201d (both temperature and the quiet, almost chilly anticipation before the holiday rush), so none of the literal options capture that clever twist.  \n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-49",
+    "question": "Wednesday,Tom and Joe went to a restaurant and ate dinner. When they were done they paid and left. Tom and Joe didn't pay. Who did?",
+    "correct_index": 0,
+    "correct_answer": "Wednesday. The name of the third person in the group, not the day.",
+    "panel_answer_idx": 0,
+    "panel_answer": "Wednesday. The name of the third person in the group, not the day.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The riddle hinges on a double meaning: \u201cWednesday\u201d is not the day but the name of a fourth diner who actually settled the bill. Thus option\u202fA is the trick answer, while the others are red herrings.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: Wednesday, Tom and Joe went to a restaurant, ate dinner, and when they were done \u201cthey paid and left.\u201d The puzzle then claims Tom and Joe didn\u2019t pay, asking who did. No explicit evidence is given that a fourth person named Wednesday existed or that money was found in a hamburger, nor that the restaurant was too expensive. Thus we cannot determine from the text which answer is correct; the puzzle leaves that fact unknown.  \n\nConfidence: LOW"
+      },
+      {
+        "hat": "black",
+        "response": "The riddle\u2019s wording is ambiguous: \u201cWednesday, Tom and Joe went\u2026\u201d could be a list of people or a date. If it\u2019s a date, no one named Wednesday exists to pay; if it\u2019s a person, the puzzle never confirms that such a fourth diner existed. Thus both A and D are equally unsupported, while B and C introduce unfounded assumptions.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The riddle plays on the double meaning of \u201cWednesday\u201d \u2013 it\u2019s not a day at all but a fourth diner whose name is Wednesday, and that person settled the bill. This twist gives the puzzle an elegant one\u2011liner payoff: the only name left to pay is Wednesday.  \nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-50",
+    "question": "A magician had a water glass that was filled to the top. Holding the glass above his head he let it drop to the carpet without spilling a single drop of water. How could he manage to drop the glass from a height of six feet and not spill any water?",
+    "correct_index": 0,
+    "correct_answer": "The glass was filled, but not with water.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that the glass isn\u2019t a conventional one at all\u2014think of it as a *glass* of *water* that is actually a *glass* (transparent container) filled with something else, or a glass made of a material that repels water. In other words, the \u201cwater\u201d is something that behaves like liquid but doesn\u2019t spill when tipped.  \n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states: a magician had a water glass that was filled to the top; he held it above his head, let it drop onto a carpet from six feet high, and did not spill any water. The answer choices are: A) the glass was filled but not with water; B) the glass is too heavy; C) surface tension prevents spilling; D) none of above.  \nWe know the scenario and the options, but we do not have evidence that any option is correct or incorrect.  \n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fA is a classic \u201cwater\u2011glass\u201d trick, but it ignores the fact that the puzzle explicitly says the glass was *filled to the top*\u2014the only way to satisfy that is for it to be full of something that behaves like water. Option\u202fB\u2019s claim about weight is irrelevant; a heavier glass would simply increase the impact force, making spillage more likely. Option\u202fC misapplies surface tension: it can hold a few millimetres of liquid on a small area, but cannot prevent a full glass from spilling when dropped onto carpet. Thus all three options fail logical scrutiny, leaving D as the only defensible choice. **Confidence:** HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant answer is that the \u201cglass\u201d was actually a *solid* glass of water\u2014i.e., it contained a liquid that behaves like water but is non\u2011spilling (think of a clear, sealed container or a glass filled with a viscous syrup that doesn\u2019t slosh). This satisfies the \u201cfilled to the top\u201d clue while keeping the liquid from spilling on impact.  \n\n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-51",
+    "question": "Craig died in Florida. Shortly after, Tracy died at sea. Nobody mourned, In fact, everyone was absolute delighted. Why?",
+    "correct_index": 0,
+    "correct_answer": "They were both hurricanes.",
+    "panel_answer_idx": 0,
+    "panel_answer": "They were both hurricanes.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The twist is that \u201cCraig\u201d and \u201cTracy\u201d were not people at all but tropical cyclones\u2014Hurricane\u202fCraig hit Florida and Hurricane\u202fTracy struck the sea.  When a storm dies (weakens, dissipates) there\u2019s no loss of life or property, so the public actually celebrated its demise.  \n\n**Answer: A. They were both hurricanes.**  \nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that Craig died in Florida, Tracy died at sea, no one mourned and everyone was delighted. The only explanation offered is that they were hurricanes (option A). We know the puzzle\u2019s wording and answer choices; we do not have evidence that Craig and Tracy were indeed hurricanes, nor any other context. \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201churricane\u201d explanation hinges on a hidden assumption that the names Craig and Tracy are being used as storm identifiers, yet the puzzle never states they were weather systems. Without evidence that such storms existed or that their dissipation would elicit delight, the claim is speculative. Moreover, option\u202fB (\u201cculture traditional\u201d) and C (\u201cpeople are getting used to it\u201d) offer no logical basis, leaving D as the only defensible choice.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most elegant twist is that \u201cCraig\u201d and \u201cTracy\u201d aren\u2019t people at all but tropical cyclones; when a hurricane dissipates (or \u201cdies\u201d) there\u2019s no loss of life, so the public actually celebrates its end. This turns a grim-sounding sentence into a light\u2011hearted meteorological joke, giving the puzzle a satisfying punchline.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "blue",
+        "response": "A"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-52",
+    "question": "Morgan was making apricot jam. She put all the apricots in the pot and stirred them up. Then she remembered she had to add 1 ounce of lemon juice for every two apricots! How did she figure out how much lemon juice to put?",
+    "correct_index": 2,
+    "correct_answer": "She counted the pits of apricots.",
+    "panel_answer_idx": 2,
+    "panel_answer": "She counted the pits of apricots.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cone ounce of lemon juice for every two apricots\u201d can be read literally: she needs \u00bd\u202founce per apricot. Instead of counting fruit, she simply counted the pits\u2014each pit representing one apricot\u2014so she could quickly halve that number. Thus the answer is C, but it\u2019s really a play on \u201cpits\u201d as units rather than the fruit itself.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that Morgan must add 1\u202founce of lemon juice for every two apricots. The only information given is the ratio and that she \u201cput all the apricots in the pot.\u201d No mention of counting pits or any other method is provided. Therefore, from the facts presented we cannot determine how she calculated the amount; the answer must be \u201cNone of above.\u201d  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "black",
+        "response": "The green hat\u2019s reasoning hinges on an unverified assumption that pits are a convenient stand\u2011in for apricots, yet the puzzle never says she counted pits. The white hat rightly points out that no method is specified, so \u201cNone of above\u201d is the only defensible answer. Thus C is unsupported and D is correct.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying solution is that Morgan used the pits as a quick count: each pit represents one apricot, so she simply counted pits and halved that number to get the ounces of lemon juice. It\u2019s a clever, practical shortcut that turns an abstract ratio into an easy-to\u2011apply counting trick. Confidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-53",
+    "question": "A woman who lives in new york legally married three men, she did not get divorce, get an enrollment, or legally seperate. How is this possible?",
+    "correct_index": 2,
+    "correct_answer": "She is a minister.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "We need to answer as Green Hat: lateral thinking. The puzzle: woman lives in New York legally married three men, no divorce, enrollment, or legal separation. How? She is a minister? Actually she could be a \"minister\" who marries people, but she's married to them. Or she is a \"polygamist\"? New York doesn't allow polygamy. Maybe she married three men in different countries? Or she married them as a \"minister\" performing marriages, but she is not the spouse. Wait: The answer choices include C. She is a minister. So maybe she is a minister, married to three men? But ministers cannot be married to multiple. Maybe it's \"she is a minister\" meaning she officiates marriages, not married herself. But the puzzle says legally married three men; she did not get divorce, enrollment, or legal separation. How is this possible? She could be a \"minister\" meaning she performed marriages for them, but that doesn't make her married. Another lateral: She is a \"minister\" meaning she was the minister of a church, and her title is \"minister\". But not relevant.\n\nMaybe answer: She married them in different states? New York requires separate marriages. Or she is a \"minister\" meaning a religious minister who can marry multiple people? Actually polygamy illegal. But maybe she is a \"minister\" meaning \"she was a minister of religion in the church that allows polygamy\"? Hmm"
+      },
+      {
+        "hat": "white",
+        "response": "The puzzle states that a woman living in New\u202fYork is legally married to three men, yet she has not obtained a divorce, enrollment, or legal separation. The question asks how this is possible, and four answer choices are given: A) the woman is not a good person; B) his husband is not a good husband; C) she is a minister; D) none of the above.  \nKnown facts: 1) The woman lives in New\u202fYork; 2) She is legally married to three men; 3) No divorce, enrollment, or legal separation has occurred.  \nUnknowns: 1) The exact circumstances that allow three legal marriages in New\u202fYork; 2) Whether any of the answer choices correctly explain those circumstances.  \n\nConfidence: LOW"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cminister\u201d answer is a red\u2011herring: being a minister doesn\u2019t grant legal polygamy. The real loophole is that she married each man in a different jurisdiction (e.g., one abroad, two in NY) and never legally dissolved the first; or she is a \u201cminister\u201d of a church that permits polygamy, but that still violates NY law. Thus none of the offered choices correctly explain how she can be legally married to three men without divorce or separation.  \n\n**Confidence: HIGH**"
+      },
+      {
+        "hat": "yellow",
+        "response": "We need to give yellow hat: value and optimism, find elegant answer. Likely she is a minister meaning she married them as officiant? Wait question: woman legally married three men, no divorce. Could be she is a minister in the sense of \"minister\" meaning she officiated marriages for them, not married. But maybe answer C is correct: She is a minister of the church that allows polygamy? Actually no. But maybe she is a \"minister\" meaning she was the minister of a state that allows polygamy? But New York doesn't. Maybe she is \"minister\" meaning she is a minister of religion, but that doesn't give legal marriage to multiple. The trick: She married them in different countries where polygamy is allowed, but New York recognizes only one marriage? Hmm.\n\nBetter: She married them in different states or countries, but New York recognizes only the first? Actually she could have married them as a \"minister\" meaning she performed marriages for others, but the puzzle says she is legally married to them. Maybe answer D none of above.\n\nBut yellow hat: value, optimism: maybe answer C is clever because a minister can marry multiple people? Actually ministers can't be married to many. But maybe she is a \"minister\" meaning she was the minister of a church that allows polygamy, but still illegal in NY. Hmm.\n\nLet's craft: The clever answer is that she married them as a \"minister\" meaning she"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-54",
+    "question": "George was cleaning the windows on the eighteenth floor of an office block when there was a massive power failure. The electric hoist on his platform was immoblized. So how did he manage to get down before the power was restored?",
+    "correct_index": 2,
+    "correct_answer": "George walked down the stairs. He was cleaning the inside of the windows.",
+    "panel_answer_idx": 2,
+    "panel_answer": "George walked down the stairs. He was cleaning the inside of the windows.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "George could have been cleaning the *inside* of the windows, so he was already on a lower level and simply walked down the fire\u2011escape stairs that run alongside each window. Alternatively, he might have used a manual hand\u2011cranked hoist or the building\u2019s emergency exit ladder that operates without electricity. In short, he never relied on the electric hoist at all.\n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "Facts stated in the puzzle: George was on the 18th floor of an office block, cleaning windows; a massive power failure occurred; the electric hoist on his platform was immobilized. It is not stated whether there were manual or alternative means of descent, nor whether the windows he was cleaning were on the exterior or interior side. Thus we know only that his electric hoist could not be used, but we do not know whether he had access to a fire\u2011escape ladder, manual hoist, or could walk down the interior side of the windows.  \n\n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle gives no evidence that any manual hoist, fire\u2011escape ladder, or interior window access exists; assuming such a feature is present is an unfounded leap. Option\u202fA (\u201croof escape\u201d) is physically impossible from the 18th floor without a means to reach the roof, and option\u202fB (\u201clift a heavy object\u201d) is irrelevant to descent. Thus all listed answers rest on unproven assumptions, leaving only option\u202fD as the logically sound choice.  \n\n**Confidence:** MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "George was probably cleaning the *inside* of the windows, so he wasn\u2019t actually on the exterior platform at all. From inside the building he could simply walk down the fire\u2011escape stairs that run along each window frame, avoiding any need for the electric hoist. **Confidence: HIGH**"
+      },
+      {
+        "hat": "blue",
+        "response": "C"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-55",
+    "question": "A man buys a rope from a woman for $3.00 and hands the woman a $10 bill. The woman goes into the grocery store next door to get change. She returns and gives the man $7.00. After the man leaves, the clerk from the store comes and says, \"Hey, that was a counterfeit bill you gave me.\" The woman gives the clerk a good bill. How much has the woman lost?",
+    "correct_index": 1,
+    "correct_answer": "Seven dollars plus the rope.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "We need to think lateral. The man paid $10, gave rope for $3, so he gave $7 change. Later clerk says counterfeit, woman gives good bill to clerk. So woman lost the $10 she received? She gave back $7 change and a good bill to clerk. So net lost $10? But rope was sold for $3, so she earned $3. She lost $7 change + $10 good bill? Actually she gave the clerk a good bill, but that was part of the original $10? She had the counterfeit $10 originally. She gave it to clerk, then replaced with good bill. So she lost the counterfeit $10? Actually she didn't lose it because she returned it. She gave a good bill, so she lost $10 in cash? But rope cost $3 to her? She sold rope for $3. So net loss: she lost $10 cash minus $3 revenue = $7. But also gave $7 change to man? Wait she gave $7 back to man from the change. So she lost $7 cash plus $10? Let's compute: She had $3 from sale, and a counterfeit $10. She goes to clerk with $10 counterfeit, gets change $7, gives man $7 back. So she has $3 from sale + $0 cash left? She then gives a good bill to clerk (which she didn't have). So she must have had $10? Actually"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle**\n\n1. The man pays a woman $10 for a rope that costs her $3, so the transaction is supposed to be:  \n   - Man gives $10 ("
+      },
+      {
+        "hat": "black",
+        "response": "The reasoning that the woman \u201clost $7 plus the rope\u201d is flawed because it ignores the fact that the counterfeit bill was never a real asset to begin with. The only real out\u2011flow is the $7 she gave back to the man and the genuine $10 she later hands to the clerk; she also earned $3 from selling the rope. Thus her net loss is \\(10+7-3 = 14\\), which"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying conclusion is that the woman\u2019s only real loss is the $7 she gave back to the man. The rope was paid for, and the counterfeit bill never entered her assets, so she didn\u2019t lose any money beyond that $7.  \n**Confidence: MEDIUM**"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-56",
+    "question": "Two camels were facing in opposite directions. One was facing due East and one was facing due West. They were in the desert so there was no reflection. How can they manage to see each other without walking around or turning around or moving their heads?",
+    "correct_index": 2,
+    "correct_answer": "The two camels were facing each other the entire time.",
+    "panel_answer_idx": 3,
+    "panel_answer": "None of above.",
+    "correct": false,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is that \u201cfacing due East\u201d and \u201cfacing due West\u201d can be true simultaneously if the camels are positioned on a curved surface (e.g., standing on opposite sides of a small hill or in a bowl\u2011shaped dune). Each camel\u2019s line of sight is tangent to the surface, so they can look straight ahead and still see each other without turning or moving.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "**Facts stated in the puzzle**\n\n- Two camels are facing opposite directions: one due East, one due West.  \n- They are in a desert with no reflections.  \n- The question asks how they can see each other without walking, turning around, or moving their heads.  \n- The answer options are: A) they were in the middle of desert; B) their eyes have a very wide view; C) the two camels were facing each other the entire time; D) none of above.\n\n**What we know**\n\n- The puzzle\u2019s premise and answer choices are explicitly given.  \n- The discussion proposes a solution involving a curved surface (e.g., hill or dune) that allows both camels to look straight ahead while still seeing each other.\n\n**What we do not know**\n\n- Whether the curved\u2011surface explanation is intended or correct for this puzzle.  \n- If any other logical explanations (e.g., a mirror, a round world) are considered.  \n- The intended answer choice among A\u2013D.\n\n**Conclusion**\n\nThe puzzle presents a scenario and multiple-choice answers; the discussion offers one possible explanation, but it is not confirmed which answer is correct.\n\nConfidence: **MEDIUM**"
+      },
+      {
+        "hat": "black",
+        "response": "Option\u202fC is logically impossible \u2013 if one camel faces due east and the other due west, they cannot simultaneously face each other unless they are at the same point. Option\u202fA gives no mechanism, and option\u202fB assumes an implausible eye\u2011field. The curved\u2011surface explanation is a clever trick but not stated in the choices, so the only choice that withstands scrutiny is D.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying answer is that the puzzle\u2019s trick lies in geometry: if the camels stand on opposite sides of a gentle hill or dune, each can look straight ahead (due east or west) and still see the other because their lines of sight curve with the terrain. This clever twist shows"
+      },
+      {
+        "hat": "blue",
+        "response": "D"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-57",
+    "question": "A sharpshooter hung up his hat and put on a blindfolded. He then walked 100 yards, turned around, and shot a bullet through his hat. The blindfolded was a perfectly good one, completely blocking the man's vision. How did he manage this?",
+    "correct_index": 1,
+    "correct_answer": "He hung his hat on the barrel of his gun.",
+    "panel_answer_idx": 1,
+    "panel_answer": "He hung his hat on the barrel of his gun.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "He didn\u2019t aim at the hat\u2019s position on his head; he aimed at the **shadow** of the hat cast by a light source. With the blindfold on, he could feel the bullet\u2019s impact on that shadow\u2011line and thus know where to shoot.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "white",
+        "response": "Facts: A sharpshooter, blindfolded with a fully opaque cover, walked 100\u202fyards away from his hat, turned back toward it, and fired a bullet that passed through the hat. The puzzle asks how he could accomplish this.  \n\nUnknowns: The method or mechanism he used to locate and hit the hat while blindfolded; no details are given about lighting, equipment, or sensory aids beyond the blindfold.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The \u201cshadow\u2011aim\u201d idea assumes a visible, well\u2011defined shadow that the shooter can feel or see through the blindfold\u2014impossible if the blindfold is fully opaque. None of the given options (sound, barrel\u2011hang, computer) logically explain a blindfolded shot that passes through a hat after walking 100\u202fyards. Thus the puzzle\u2019s only defensible answer is **D. None of above**.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "A neat, almost \u201cmagic\u2011bullet\u201d trick is that he simply put his hat on the gun\u2019s barrel before walking away; when he turned back, the bullet would naturally pass straight through that hat. This solves the puzzle with zero aiming skill or extra gadgets\u2014just a clever positioning trick.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  },
+  {
+    "puzzle_id": "SP-58",
+    "question": "Two cops walked into a room with no windows and found a dead man who obviously hung himself from the ceiling, though they couldn't figure out how. There was no chair beneath him that he might have jumped off of, or a table. Just a paddle of water. How'd he do it?",
+    "correct_index": 1,
+    "correct_answer": "He stood on a block of ice until it melted.",
+    "panel_answer_idx": 1,
+    "panel_answer": "He stood on a block of ice until it melted.",
+    "correct": true,
+    "discussion": [
+      {
+        "hat": "green",
+        "response": "The trick is to look past the literal \u201cno chair, no table\u201d and think of what a \u201cpaddle"
+      },
+      {
+        "hat": "white",
+        "response": "Facts: Two cops entered a windowless room, found a dead man who had hanged himself from the ceiling. There was no chair or table; only a paddle of water present. Unknown: How did the man get to the ceiling to hang himself? Confidence: MEDIUM"
+      },
+      {
+        "hat": "black",
+        "response": "The puzzle\u2019s wording misleads by suggesting a \u201cpaddle of water\u201d is relevant, but none of the given options actually explain how a man could reach the ceiling.  \nA (\u201cHe positioned himself\u201d) is too vague to be a solution; B relies on an implausible ice\u2011block scenario that would require a specific temperature and time; C (\u201cThe man sat on the floor\u201d) is impossible because sitting cannot lift one to the ceiling.  \nThus, none of the above options hold up under scrutiny \u2013 the correct answer is D.  \n\nConfidence: HIGH"
+      },
+      {
+        "hat": "yellow",
+        "response": "The most satisfying angle is that the man used the ice\u2011block trick: he stood on a block of ice, waited for it to melt and leave him suspended in the air, then hung himself. It\u2019s a clever use of physics that turns an ordinary \u201cpaddle of water\u201d into a temporary platform.  \n\nConfidence: MEDIUM"
+      },
+      {
+        "hat": "blue",
+        "response": "B"
+      }
+    ],
+    "model": "openai/gpt-oss:20b"
+  }
+]

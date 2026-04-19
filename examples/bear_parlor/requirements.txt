@@ -1,0 +1,14 @@
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+python-dotenv>=1.0
+pyyaml>=6.0
+python-multipart>=0.0.9       # required for file upload (POST /ingest)
+pypdf>=4.0.0                  # optional, for ingest.py PDF ingestion
+openai>=1.0.0     # required for OpenAI or local OpenAI-compatible LLM (e.g. LM Studio)
+anthropic>=0.20.0             # optional, for Anthropic/Claude characters
+google-genai>=1.0.0          # optional, for Gemini characters
+torch>=2.2,<2.7               # torch nightly builds (2.10+) have MPS init hangs on macOS
+sentence-transformers>=2.2.0  # optional, for --semantic embeddings
+edge-tts>=6.1.0              # optional, for text-to-speech
+chromadb>=0.4.0               # knowledge RAG store for PDF ingestion

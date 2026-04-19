@@ -1,0 +1,14 @@
+# Pet Sim — BEAR Edition
+# Install from the behavioral-rag root:
+#   pip install -e .
+#   pip install -r examples/pet_sim/requirements.txt
+
+# Web server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+
+# At least one LLM backend (pick one or more):
+# openai>=1.0         # OpenAI / Ollama / vLLM / LM Studio
+# anthropic>=0.30     # Anthropic Claude
+# ollama>=0.2         # Ollama native client

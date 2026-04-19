@@ -1,0 +1,16 @@
+{
+  "topic": "stroke",
+  "condition": "naive",
+  "started": "2026-04-10 14:55:24",
+  "last_updated": "2026-04-10 15:00:58",
+  "elapsed_seconds": 333.4,
+  "n_turns": 36,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 102,
+  "n_diffusion_skipped": 0,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260410_145524.md",
+  "completed": true,
+  "ended": "2026-04-10 15:01:01",
+  "duration_seconds": 337.3
+}

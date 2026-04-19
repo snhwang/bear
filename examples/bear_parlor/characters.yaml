@@ -1,0 +1,203 @@
+# BEAR Parlor — Character definitions
+# Edit this file to change character profiles, timing, voices, and mood thresholds.
+# Add new entries to introduce new characters (also add matching instruction YAML files).
+
+characters:
+
+  - id: gus
+    name: Gus Kowalski
+    short_name: Gus
+    color: "#e8a735"
+    avatar: GK
+    description: "Diner owner. Blunt, no-nonsense."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    tts_voice: en-US-GuyNeural
+    tts_rate: "-5%"
+    tts_pitch: "-10Hz"
+    mood_low: irritated
+    mood_high: warm
+    mood_low_threshold: -0.3
+    mood_high_threshold: 0.3
+
+  - id: mabel
+    name: Mabel Thompson
+    short_name: Mabel
+    color: "#e87ec4"
+    avatar: MT
+    description: "Retired teacher. Chatty and warm."
+    talk_probability: 0.7
+    spontaneous_min: 12
+    spontaneous_max: 25
+    tts_voice: en-US-JennyNeural
+    tts_rate: "-8%"
+    tts_pitch: "+5Hz"
+    mood_low: worried
+    mood_high: excited
+    mood_low_threshold: -0.2
+    mood_high_threshold: 0.3
+
+  - id: ricky
+    name: Ricky Delgado
+    short_name: Ricky
+    color: "#5eb87e"
+    avatar: RD
+    description: "Barber. Eager and enthusiastic."
+    talk_probability: 0.55
+    spontaneous_min: 18
+    spontaneous_max: 35
+    tts_voice: en-US-AndrewNeural
+    tts_rate: "+5%"
+    tts_pitch: "+5Hz"
+    mood_low: nervous
+    mood_high: pumped
+    mood_low_threshold: -0.2
+    mood_high_threshold: 0.4
+
+  - id: helen
+    name: Helen Park
+    short_name: Helen
+    color: "#7ea0e8"
+    avatar: HP
+    description: "Librarian. Quiet, devastating wit."
+    talk_probability: 0.25
+    spontaneous_min: 40
+    spontaneous_max: 70
+    tts_voice: en-US-AriaNeural
+    tts_rate: "-3%"
+    tts_pitch: "-2Hz"
+    mood_low: content
+    mood_high: content          # mood_high_choices used instead
+    mood_low_threshold: -0.3
+    mood_high_threshold: 0.3
+    mood_high_choices:
+      - engaged
+      - amused
+
+# ── Six Thinking Hats ────────────────────────────────────────────────────────
+# Used by the brainstorming-hats panel.
+# Set llm_backend / llm_model to give a hat a different model from the session
+# default. Leave null to share the session LLM.
+# Per-model sampling parameters follow each model's recommended settings.
+# llm_max_tokens bumped to 400 for substantive deliberation responses.
+
+  - id: white-hat
+    name: White Hat
+    short_name: White
+    color: "#d8d8d8"
+    avatar: WH
+    description: "Facts and data. What do we know? What do we need to find out?"
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    tts_voice: en-US-GuyNeural
+    tts_rate: "+0%"
+    tts_pitch: "+0Hz"
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+    llm_backend: anthropic
+    llm_model: claude-sonnet-4-6
+    llm_max_tokens: 400
+
+  - id: red-hat
+    name: Red Hat
+    short_name: Red
+    color: "#e84040"
+    avatar: RH
+    description: "Gut feelings and intuition. No justification required."
+    talk_probability: 0.50
+    spontaneous_min: 15
+    spontaneous_max: 30
+    tts_voice: en-US-JennyNeural
+    tts_rate: "+3%"
+    tts_pitch: "+3Hz"
+    mood_low: content
+    mood_high: animated
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.35
+    llm_backend: anthropic
+    llm_model: claude-haiku-4-5
+    llm_max_tokens: 400
+
+  - id: black-hat
+    name: Black Hat
+    short_name: Black
+    color: "#505050"
+    avatar: BH
+    description: "Devil's advocate. Risks, flaws, reasons it won't work."
+    talk_probability: 0.40
+    spontaneous_min: 25
+    spontaneous_max: 45
+    tts_voice: en-US-EricNeural
+    tts_rate: "-3%"
+    tts_pitch: "-5Hz"
+    mood_low: content
+    mood_high: pressing
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+    llm_backend: anthropic
+    llm_model: claude-opus-4-6
+    llm_max_tokens: 400
+
+  - id: yellow-hat
+    name: Yellow Hat
+    short_name: Yellow
+    color: "#e8d840"
+    avatar: YH
+    description: "Optimism and value. Why it could work and what it achieves."
+    talk_probability: 0.55
+    spontaneous_min: 15
+    spontaneous_max: 30
+    tts_voice: en-US-AndrewNeural
+    tts_rate: "+5%"
+    tts_pitch: "+5Hz"
+    mood_low: content
+    mood_high: enthusiastic
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.3
+    llm_backend: openai
+    llm_model: gpt-4.1-mini
+    llm_max_tokens: 400
+
+  - id: green-hat
+    name: Green Hat
+    short_name: Green
+    color: "#40a840"
+    avatar: GH
+    description: "Lateral thinking, new ideas, provocations, alternatives."
+    talk_probability: 0.50
+    spontaneous_min: 18
+    spontaneous_max: 35
+    tts_voice: en-US-AriaNeural
+    tts_rate: "+5%"
+    tts_pitch: "+5Hz"
+    mood_low: content
+    mood_high: inspired
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.3
+    llm_backend: openai
+    llm_model: gpt-4.1
+    llm_max_tokens: 400
+
+  - id: blue-hat
+    name: Blue Hat
+    short_name: Blue
+    color: "#4080e8"
+    avatar: BL
+    description: "Process and facilitation. Keeps the session structured and on track."
+    talk_probability: 0.60
+    spontaneous_min: 12
+    spontaneous_max: 25
+    tts_voice: en-US-ChristopherNeural
+    tts_rate: "-2%"
+    tts_pitch: "-2Hz"
+    mood_low: content
+    mood_high: steering
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.3
+    llm_backend: openai
+    llm_model: gpt-5.4
+    llm_max_tokens: 400

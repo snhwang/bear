@@ -1,0 +1,16 @@
+{
+  "topic": "ms",
+  "condition": "bear",
+  "started": "2026-04-10 15:02:33",
+  "last_updated": "2026-04-10 15:08:06",
+  "elapsed_seconds": 333.6,
+  "n_turns": 36,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 43,
+  "n_diffusion_skipped": 11,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260410_150233.md",
+  "completed": true,
+  "ended": "2026-04-10 15:08:11",
+  "duration_seconds": 338.5
+}

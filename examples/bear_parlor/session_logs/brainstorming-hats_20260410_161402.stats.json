@@ -1,0 +1,16 @@
+{
+  "topic": "llm-cds",
+  "condition": "bear",
+  "started": "2026-04-10 16:14:02",
+  "last_updated": "2026-04-10 16:19:36",
+  "elapsed_seconds": 333.1,
+  "n_turns": 34,
+  "n_pdfs_ingested": 0,
+  "n_diffusion_stored": 43,
+  "n_diffusion_skipped": 9,
+  "ingestions": [],
+  "log_path": "/mnt/c/Users/Scott/Documents/Work/bear/examples/bear_parlor/session_logs/brainstorming-hats_20260410_161402.md",
+  "completed": true,
+  "ended": "2026-04-10 16:19:39",
+  "duration_seconds": 337.1
+}

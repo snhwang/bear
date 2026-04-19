@@ -1,0 +1,44 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.eggs/
+*.npy
+.env
+.venv
+results/llm_review/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+
+# External benchmark data (downloaded at runtime)
+paper/evaluation/data/external_benchmarks/
+
+# Claude Code local settings
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Eval run logs (large, not results)
+paper1_*.log
+paper2*.log
+sim_log_diploid_*_action.json
+
+# Runtime sim state (transient autosave; opt-in via --output)
+sim_autosave.json
