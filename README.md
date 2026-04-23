@@ -388,12 +388,10 @@ The retriever will automatically use metadata-aware methods when `supports_metad
 
 See the `examples/` directory for complete demos:
 
-- **`bear_parlor/`** — Multi-character chat room where 4 AI characters with distinct personalities converse with each other and the user; affinities and memories evolve across the session
-- **`npc_tavern/`** — Fantasy NPCs with distinct personalities respond differently to the same queries
-- **`medical_assistant/`** — Role-based clinical education with mandatory safety constraints
-- **`customer_support/`** — Context-aware support agent that adapts to complaint vs. inquiry
-- **`world_3d/`** — Explorable 3D village (Ursina) where NPCs and objects are driven by behavioral instructions
-- **`spatial_evolution/`** — Evolving ecosystem where LLM-generated gene text is the genotype: BEAR retrieval computes per-entity behavior profiles (combat, foraging, breeding, etc.) via scope-aware similarity to canonical situations, so entities with different gene *wording* behave differently even when flat stats are similar
+- **`bear_parlor/`** — Multi-character chat room where AI characters with distinct personalities converse with each other and the user; affinities and memories evolve across the session
+- **`pet_sim/`** — Pet simulation demo illustrating scope-gated behavioral retrieval, action markers, and governance; used as the primary evaluation corpus in the BEAR paper
+- **`customer_support/`** — Context-aware support agent that adapts behavior to complaint vs. inquiry contexts
+- **`evolutionary_ecosystem/`** — Evolving ecosystem where LLM-generated gene text is the genotype; BEAR retrieval computes per-entity behavior profiles via scope-aware similarity, so entities with different gene wording behave differently even when flat stats are similar
 
 ## Development
 
