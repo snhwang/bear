@@ -1,4 +1,13 @@
+<p align="center">
+  <img src="static/logo.png" alt="BEAR logo" width="220">
+</p>
+
 # BEAR — Behavioral Evolution And Retrieval
+
+**Patent Pending** | Copyright (c) 2024-2026 The Pennsylvania State University. All rights reserved.
+Inventor: Scott N. Hwang
+
+Licensed under the Open Core Ventures Source Available License (OCVSAL) v1.0. See [LICENSE](LICENSE). Production use requires a commercial agreement. For commercial licensing, contact the Penn State Office of Technology Transfer at ottinfo@psu.edu.
 
 A Python library for retrieving and composing **behavioral instructions** to shape LLM behavior.
 
