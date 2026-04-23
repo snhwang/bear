@@ -9,9 +9,9 @@ Inventor: Scott N. Hwang
 
 Licensed under the Open Core Ventures Source Available License (OCVSAL) v1.0. See [LICENSE](LICENSE). Production use requires a commercial agreement. For commercial licensing, contact the Penn State Office of Technology Transfer at ottinfo@psu.edu.
 
-A Python library for retrieving and composing **behavioral instructions** to shape LLM behavior.
+A Python library for retrieving and composing **behavioral instructions** to shape the behavior of LLMs and other intelligent agents.
 
-Traditional RAG retrieves *knowledge* to augment what an LLM knows. BEAR retrieves *instructions* to shape how an LLM behaves.
+Traditional RAG retrieves *knowledge* to augment what an LLM knows. BEAR retrieves *instructions* to shape how an LLM or agent behaves.
 
 ```
 Context (entity + location + state + query)
