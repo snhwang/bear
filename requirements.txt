@@ -3,12 +3,9 @@ pyyaml>=6.0
 numpy>=1.24
 pydantic>=2.0
 
-# PyTorch with CUDA 12.8 (required for Blackwell/sm_120 GPUs)
-# Install with: uv pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
-torch>=2.11
-torchvision>=0.26
-
-# Embedding model
+# Embedding model (pulls in torch as a transitive dep — CPU wheel from PyPI by default).
+# For a CUDA build of torch, install it explicitly first, e.g.:
+#   uv pip install torch --index-url https://download.pytorch.org/whl/cu128
 sentence-transformers>=2.2
 
 # LLM backends (at least one needed for generation)
