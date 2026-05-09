@@ -1452,30 +1452,28 @@ def express(
         if not allele_a and not allele_b:
             continue
 
-        if loc.dominance == Dominance.DOMINANT:
-            # Per-allele dominance: at heterozygous loci, the allele with the
-            # higher metadata["dominance"] score wins; the other is hidden.
-            # Allele instructions default to dominance=1.0 if unspecified
-            # (preserves backward-compat: untagged corpora behave as
-            # equal-rank, which under the score-max rule emits the first
-            # template encountered per side — matching prior single-winner
-            # behavior on identical content).
+        if loc.dominance in (Dominance.DOMINANT, Dominance.CODOMINANT):
+            # Unified score-based expression for diploid loci.
+            #
+            # Both DOMINANT and CODOMINANT use the same rule under per-allele
+            # dominance scoring: emit the alleles tied at the maximum score.
+            # Almost all heterozygote pairings produce a single winner (real
+            # Mendelian dominance — recessive hidden); only deliberately-tied
+            # scores produce both-expressed (codominance, e.g., AB blood type
+            # where two alleles share the same dominance level by design).
+            #
+            # The two enum values are retained for backward-compatibility with
+            # existing code; they are now functionally equivalent. Future
+            # versions may collapse to a single ``DIPLOID`` value.
+            #
+            # Default dominance score is 1.0 if unspecified, so untagged
+            # corpora (no per-allele scoring) tie at the top and emit both
+            # alleles — preserving the prior CODOMINANT default behavior.
             def _score(inst):
                 return inst.metadata.get("dominance", 1.0)
-            max_a = max((_score(i) for i in allele_a), default=float("-inf"))
-            max_b = max((_score(i) for i in allele_b), default=float("-inf"))
-            if max_a >= max_b:
-                expressed.extend(allele_a if allele_a else allele_b)
-            else:
-                expressed.extend(allele_b)
 
-        elif loc.dominance == Dominance.CODOMINANT:
-            # Dedupe homozygous duplicates by (content, situation_idx). At
-            # each retrieval-scope position, two alleles sharing identical
-            # content collapse to one; distinct contents at the same scope
-            # both pass through (true codominance). Heterozygotes producing
-            # different content at any scope therefore yield concatenated
-            # phenotype expression.
+            # Dedupe by (content, situation_idx) so homozygous duplicates
+            # collapse to one set of template instructions.
             seen: set = set()
             deduped: list[Instruction] = []
             for inst in allele_a + allele_b:
@@ -1485,8 +1483,15 @@ def express(
                     seen.add(key)
                     deduped.append(inst)
 
-            distinct_contents = {i.content for i in deduped}
-            if blend_fn is not None and len(distinct_contents) > 1:
+            if not deduped:
+                continue
+
+            # Score-driven selection: emit alleles tied at the top score.
+            max_score = max(_score(i) for i in deduped)
+            winners = [i for i in deduped if _score(i) == max_score]
+            distinct_winner_contents = {i.content for i in winners}
+
+            if blend_fn is not None and len(distinct_winner_contents) > 1:
                 # Optional opt-in: fuse distinct allele texts via the supplied
                 # callable. WARNING: LLM-based blending often destroys
                 # structured content like action markers ([!flee],
@@ -1494,11 +1499,11 @@ def express(
                 # leave blend_fn=None — the deduped pass-through preserves
                 # each allele's text verbatim and lets retrieval gate which
                 # allele expresses per situation.
-                a_insts = [i for i in deduped if i in allele_a]
-                b_insts = [i for i in deduped if i in allele_b]
+                a_insts = [i for i in winners if i in allele_a]
+                b_insts = [i for i in winners if i in allele_b]
                 a_text = "\n".join(i.content for i in a_insts)
                 b_text = "\n".join(i.content for i in b_insts)
-                template = a_insts[0] if a_insts else deduped[0]
+                template = a_insts[0] if a_insts else winners[0]
                 blended = template.model_copy(update={
                     "id": template.id.replace("-", "-expressed-", 1),
                     "content": blend_fn(a_text, b_text),
@@ -1513,7 +1518,7 @@ def express(
                 })
                 expressed.append(blended)
             else:
-                expressed.extend(deduped)
+                expressed.extend(winners)
 
     # Include non-locus instructions and instructions at unregistered loci
     for locus, insts in by_locus.items():

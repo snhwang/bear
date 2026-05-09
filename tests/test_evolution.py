@@ -2235,14 +2235,14 @@ class TestExpression:
             "parent_a", "parent_b", config=cfg,
         ), reg
 
-    def test_dominant_with_default_scores_picks_a(self):
-        """When both alleles default to dominance=1.0, allele a wins on tie."""
+    def test_dominant_with_default_scores_emits_both(self):
+        """When both alleles default to dominance=1.0, ties produce codominance — both emit."""
         result, reg = self._breed_diploid()
         expressed = express(result.child, reg, locus_key="gene")
         combat = [i for i in expressed if i.metadata.get("gene") == "combat"]
-        # Tie at default 1.0 → allele a wins
-        assert len(combat) == 1
-        assert combat[0].metadata.get("allele") == "a"
+        # Tie at default 1.0 → both alleles emit (codominance falls out naturally)
+        assert len(combat) == 2
+        assert {i.metadata.get("allele") for i in combat} == {"a", "b"}
 
     def test_dominant_higher_score_wins(self):
         """The allele with higher metadata['dominance'] should be expressed."""

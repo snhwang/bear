@@ -38,34 +38,32 @@ class CrossoverMethod(str, Enum):
 
 
 class Dominance(str, Enum):
-    """Locus-level expression policy for a gene category.
-
-    Determines how alleles are inherited (number of slots) and how their
-    contents are resolved into the expressed phenotype:
+    """Locus-level ploidy / expression policy for a gene category.
 
     - **HAPLOID** (default): One allele per locus. ``express()`` emits the
       single allele unchanged.
-    - **DOMINANT**: Two alleles per locus. Hierarchical expression by
-      per-allele *dominance score*. ``express()`` emits the allele with
-      the higher ``metadata["dominance"]`` score; the lower-scored allele
-      is hidden. Models classical Mendelian dominance (e.g., A/a where
-      A's content is intrinsically dominant). Allele scores are intended
-      to be unique within a locus's allele pair so a single winner is
-      always determined; if scores tie, the first allele encountered wins.
-    - **CODOMINANT**: Two alleles per locus. Both expressed simultaneously
-      regardless of dominance score. When allele contents differ, an
-      optional ``blend_fn`` can fuse them into a single phenotype
-      instruction at expression time; otherwise both instructions are
-      emitted so retrieval can score them independently. Models cases
-      like AB blood type where both alleles produce visible phenotype.
+    - **DOMINANT**: Two alleles per locus. Score-driven expression — the
+      allele with the higher ``metadata["dominance"]`` score is emitted;
+      the lower-scored allele is hidden. Equal scores tie and both express
+      (codominance falls out naturally).
+    - **CODOMINANT**: Functionally equivalent to **DOMINANT** under the
+      per-allele scoring system; retained as an alias for backward
+      compatibility. May be collapsed in a future major release.
 
-    **Per-allele dominance metadata.** For DOMINANT loci, each allele
-    instruction's ``metadata["dominance"]`` is a float (default 1.0 if
-    absent) used to rank alleles. Higher score = more dominant. Producers
-    of allele instructions assign these scores at corpus-build time
-    (e.g., founder alleles drawn from one distribution, mutated alleles
-    from another more recessive-biased distribution). The score is
-    preserved through breeding via the standard metadata-copy mechanism.
+    **Per-allele dominance metadata.** Each allele instruction's
+    ``metadata["dominance"]`` is a float (default 1.0 if absent) used to
+    rank alleles. Higher score = more dominant. Mendelian dominance,
+    codominance, and recessive emergence all fall out of the score
+    distribution:
+
+    - Score(A)=0.9, Score(a)=0.1 → A wins (classical dominance).
+    - Score(A)=Score(B)=0.8 → both emit (codominance, e.g., AB blood type).
+    - Score(a)=Score(a')=0.05 → both emit (homozygous recessive surfaces).
+
+    Producers of allele instructions assign scores at corpus-build time
+    (e.g., founders drawn from one distribution, mutants from a more
+    recessive-biased distribution). Scores are preserved through breeding
+    via the standard metadata-copy mechanism.
     """
 
     HAPLOID = "haploid"
