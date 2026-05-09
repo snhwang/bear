@@ -348,6 +348,7 @@ def _maybe_finalize_chunk(w) -> None:
     _death_log.clear()
     _action_log.clear()
     _snapshot_log.clear()
+    _epoch_snapshots.clear()
     _chunk_index += 1
     logger.info("Chunk boundary at tick %d — advancing to chunk %02d", w.tick_count, _chunk_index)
 
