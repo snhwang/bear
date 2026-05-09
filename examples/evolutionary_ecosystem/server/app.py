@@ -336,21 +336,32 @@ def _chunked_output_path(base_output: str) -> str:
     return base_output
 
 
-def _maybe_finalize_chunk(w) -> None:
-    """At a chunk boundary, increment chunk index and clear accumulators."""
+async def _maybe_finalize_chunk(w) -> None:
+    """At a chunk boundary, flush current data to disk then clear accumulators.
+
+    Must be awaited: previously this used asyncio.create_task for autosave and
+    cleared accumulators synchronously, which raced — the scheduled autosave
+    saw cleared lists by the time it ran, dropping all events accumulated
+    since the previous autosave (~2000 ticks of births/deaths/actions per
+    chunk boundary).
+    """
     global _chunk_index
     cs = getattr(args_ns, "chunk_size", None)
     if not cs or w.tick_count == 0:
         return
     if w.tick_count % cs != 0:
         return
+    # Flush THIS chunk's accumulators to its file before clearing.
+    if getattr(args_ns, "output", None):
+        await _auto_save(w)
     _birth_log.clear()
     _death_log.clear()
     _action_log.clear()
     _snapshot_log.clear()
     _epoch_snapshots.clear()
     _chunk_index += 1
-    logger.info("Chunk boundary at tick %d — advancing to chunk %02d", w.tick_count, _chunk_index)
+    logger.info("Chunk boundary at tick %d — finalised chunk %02d, advancing to %02d",
+                w.tick_count, _chunk_index - 1, _chunk_index)
 
 
 async def _save_sim_log() -> None:
@@ -464,10 +475,10 @@ async def _simulation_loop(tick_rate: int) -> None:
                         and getattr(args_ns, "output", None)):
                     asyncio.create_task(_auto_save(world))
 
-                # Chunk rotation: at every chunk_size boundary, advance the
-                # chunk index and clear accumulators so the next chunk file
-                # starts fresh and stays bounded in size.
-                _maybe_finalize_chunk(world)
+                # Chunk rotation: at every chunk_size boundary, flush the
+                # current chunk to disk then clear accumulators so the next
+                # chunk file starts fresh and stays bounded in size.
+                await _maybe_finalize_chunk(world)
 
                 # Tick limit for eval mode
                 max_ticks = getattr(args_ns, 'ticks', None)
