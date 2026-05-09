@@ -226,15 +226,16 @@ The `breed()` function returns a `BreedResult` with:
 
 ### Diploid Inheritance
 
-For Mendelian-style inheritance with two alleles per locus, attach a `LocusRegistry` to `BreedingConfig` and assign each `GeneLocus` a `Dominance` mode. The default (`Dominance.HAPLOID`) preserves the simple one-allele-per-locus behavior described above; `DOMINANT` and `CODOMINANT` opt the locus into a diploid genotype:
+For Mendelian-style inheritance with two alleles per locus, attach a `LocusRegistry` to `BreedingConfig` and tag each `GeneLocus` as diploid. Per-allele dominance scores then determine expression:
 
 ```python
 from bear.evolution import breed, BreedingConfig, express
 from bear.models import LocusRegistry, GeneLocus, Dominance, CrossoverMethod
 
+# Two alleles per locus; expression decided by per-allele dominance score
 registry = LocusRegistry(loci=[
     GeneLocus(name="combat", position=0, dominance=Dominance.DOMINANT),
-    GeneLocus(name="social", position=1, dominance=Dominance.CODOMINANT),
+    GeneLocus(name="social", position=1, dominance=Dominance.DOMINANT),
 ])
 config = BreedingConfig(
     locus_key="gene_category",
@@ -246,14 +247,21 @@ result = breed(parent_a_corpus, parent_b_corpus, "child", "parent_a", "parent_b"
 phenotype = express(result.child, registry, locus_key="gene_category")
 ```
 
-**Meiosis is automatic.** When parents are themselves diploid (i.e. their corpora already contain `allele:"a"` and `allele:"b"` instructions from a previous breeding), `breed()` randomly draws one allele per parent per locus before pairing — true Mendelian segregation across generations. No manual gamete-formation step is required.
+**Per-allele dominance scoring.** Each allele instruction's `metadata["dominance"]` is a float (default 1.0) used by `express()` to pick winners at heterozygous loci. The allele(s) tied at the maximum score are emitted; lower-scored alleles are hidden:
 
-**Codominance — important caveat.** `Dominance.CODOMINANT` instructs `express()` to return *both* allele instructions at the locus. That is the *mechanism*. Whether downstream behavior matches biological codominance (both alleles simultaneously visible, e.g. AB blood type) depends on how your consumer uses the expressed instruction set:
+| Allele A score | Allele B score | Result |
+|---|---|---|
+| 0.9 | 0.1 | A wins (classical dominance, B hidden) |
+| 0.8 | 0.8 | both express (codominance, e.g. AB blood type) |
+| 0.05 | 0.05 | both express (homozygous recessive surfaces) |
 
-- If you retrieve over the corpus and dedupe by locus, only the higher-scoring allele per locus fires per query. That is **retrieval-gated / context-conditional expression** — both alleles influence behavior across many queries, but only one per locus per query. Useful for situational specialization, but not the textbook "both expressed at once".
-- For true biological codominance, either pass a `blend_fn` to `express()` so both alleles fuse into a single phenotype instruction per locus, or design your retrieval/prompt path to surface both allele instructions in parallel without per-locus deduplication.
+Mendelian dominance, codominance, and recessive emergence all fall out of the score distribution — no separate enum modes required. The `DOMINANT` and `CODOMINANT` enum values are now functionally equivalent under per-allele scoring; `CODOMINANT` is retained as a backward-compat alias.
 
-The `Dominance.CODOMINANT` docstring in [`bear/models.py`](bear/models.py) has more detail on this distinction.
+**Meiosis is automatic across generations.** When parents are themselves diploid (their corpora already contain `allele:"a"` and `allele:"b"` instructions from a previous breeding), `breed()` randomly draws one allele per parent per locus before pairing — true Mendelian segregation. No manual gamete-formation step required.
+
+**Optional `blend_fn` (avoid for action-marker-bearing content).** For loci where you want LLM-blended phenotypes instead of multi-allele expression, pass a `blend_fn` to `express()`. WARNING: LLM-based blending often destroys structured content like action markers (`[!flee]`, `[!mood(happy)]`). Default behavior (`blend_fn=None`) preserves allele text verbatim and lets retrieval gate which allele expresses per query.
+
+The `Dominance` docstring in [`bear/models.py`](bear/models.py) has more detail.
 
 ## Configuration
 

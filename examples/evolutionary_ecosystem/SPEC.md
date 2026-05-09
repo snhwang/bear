@@ -270,32 +270,36 @@ Copy from creature ecosystem's `run.py`, change imports to point to `evolutionar
 
 ## Genetics Modes
 
-The simulation supports three ploidy modes via `BreedRequest.ploidy` and a registry built by `_make_locus_registry()` in `gene_engine.py`. The locus-based and splice recombination paths run through `bear.evolution.breed()`; the blend path is LLM-mediated and does not carry diploid genotype.
+The simulation supports two ploidy modes via `BreedRequest.ploidy` and a registry built by `_make_locus_registry()` in `gene_engine.py`. The locus-based and splice recombination paths run through `bear.evolution.breed()`; the blend path is LLM-mediated and does not carry diploid genotype.
 
 ### `haploid`
 
 One allele per locus per creature. `bear.evolution.breed()` picks one parent's allele per locus (uniform 50/50). Mutations apply to that single allele. This is the default and matches classic GA-style crossover.
 
-### `diploid_dominant`
+### `diploid_dominant` and `diploid_codominant` (functionally equivalent — score-driven)
 
 Each creature carries two alleles per locus (`allele:"a"` from parent A's gamete, `allele:"b"` from parent B's gamete). Inheritance follows Mendelian segregation, handled inside `bear.evolution.breed()`:
+
 1. **Meiosis**: each parent's diploid corpus contributes a gamete by random allele draw per locus (`_meiotic_gamete()` in bear).
 2. **Fertilisation**: bear pairs the two gametes into a diploid child, with allele "a" from parent A's draw and allele "b" from parent B's draw.
-3. **Expression**: `express()` returns only the allele-"a" instructions per locus. The "a" parent's drawn allele is the dominant one, so the phenotype reflects parent A's contribution this generation. Parent B's allele is carried silently and can resurface in grandchildren via meiosis.
+3. **Expression** — score-driven: `express()` reads each allele's `metadata["dominance"]` (a float, default 1.0) and emits the allele(s) tied at the maximum score. Heterozygotes with distinct scores produce a single winner (classical Mendelian dominance, recessive hidden); deliberately tied scores produce both expressed (codominance — e.g., AB blood type modeled by giving both alleles equal scores).
 
-This is "parent A wins" dominance, not Mendelian per-allele dominance — there is no notion that some allele texts are intrinsically dominant over others; the slot identity ("a" vs "b") determines dominance.
+The `diploid_dominant` and `diploid_codominant` enum values are now functionally equivalent under this score-driven rule. `diploid_codominant` is retained as a backward-compat alias.
 
-### `diploid_codominant` — note: not biological codominance
+### Per-allele dominance score assignment
 
-The label is **operationally** codominant but **not** the textbook Mendelian sense. Worth understanding before using or citing this mode.
+Set in `gene_engine.py`:
 
-**What it is.** Both alleles are stored in the corpus and both are returned by `express()`. At decision time the retriever scores every instruction in the corpus (including both alleles at every locus) by embedding-similarity to the current situation, then `brain.py` deduplicates retrievals by `gene_category`, taking the higher-scoring allele's text per locus into the LLM `guidance` field. So in any single turn each codominant locus contributes one allele's text — whichever fits the situation best.
+- **Founder NPCs** (gen-0): `dominance ~ Uniform(0, 1)` per (creature, gene_category). Founders span the dominance hierarchy realistically — half are dominant-leaning, half recessive-leaning.
+- **Point mutations** (`mutate_gene`): `dominance ~ Beta(1, 4)` (mean ~0.20, recessive-biased). Most novel point mutations enter the gene pool as recessive carriers — biologically realistic since most loss-of-function mutations are recessive (Hardy-Weinberg masking).
+- **Spontaneous mutations** (`spontaneous_gene`, formerly `drift_gene`): `dominance ~ Beta(1, 6)` (mean ~0.14, strongly recessive-biased). Wholly novel content that's never been in any parent.
+- **Inherited alleles**: dominance score carries through metadata copy.
 
-**What it isn't.** Standard biological codominance means both alleles are expressed *simultaneously and visibly* at all times (e.g., AB blood type displays both A and B antigens on every cell, with no situational gating). Our implementation never has both alleles fire in the same turn at the same locus.
+### Codominant expression (when scores tie)
 
-**What it actually models.** Closer to *context-conditional expression* or *situation-gated heterozygote advantage*: a heterozygote can deploy allele A when situation A's content matches better, and allele B when situation B's content matches better. Across a creature's lifetime both alleles influence behavior, but the split is governed by the creature's situational distribution and the embedding geometry — not a 50/50 coin flip and not simultaneous expression.
+When two alleles tie at the max score and have *different* content, both emit. The `express()` CODOMINANT/DOMINANT branch dedupes by `(content, situation_idx)` so homozygous-identical content collapses to one set of template instructions; heterozygous distinct content surfaces both.
 
-**Future work.** Replace this with true biological codominance — likely via the `blend_fn` hook in `bear.evolution.express()` (LLM-blends the two allele texts into a single combined phenotype instruction per locus) or by lifting the per-locus dedupe in `brain.py` so both alleles can fire in the same turn. When that lands, the current mode should be renamed (e.g. `diploid_situational`) and the new one given the `diploid_codominant` label.
+LLM-blending of co-expressed alleles is opt-in via `blend_fn` and **not recommended** for content with action markers (`[!flee]`, `[!mood(happy)]`) — LLM blending often destroys structured content. Default behavior preserves allele text verbatim and lets retrieval pick the better-matching allele per situation.
 
 ## Testing Checklist
 
