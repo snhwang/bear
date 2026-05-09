@@ -38,38 +38,34 @@ class CrossoverMethod(str, Enum):
 
 
 class Dominance(str, Enum):
-    """Dominance model for a gene locus.
+    """Locus-level expression policy for a gene category.
 
-    Controls how alleles are inherited and expressed during breeding:
+    Determines how alleles are inherited (number of slots) and how their
+    contents are resolved into the expressed phenotype:
 
-    - **HAPLOID** (default): Classical single-allele inheritance.  The child
-      receives one parent's instruction per locus — the existing behaviour.
-    - **DOMINANT**: Diploid.  The child carries both alleles but only
-      expresses the one from the dominant parent (allele "a" by convention,
-      i.e. parent A).  This is "slot-based" dominance — the position in the
-      genotype determines dominance, not any intrinsic property of the
-      allele content. Not equivalent to Mendelian per-allele dominance.
-    - **CODOMINANT**: Diploid.  ``express()`` returns both allele
-      instructions for the locus; an optional ``blend_fn`` can fuse them
-      into a single phenotype instruction at expression time.
+    - **HAPLOID** (default): One allele per locus. ``express()`` emits the
+      single allele unchanged.
+    - **DOMINANT**: Two alleles per locus. Hierarchical expression by
+      per-allele *dominance score*. ``express()`` emits the allele with
+      the higher ``metadata["dominance"]`` score; the lower-scored allele
+      is hidden. Models classical Mendelian dominance (e.g., A/a where
+      A's content is intrinsically dominant). Allele scores are intended
+      to be unique within a locus's allele pair so a single winner is
+      always determined; if scores tie, the first allele encountered wins.
+    - **CODOMINANT**: Two alleles per locus. Both expressed simultaneously
+      regardless of dominance score. When allele contents differ, an
+      optional ``blend_fn`` can fuse them into a single phenotype
+      instruction at expression time; otherwise both instructions are
+      emitted so retrieval can score them independently. Models cases
+      like AB blood type where both alleles produce visible phenotype.
 
-      **Caveat — biological codominance is not automatic.**  Returning
-      both alleles from ``express()`` is the *mechanism*; whether the
-      resulting behaviour matches biological codominance (both alleles
-      simultaneously visible, e.g. AB blood type) depends on how the
-      consumer uses that output.  Common pitfalls:
-
-      * If the consumer runs retrieval over the corpus and deduplicates
-        by locus, only the higher-scoring allele per locus fires per
-        query — that is *retrieval-gated* / context-conditional
-        expression, not simultaneous expression.
-      * If the consumer pulls a single string per locus into a prompt
-        template, only one allele's text reaches the prompt.
-
-      For true biological codominance, either pass a ``blend_fn`` so
-      both alleles fuse into one phenotype instruction, or design the
-      consumer to surface both allele instructions in parallel without
-      deduplicating by locus.
+    **Per-allele dominance metadata.** For DOMINANT loci, each allele
+    instruction's ``metadata["dominance"]`` is a float (default 1.0 if
+    absent) used to rank alleles. Higher score = more dominant. Producers
+    of allele instructions assign these scores at corpus-build time
+    (e.g., founder alleles drawn from one distribution, mutated alleles
+    from another more recessive-biased distribution). The score is
+    preserved through breeding via the standard metadata-copy mechanism.
     """
 
     HAPLOID = "haploid"

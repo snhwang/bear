@@ -2235,13 +2235,57 @@ class TestExpression:
             "parent_a", "parent_b", config=cfg,
         ), reg
 
-    def test_dominant_expresses_allele_a(self):
+    def test_dominant_with_default_scores_picks_a(self):
+        """When both alleles default to dominance=1.0, allele a wins on tie."""
         result, reg = self._breed_diploid()
         expressed = express(result.child, reg, locus_key="gene")
-        # combat is DOMINANT — should express allele_a only
         combat = [i for i in expressed if i.metadata.get("gene") == "combat"]
+        # Tie at default 1.0 → allele a wins
         assert len(combat) == 1
         assert combat[0].metadata.get("allele") == "a"
+
+    def test_dominant_higher_score_wins(self):
+        """The allele with higher metadata['dominance'] should be expressed."""
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="trait", position=0, dominance=Dominance.DOMINANT),
+        ])
+        # Build a child corpus directly with two alleles having different scores
+        child = Corpus()
+        child.add(Instruction(
+            id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
+            content="recessive variant",
+            metadata={"gene": "trait", "allele": "a", "dominance": 0.2},
+        ))
+        child.add(Instruction(
+            id="child-trait-b", type=InstructionType.DIRECTIVE, priority=60,
+            content="dominant variant",
+            metadata={"gene": "trait", "allele": "b", "dominance": 0.9},
+        ))
+        expressed = express(child, reg, locus_key="gene")
+        trait = [i for i in expressed if i.metadata.get("gene") == "trait"]
+        assert len(trait) == 1
+        assert trait[0].content == "dominant variant"
+        assert trait[0].metadata.get("allele") == "b"
+
+    def test_dominant_recessive_hidden(self):
+        """The lower-scored allele is fully hidden from express()."""
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="trait", position=0, dominance=Dominance.DOMINANT),
+        ])
+        child = Corpus()
+        child.add(Instruction(
+            id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
+            content="dominant",
+            metadata={"gene": "trait", "allele": "a", "dominance": 0.95},
+        ))
+        child.add(Instruction(
+            id="child-trait-b", type=InstructionType.DIRECTIVE, priority=60,
+            content="recessive",
+            metadata={"gene": "trait", "allele": "b", "dominance": 0.05},
+        ))
+        expressed = express(child, reg, locus_key="gene")
+        contents = {i.content for i in expressed if i.metadata.get("gene") == "trait"}
+        assert contents == {"dominant"}
 
     def test_codominant_expresses_both(self):
         result, reg = self._breed_diploid()
