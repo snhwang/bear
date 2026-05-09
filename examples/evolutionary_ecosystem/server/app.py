@@ -929,6 +929,12 @@ async def _run_headless(args: argparse.Namespace) -> None:
     llm_h = _auto_llm(base_url=getattr(args, "base_url", None),
                       model=getattr(args, "model", None))
 
+    # _make_retriever reads module-level `embedder`, `bear_config`, and `world` globals
+    global embedder, bear_config, world, llm, brain_engine
+    embedder = embedder_h
+    bear_config = bear_cfg
+    llm = llm_h
+
     bq = asyncio.Queue()
     biq = asyncio.Queue()
     # Apply lock_epoch if specified
@@ -948,6 +954,7 @@ async def _run_headless(args: argparse.Namespace) -> None:
         recombination = getattr(args, "recombination", "locus"),
         ploidy        = getattr(args, "ploidy", "haploid"),
     )
+    world = w
     # Prevent epoch transitions if locked
     if getattr(args, "lock_epoch", None):
         w.epoch_timer = 10**9  # effectively never transitions
@@ -967,6 +974,7 @@ async def _run_headless(args: argparse.Namespace) -> None:
         bear_config   = bear_cfg,
         tick_interval = 0.5,
     )
+    brain_engine = brain_h
 
     breed_tasks = [
         asyncio.create_task(
