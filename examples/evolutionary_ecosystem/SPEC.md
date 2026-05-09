@@ -268,6 +268,35 @@ Copy from creature ecosystem's `run.py`, change imports to point to `evolutionar
 
 5. **All 8 gene categories matter**: 4 NPC genes (personality, social, reaction, movement) → appearance, skills, dialogue. 4 survival genes (foraging, predator_defense, climate, territorial) → fast-path movement, stats.
 
+## Genetics Modes
+
+The simulation supports three ploidy modes via `BreedRequest.ploidy` and a registry built by `_make_locus_registry()` in `gene_engine.py`. The locus-based and splice recombination paths run through `bear.evolution.breed()`; the blend path is LLM-mediated and does not carry diploid genotype.
+
+### `haploid`
+
+One allele per locus per creature. `bear.evolution.breed()` picks one parent's allele per locus (uniform 50/50). Mutations apply to that single allele. This is the default and matches classic GA-style crossover.
+
+### `diploid_dominant`
+
+Each creature carries two alleles per locus (`allele:"a"` from parent A's gamete, `allele:"b"` from parent B's gamete). Inheritance follows Mendelian segregation, handled inside `bear.evolution.breed()`:
+1. **Meiosis**: each parent's diploid corpus contributes a gamete by random allele draw per locus (`_meiotic_gamete()` in bear).
+2. **Fertilisation**: bear pairs the two gametes into a diploid child, with allele "a" from parent A's draw and allele "b" from parent B's draw.
+3. **Expression**: `express()` returns only the allele-"a" instructions per locus. The "a" parent's drawn allele is the dominant one, so the phenotype reflects parent A's contribution this generation. Parent B's allele is carried silently and can resurface in grandchildren via meiosis.
+
+This is "parent A wins" dominance, not Mendelian per-allele dominance — there is no notion that some allele texts are intrinsically dominant over others; the slot identity ("a" vs "b") determines dominance.
+
+### `diploid_codominant` — note: not biological codominance
+
+The label is **operationally** codominant but **not** the textbook Mendelian sense. Worth understanding before using or citing this mode.
+
+**What it is.** Both alleles are stored in the corpus and both are returned by `express()`. At decision time the retriever scores every instruction in the corpus (including both alleles at every locus) by embedding-similarity to the current situation, then `brain.py` deduplicates retrievals by `gene_category`, taking the higher-scoring allele's text per locus into the LLM `guidance` field. So in any single turn each codominant locus contributes one allele's text — whichever fits the situation best.
+
+**What it isn't.** Standard biological codominance means both alleles are expressed *simultaneously and visibly* at all times (e.g., AB blood type displays both A and B antigens on every cell, with no situational gating). Our implementation never has both alleles fire in the same turn at the same locus.
+
+**What it actually models.** Closer to *context-conditional expression* or *situation-gated heterozygote advantage*: a heterozygote can deploy allele A when situation A's content matches better, and allele B when situation B's content matches better. Across a creature's lifetime both alleles influence behavior, but the split is governed by the creature's situational distribution and the embedding geometry — not a 50/50 coin flip and not simultaneous expression.
+
+**Future work.** Replace this with true biological codominance — likely via the `blend_fn` hook in `bear.evolution.express()` (LLM-blends the two allele texts into a single combined phenotype instruction per locus) or by lifting the per-locus dedupe in `brain.py` so both alleles can fire in the same turn. When that lands, the current mode should be renamed (e.g. `diploid_situational`) and the new one given the `diploid_codominant` label.
+
 ## Testing Checklist
 
 - [ ] Creatures with different gene profiles move differently when idle (visible behavioral differentiation from fast path alone)

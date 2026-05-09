@@ -694,6 +694,26 @@ def _locus_dominance(
     return loc.dominance
 
 
+def _meiotic_gamete(
+    insts: list[tuple[Instruction, str]],
+    rng: random.Random,
+) -> list[tuple[Instruction, str]]:
+    """Sample one allele from a (possibly diploid) parent's instructions at a locus.
+
+    If *insts* contains both ``allele:"a"`` and ``allele:"b"`` markers — i.e.
+    the parent is itself diploid at this locus — randomly pick one allele
+    (Mendelian segregation) and return only that allele's instructions.
+    Otherwise (haploid parent, hemizygous, or no allele markers), return
+    *insts* unchanged.
+    """
+    has_a = any(i.metadata.get("allele") == "a" for i, _ in insts)
+    has_b = any(i.metadata.get("allele") == "b" for i, _ in insts)
+    if not (has_a and has_b):
+        return insts
+    chosen = "a" if rng.random() < 0.5 else "b"
+    return [(i, p) for i, p in insts if i.metadata.get("allele") == chosen]
+
+
 def _make_diploid_pair(
     a_insts: list[tuple[Instruction, str]],
     b_insts: list[tuple[Instruction, str]],
@@ -702,12 +722,23 @@ def _make_diploid_pair(
     base_tags: list[str],
     config: BreedingConfig,
     seed: int,
+    rng: random.Random,
 ) -> tuple[list[Instruction], int, int, dict[str, tuple[str, str]]]:
     """Create a diploid allele pair from both parents' instructions.
+
+    Performs meiosis on each parent's contribution: if a parent is itself
+    diploid at this locus (carries both ``allele:"a"`` and ``allele:"b"``
+    instructions), one allele is randomly selected to form that parent's
+    gamete. The selected allele is then re-labeled in the child as ``"a"``
+    (from parent A's gamete) or ``"b"`` (from parent B's gamete). This
+    enforces Mendelian segregation across generations.
 
     Returns (instructions, from_a, from_b, genotype_entries).
     Each instruction gets ``allele: "a"`` or ``allele: "b"`` in metadata.
     """
+    a_insts = _meiotic_gamete(a_insts, rng)
+    b_insts = _meiotic_gamete(b_insts, rng)
+
     result: list[Instruction] = []
     from_a = from_b = 0
     genotype: dict[str, tuple[str, str]] = {}
@@ -812,7 +843,7 @@ def _breed_by_locus(
                 # Diploid: inherit both alleles
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     a_insts, b_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa
@@ -854,7 +885,7 @@ def _breed_by_locus(
                 # Hemizygous diploid: same allele in both slots
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     a_insts, a_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa
@@ -877,7 +908,7 @@ def _breed_by_locus(
             if dom != Dominance.HAPLOID:
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     b_insts, b_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa
@@ -1049,7 +1080,7 @@ def _breed_positional(
                 # Diploid: inherit both alleles regardless of mask
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     a_insts, b_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa
@@ -1090,7 +1121,7 @@ def _breed_positional(
             if dom != Dominance.HAPLOID:
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     a_insts, a_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa
@@ -1112,7 +1143,7 @@ def _breed_positional(
             if dom != Dominance.HAPLOID:
                 pair_insts, pa, pb, geno = _make_diploid_pair(
                     b_insts, b_insts, parent_a_name,
-                    child_name, base_tags, config, seed,
+                    child_name, base_tags, config, seed, rng,
                 )
                 result.extend(pair_insts)
                 from_a += pa

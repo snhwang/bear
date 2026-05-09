@@ -2140,6 +2140,80 @@ class TestDiploidBreeding:
         assert len(unique) == 2  # homozygous = two copies
         assert {i.metadata["allele"] for i in unique} == {"a", "b"}
 
+    def test_meiosis_segregates_diploid_parent_alleles(self):
+        """When a diploid parent breeds, only ONE of its two alleles passes
+        to each gamete (Mendelian segregation).
+
+        Setup: parent corpora are *already diploid* at locus 'combat' — each
+        carries an allele:"a" instruction with content "G_A" and an
+        allele:"b" instruction with content "G_B" (representing alleles
+        inherited from grandparents). When two such parents breed, the
+        child should have exactly one allele from each parent's gamete,
+        not all four.
+        """
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="combat", position=0, dominance=Dominance.DOMINANT),
+        ])
+
+        def diploid_parent(name: str, a_text: str, b_text: str) -> Corpus:
+            c = Corpus()
+            c.add(Instruction(
+                id=f"{name}-persona", type=InstructionType.PERSONA,
+                priority=80, content=name,
+            ))
+            c.add(Instruction(
+                id=f"{name}-combat-a", type=InstructionType.DIRECTIVE,
+                priority=60, content=a_text,
+                metadata={"gene": "combat", "allele": "a"},
+            ))
+            c.add(Instruction(
+                id=f"{name}-combat-b", type=InstructionType.DIRECTIVE,
+                priority=60, content=b_text,
+                metadata={"gene": "combat", "allele": "b"},
+            ))
+            return c
+
+        from collections import Counter
+        genotype_counts: Counter = Counter()
+        for trial in range(400):
+            parent_a = diploid_parent("ma", "MA_A", "MA_B")
+            parent_b = diploid_parent("pa", "PA_A", "PA_B")
+            cfg = BreedingConfig(
+                locus_key="gene", seed=trial,
+                crossover_method=CrossoverMethod.TAGGED,
+                locus_registry=reg,
+            )
+            result = breed(
+                parent_a, parent_b, f"child{trial}",
+                "ma", "pa", config=cfg,
+            )
+            combat = [
+                i for i in result.child
+                if i.metadata.get("gene") == "combat"
+            ]
+            # Child must inherit exactly two alleles, one in each slot.
+            assert len(combat) == 2, (
+                f"trial {trial}: expected 2 combat instructions, got {len(combat)}"
+            )
+            a_inst = [i for i in combat if i.metadata["allele"] == "a"]
+            b_inst = [i for i in combat if i.metadata["allele"] == "b"]
+            assert len(a_inst) == 1 and len(b_inst) == 1
+            # Allele 'a' content must come from parent A's gamete (one of MA_A / MA_B).
+            assert a_inst[0].content in ("MA_A", "MA_B")
+            # Allele 'b' content must come from parent B's gamete (one of PA_A / PA_B).
+            assert b_inst[0].content in ("PA_A", "PA_B")
+            genotype_counts[(a_inst[0].content, b_inst[0].content)] += 1
+
+        # All four (MA_*, PA_*) combinations should appear with non-trivial
+        # frequency (proper independent random segregation).
+        assert len(genotype_counts) == 4, (
+            f"expected all 4 genotypes, got {dict(genotype_counts)}"
+        )
+        for combo, count in genotype_counts.items():
+            assert count > 30, (
+                f"genotype {combo} appeared only {count} times in 400 trials"
+            )
+
 
 # ---------------------------------------------------------------------------
 # Test Expression

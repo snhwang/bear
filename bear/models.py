@@ -46,12 +46,33 @@ class Dominance(str, Enum):
       receives one parent's instruction per locus — the existing behaviour.
     - **DOMINANT**: Diploid.  The child carries both alleles but only
       expresses the one from the dominant parent (allele "a" by convention,
-      i.e. parent A).
+      i.e. parent A).  This is "slot-based" dominance — the position in the
+      genotype determines dominance, not any intrinsic property of the
+      allele content. Not equivalent to Mendelian per-allele dominance.
     - **RECESSIVE**: Diploid.  Expressed only when homozygous (both alleles
       carry the same content hash).  When heterozygous the dominant allele
       is expressed.
-    - **CODOMINANT**: Diploid.  Both alleles are expressed; an optional
-      ``blend_fn`` at expression time can fuse them into a single phenotype.
+    - **CODOMINANT**: Diploid.  ``express()`` returns both allele
+      instructions for the locus; an optional ``blend_fn`` can fuse them
+      into a single phenotype instruction at expression time.
+
+      **Caveat — biological codominance is not automatic.**  Returning
+      both alleles from ``express()`` is the *mechanism*; whether the
+      resulting behaviour matches biological codominance (both alleles
+      simultaneously visible, e.g. AB blood type) depends on how the
+      consumer uses that output.  Common pitfalls:
+
+      * If the consumer runs retrieval over the corpus and deduplicates
+        by locus, only the higher-scoring allele per locus fires per
+        query — that is *retrieval-gated* / context-conditional
+        expression, not simultaneous expression.
+      * If the consumer pulls a single string per locus into a prompt
+        template, only one allele's text reaches the prompt.
+
+      For true biological codominance, either pass a ``blend_fn`` so
+      both alleles fuse into one phenotype instruction, or design the
+      consumer to surface both allele instructions in parallel without
+      deduplicating by locus.
     """
 
     HAPLOID = "haploid"

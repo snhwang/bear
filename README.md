@@ -224,6 +224,37 @@ The `breed()` function returns a `BreedResult` with:
 - `persona` — the blended persona instruction
 - `seed_used` — the RNG seed for reproducibility
 
+### Diploid Inheritance
+
+For Mendelian-style inheritance with two alleles per locus, attach a `LocusRegistry` to `BreedingConfig` and assign each `GeneLocus` a `Dominance` mode. The default (`Dominance.HAPLOID`) preserves the simple one-allele-per-locus behavior described above; `DOMINANT` / `RECESSIVE` / `CODOMINANT` opt the locus into a diploid genotype:
+
+```python
+from bear.evolution import breed, BreedingConfig, express
+from bear.models import LocusRegistry, GeneLocus, Dominance, CrossoverMethod
+
+registry = LocusRegistry(loci=[
+    GeneLocus(name="combat", position=0, dominance=Dominance.DOMINANT),
+    GeneLocus(name="social", position=1, dominance=Dominance.CODOMINANT),
+])
+config = BreedingConfig(
+    locus_key="gene_category",
+    locus_registry=registry,
+    crossover_method=CrossoverMethod.TAGGED,
+    seed=42,
+)
+result = breed(parent_a_corpus, parent_b_corpus, "child", "parent_a", "parent_b", config=config)
+phenotype = express(result.child, registry, locus_key="gene_category")
+```
+
+**Meiosis is automatic.** When parents are themselves diploid (i.e. their corpora already contain `allele:"a"` and `allele:"b"` instructions from a previous breeding), `breed()` randomly draws one allele per parent per locus before pairing — true Mendelian segregation across generations. No manual gamete-formation step is required.
+
+**Codominance — important caveat.** `Dominance.CODOMINANT` instructs `express()` to return *both* allele instructions at the locus. That is the *mechanism*. Whether downstream behavior matches biological codominance (both alleles simultaneously visible, e.g. AB blood type) depends on how your consumer uses the expressed instruction set:
+
+- If you retrieve over the corpus and dedupe by locus, only the higher-scoring allele per locus fires per query. That is **retrieval-gated / context-conditional expression** — both alleles influence behavior across many queries, but only one per locus per query. Useful for situational specialization, but not the textbook "both expressed at once".
+- For true biological codominance, either pass a `blend_fn` to `express()` so both alleles fuse into a single phenotype instruction per locus, or design your retrieval/prompt path to surface both allele instructions in parallel without per-locus deduplication.
+
+The `Dominance.CODOMINANT` docstring in [`bear/models.py`](bear/models.py) has more detail on this distinction.
+
 ## Configuration
 
 ```python
