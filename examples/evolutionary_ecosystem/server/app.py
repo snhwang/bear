@@ -431,11 +431,8 @@ async def _simulation_loop(tick_rate: int) -> None:
                 if max_ticks and world.tick_count >= max_ticks:
                     logger.info("Tick limit %d reached -- saving results and exiting", max_ticks)
                     await _save_eval_results()
-                    # Cancel all tasks and stop the server cleanly
-                    for task in asyncio.all_tasks():
-                        if task is not asyncio.current_task():
-                            task.cancel()
-                    return
+                    import os
+                    os._exit(0)
         except SystemExit:
             raise
         except Exception as e:
