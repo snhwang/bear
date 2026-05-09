@@ -1,3 +1,5 @@
+bear @ git+https://github.com/snhwang/bear.git@v0.1.2
+
 # Core dependencies
 pyyaml>=6.0
 numpy>=1.24
