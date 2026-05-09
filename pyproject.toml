@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bear"
-version = "0.1.3"
+version = "0.1.7"
 description = "Behavioral Evolution And Retrieval (BEAR) — a framework for retrieving and composing behavioral instructions to shape LLM behavior"
 readme = "README.md"
 license = {file = "LICENSE"}
