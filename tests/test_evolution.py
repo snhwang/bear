@@ -1996,7 +1996,7 @@ def _diploid_registry():
     return LocusRegistry(loci=[
         GeneLocus(name="foraging", position=0, dominance=Dominance.HAPLOID),
         GeneLocus(name="combat", position=1, dominance=Dominance.DOMINANT),
-        GeneLocus(name="social", position=2, dominance=Dominance.RECESSIVE),
+        GeneLocus(name="social", position=2, dominance=Dominance.DOMINANT),
         GeneLocus(name="exploration", position=3, dominance=Dominance.CODOMINANT),
     ])
 
@@ -2242,47 +2242,6 @@ class TestExpression:
         combat = [i for i in expressed if i.metadata.get("gene") == "combat"]
         assert len(combat) == 1
         assert combat[0].metadata.get("allele") == "a"
-
-    def test_recessive_heterozygous_expresses_dominant(self):
-        result, reg = self._breed_diploid()
-        expressed = express(result.child, reg, locus_key="gene")
-        # social is RECESSIVE — parents have different content, so heterozygous
-        # Should express allele_a (dominant)
-        social = [i for i in expressed if i.metadata.get("gene") == "social"]
-        assert len(social) == 1
-        assert social[0].metadata.get("allele") == "a"
-
-    def test_recessive_homozygous_expresses(self):
-        """When both alleles have same content, recessive is expressed."""
-        reg = LocusRegistry(loci=[
-            GeneLocus(name="trait", position=0, dominance=Dominance.RECESSIVE),
-        ])
-        # Both parents have identical content
-        parent_a = Corpus()
-        parent_a.add(Instruction(
-            id="a-p", type=InstructionType.PERSONA, priority=80, content="A",
-        ))
-        parent_a.add(Instruction(
-            id="a-trait", type=InstructionType.DIRECTIVE, priority=60,
-            content="same behavior", metadata={"gene": "trait"},
-        ))
-        parent_b = Corpus()
-        parent_b.add(Instruction(
-            id="b-p", type=InstructionType.PERSONA, priority=80, content="B",
-        ))
-        parent_b.add(Instruction(
-            id="b-trait", type=InstructionType.DIRECTIVE, priority=60,
-            content="same behavior", metadata={"gene": "trait"},
-        ))
-        cfg = BreedingConfig(
-            locus_key="gene", seed=42,
-            crossover_method=CrossoverMethod.SINGLE_POINT,
-            locus_registry=reg,
-        )
-        result = breed(parent_a, parent_b, "child", "pa", "pb", config=cfg)
-        expressed = express(result.child, reg, locus_key="gene")
-        trait = [i for i in expressed if i.metadata.get("gene") == "trait"]
-        assert len(trait) == 1  # homozygous recessive is expressed
 
     def test_codominant_expresses_both(self):
         result, reg = self._breed_diploid()
@@ -2628,7 +2587,6 @@ class TestDominanceYAML:
     def test_dominance_values(self):
         assert Dominance.HAPLOID.value == "haploid"
         assert Dominance.DOMINANT.value == "dominant"
-        assert Dominance.RECESSIVE.value == "recessive"
         assert Dominance.CODOMINANT.value == "codominant"
 
     def test_yaml_round_trip_with_dominance(self):
@@ -2640,7 +2598,7 @@ loci:
     linkage_group: survival
   - name: combat
     position: 1
-    dominance: recessive
+    dominance: codominant
     linkage_group: survival
   - name: social
     position: 2
@@ -2648,7 +2606,7 @@ loci:
         reg = LocusRegistry.from_yaml(yaml_text)
         assert reg.loci[0].dominance == Dominance.DOMINANT
         assert reg.loci[0].linkage_group == "survival"
-        assert reg.loci[1].dominance == Dominance.RECESSIVE
+        assert reg.loci[1].dominance == Dominance.CODOMINANT
         assert reg.loci[2].dominance == Dominance.HAPLOID  # default
 
     def test_yaml_omits_haploid_default(self):

@@ -1456,17 +1456,6 @@ def express(
             # Express allele a (from parent A, the "dominant" parent)
             expressed.extend(allele_a if allele_a else allele_b)
 
-        elif loc.dominance == Dominance.RECESSIVE:
-            # Only express if homozygous (same content in both alleles)
-            a_content = {i.content for i in allele_a}
-            b_content = {i.content for i in allele_b}
-            if a_content == b_content:
-                # Homozygous — express (use allele_a copy)
-                expressed.extend(allele_a)
-            else:
-                # Heterozygous — express dominant (allele a)
-                expressed.extend(allele_a if allele_a else allele_b)
-
         elif loc.dominance == Dominance.CODOMINANT:
             if blend_fn is not None and allele_a and allele_b:
                 # Blend into a single phenotype instruction

@@ -226,7 +226,7 @@ The `breed()` function returns a `BreedResult` with:
 
 ### Diploid Inheritance
 
-For Mendelian-style inheritance with two alleles per locus, attach a `LocusRegistry` to `BreedingConfig` and assign each `GeneLocus` a `Dominance` mode. The default (`Dominance.HAPLOID`) preserves the simple one-allele-per-locus behavior described above; `DOMINANT` / `RECESSIVE` / `CODOMINANT` opt the locus into a diploid genotype:
+For Mendelian-style inheritance with two alleles per locus, attach a `LocusRegistry` to `BreedingConfig` and assign each `GeneLocus` a `Dominance` mode. The default (`Dominance.HAPLOID`) preserves the simple one-allele-per-locus behavior described above; `DOMINANT` and `CODOMINANT` opt the locus into a diploid genotype:
 
 ```python
 from bear.evolution import breed, BreedingConfig, express

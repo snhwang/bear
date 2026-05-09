@@ -49,9 +49,6 @@ class Dominance(str, Enum):
       i.e. parent A).  This is "slot-based" dominance — the position in the
       genotype determines dominance, not any intrinsic property of the
       allele content. Not equivalent to Mendelian per-allele dominance.
-    - **RECESSIVE**: Diploid.  Expressed only when homozygous (both alleles
-      carry the same content hash).  When heterozygous the dominant allele
-      is expressed.
     - **CODOMINANT**: Diploid.  ``express()`` returns both allele
       instructions for the locus; an optional ``blend_fn`` can fuse them
       into a single phenotype instruction at expression time.
@@ -77,7 +74,6 @@ class Dominance(str, Enum):
 
     HAPLOID = "haploid"
     DOMINANT = "dominant"
-    RECESSIVE = "recessive"
     CODOMINANT = "codominant"
 
 
