@@ -320,6 +320,38 @@ def _log_birth(result) -> None:
     })
 
 
+# Chunked output: when --chunk-size N is set, the simulation rotates the
+# output file every N ticks. Each chunk gets a numbered suffix (e.g.
+# foo_01.json, foo_02.json) and accumulator lists are cleared at chunk
+# boundaries so each file stays self-contained and bounded in size.
+_chunk_index: int = 1
+
+
+def _chunked_output_path(base_output: str) -> str:
+    """Return the current chunk's output path, or *base_output* if no chunking."""
+    import os as _os
+    if getattr(args_ns, "chunk_size", None):
+        base, ext = _os.path.splitext(base_output)
+        return f"{base}_{_chunk_index:02d}{ext}"
+    return base_output
+
+
+def _maybe_finalize_chunk(w) -> None:
+    """At a chunk boundary, increment chunk index and clear accumulators."""
+    global _chunk_index
+    cs = getattr(args_ns, "chunk_size", None)
+    if not cs or w.tick_count == 0:
+        return
+    if w.tick_count % cs != 0:
+        return
+    _birth_log.clear()
+    _death_log.clear()
+    _action_log.clear()
+    _snapshot_log.clear()
+    _chunk_index += 1
+    logger.info("Chunk boundary at tick %d — advancing to chunk %02d", w.tick_count, _chunk_index)
+
+
 async def _save_sim_log() -> None:
     """Save all collected sim data to log file."""
     if not world:
@@ -348,21 +380,23 @@ async def _save_sim_log() -> None:
         "snapshots":      _snapshot_log,
         "epoch_snapshots": _epoch_snapshots,
     }
+    if getattr(args_ns, "chunk_size", None):
+        log["metadata"]["chunk_index"] = _chunk_index
+        log["metadata"]["chunk_size"] = args_ns.chunk_size
     out = getattr(args_ns, "output", None)
     if not out:
         seed = log["metadata"]["seed"]
         epoch = log["metadata"]["epoch"] or "free"
         out = f"sim_log_seed{seed}_{epoch}.json"
-    Path(out).write_text(json.dumps(log, indent=2))
-    logger.info("Sim log saved to %s", out)
-    print(f"Saved to {out} — {len(_birth_log)} births, {len(_snapshot_log)} snapshots")
+    out_path = _chunked_output_path(out)
+    Path(out_path).write_text(json.dumps(log, indent=2))
+    logger.info("Sim log saved to %s", out_path)
+    print(f"Saved to {out_path} — {len(_birth_log)} births, {len(_snapshot_log)} snapshots")
 
 
 async def _auto_save(w) -> None:
     """Periodic auto-save during live sim — survives crashes."""
     from pathlib import Path
-    import json as _json
-    out = Path("sim_autosave.json")
     try:
         from examples.evolutionary_ecosystem.eval.harness import gene_diversity_mean
         creatures = list(w.creatures.values())
@@ -380,10 +414,13 @@ async def _auto_save(w) -> None:
             "snapshots":    _snapshot_log,
             "epoch_snapshots": _epoch_snapshots,
         }
-        # Use --output filename if specified, otherwise sim_autosave.json
-        out_path = Path(getattr(args_ns, "output", None) or str(out))
-        out_path.write_text(_json.dumps(log, indent=2))
-        logger.info("Auto-saved sim log to %s (%d births)", out_path, len(_birth_log))
+        if getattr(args_ns, "chunk_size", None):
+            log["chunk_index"] = _chunk_index
+            log["chunk_size"] = args_ns.chunk_size
+        out_base = getattr(args_ns, "output", None) or "sim_autosave.json"
+        out_path = _chunked_output_path(out_base)
+        Path(out_path).write_text(json.dumps(log, indent=2))
+        logger.info("Auto-saved sim log to %s (%d births in this chunk)", out_path, len(_birth_log))
     except Exception as e:
         logger.warning("Auto-save failed: %s", e)
 
@@ -425,6 +462,11 @@ async def _simulation_loop(tick_rate: int) -> None:
                 if (world.tick_count % 2000 == 0 and world.tick_count > 0
                         and getattr(args_ns, "output", None)):
                     asyncio.create_task(_auto_save(world))
+
+                # Chunk rotation: at every chunk_size boundary, advance the
+                # chunk index and clear accumulators so the next chunk file
+                # starts fresh and stays bounded in size.
+                _maybe_finalize_chunk(world)
 
                 # Tick limit for eval mode
                 max_ticks = getattr(args_ns, 'ticks', None)
@@ -1163,6 +1205,10 @@ def main():
                         help="Breeding recombination method")
     parser.add_argument("--ploidy", choices=["haploid", "diploid_dominant", "diploid_codominant"],
                         default="haploid", help="Inheritance ploidy mode")
+    parser.add_argument("--chunk-size", type=int, default=None, dest="chunk_size",
+                        help="Rotate the output file every N ticks. Each chunk is written "
+                             "as <output>_NN.<ext> (zero-padded). Keeps individual files "
+                             "under GitHub's 50MB limit on long action-logged runs.")
     args_ns = parser.parse_args()
 
     if args_ns.headless:
