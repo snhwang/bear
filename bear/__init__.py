@@ -50,7 +50,7 @@ from bear.references import (
     extract_references,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.1.8"
 
 __all__ = [
     # Models

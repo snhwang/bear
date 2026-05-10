@@ -2669,3 +2669,64 @@ loci:
         yaml_str = reg.to_yaml()
         reg2 = LocusRegistry.from_yaml(yaml_str)
         assert reg2.loci[0].linkage_group == "g1"
+
+
+class TestPersonaGrowthAcrossGenerations:
+    """Documents bear's recursive default persona template behavior.
+
+    The default ``persona_template`` substitutes both parents' full persona
+    content into the child's persona via ``{parent_a_persona}`` and
+    ``{parent_b_persona}``. Across breeding generations this doubles the
+    persona size every generation (~2^N). Multi-generation simulations
+    that hand the child corpus back as a parent in the next generation
+    will hit context-window limits when the persona is later surfaced
+    through retrieval to an LLM.
+
+    The recommended workaround for evolutionary loops is to pass
+    ``custom_persona=child_name`` (or any short bounded string) to
+    ``breed()``, which bypasses the recursive template entirely.
+    """
+
+    def _persona_content(self, corpus: Corpus) -> str:
+        for inst in corpus:
+            if inst.type == InstructionType.PERSONA:
+                return inst.content
+        return ""
+
+    def test_default_template_grows_persona_exponentially(self):
+        """Default template doubles persona size each generation."""
+        cur_a = _parent_a_corpus()
+        cur_b = _parent_b_corpus()
+        sizes = [len(self._persona_content(cur_a))]
+        for gen in range(5):
+            result = breed(
+                cur_a, cur_b,
+                f"child{gen}", "parent_a", "parent_b",
+                config=BreedingConfig(seed=gen),
+            )
+            sizes.append(len(self._persona_content(result.child)))
+            cur_a = result.child
+            cur_b = result.child
+        assert sizes[-1] >= sizes[0] * 16, (
+            f"persona did not grow as expected: {sizes}"
+        )
+
+    def test_custom_persona_keeps_persona_bounded(self):
+        """custom_persona=child_name neutralises the recursive template."""
+        cur_a = _parent_a_corpus()
+        cur_b = _parent_b_corpus()
+        max_seen = 0
+        for gen in range(20):
+            child_name = f"child{gen}"
+            result = breed(
+                cur_a, cur_b,
+                child_name, "parent_a", "parent_b",
+                config=BreedingConfig(seed=gen),
+                custom_persona=child_name,
+            )
+            max_seen = max(max_seen, len(self._persona_content(result.child)))
+            cur_a = result.child
+            cur_b = result.child
+        assert max_seen < 50, (
+            f"custom_persona should keep persona bounded; saw {max_seen} chars"
+        )
