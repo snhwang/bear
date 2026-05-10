@@ -1,0 +1,1586 @@
+[
+  {
+    "id": "WP-0",
+    "question": "How do you spell COW in thirteen letters?",
+    "answer": "SEE O DOUBLE YOU.",
+    "choices": [
+      "SEE OH DEREFORD",
+      "SEE O DOUBLE YOU.",
+      "COWCOWCOWCOWW",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-1",
+    "question": "If eleven plus two equals one, what does nine plus five equal?",
+    "answer": "Two.",
+    "choices": [
+      "Four.",
+      "Two.",
+      "Three.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-2",
+    "question": "How can you take 2 from 5 and leave 4?",
+    "answer": "FIVE. Remove the 2 letters F and E from five and you have in which is the Roman numeral for four.",
+    "choices": [
+      "Imagine you have five fingers on your hand. If you take two fingers (your index and middle fingers) and hold them down, you are left with four fingers remaining upright. So, by taking 2 fingers from the set of 5 fingers, you are left with 4 fingers.",
+      "Take the 5 and subtract 2 from it. This results in the number 3. Now, remove the vertical top part of the digit \"3\" and you are left with the digit \"4.\" ",
+      "FIVE. Remove the 2 letters F and E from five and you have in which is the Roman numeral for four.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-4",
+    "question": "Tomorrow I am surely here, yesterday I am found as well. Today I am gone. Who am I?",
+    "answer": "The Letter R.",
+    "choices": [
+      "The Letter R.",
+      "The Letter T.",
+      "The Letter E.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-5",
+    "question": "What can you find in the center of gravity?",
+    "answer": "The letter V.",
+    "choices": [
+      "The letter V.",
+      "The letter Y.",
+      "The letter G.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-6",
+    "question": "What is in seasons, seconds, centuries and minutes but not in decades, years or days?",
+    "answer": "The letter N.",
+    "choices": [
+      "The letter A.",
+      "The letter D.",
+      "The letter N.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-7",
+    "question": "How many seconds are there in one year?",
+    "answer": "12 of them: January 2nd, February 2nd, March 2nd, April 2nd, May 2nd, June 2nd, July 2nd, August 2nd, September 2nd, October 2nd, November 2nd, December 2nd.",
+    "choices": [
+      "One thousands.",
+      "12 of them: January 2nd, February 2nd, March 2nd, April 2nd, May 2nd, June 2nd, July 2nd, August 2nd, September 2nd, October 2nd, November 2nd, December 2nd.",
+      "Six.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-8",
+    "question": "What arithmetic symbol can we place between 2 and 3 to make a number greater than 2 but less than 3?",
+    "answer": "A decimal point.",
+    "choices": [
+      "A plus sign.",
+      "A decimal point.",
+      "A division sign.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-9",
+    "question": "Do you know anything that has four eyes?",
+    "answer": "Mississippi.",
+    "choices": [
+      "Mississippi.",
+      "California.",
+      "Florida.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-10",
+    "question": "How can you spell \"enemy\" in three letters?",
+    "answer": "F O E.",
+    "choices": [
+      "F O E.",
+      "E N M.",
+      "N M Y.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-11",
+    "question": "Ben walked into a hardware store and asked the price of some items. The salesman said: One costs $1, Eight costs $1, Seventeen cost $2, One hundred four costs $3 and One thousand seventy two costs $4. What was Ben buying?",
+    "answer": "Ben was buying home address numbers and they cost $1 per digit.",
+    "choices": [
+      "Ben is buying English word cards. The price is determined by the number of letters in the spelled-out number.",
+      "Ben is buying English word cards. The price is determined by the number of vowels in the spelled-out number.",
+      "Ben was buying home address numbers and they cost $1 per digit.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-12",
+    "question": "What liquid is represented by 'hijklmno'?",
+    "answer": "Water. Hijklmno is \"H to O\" in the alphabet. Water is H20.",
+    "choices": [
+      "Oil, if we rearrange the letters, they form the word \"oil\". ",
+      "Water. Hijklmno is \"H to O\" in the alphabet. Water is H20.",
+      "Milk. \"H L M N O\" is similar as the nursery rhyme \"High low\uff0cmaids in a row\", which commonly associated with milking cows. ",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-13",
+    "question": "How can you say rabbit without using the letter R?",
+    "answer": "Bunny.",
+    "choices": [
+      "Abbit.",
+      "Bunny.",
+      "White-animal with long things on head.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-14",
+    "question": "Which word in the English language becomes shorter when it is lengthened?",
+    "answer": "Short.",
+    "choices": [
+      "Abbreviation.",
+      "Truncation.",
+      "Short.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-16",
+    "question": "What dress does everyone have, but no one wears?",
+    "answer": "Address.",
+    "choices": [
+      "Suit.",
+      "Address.",
+      "Wedding dress.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-17",
+    "question": "What letters of the alphabet come too late for supper?",
+    "answer": "Those that come after T.",
+    "choices": [
+      "Those that come after T.",
+      "Those that at the end of alphabet.",
+      "Those that at the middle of alphabet.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-18",
+    "question": "What changes a pear into a pearl in a second?",
+    "answer": "The letter L.",
+    "choices": [
+      "High pressure and heat.",
+      "The letter L.",
+      "The process of biomineralization in some oysters.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-20",
+    "question": "Is an old hundred dollar bill better than a new one?",
+    "answer": "Yes, it's worth 99 more dollars.",
+    "choices": [
+      "No, the new one is more acceptable to public.",
+      "Yes, it's worth 99 more dollars.",
+      "No, the value of a dollar bill, whether it is old or new, remains the same. ",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-21",
+    "question": "What is in front of a woman and at the end of a cow?",
+    "answer": "The letter W.",
+    "choices": [
+      "The letter O.",
+      "The letter W.",
+      "The letter N.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-22",
+    "question": "How can you eat and study at the same time?",
+    "answer": "Eat alphabet soup.",
+    "choices": [
+      "Eat alphabet soup.",
+      "Eat minestrone soup.",
+      "Eat tomato soup.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-23",
+    "question": "What does a stone become when in the water?",
+    "answer": "A whetstone.",
+    "choices": [
+      "A whetstone.",
+      "A limestone",
+      "A sandstone.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-24",
+    "question": "What kind of sandwich sinks to the bottom of the tub?",
+    "answer": "A submarine sandwich.",
+    "choices": [
+      "A cheesesteak sandwich.",
+      "A submarine sandwich.",
+      "A reuben sandwich.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-25",
+    "question": "What kind of nut has no shell?",
+    "answer": "A Doughnut.",
+    "choices": [
+      "A peanut.",
+      "A Doughnut.",
+      "A walnut.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-27",
+    "question": "What part of London is in France?",
+    "answer": "The letter N.",
+    "choices": [
+      "The letter O.",
+      "The letter N.",
+      "The letter L.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-28",
+    "question": "What kind of ant has a long history?",
+    "answer": "An antique.",
+    "choices": [
+      "An antique.",
+      "A worker ant(ergate).",
+      "A queen ant.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-29",
+    "question": "What do mathematics teachers like to eat?",
+    "answer": "Pie.",
+    "choices": [
+      "Hot dog.",
+      "Pie.",
+      "Hamburger.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-31",
+    "question": "What bird is very rude?",
+    "answer": "Mocking bird.",
+    "choices": [
+      "Humming bird.",
+      "Eagle.",
+      "Mocking bird.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-33",
+    "question": "What do you call peas which are crazy?",
+    "answer": "Peanuts.",
+    "choices": [
+      "Peanuts.",
+      "Soybean.",
+      "Chickpea.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-34",
+    "question": "Which side of the turkey has the most feathers?",
+    "answer": "The outside.",
+    "choices": [
+      "The rightside.",
+      "The outside.",
+      "The leftside.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-35",
+    "question": "What's 3/7 chicken, 2/3 cat, and 2/4 goat?",
+    "answer": "Chicago.",
+    "choices": [
+      "Texas.",
+      "Chicago.",
+      "California.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-38",
+    "question": "What word contains all of the twenty six letters?",
+    "answer": "Alphabet.",
+    "choices": [
+      "Academic.",
+      "Alphabet.",
+      "Abcdefghijklmnopqrstuvwxyz.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-39",
+    "question": "What three letters change a girl into a woman?",
+    "answer": "Remove G,I and R and add A,D and Y.",
+    "choices": [
+      "Remove G,I and R and add A,D and Y.",
+      "Add N,O and T at beginning.",
+      "Add B,O and Y at beginning.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-40",
+    "question": "David is 5 years old. Fred is 4 years old. Ilina is also 5 years old. Daniel is 6 years old. Valentina is 9. How old is Ronnie?",
+    "answer": "Ronnie is 6.",
+    "choices": [
+      "Ronnie is 4.",
+      "Ronnie is 5.",
+      "Ronnie is 6.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-41",
+    "question": "What kind of a band, never plays music?",
+    "answer": "A rubber band.",
+    "choices": [
+      "A dance band.",
+      "A rubber band.",
+      "A rock band.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-42",
+    "question": "What 7 letter word becomes longer when the third letter is removed?",
+    "answer": "Lounger.",
+    "choices": [
+      "Chaise.",
+      "Lounger.",
+      "Recliner.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-44",
+    "question": "What pets make stirring music?",
+    "answer": "Trumpet.",
+    "choices": [
+      "Corgi.",
+      "Husky.",
+      "Trumpet.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-45",
+    "question": "How do you make a pirate angry?",
+    "answer": "Take away the 'p'.",
+    "choices": [
+      "Take away the 'p'.",
+      "Take away the 'e'.",
+      "Take away the 'i'.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-46",
+    "question": "What 4 days in the week start with T?",
+    "answer": "Tuesday, Thursday, Today and Tomorrow.",
+    "choices": [
+      "Monday, Tuesday, Wednesday and Thursday.",
+      "Tuesday, Thursday, Today and Tomorrow.",
+      "Tuesday, Wednesday,Thursday and Friday.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-47",
+    "question": "What kind of fish chases a mouse?",
+    "answer": "Catfish.",
+    "choices": [
+      "Catfish.",
+      "Salmon.",
+      "Bass.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-48",
+    "question": "You are in a place called Wall's World and there is only one law. There is a mirror, but no reflection. There is pizza with cheese, but not sausage. There is pepper, but no salt. There is a door, yet no entrance or exit. What is the law?\n",
+    "answer": "Each word in Wall's World must contain double letters.\n",
+    "choices": [
+      "Each word in Wall's World must contain less than seven letters.\n",
+      "Each word in Wall's World must contain more than four letters.\n",
+      "Each word in Wall's World must contain double letters.\n",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-49",
+    "question": "What does I RIGHT I mean? \n",
+    "answer": "Right between the eyes.\n",
+    "choices": [
+      "I am right next to myself.",
+      "Two letter I.",
+      "Right between the eyes.\n",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-50",
+    "question": "Which word is written incorrectly in the dictionary?\n",
+    "answer": "The word \"incorrectly\".\n",
+    "choices": [
+      "The word \"incorrectly\".\n",
+      "The word \"false\".",
+      "The word \"wrong\".",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-51",
+    "question": "What letters are easily found in every single day of the week?\n",
+    "answer": "DAY.\n",
+    "choices": [
+      "T H U.",
+      "DAY.\n",
+      "M F S.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-52",
+    "question": "If the red house is on the right side and if the blue house is on the left side, where's the white house?\n",
+    "answer": "In Washington, D.C.\n",
+    "choices": [
+      "On the right of red house.",
+      "In Washington, D.C.\n",
+      "In the middle of red house and blue house.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-53",
+    "question": "I am the beginning of sorrow and the end of sickness. You cannot express happiness without me yet I am in the midst of crosses. I am always in risk yet never in danger. You may find me in the sun, but I am never out of darkness.",
+    "answer": "The letter S.",
+    "choices": [
+      "The letter I.",
+      "The letter E.",
+      "The letter S.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-54",
+    "question": "Which room has no walls?\n",
+    "answer": "A mushroom\n",
+    "choices": [
+      "A mushroom\n",
+      "A restroom.",
+      "A classroom.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-55",
+    "question": "What are the next three letters in this combination? OTTFFSS_.",
+    "answer": "E N T.",
+    "choices": [
+      "F F T.",
+      "T U V.",
+      "E N T.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-57",
+    "question": "What happens only in the middle of each month, in all of the seasons, except summer, and happens only in the night, never in the day? ",
+    "answer": "The letter 'N'.",
+    "choices": [
+      "The letter 'M'.",
+      "The letter 'R'.",
+      "The letter 'N'.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-58",
+    "question": "If fish lived on land, where would they live?",
+    "answer": "In Finland.",
+    "choices": [
+      "In farmland.",
+      "In woodland.",
+      "In Finland.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-61",
+    "question": "What is the proper length for a lady's skirt?",
+    "answer": "A little above two feet.",
+    "choices": [
+      "A little above two feet.",
+      "As big as the age of lady.",
+      "As long as the height of lady.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-63",
+    "question": "Mr. Red resides in a red home, Mrs. Pink resides in a pink home, and Mr. Blue resides in a blue home. The White House is inhabited by who?",
+    "answer": "None of above.",
+    "choices": [
+      "Mr. White.",
+      "Mrs. Pink.",
+      "Mr. Red, Mrs Pink and Mrs Blue share the house.",
+      "None of above."
+    ],
+    "correct_index": 3
+  },
+  {
+    "id": "WP-64",
+    "question": "There is a pink house made of pink  bricks, a blue house made of blue bricks, an orange house made of orange bricks. What color bricks is a greenhouse made of?",
+    "answer": "None of above.",
+    "choices": [
+      "Mix of pink,blue and orange.",
+      "Pink.",
+      "Green.",
+      "None of above."
+    ],
+    "correct_index": 3
+  },
+  {
+    "id": "WP-65",
+    "question": "What comes once in a minute, twice in a moment, but never in a thousand years?",
+    "answer": "The letter M.",
+    "choices": [
+      "The letter N.",
+      "The letter E.",
+      "The letter M.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-66",
+    "question": "Where does Christmas come before Thanksgiving?",
+    "answer": "In the dictionary.",
+    "choices": [
+      "In the dictionary.",
+      "In a biography.",
+      "In the physical book.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-67",
+    "question": "How do you make the number 7 even without addition, subtraction, multiplication, or division?",
+    "answer": "Drop the \"S\".",
+    "choices": [
+      "Drop the \"N\".",
+      "Drop the \"E\".",
+      "Drop the \"S\".",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-68",
+    "question": "How do you spell candy in 2 letters?",
+    "answer": "C' and 'Y'.",
+    "choices": [
+      "C' and 'A'.",
+      "C' and 'Y'.",
+      "A' and 'Y'.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-69",
+    "question": "How do you spell hard water with three letters?",
+    "answer": "ICE.",
+    "choices": [
+      "HHO.",
+      "ICE.",
+      "HAW.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-70",
+    "question": "What is one thing that all wise men, regardless of their politics or religion, agree is between heaven and earth?",
+    "answer": "The word 'and'.",
+    "choices": [
+      "The word 'love'.",
+      "The word 'peace'.",
+      "The word 'and'.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-72",
+    "question": "A man has Ten Horses and nine stables as shown here. [] [] [] [] [] [] [] [] [] The man wants to fit Ten Horses into nine stables. How can he fit Ten horses into nine stables?",
+    "answer": "One letter for each stable. [T][E][N] [H][O][R][S][E][S].",
+    "choices": [
+      "One letter for each stable. [H][O][R] [S][E][S][H][O][R].",
+      "One letter for each stable. [T][E][N] [H][O][R][S][E][S].",
+      "One letter for each stable. [H][H][H] [H][H][H][H][H][H].",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-73",
+    "question": "Always in visible, yet never out of sight.\nWhat are they?",
+    "answer": "The letters I and S.",
+    "choices": [
+      "The letters I and S.",
+      "The letters V and S.",
+      "The letters V and I.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-74",
+    "question": "What is the end of everything?",
+    "answer": "The letter G.",
+    "choices": [
+      "The letter T.",
+      "The letter E.",
+      "The letter G.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-75",
+    "question": "What can be seen in the middle of March and April that cannot be seen at the beginning or end of either month?",
+    "answer": "The letter R.",
+    "choices": [
+      "The letter R.",
+      "The letter A.",
+      "The letter I.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-76",
+    "question": "How many letters are in the alphabet?",
+    "answer": "There are 11 letters.",
+    "choices": [
+      "There are 22 letters.",
+      "There are 25 letters.",
+      "There are 11 letters.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-77",
+    "question": "What starts with \"P\", ends with \"E\", and has many letters?",
+    "answer": "Post Office.",
+    "choices": [
+      "Police Office.",
+      "Post Office.",
+      "Government Office.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-78",
+    "question": "What two things can you never eat for breakfast?",
+    "answer": "Lunch and dinner.",
+    "choices": [
+      "Lunch and dinner.",
+      "Milk and bread.",
+      "Turkey.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-80",
+    "question": "What fruit always travels in groups of two?",
+    "answer": "Pears.",
+    "choices": [
+      "Pears.",
+      "Oranges.",
+      "Apples.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-81",
+    "question": "What's the quickest way to make oil boil?",
+    "answer": "Add the letter B.",
+    "choices": [
+      "Add the letter B.",
+      "Add the letter F.",
+      "Add the letter L.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-82",
+    "question": "On which side of a church is the graveyard always situated?",
+    "answer": "Outside.",
+    "choices": [
+      "Outside.",
+      "Leftside.",
+      "Rightside.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-83",
+    "question": "When does a British potato change its nationality?",
+    "answer": "When it becomes a french fries.",
+    "choices": [
+      "When it is delivered.",
+      "When it is on the plane.",
+      "When it becomes a french fries.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-84",
+    "question": "There are 10 dogs in a yard. 3 sleep, 4 run behind a tree, and 2 jump in the hole. How many are left?",
+    "answer": "None of above. No dogs left the yard.",
+    "choices": [
+      "One.",
+      "Three.",
+      "Two.",
+      "None of above."
+    ],
+    "correct_index": 3
+  },
+  {
+    "id": "WP-85",
+    "question": "What kind of cheese is made backwards?",
+    "answer": "Edam cheese.",
+    "choices": [
+      "Blue cheese.",
+      "Edam cheese.",
+      "Cheddar cheese.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-89",
+    "question": "Where does a showman keep his money?",
+    "answer": "In a snow bank.",
+    "choices": [
+      "In a national bank.",
+      "In a snow bank.",
+      "In a local bank.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-90",
+    "question": "What do you call unhappy cranberries?",
+    "answer": "Blueberries.",
+    "choices": [
+      "Blackberries",
+      "Blueberries.",
+      "Stawberries.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-91",
+    "question": "What sweets do geologists like?",
+    "answer": "Rock candy.",
+    "choices": [
+      "Sugar candy.",
+      "White chocolate.",
+      "Rock candy.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-92",
+    "question": "What type of music are balloons scared of?",
+    "answer": "Pop Music.",
+    "choices": [
+      "Country Music.",
+      "Jazz Music.",
+      "Pop Music.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-93",
+    "question": "What driver never gets arrested?",
+    "answer": "A screw driver.",
+    "choices": [
+      "An old driver.",
+      "A screw driver.",
+      "A drunk driver.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-94",
+    "question": "What do you call a ghost without a host?",
+    "answer": "G.",
+    "choices": [
+      "G.",
+      "H.",
+      "T.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-95",
+    "question": "Which is the biggest jam in the world?",
+    "answer": "A traffic jam.",
+    "choices": [
+      "A chutney jam.",
+      "A curd jam.",
+      "A traffic jam.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-99",
+    "question": "What kind of bars won't keep a prisoner in jail?",
+    "answer": "Chocolate bars.",
+    "choices": [
+      "Chocolate bars.",
+      "State prison bars.",
+      "County prison bars.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-100",
+    "question": "What kind of can never needs a can-opener?",
+    "answer": "A pelican.",
+    "choices": [
+      "A salmon can.",
+      "A pelican.",
+      "A tomato can.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-102",
+    "question": "Why was 6 afraid of 9 on new years eve?",
+    "answer": "Because 9 ate (eight) 7.",
+    "choices": [
+      "Because 6 never saw 9 before.",
+      "Because 9(night) is coming.",
+      "Because 9 ate (eight) 7.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-103",
+    "question": "What type of drum are you not able to play?",
+    "answer": "Conundrum.",
+    "choices": [
+      "Bass drum.",
+      "Tom drum.",
+      "Conundrum.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-104",
+    "question": "What is in the middle of India?",
+    "answer": "The letter 'd'.",
+    "choices": [
+      "The letter 'a'.",
+      "The letter 'i'.",
+      "The letter 'd'.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-105",
+    "question": "Guess the next three letters in the series GTNTL.",
+    "answer": "I, T, S.\n",
+    "choices": [
+      "T,N,T.",
+      "T,M,G.",
+      "I, T, S.\n",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-106",
+    "question": "What letter comes next in the following sequence? D R M F S L T_",
+    "answer": "D.\n",
+    "choices": [
+      "E.",
+      "T.",
+      "D.\n",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-107",
+    "question": "What two words when combined hold the most letters?",
+    "answer": "Post' and 'Office'.\n",
+    "choices": [
+      "Post' and 'Office'.\n",
+      "Language' and 'Book'.",
+      "Dictionary' and 'Alphabet.'",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-108",
+    "question": "I am an odd number, but if you take away just a single letter, I become even. Can you guess my number?",
+    "answer": "Seven\n",
+    "choices": [
+      "Five.",
+      "Eleven.",
+      "Seven\n",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-109",
+    "question": "I add six to eleven, and get five. Why is this correct?",
+    "answer": "Because we are talking the time.",
+    "choices": [
+      "Because we are talking the computer.",
+      "Because we are talking the time.",
+      "Because we are talking the price.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-110",
+    "question": "How do you make the number one disappear?",
+    "answer": "Add a 'G' .",
+    "choices": [
+      "Add a 'G' .",
+      "Add a 'O' .",
+      "Add a 'E' .",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-111",
+    "question": "How do you spell the word 'Panda' in two letters?",
+    "answer": "P and A.",
+    "choices": [
+      "P and A.",
+      "A and D.",
+      "P and D.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-112",
+    "question": "What room do ghosts avoid?",
+    "answer": "The living room.",
+    "choices": [
+      "The bed room.",
+      "The living room.",
+      "The rest room.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-113",
+    "question": "Name one fish that one can never catch?",
+    "answer": "Selfish.",
+    "choices": [
+      "Catfish.",
+      "Selfish.",
+      "Tuna.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-114",
+    "question": "What kind of money do vampires use?",
+    "answer": "Blood money.",
+    "choices": [
+      "Blood money.",
+      "Old money.",
+      "New money.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-115",
+    "question": "What TV program should you watch in the bathtub?",
+    "answer": "Soap operas.",
+    "choices": [
+      "Soap operas.",
+      "Sports live.",
+      "Talk show.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-116",
+    "question": "How did the champ fix the leaky facet?",
+    "answer": "With a monkey wrench.",
+    "choices": [
+      "With an adjustable wrench.",
+      "With a monkey wrench.",
+      "With a stubby wrench.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-117",
+    "question": "What starts with a T, ends with a T and has T in it?",
+    "answer": "Teapot.",
+    "choices": [
+      "Tookit.",
+      "Trust",
+      "Teapot.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-118",
+    "question": "What begins with 'E', ends with 'E', and only has one letter in it?",
+    "answer": "Envelope.",
+    "choices": [
+      "Evolve.",
+      "Eagle.",
+      "Envelope.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-119",
+    "question": "What falls down but never breaks?",
+    "answer": "Nightfall.",
+    "choices": [
+      "Nightfall.",
+      "Waterfall.",
+      "Freefall.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-120",
+    "question": "How can you make \"ten\" out of \"net\"?",
+    "answer": "Just flip it around.",
+    "choices": [
+      "Just flip it around.",
+      "Remove the letter \"e\".",
+      "Move the letter \"t\" to the end.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-121",
+    "question": "What is found at the beginning of eternity, the end of time and space, the start of every end and the end of every race?",
+    "answer": "The letter 'E'.",
+    "choices": [
+      "The letter 'E'.",
+      "The letter 'R'.",
+      "The letter 'B'.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-123",
+    "question": "What is the most shocking city?",
+    "answer": "Electricity.",
+    "choices": [
+      "Urban city.",
+      "Inner city.",
+      "Electricity.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-126",
+    "question": "What kind of ship has two mates but no captain?",
+    "answer": "Partnership.",
+    "choices": [
+      "Partnership.",
+      "Battleship.",
+      "Spaceship.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-128",
+    "question": "What kind of a cup doesn\u2019t hold water?",
+    "answer": "A cupcake.",
+    "choices": [
+      "A teacup.",
+      "A cupcake.",
+      "A coffee cup.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-129",
+    "question": "What kind of house weighs the least?",
+    "answer": "A lighthouse.",
+    "choices": [
+      "A lighthouse.",
+      "A beach house.",
+      "A treehouse.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-131",
+    "question": "What is a boxer\u2019s favorite drink?",
+    "answer": "Punch.",
+    "choices": [
+      "Coke.",
+      "Punch.",
+      "Sprite.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-132",
+    "question": "What do you call a bear with no ear?",
+    "answer": "\"B\" .",
+    "choices": [
+      "\"E\" .",
+      "\"R\" .",
+      "\"B\" .",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-133",
+    "question": "What kind of beans won't grow in a garden?",
+    "answer": "Jelly beans.",
+    "choices": [
+      "Soy beans.",
+      "Green beans.",
+      "Jelly beans.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-135",
+    "question": "What's a computer's favorite snack?",
+    "answer": "Chips.",
+    "choices": [
+      "Cookie.",
+      "Chips.",
+      "Candy.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-136",
+    "question": "What type of butter can actually fly?",
+    "answer": "Butterfly.",
+    "choices": [
+      "Butterfly.",
+      "Peanut butter.",
+      "Almond butter.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-138",
+    "question": "What kind of ring is square?",
+    "answer": "A boxing ring.",
+    "choices": [
+      "A wedding ring.",
+      "A ear ring.",
+      "A boxing ring.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-139",
+    "question": "What type of bar doesn't serve alcohol?",
+    "answer": "Sandbar.",
+    "choices": [
+      "Cocktail bar.",
+      "Sandbar.",
+      "Hotel bar.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-141",
+    "question": "What type of ham can you not eat?",
+    "answer": "Birmingham.",
+    "choices": [
+      "Birmingham.",
+      "Cured ham.",
+      "Smoked ham.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-142",
+    "question": "What type of lamp doesn't provide light?",
+    "answer": "Clamp.",
+    "choices": [
+      "Clamp.",
+      "LED lamp.",
+      "Oil lamp.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-143",
+    "question": "What kind of pot can't you cook anything in?",
+    "answer": "Jackpot.",
+    "choices": [
+      "Crockpot.",
+      "Cooking pot.",
+      "Jackpot.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-144",
+    "question": "What kind of case can't hold anything?",
+    "answer": "Lowercase.",
+    "choices": [
+      "Suitcase.",
+      "Lowercase.",
+      "Bookcase.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-145",
+    "question": "What type of pool can you never swim in?",
+    "answer": "Carpool.",
+    "choices": [
+      "Carpool.",
+      "Wading pool.",
+      "Spa pool.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-146",
+    "question": "What kind of fast doesn't involve running?",
+    "answer": "Breakfast.",
+    "choices": [
+      "Runing fast.",
+      "Chasing fast.",
+      "Breakfast.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-147",
+    "question": "What type of board can't you play games on?",
+    "answer": "Keyboard.",
+    "choices": [
+      "Dartboard.",
+      "Chessboard.",
+      "Keyboard.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-148",
+    "question": "What type of bank doesn't hold money?",
+    "answer": "Snowbank.",
+    "choices": [
+      "Snowbank.",
+      "Investment bank.",
+      "Central bank.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-149",
+    "question": "What type of root can't be eaten?",
+    "answer": "Square root.",
+    "choices": [
+      "Carrot root.",
+      "Cabbage root.",
+      "Square root.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-150",
+    "question": "What kind of mouse can't you feed cheese to?",
+    "answer": "A computer mouse.",
+    "choices": [
+      "A computer mouse.",
+      "A hungry mouse.",
+      "An old mouse.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-151",
+    "question": "What kind of plant can't photosynthesize?",
+    "answer": "A power plant.",
+    "choices": [
+      "An indoor plant.",
+      "A house plant",
+      "A power plant.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-152",
+    "question": "What kind of wood never gets chopped?",
+    "answer": "Hollywood.",
+    "choices": [
+      "Softwood.",
+      "Hollywood.",
+      "Hardwood.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-154",
+    "question": "What type of dish doesn't hold food?",
+    "answer": "A satellite dish.",
+    "choices": [
+      "A satellite dish.",
+      "A fish dish.",
+      "A side dish.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-155",
+    "question": "What kind of bottle can't hold a liquid?",
+    "answer": "A bottle neck.",
+    "choices": [
+      "A bottle neck.",
+      "A glass bottle.",
+      "A water bottle.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-156",
+    "question": "What kind of note can't be played?",
+    "answer": "A footnote.",
+    "choices": [
+      "A music note.",
+      "A footnote.",
+      "A high note.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-158",
+    "question": "What kind of watch can't tell time?",
+    "answer": "A watchdog.",
+    "choices": [
+      "A pocket watch.",
+      "A wristwatch.",
+      "A watchdog.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-159",
+    "question": "What type of pump doesn't inflate anything?",
+    "answer": "Pumpkin.",
+    "choices": [
+      "Bicycle pump.",
+      "Pumpkin.",
+      "Air pump.",
+      "None of above."
+    ],
+    "correct_index": 1
+  },
+  {
+    "id": "WP-160",
+    "question": "What type of ink never leaves a stain?",
+    "answer": "Link.",
+    "choices": [
+      "Link.",
+      "Blue ink.",
+      "Red ink.",
+      "None of above."
+    ],
+    "correct_index": 0
+  },
+  {
+    "id": "WP-161",
+    "question": "What type of art doesn't hang in a gallery?",
+    "answer": "Tart.",
+    "choices": [
+      "Contemporary art.",
+      "Fine art.",
+      "Tart.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-162",
+    "question": "What kind of bell doesn't make a sound?",
+    "answer": "A dumbbell.",
+    "choices": [
+      "A doorbell.",
+      "A cowbell.",
+      "A dumbbell.",
+      "None of above."
+    ],
+    "correct_index": 2
+  },
+  {
+    "id": "WP-163",
+    "question": "What type of ice never melts?",
+    "answer": "Dice.",
+    "choices": [
+      "Dice.",
+      "Flaked ice.",
+      "Glacier ice.",
+      "None of above."
+    ],
+    "correct_index": 0
+  }
+]
