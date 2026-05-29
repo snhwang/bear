@@ -25,7 +25,9 @@ LLM generates behavior-compliant response
 ## Foundational Work
 
 [Retrieval-Governed Context](https://zenodo.org/records/19705464)
+
 [Behavioral Inheritance and Evolution in LLM-Controlled Agent Populations](https://doi.org/10.5281/zenodo.20149759)
+
 [Role-Differentiated Knowledge Flow and Structured Deliberation in Multi-Agent LLM Systems](https://doi.org/10.5281/zenodo.19866913)
 
 ## Installation
