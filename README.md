@@ -22,6 +22,10 @@ Compose into priority-ordered guidance
     ↓
 LLM generates behavior-compliant response
 ```
+## Foundational Work
+
+[Retrieval-Governed Context]{!https://doi.org/10.5281/zenodo.20149759}
+
 
 ## Installation
 
