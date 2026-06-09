@@ -32,7 +32,9 @@ DEFAULT_PORT       = 8355
 DEFAULT_MODEL      = "e2b"
 CONTAINER_PORT     = 8000
 CONTAINER_NAME     = "vllm_bear_llm"
-DEFAULT_VLLM_IMAGE = "vllm/vllm-openai:gemma4"
+# Official, pullable vLLM image (CUDA 13 / Blackwell). Multi-arch: runs on
+# x86 Blackwell and the aarch64 GH200 DGX Sparks. Override via VLLM_SPARK_IMAGE.
+DEFAULT_VLLM_IMAGE = "vllm/vllm-openai:v0.17.1-cu130"
 
 
 def load_env():
