@@ -72,11 +72,64 @@ class Composer:
         header: str = "=== BEHAVIORAL GUIDANCE ===",
         footer: str = "=== END BEHAVIORAL GUIDANCE ===",
         max_instructions: int | None = None,
+        emit_tool_summary: bool = False,
+        tool_summary_header: str = "=== AVAILABLE TOOLS ===",
+        tool_summary_footer: str = "=== END AVAILABLE TOOLS ===",
+        tool_summary_max_chars: int = 80,
     ):
+        """Initialize the composer.
+
+        Parameters
+        ----------
+        strategy : CompositionStrategy
+            How to organize text instructions in the guidance string.
+        header, footer : str
+            Markers around the guidance block.
+        max_instructions : int | None
+            Cap the number of text instructions in the guidance.
+        emit_tool_summary : bool, default False
+            If True, append a short textual list of admitted tool names
+            and one-line descriptions to the guidance string, in
+            addition to emitting structured tool schemas in
+            :pyattr:`ComposedOutput.tools`.
+
+            BEAR's default architecture separates tool schemas (delivered
+            via the LLM API's structured ``tools`` parameter) from text
+            guidance. Modern function-calling LLMs (OpenAI, Anthropic,
+            vLLM, etc.) see both during reasoning, so the strict
+            separation is harmless in those deployments.
+
+            The separation can become a problem in two cases:
+
+            (1) Decoupled planner / executor architectures, where a
+                reasoning model writes a plan and a separate executor
+                calls tools. The planner only sees the guidance string,
+                so without a textual tool summary it can hallucinate
+                plans that require tools it never names.
+
+            (2) Models without native function-calling APIs (e.g.,
+                certain Ollama base-model deployments), where tools must
+                be passed as text rather than as structured schemas.
+
+            Enabling :pyattr:`emit_tool_summary` injects a short bulleted
+            list of admitted tool names into the guidance text. The list
+            is built from the same partitioned ``tool_instructions`` set
+            that produces :pyattr:`ComposedOutput.tools`, so the textual
+            summary cannot drift from the structured schemas.
+        tool_summary_header, tool_summary_footer : str
+            Markers around the tool-summary block.
+        tool_summary_max_chars : int
+            Maximum characters per tool's description in the summary;
+            longer descriptions are truncated with an ellipsis.
+        """
         self.strategy = strategy
         self.header = header
         self.footer = footer
         self.max_instructions = max_instructions
+        self.emit_tool_summary = emit_tool_summary
+        self.tool_summary_header = tool_summary_header
+        self.tool_summary_footer = tool_summary_footer
+        self.tool_summary_max_chars = tool_summary_max_chars
 
     def compose(self, instructions: list[ScoredInstruction]) -> ComposedOutput:
         """Compose scored instructions into guidance text and tool schemas.
@@ -116,6 +169,15 @@ class Composer:
 
         # Build tool schemas from tool-type instructions
         tools = self._build_tool_schemas(tool_instructions)
+
+        # Optionally append a textual tool summary to the guidance string.
+        # The summary mirrors the structured `tools` list so the two
+        # views cannot drift, and is governed by the same partitioning
+        # that determines tool admission.
+        if self.emit_tool_summary and tool_instructions:
+            summary = self._build_tool_summary(tool_instructions)
+            if summary:
+                guidance = (guidance + "\n\n" + summary).lstrip("\n")
 
         return ComposedOutput(guidance=guidance, tools=tools)
 
@@ -191,6 +253,53 @@ class Composer:
     # ------------------------------------------------------------------
     # Tool schema building
     # ------------------------------------------------------------------
+
+    def _build_tool_summary(
+        self,
+        tool_instructions: list[ScoredInstruction],
+    ) -> str:
+        """Render a short textual summary of admitted tools.
+
+        One line per tool: ``- function_name: short description``.
+        Description is taken from ``actions.description`` if present,
+        otherwise from the first non-empty line of ``content``, and
+        truncated to :pyattr:`tool_summary_max_chars` characters.
+
+        Tools are listed in priority order so the most important tools
+        appear first to the reasoning model.
+        """
+        sorted_tools = sorted(
+            tool_instructions, key=lambda s: s.priority, reverse=True,
+        )
+        lines: list[str] = [self.tool_summary_header]
+        for scored in sorted_tools:
+            actions = scored.actions or {}
+            func_name = actions.get("function")
+            if not func_name:
+                continue
+            description = actions.get("description")
+            if not description:
+                for raw in scored.content.splitlines():
+                    stripped = raw.strip()
+                    if stripped:
+                        description = stripped
+                        break
+            if not description:
+                description = ""
+            description = description.replace("\n", " ").strip()
+            if len(description) > self.tool_summary_max_chars:
+                description = (
+                    description[: self.tool_summary_max_chars - 1].rstrip()
+                    + "\u2026"
+                )
+            if description:
+                lines.append(f"- {func_name}: {description}")
+            else:
+                lines.append(f"- {func_name}")
+        if len(lines) == 1:
+            return ""
+        lines.append(self.tool_summary_footer)
+        return "\n".join(lines)
 
     @staticmethod
     def _build_tool_schemas(

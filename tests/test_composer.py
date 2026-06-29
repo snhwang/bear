@@ -299,3 +299,181 @@ class TestToolEmission:
 
         assert result.guidance == ""
         assert len(result.tools) == 1
+
+
+class TestEmitToolSummary:
+    """Tests for the emit_tool_summary flag (default OFF, opt-in textual summary)."""
+
+    def test_default_off_no_summary_in_guidance(self):
+        """By default, tool summary is NOT in guidance — strict separation."""
+        instructions = [
+            _make_scored(
+                "guide-1", InstructionType.PROTOCOL, 80,
+                "Always be polite to customers.",
+            ),
+            _make_scored(
+                "tool-refund", InstructionType.TOOL, 70, "Process a refund.",
+                actions={"function": "process_refund"},
+            ),
+        ]
+        composer = Composer()  # emit_tool_summary defaults to False
+        result = composer.compose(instructions)
+
+        assert "process_refund" not in result.guidance
+        assert "=== AVAILABLE TOOLS ===" not in result.guidance
+        # Tool still appears in structured tools
+        assert len(result.tools) == 1
+        assert result.tools[0]["function"]["name"] == "process_refund"
+
+    def test_enabled_appends_tool_summary(self):
+        """When enabled, guidance contains a bulleted tool list with names."""
+        instructions = [
+            _make_scored(
+                "guide-1", InstructionType.PROTOCOL, 80,
+                "Always be polite to customers.",
+            ),
+            _make_scored(
+                "tool-refund", InstructionType.TOOL, 70, "Process a refund.",
+                actions={"function": "process_refund",
+                         "description": "Refund a customer order."},
+            ),
+            _make_scored(
+                "tool-ticket", InstructionType.TOOL, 60, "Create a support ticket.",
+                actions={"function": "create_ticket"},
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+
+        # Text guidance still present and unchanged
+        assert "Always be polite" in result.guidance
+        # Tool summary block present
+        assert "=== AVAILABLE TOOLS ===" in result.guidance
+        assert "=== END AVAILABLE TOOLS ===" in result.guidance
+        # Both tools listed
+        assert "process_refund" in result.guidance
+        assert "create_ticket" in result.guidance
+        # Description preferred over content
+        assert "Refund a customer order." in result.guidance
+        # Structured tools unchanged
+        assert {t["function"]["name"] for t in result.tools} == {
+            "process_refund", "create_ticket",
+        }
+
+    def test_summary_uses_first_line_of_content_when_no_description(self):
+        """Falls back to first non-empty line of content for description."""
+        instructions = [
+            _make_scored(
+                "tool-x", InstructionType.TOOL, 50,
+                "\nFirst meaningful line.\nSecond line ignored.\n",
+                actions={"function": "x"},
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+        assert "x: First meaningful line." in result.guidance
+        assert "Second line ignored" not in result.guidance
+
+    def test_summary_truncates_long_descriptions(self):
+        """Long descriptions are truncated with an ellipsis."""
+        long_desc = "a" * 200
+        instructions = [
+            _make_scored(
+                "tool-long", InstructionType.TOOL, 50, long_desc,
+                actions={"function": "long_fn"},
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True, tool_summary_max_chars=40)
+        result = composer.compose(instructions)
+        # Find the summary line
+        for line in result.guidance.splitlines():
+            if line.startswith("- long_fn:"):
+                # name + ": " + (max_chars chars including ellipsis)
+                payload = line.split(": ", 1)[1]
+                assert len(payload) <= 40
+                assert payload.endswith("\u2026")
+                break
+        else:
+            raise AssertionError("Summary line for long_fn not found")
+
+    def test_summary_priority_order(self):
+        """Tools appear in priority order (highest first)."""
+        instructions = [
+            _make_scored(
+                "tool-low", InstructionType.TOOL, 10, "Low priority tool.",
+                actions={"function": "low_fn"},
+            ),
+            _make_scored(
+                "tool-high", InstructionType.TOOL, 90, "High priority tool.",
+                actions={"function": "high_fn"},
+            ),
+            _make_scored(
+                "tool-mid", InstructionType.TOOL, 50, "Mid priority tool.",
+                actions={"function": "mid_fn"},
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+        idx_high = result.guidance.index("high_fn")
+        idx_mid = result.guidance.index("mid_fn")
+        idx_low = result.guidance.index("low_fn")
+        assert idx_high < idx_mid < idx_low
+
+    def test_summary_skips_tools_without_function_name(self):
+        """Tools missing the 'function' key are skipped silently."""
+        instructions = [
+            _make_scored(
+                "tool-broken", InstructionType.TOOL, 50, "No function key.",
+                actions={"description": "nope"},
+            ),
+            _make_scored(
+                "tool-ok", InstructionType.TOOL, 40, "Good tool.",
+                actions={"function": "ok_fn"},
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+        assert "ok_fn" in result.guidance
+        # The broken one shouldn't appear in the summary either
+        for line in result.guidance.splitlines():
+            assert not line.startswith("- :")
+
+    def test_summary_no_block_when_no_tools(self):
+        """If no tools admitted, no summary block at all."""
+        instructions = [
+            _make_scored(
+                "guide-1", InstructionType.PROTOCOL, 80, "Be polite.",
+            ),
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+        assert "=== AVAILABLE TOOLS ===" not in result.guidance
+
+    def test_summary_mirrors_structured_tools(self):
+        """Summary and tools list always contain the same function names."""
+        instructions = [
+            _make_scored(
+                f"tool-{i}", InstructionType.TOOL, 50 + i,
+                f"Tool number {i}.",
+                actions={"function": f"fn_{i}"},
+            )
+            for i in range(5)
+        ]
+        composer = Composer(emit_tool_summary=True)
+        result = composer.compose(instructions)
+
+        structured_names = {t["function"]["name"] for t in result.tools}
+        summary_names = set()
+        in_block = False
+        for line in result.guidance.splitlines():
+            if line.startswith("=== AVAILABLE TOOLS"):
+                in_block = True
+                continue
+            if line.startswith("=== END AVAILABLE TOOLS"):
+                in_block = False
+                continue
+            if in_block and line.startswith("- "):
+                name = line[2:].split(":", 1)[0].strip()
+                summary_names.add(name)
+
+        assert structured_names == summary_names
