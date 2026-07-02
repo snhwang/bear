@@ -166,6 +166,21 @@ scope = ScopeCondition(
 | `CONFLICT_RESOLUTION` | Detect conflicts, keep higher priority |
 | `HIERARCHICAL` | Group by type, apply most specific |
 
+### Tool Emission (New in 0.1.9)
+
+By default, `Composer` emits tool schemas through the structured `ComposedOutput.tools` field, which callers pass to the LLM API's native `tools` parameter. The text guidance does not repeat those schemas.
+
+For deployments that need the tool set to also appear inside the guidance text (decoupled planner/executor pipelines, or backends without native function-calling APIs), set `emit_tool_summary=True`:
+
+```python
+composer = Composer(emit_tool_summary=True, tool_summary_max_chars=80)
+result = composer.compose(instructions)
+# result.guidance now contains a short bulleted list of admitted tools
+# result.tools still contains the same structured schemas
+```
+
+The textual summary is built from the same partitioned instruction set as the structured tool array, so the two views cannot drift. The flag is off by default; existing behavior is unchanged.
+
 ## Breeding & Evolution
 
 BEAR supports behavioral inheritance: two parent corpora can be combined to produce an offspring corpus.
