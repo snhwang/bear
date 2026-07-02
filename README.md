@@ -461,6 +461,10 @@ uv pip install -e ".[dev]"
 pytest
 ```
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## Design Principles
 
 1. **Domain-agnostic** — Works for NPCs, medical systems, legal tools, support bots, etc.
