@@ -345,6 +345,8 @@ class Retriever:
         self._instruction_list: list[Instruction] = []
         self._built = False
         self._cache_dir: Path | None = None
+        # Set at build time: True if any instruction carries a hard gate.
+        self._has_required_tags = False
 
     @property
     def _is_bm25(self) -> bool:
@@ -365,6 +367,9 @@ class Retriever:
             cache_dir: If provided, cache embeddings to this directory.
         """
         self._instruction_list = list(self.corpus)
+        self._has_required_tags = any(
+            inst.scope.required_tags for inst in self._instruction_list
+        )
         if not self._instruction_list:
             logger.warning("Corpus is empty, nothing to index.")
             self._built = True
@@ -460,27 +465,40 @@ class Retriever:
         query_text = self._query_text(query, context)
 
         # Step 2: Search (BM25, ITR, or dense)
+        #
+        # When a hard gate (required_tags) is active for this query, the scope
+        # filter in Step 3 prunes the candidate pool.  With the default top_k*3
+        # over-fetch, admissible items that rank just outside that window fall
+        # through to the flat-priority backfill in Step 3.5 -- which, on large
+        # corpora, lets flat-scored items displace genuinely-similar matches and
+        # depresses retrieval quality.  Widen the over-fetch to the full corpus
+        # when gated so the admissible set is ranked by real similarity; the
+        # backfill then becomes a no-op (all admissible items are already
+        # scored).  Non-gated queries are unaffected.
+        n = len(self._instruction_list)
+        gated = self._has_required_tags and context is not None and bool(context.tags)
+        overfetch_k = n if gated else min(n, top_k * 3)
+
         if self._is_bm25:
             from bear.backends.embeddings.bm25_backend import BM25Backend
             assert isinstance(self._backend, BM25Backend)
-            search_k = min(len(self._instruction_list), top_k * 3)
-            raw_results = self._backend.search_bm25(query_text, search_k)
+            raw_results = self._backend.search_bm25(query_text, overfetch_k)
         elif self._is_itr:
             from bear.backends.embeddings.itr_backend import ITRBackend
             assert isinstance(self._backend, ITRBackend)
-            search_k = min(len(self._instruction_list), top_k * 3)
-            raw_results = self._backend.search_itr(query_text, search_k)
+            raw_results = self._backend.search_itr(query_text, overfetch_k)
         else:
             query_embedding = self._embedder.embed_single(query_text, is_query=True)
             metadata_filter = self._build_metadata_filter(context)
             if self._backend.supports_metadata_filtering and metadata_filter:
-                search_k = min(len(self._instruction_list), top_k * 2)
+                # Backend applies the gate itself and returns admissible items
+                # ranked by similarity; top_k*2 covers the requested top_k.
+                search_k = min(n, top_k * 2)
                 raw_results = self._backend.search_with_filter(
                     query_embedding, search_k, metadata_filter=metadata_filter,
                 )
             else:
-                search_k = min(len(self._instruction_list), top_k * 3)
-                raw_results = self._backend.search(query_embedding, search_k)
+                raw_results = self._backend.search(query_embedding, overfetch_k)
 
         # Step 3: Score, filter by scope, and collect
         scored: list[ScoredInstruction] = []

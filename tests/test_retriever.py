@@ -276,3 +276,68 @@ class TestBM25Backend:
         result_ids = {r.id for r in results}
         assert "tool-eat" in result_ids
         assert "tool-flee" not in result_ids
+
+
+class TestGatedOverfetch:
+    """Regression: a hard gate must not depress ranking on large corpora.
+
+    Before the widened over-fetch, an admissible item ranked outside the fixed
+    top_k*3 window was recovered by the flat-priority backfill (final_score =
+    priority/100 = 0.5). On a large single-category corpus that flat score
+    outranked genuinely-similar matches whose cosine was below ~0.5, displacing
+    the true best result. The fix widens the over-fetch to the full corpus when
+    a gate is active so the admissible set is ranked by real similarity.
+    """
+
+    @staticmethod
+    def _unit(sim):
+        import numpy as np
+        return np.array([sim, np.sqrt(max(0.0, 1.0 - sim * sim))], dtype=np.float32)
+
+    def _build(self):
+        import numpy as np
+        specs = [("gold", 0.45), ("d1", 0.44), ("d2", 0.43)]
+        specs += [(f"low{i}", 0.02) for i in range(10)]
+        corpus = Corpus()
+        for name, _ in specs:
+            corpus.add(Instruction(
+                id=name, type=InstructionType.TOOL, priority=50,
+                content=f"tool {name}",
+                scope=ScopeCondition(required_tags=["a"], tags=["a"]), tags=["a"],
+            ))
+        config = Config(
+            embedding_backend=EmbeddingBackend.NUMPY, embedding_dim=2,
+            priority_weight=0.3, default_threshold=0.0, default_top_k=1,
+            mandatory_tags=[],
+        )
+        retriever = Retriever(corpus, config=config)
+        text_to_vec = {
+            retriever._instruction_text(inst): self._unit(sim)
+            for (_, sim), inst in zip(specs, corpus)
+        }
+
+        class _Stub:
+            def embed(self, texts, is_query=False):
+                return np.stack([text_to_vec[t] for t in texts])
+
+            def embed_single(self, text, is_query=True):
+                return TestGatedOverfetch._unit(1.0)
+
+        retriever._embedder = _Stub()
+        retriever.build_index()
+        return retriever
+
+    def test_gate_does_not_displace_best_match(self):
+        retriever = self._build()
+        results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
+        assert results, "expected a result"
+        assert results[0].instruction.id == "gold"
+        assert not any(
+            r.similarity == 0.0 and r.final_score == 0.5 for r in results
+        )
+
+    def test_old_narrow_overfetch_reproduces_bug(self):
+        retriever = self._build()
+        retriever._has_required_tags = False
+        results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
+        assert results and results[0].instruction.id != "gold"
