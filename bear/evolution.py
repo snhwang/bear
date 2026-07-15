@@ -61,6 +61,19 @@ class EvolutionConfig(BaseModel):
     )
     max_pending: int = Field(default=20, ge=1)
     id_prefix: str = "evo"
+    allowed_markers: list[str] | None = Field(
+        default=None,
+        description=(
+            "Application-declared list of valid inline action-marker signatures, "
+            "e.g. ['[!flee]', '[!approach(nearest|id=X|item=food)]']. BEAR itself "
+            "has no intrinsic actions; markers only mean something when the host "
+            "application implements a handler for them. When this list is set, "
+            "synthesis is constrained to exactly these markers so generated "
+            "instructions never reference actions the application cannot execute. "
+            "When None, the marker vocabulary is inferred from style examples "
+            "(best-effort) and may include markers the application does not implement."
+        ),
+    )
 
     # Gate
     gate_policy: str = Field(
@@ -227,6 +240,26 @@ Output valid YAML under an "instructions:" key. Only output the YAML, \
 no explanation."""
 
 
+def _format_allowed_markers_block(allowed_markers: list[str]) -> str:
+    """Render an application-declared action-marker allow-list into a prompt
+    section that constrains generation to exactly those markers.
+
+    Each entry is a marker signature shown verbatim to the model, e.g.
+    ``"[!flee]"`` or ``"[!approach(nearest|id=X|item=food)]"``. BEAR does not
+    interpret the signatures; it only relays them, so the action vocabulary
+    stays owned by the host application.
+    """
+    listing = "\n".join(f"  {sig}" for sig in allowed_markers)
+    return (
+        "\nThe ONLY valid inline action markers are listed below. Use markers "
+        "ONLY from this list, written exactly as shown. Do not invent new marker "
+        "names, and do not add arguments to markers shown without one:\n"
+        f"{listing}\n"
+        "Embed one or two appropriate markers in the content of each generated "
+        "instruction.\n"
+    )
+
+
 async def generate_with_llm(
     llm: Any,
     evaluation: EvaluationResult,
@@ -240,6 +273,10 @@ async def generate_with_llm(
         style_examples: Sample instruction content strings from the corpus.
             When provided, the LLM is shown these examples so that evolved
             instructions match the corpus style (e.g. inline action markers).
+
+    When ``config.allowed_markers`` is set, generation is constrained to that
+    application-declared marker set (see :class:`EvolutionConfig`); otherwise
+    the marker vocabulary is inferred from ``style_examples`` (best-effort).
     """
     gaps_text = "\n".join(
         f'  - query: "{o.query}" (similarity: {o.top_similarity:.2f})'
@@ -257,7 +294,22 @@ async def generate_with_llm(
         examples_text = "\n".join(
             f"  {i+1}. {ex}" for i, ex in enumerate(style_examples)
         )
-        # Detect action markers in examples and list them explicitly
+        style_section = (
+            f"\nExisting instruction style examples (match this style):\n"
+            f"{examples_text}\n"
+        )
+
+    if config.allowed_markers:
+        # The host application has declared exactly which action markers it
+        # implements. Constrain generation to that set so evolved instructions
+        # only reference actions the application can actually execute.
+        style_section += _format_allowed_markers_block(config.allowed_markers)
+        style_hint = (
+            " with embedded inline action markers chosen only from the allowed list"
+        )
+    elif style_examples:
+        # No explicit allow-list: infer the marker vocabulary from the examples
+        # (best-effort; may include markers the application does not implement).
         import re as _re
         markers = sorted(
             {m.group(0) for ex in style_examples
@@ -270,10 +322,6 @@ async def generate_with_llm(
             {m.group(1) for ex in style_examples
              for m in _re.finditer(r'\[!(\w+)', ex)}
         )
-        style_section = (
-            f"\nExisting instruction style examples (match this style):\n"
-            f"{examples_text}\n"
-        )
         if marker_names:
             style_section += (
                 f"\nThese instructions use inline action markers with the syntax "
@@ -283,9 +331,7 @@ async def generate_with_llm(
                 f"instructions.\n"
             )
             style_hint = " with embedded inline action markers like [!action(param)]"
-        else:
-            style_hint = ""
-    # endif style_examples
+    # endif marker vocabulary
 
     prompt = _GENERATION_PROMPT.format(
         gaps=gaps_text or "  (none)",

@@ -401,6 +401,27 @@ def teach(corpus, name, cycle):
     return added
 
 
+# Action markers the ecosystem actually implements, mirroring the handlers in
+# server/brain.py::markers_to_decision. BEAR has no intrinsic actions, so we
+# declare our implemented set here and pass it to synthesis (EvolutionConfig.
+# allowed_markers) — the LLM may only emit markers from this list, so every
+# generated instruction references an action the application can execute.
+ALLOWED_ACTION_MARKERS = [
+    "[!flee]",
+    "[!rally]",
+    "[!wander]",
+    "[!roll]",
+    "[!circle]",
+    "[!sprint]",
+    "[!sneak]",
+    "[!approach(nearest|id=X|item=food|ball|flower|tree)]",
+    "[!challenge(nearest|id=X)]",
+    "[!breed(nearest|id=X)]",
+    "[!mood(happy|playful|cautious|excited|annoyed)]",
+    "[!effect(hearts|sparkles|exclamation|question_mark)]",
+]
+
+
 def evolve_cycle(corpus, name, config):
     """One autonomous evolution cycle: feed gap queries, detect, generate."""
     gap_queries = GAP_QUERIES[name]
@@ -414,6 +435,7 @@ def evolve_cycle(corpus, name, config):
         low_similarity_trigger=0.30,  # evolve when >30% of queries are gaps
         max_evolved_priority=40,
         evolved_tag="evolved",
+        allowed_markers=ALLOWED_ACTION_MARKERS,
         gate_policy="auto",
         batch_size=1,
         rebuild_cooldown=0.0,
