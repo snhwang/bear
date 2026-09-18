@@ -19,6 +19,19 @@ logger = logging.getLogger(__name__)
 _MAX_RETRIES = 4
 _BASE_DELAY = 2  # seconds, doubles each retry
 
+# Models whose API rejects sampling parameters (temperature / top_p / top_k):
+# Opus 4.7 and later, the Fable and Mythos models, and Claude Sonnet 5 (which
+# rejects non-default values). Earlier still-served models -- the 4.6 / 4.5
+# line, Haiku 4.5 included -- accept them.
+_NO_SAMPLING_PREFIXES = (
+    "claude-opus-5", "claude-opus-4-8", "claude-opus-4-7",
+    "claude-fable-", "claude-mythos-", "claude-sonnet-5",
+)
+
+
+def _accepts_sampling(model: str) -> bool:
+    return not model.startswith(_NO_SAMPLING_PREFIXES)
+
 
 def _openai_tool_to_anthropic(tool: dict) -> dict:
     """Convert an OpenAI-format tool schema to Anthropic's format.
@@ -62,13 +75,22 @@ class AnthropicBackend(LLMBackendBase):
         kwargs: dict = {
             "model": self.model,
             "messages": messages,
-            "temperature": request.temperature,
             "max_tokens": request.max_tokens or 4096,
         }
+        # anthropic SDK 1.x removed temperature / top_p / top_k from
+        # messages.create() (passing them is a TypeError); the API still honours
+        # them on models that accept sampling, so send them in extra_body, which
+        # both 0.x and 1.x SDKs merge into the request body as-is.
+        sampling = {"temperature": request.temperature}
         if request.top_p is not None:
-            kwargs["top_p"] = request.top_p
+            sampling["top_p"] = request.top_p
         if request.top_k is not None:
-            kwargs["top_k"] = request.top_k
+            sampling["top_k"] = request.top_k
+        if _accepts_sampling(self.model):
+            kwargs["extra_body"] = sampling
+        else:
+            logger.debug("%s does not accept sampling parameters; omitting %s",
+                         self.model, sorted(sampling))
         if request.system:
             kwargs["system"] = request.system
         if request.tools:
@@ -103,13 +125,14 @@ class AnthropicBackend(LLMBackendBase):
                 )
             except Exception as e:
                 last_exc = e
-                # Don't retry auth or validation errors
-                err_name = type(e).__name__
-                err_msg = str(e).lower()
-                if ("AuthenticationError" in err_name
-                        or "InvalidRequestError" in err_name
-                        or "authentication" in err_msg
-                        or "api_key" in err_msg):
+                # Don't retry what a retry cannot fix: bad requests, auth and
+                # permission errors, unknown models, and client-side errors
+                # such as a TypeError from an unsupported SDK argument.
+                import anthropic
+                if isinstance(e, (TypeError, anthropic.BadRequestError,
+                                  anthropic.AuthenticationError,
+                                  anthropic.PermissionDeniedError,
+                                  anthropic.NotFoundError)):
                     raise
                 if attempt < _MAX_RETRIES:
                     delay = _BASE_DELAY * (2 ** attempt)

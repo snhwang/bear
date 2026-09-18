@@ -98,14 +98,18 @@ def _get_embedding_backend(
 class Embedder:
     """Generates text embeddings using a pluggable model.
 
-    Supports three embedding backends (auto-detected in order):
+    Supports four embedding modes (auto-detected in order):
 
-    1. **MLX** — Apple-Silicon-native inference via ``mlx-embeddings``.
+    1. **OpenAI** — Cloud API via the ``openai`` package.  Triggered when
+       ``model_name`` starts with ``openai:`` (e.g. ``openai:text-embedding-3-small``).
+       Requires ``OPENAI_API_KEY`` in the environment.  Good fit for
+       CPU-only deployments (e.g. Replit) where local inference is slow.
+    2. **MLX** — Apple-Silicon-native inference via ``mlx-embeddings``.
        Used automatically when the model name contains ``mlx`` and the
        ``mlx_embeddings`` package is installed.  Fastest on Mac.
-    2. **sentence-transformers** — PyTorch-based inference.  Works on
+    3. **sentence-transformers** — PyTorch-based inference.  Works on
        any platform with ``sentence-transformers`` installed.
-    3. **hash** — Deterministic character-n-gram embedding (no
+    4. **hash** — Deterministic character-n-gram embedding (no
        semantics).  Used when no ML framework is available, or when
        ``model_name="hash"`` is set explicitly.
 
@@ -136,7 +140,8 @@ class Embedder:
         self.trust_remote_code = trust_remote_code
         self._model: Any = None
         self._tokenizer: Any = None
-        self._mode: str = "hash"  # "mlx" | "sentence_transformers" | "hash"
+        self._mode: str = "hash"  # "openai" | "mlx" | "sentence_transformers" | "hash"
+        self._openai_model: str = ""
         self._loaded = False
         # Eagerly resolve mode for explicit hash requests; defer real model loading
         if model_name == "hash":
@@ -155,11 +160,22 @@ class Embedder:
         """True when the model name looks like an MLX-community model."""
         return "mlx" in self.model_name.lower()
 
+    @property
+    def _is_openai_model(self) -> bool:
+        """True when the model name carries the ``openai:`` provider prefix."""
+        return self.model_name.lower().startswith("openai:")
+
     def _ensure_loaded(self) -> None:
         """Lazily load the embedding model on first use."""
         if self._loaded:
             return
         self._loaded = True
+
+        # OpenAI cloud API — requested explicitly via ``openai:`` prefix.
+        # Fail hard if unavailable so the user isn't silently downgraded.
+        if self._is_openai_model:
+            self._load_openai()
+            return
 
         # Try MLX first for MLX-tagged models
         if self._is_mlx_model:
@@ -173,6 +189,28 @@ class Embedder:
         # Fall back to hash
         logger.info("No ML embedding framework available. Using hash-based embeddings.")
         self._mode = "hash"
+
+    def _load_openai(self) -> None:
+        """Initialize the OpenAI embeddings client. Raises on missing deps / key."""
+        try:
+            from openai import OpenAI
+        except ImportError as exc:
+            raise RuntimeError(
+                "OpenAI embeddings requested ('openai:' prefix) but the 'openai' "
+                "package is not installed. Install with: pip install openai"
+            ) from exc
+        import os
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise RuntimeError(
+                "OpenAI embeddings requested but OPENAI_API_KEY is not set."
+            )
+        self._openai_model = self.model_name.split(":", 1)[1]
+        self._model = OpenAI()
+        logger.info("Loading OpenAI embedding model: %s ...", self._openai_model)
+        test = self._embed_openai(["test"])
+        self.dim = test.shape[1]
+        self._mode = "openai"
+        logger.info("Loaded OpenAI model: %s (dim=%d)", self._openai_model, self.dim)
 
     def _try_load_mlx(self) -> bool:
         """Attempt to load the model via mlx-embeddings.  Returns True on success."""
@@ -228,9 +266,12 @@ class Embedder:
         """
         self._ensure_loaded()
         prefix = self.query_prefix if is_query else self.passage_prefix
+        # OpenAI models don't use BGE-style instruction prefixes — skip them.
         if prefix and self._mode in ("sentence_transformers", "mlx"):
             texts = [prefix + t for t in texts]
-        if self._mode == "mlx":
+        if self._mode == "openai":
+            return self._embed_openai(texts)
+        elif self._mode == "mlx":
             return self._embed_mlx(texts)
         elif self._mode == "sentence_transformers":
             # Batch encode to avoid OOM on large corpora with big models
@@ -241,6 +282,23 @@ class Embedder:
             ).astype(np.float32)
         else:
             return self._hash_embed(texts)
+
+    def _embed_openai(self, texts: list[str]) -> np.ndarray:
+        """Embed texts via the OpenAI embeddings API.
+
+        Empty strings are rejected by the API, so they are replaced with a
+        single space (matches behavior of other backends which never error
+        on empty input).
+        """
+        safe = [t if t else " " for t in texts]
+        # OpenAI caps at 2048 inputs per request; chunk defensively.
+        batch_size = 256
+        vecs: list[list[float]] = []
+        for i in range(0, len(safe), batch_size):
+            chunk = safe[i:i + batch_size]
+            resp = self._model.embeddings.create(model=self._openai_model, input=chunk)
+            vecs.extend(item.embedding for item in resp.data)
+        return np.array(vecs, dtype=np.float32)
 
     def _embed_mlx(self, texts: list[str]) -> np.ndarray:
         """Embed texts using the MLX backend."""
@@ -469,7 +527,7 @@ class Retriever:
         # When a hard gate (required_tags) is active for this query, the scope
         # filter in Step 3 prunes the candidate pool.  With the default top_k*3
         # over-fetch, admissible items that rank just outside that window fall
-        # through to the flat-priority backfill in Step 3.5 -- which, on large
+        # through to the flat-priority backfill in Step 3.5 — which, on large
         # corpora, lets flat-scored items displace genuinely-similar matches and
         # depresses retrieval quality.  Widen the over-fetch to the full corpus
         # when gated so the admissible set is ranked by real similarity; the
@@ -674,6 +732,15 @@ class Retriever:
         for inst in self._instruction_list:
             if inst.id in already_seen:
                 continue
+
+            # A hard gate holds here too: mandatory means "always include
+            # where admissible", not "include for every agent". Without this,
+            # an agent-scoped instruction that happens to carry a mandatory
+            # tag is injected into every other agent's prompt.
+            if inst.scope.required_tags:
+                ctx_tags = set(context.tags) if context and context.tags else set()
+                if not set(inst.scope.required_tags) <= ctx_tags:
+                    continue
 
             inst_tags = set(inst.tags) | set(inst.scope.tags)
             if inst_tags & mandatory_tags:

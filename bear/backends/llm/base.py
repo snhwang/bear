@@ -39,6 +39,7 @@ class GenerateRequest:
     max_tokens: int | None = None
     thinking: bool = False
     response_format: dict | None = None
+    seed: int | None = None
 
 
 @dataclass

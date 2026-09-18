@@ -339,6 +339,7 @@ class LLM:
         min_p: float | None = None,
         max_tokens: int | None = None,
         response_format: dict | None = None,
+        seed: int | None = None,
     ) -> GenerateResponse:
         """Generate a response using the configured backend.
 
@@ -353,6 +354,10 @@ class LLM:
             top_k: Top-k sampling limit.
             min_p: Minimum probability threshold.
             max_tokens: Maximum tokens to generate.
+            response_format: Optional structured-output schema.
+            seed: Optional sampling seed. Backends that support it
+                (ollama, OpenAI-compatible servers) become reproducible
+                for a fixed model build and sampling configuration.
 
         Returns:
             GenerateResponse with the generated content and any tool calls.
@@ -368,6 +373,7 @@ class LLM:
             min_p=min_p,
             max_tokens=max_tokens,
             response_format=response_format,
+            seed=seed,
         )
         return await self._backend.generate(request)
 

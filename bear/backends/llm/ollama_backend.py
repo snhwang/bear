@@ -72,6 +72,8 @@ class OllamaBackend(LLMBackendBase):
             options["min_p"] = request.min_p
         if request.max_tokens:
             options["num_predict"] = request.max_tokens
+        if request.seed is not None:
+            options["seed"] = request.seed
 
         kwargs: dict = {
             "model": self.model,

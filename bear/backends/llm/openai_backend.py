@@ -51,10 +51,15 @@ class OpenAIBackend(LLMBackendBase):
         api_key: str | None = None,
         base_url: str | None = None,
         no_system_role: bool = False,
+        timeout: float | None = None,
     ):
         self.model = model
         self.base_url = base_url
         self.no_system_role = no_system_role
+        # Request timeout in seconds. A heavily loaded self-hosted server can
+        # take many minutes for one long completion, and the default below is
+        # then far too short: every request times out and is retried forever.
+        self.timeout = timeout
         # For local servers, use a placeholder key so the openai client
         # doesn't complain about a missing key.
         if base_url and not api_key and not os.environ.get("OPENAI_API_KEY"):
@@ -94,7 +99,9 @@ class OpenAIBackend(LLMBackendBase):
             kwargs: dict = {"api_key": self.api_key}
             if self.base_url:
                 kwargs["base_url"] = self.base_url
-            if self.is_local:
+            if self.timeout is not None:
+                kwargs["timeout"] = float(self.timeout)
+            elif self.is_local:
                 kwargs["timeout"] = 120.0  # local models can be slow
             self._client = AsyncOpenAI(**kwargs)
             return self._client
@@ -139,6 +146,8 @@ class OpenAIBackend(LLMBackendBase):
             kwargs["tools"] = request.tools
         if request.response_format:
             kwargs["response_format"] = request.response_format
+        if request.seed is not None:
+            kwargs["seed"] = request.seed
 
         # Pass top_k / min_p via extra_body for Ollama-compatible servers
         extra = {}
@@ -147,12 +156,16 @@ class OpenAIBackend(LLMBackendBase):
         if request.min_p is not None:
             extra["min_p"] = request.min_p
 
-        # For local servers (Ollama, etc.), disable "thinking" mode unless
-        # explicitly requested, so the model doesn't consume all tokens on
-        # <think> reasoning and return empty content.
+        # For local servers (Ollama, vLLM, etc.), disable "thinking" mode
+        # unless explicitly requested, so the model doesn't consume all tokens
+        # on reasoning and return empty / meta-commentary content.
+        # - ``think``: Ollama-style param.
+        # - ``chat_template_kwargs.enable_thinking``: vLLM/Gemma/Qwen3-style param
+        #   forwarded into the chat template.
         if self.is_local and not request.thinking:
             extra["think"] = False
             extra["num_ctx"] = 8192
+            extra["chat_template_kwargs"] = {"enable_thinking": False}
 
         if extra:
             kwargs["extra_body"] = extra
@@ -178,12 +191,20 @@ class OpenAIBackend(LLMBackendBase):
                             len(content),
                         )
 
-                # Safety net: strip <think>...</think> blocks that some models
-                # (deepseek-r1, qwk, gemma3) embed directly in the content.
-                if "<think>" in content:
+                # Safety net: strip reasoning blocks that some models embed
+                # directly in the content — covers both plain <think>...</think>
+                # (deepseek-r1, qwen-think) and <|think|>...<|/think|> /
+                # <|begin_of_thought|>...<|end_of_thought|> variants (gemma,
+                # some Qwen derivatives).
+                if ("<think>" in content or "<|think|>" in content
+                        or "<|begin_of_thought|>" in content):
                     import re
                     content = re.sub(
-                        r"<think>[\s\S]*?</think>", "", content
+                        r"<think>[\s\S]*?</think>|"
+                        r"<\|think\|>[\s\S]*?<\|/think\|>|"
+                        r"<\|begin_of_thought\|>[\s\S]*?<\|end_of_thought\|>",
+                        "",
+                        content,
                     ).strip()
 
                 # Parse tool calls from the response

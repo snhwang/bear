@@ -21,6 +21,15 @@ from bear.evolution import (
     breed,
     express,
 )
+from bear.genetics.genotype import (
+    DEFAULT_LOCUS_KEY,
+    PLOIDY_DOMINANCE,
+    breeding_config,
+    dominance_for_ploidy,
+    expressed_genes,
+    genes_to_corpus,
+    locus_registry,
+)
 
 __all__ = [
     # Genetic types
@@ -36,4 +45,12 @@ __all__ = [
     # Evolution orchestration
     "Evolution",
     "EvolutionConfig",
+    # Genotype <-> corpus helpers (reusable across apps)
+    "genes_to_corpus",
+    "expressed_genes",
+    "locus_registry",
+    "breeding_config",
+    "dominance_for_ploidy",
+    "PLOIDY_DOMINANCE",
+    "DEFAULT_LOCUS_KEY",
 ]

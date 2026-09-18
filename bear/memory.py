@@ -125,6 +125,13 @@ class LLMMemoryExtractor(MemoryExtractor):
                     persona / core directive priority so memories do not
                     dominate retrieval but surface when relevant.
         memory_tag: Tag applied to all produced instructions for easy filtering.
+        reserved_tags: Tags an LLM-generated topic may not become, e.g. the
+            retriever's mandatory tags. A memory about "safety" must not
+            turn into a mandatory instruction.
+        scope_to_agent: If True, each memory is hard-gated on its agent id
+            (``required_tags``), so only that agent can retrieve it. The
+            default soft tag admits it for its agent but does not keep it
+            from other agents whose queries are topically similar.
     """
 
     def __init__(
@@ -134,8 +141,12 @@ class LLMMemoryExtractor(MemoryExtractor):
         max_memories_per_batch: int = 2,
         priority: int = 45,
         memory_tag: str = "memory",
+        scope_to_agent: bool = False,
+        reserved_tags: tuple[str, ...] | list[str] = (),
     ) -> None:
         self._agent_name = agent_name
+        self._scope_to_agent = scope_to_agent
+        self._reserved_tags = {t.lower() for t in reserved_tags} | {memory_tag.lower()}
         self._batch_size = batch_size
         self._max_per_batch = max_memories_per_batch
         self._priority = priority
@@ -203,7 +214,8 @@ class LLMMemoryExtractor(MemoryExtractor):
         now = time.time()
         for mem in memories[: self._max_per_batch]:
             content = mem.get("content", "").strip()
-            topics = [str(t) for t in mem.get("topics", [])][:5]
+            topics = [str(t) for t in mem.get("topics", [])
+                      if str(t).lower() not in self._reserved_tags][:5]
             if not content:
                 continue
             self._count += 1
@@ -215,7 +227,10 @@ class LLMMemoryExtractor(MemoryExtractor):
                     f"Memory — {name} previously shared: {content}\n"
                     f"Mention this naturally if the topic comes up again."
                 ),
-                scope=ScopeCondition(tags=[agent_id] + topics),
+                scope=ScopeCondition(
+                    required_tags=[agent_id] if self._scope_to_agent else [],
+                    tags=[agent_id] + topics,
+                ),
                 tags=[self._memory_tag, agent_id] + topics,
                 metadata={"source": "memory_extractor", "created": now},
             )

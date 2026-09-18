@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -62,9 +64,39 @@ class Corpus:
         corpus._load_file(Path(path))
         return corpus
 
+    @classmethod
+    def from_dicts(cls, dicts: list[dict[str, Any]]) -> Corpus:
+        """Rebuild a Corpus from a list of Instruction dicts (see :meth:`to_dicts`).
+
+        Round-trips ``to_dicts()`` output, so it accepts either full
+        ``Instruction.model_dump()`` dicts or the looser YAML-style dicts that
+        :func:`_parse_instruction` handles.
+        """
+        corpus = cls()
+        for item in dicts:
+            corpus.add(_parse_instruction(item))
+        return corpus
+
+    @classmethod
+    def from_json(cls, text: str) -> Corpus:
+        """Rebuild a Corpus from a JSON string produced by :meth:`to_json`."""
+        return cls.from_dicts(json.loads(text))
+
+    def to_dicts(self) -> list[dict[str, Any]]:
+        """Serialize the corpus to a JSON-safe list of Instruction dicts.
+
+        The inverse of :meth:`from_dicts`. Useful for persistence, HTTP
+        transport, and logging where YAML files are not appropriate.
+        """
+        return [inst.model_dump(mode="json") for inst in self]
+
+    def to_json(self, **json_kwargs: Any) -> str:
+        """Serialize the corpus to a JSON string (inverse of :meth:`from_json`)."""
+        return json.dumps(self.to_dicts(), **json_kwargs)
+
     def _load_file(self, path: Path) -> None:
         """Parse a YAML file and add its instructions."""
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         if data is None:

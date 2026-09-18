@@ -296,6 +296,8 @@ class TestGatedOverfetch:
 
     def _build(self):
         import numpy as np
+        # gold has the highest similarity but a realistic low cosine (<0.5);
+        # ten near-zero distractors sit outside the old top_k*3 window.
         specs = [("gold", 0.45), ("d1", 0.44), ("d2", 0.43)]
         specs += [(f"low{i}", 0.02) for i in range(10)]
         corpus = Corpus()
@@ -332,11 +334,14 @@ class TestGatedOverfetch:
         results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
         assert results, "expected a result"
         assert results[0].instruction.id == "gold"
+        # No flat-injected artifact should appear (similarity==0, final==0.5).
         assert not any(
             r.similarity == 0.0 and r.final_score == 0.5 for r in results
         )
 
     def test_old_narrow_overfetch_reproduces_bug(self):
+        # Sanity check that the test actually exercises the displacement: with
+        # the widening disabled, the flat-injected distractor wins.
         retriever = self._build()
         retriever._has_required_tags = False
         results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
