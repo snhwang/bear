@@ -49,6 +49,26 @@ from bear.references import (
     collect_references,
     extract_references,
 )
+from bear.markers import (
+    ActionMarker,
+    EmittedMarker,
+    MarkerAction,
+    MarkerHandler,
+    MarkerRegistry,
+    Reference,
+    ReferenceResolution,
+    coerce_enum,
+    coerce_float,
+    coerce_int,
+    emit,
+    parse_actions,
+    parse_kv_args,
+    parse_references,
+    reference,
+    resolve_references,
+    strip_actions,
+)
+from bear.provenance import Provenance
 
 __version__ = "0.1.10"
 
@@ -94,6 +114,26 @@ __all__ = [
     "InstructionRef",
     "extract_references",
     "collect_references",
+    # Markers (shared grammar)
+    "ActionMarker",
+    "MarkerAction",
+    "MarkerHandler",
+    "MarkerRegistry",
+    "Reference",
+    "ReferenceResolution",
+    "parse_actions",
+    "strip_actions",
+    "parse_kv_args",
+    "coerce_float",
+    "coerce_int",
+    "coerce_enum",
+    "parse_references",
+    "resolve_references",
+    "reference",
+    "EmittedMarker",
+    "emit",
+    # Provenance
+    "Provenance",
     # Logging
     "RetrievalEvent",
     "set_log_handler",
