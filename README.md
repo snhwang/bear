@@ -499,6 +499,9 @@ response.used_reasoning       # True when that fallback was applied
   endpoint.** That endpoint ignores the thinking parameters, so a reasoning
   model spends a short budget on thinking and returns empty content. The
   native backend sends `think` and gets a real reply.
+- Where a model exposes its reasoning separately, both field names are read:
+  `reasoning` (OpenAI-compatible providers) and `reasoning_content` (vLLM and
+  SGLang started with a reasoning parser, such as `--reasoning-parser qwen3`).
 - `reasoning_fallback=True` (the default) returns the model's reasoning text
   when the reply itself is empty, so a caller always gets something back.
   **Set it to `False` when only genuine output is acceptable** — spoken

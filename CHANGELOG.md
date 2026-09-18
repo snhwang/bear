@@ -31,6 +31,10 @@ the initial submission of the *Retrieval-Governed Context* paper.
 - `LLMMemoryExtractor`: `scope_to_agent` hard-gates a memory on its agent id,
   and `reserved_tags` stops an LLM-generated topic from becoming a mandatory
   tag.
+- OpenAI backend reads `reasoning_content` as well as `reasoning`. vLLM and
+  SGLang use the former when started with a reasoning parser
+  (`--reasoning-parser qwen3`), so reasoning output from those servers was not
+  recognized at all.
 - LLM: `thinking` and `reasoning_fallback` parameters on `LLM.generate()`, and
   `GenerateResponse.used_reasoning`. `thinking=False` (the default) now tells
   local servers to disable thinking through `chat_template_kwargs.enable_thinking`

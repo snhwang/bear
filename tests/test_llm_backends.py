@@ -11,9 +11,10 @@ from bear.backends.llm.openai_backend import OpenAIBackend
 
 
 class _Message:
-    def __init__(self, content, reasoning=None):
+    def __init__(self, content, reasoning=None, reasoning_content=None):
         self.content = content
         self.reasoning = reasoning
+        self.reasoning_content = reasoning_content
         self.tool_calls = None
 
 
@@ -58,6 +59,19 @@ def test_reasoning_fallback_can_be_refused():
         GenerateRequest(user="hi", reasoning_fallback=False)))
     assert response.content == ""
     assert response.used_reasoning is False
+
+
+def test_vllm_reasoning_content_field_is_recognized():
+    """vLLM and SGLang name the field reasoning_content, not reasoning."""
+    backend = _backend(_Message("", reasoning_content="Okay, so the villager…"))
+    response = asyncio.run(backend.generate(GenerateRequest(user="hi")))
+    assert response.content.startswith("Okay")
+    assert response.used_reasoning is True
+
+    backend = _backend(_Message("", reasoning_content="Okay, so the villager…"))
+    refused = asyncio.run(backend.generate(
+        GenerateRequest(user="hi", reasoning_fallback=False)))
+    assert refused.content == ""
 
 
 def test_real_content_is_never_replaced_by_reasoning():

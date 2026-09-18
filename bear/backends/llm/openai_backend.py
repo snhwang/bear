@@ -181,11 +181,15 @@ class OpenAIBackend(LLMBackendBase):
                 used_reasoning = False
 
                 # Some reasoning models (qwen3, deepseek-r1) put their output
-                # in a "reasoning" field and leave content empty.  Use it as a
+                # in a reasoning field and leave content empty.  Use it as a
                 # fallback so callers always get *something* back — unless the
-                # caller asked for real output only.
+                # caller asked for real output only.  The field is named
+                # "reasoning" by OpenAI-compatible providers and
+                # "reasoning_content" by vLLM and SGLang when a reasoning
+                # parser is configured (e.g. --reasoning-parser qwen3).
                 if not content:
-                    reasoning = getattr(msg, "reasoning", None) or ""
+                    reasoning = (getattr(msg, "reasoning", None)
+                                 or getattr(msg, "reasoning_content", None) or "")
                     if reasoning and request.reasoning_fallback:
                         content = reasoning
                         used_reasoning = True
