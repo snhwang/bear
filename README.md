@@ -455,7 +455,7 @@ The retriever will automatically use metadata-aware methods when `supports_metad
 
 | Backend | Models | Requires |
 |---------|--------|----------|
-| `OLLAMA` | llama3, mistral, phi3, etc. | Local Ollama install |
+| `OLLAMA` | llama3, mistral, qwen3, etc. | Local Ollama install (`uv pip install -e ".[ollama]"`) |
 | `OPENAI` | gpt-4o, gpt-4o-mini | `OPENAI_API_KEY` |
 | `ANTHROPIC` | claude-sonnet, claude-opus | `ANTHROPIC_API_KEY` |
 | `GEMINI` | gemini-2.0-flash, etc. | `GEMINI_API_KEY` |
@@ -468,6 +468,10 @@ at a local one with `base_url` (vLLM, SGLang, LM Studio, or Ollama's
 llm = LLM(backend=LLMBackend.OPENAI, model="qwen3.8-27b",
           base_url="http://localhost:8355/v1")
 ```
+
+`OLLAMA_HOST` is honored, and because that variable doubles as the address the
+Ollama *server* binds to, a wildcard such as `0.0.0.0` is dialed on loopback
+instead of being used verbatim.
 
 ### Thinking and reasoning output
 
@@ -490,6 +494,11 @@ response.used_reasoning       # True when that fallback was applied
   vLLM and SGLang, and via `think` for Ollama. A model that rejects the
   parameter is retried without it. Set `thinking=True` for reasoning-heavy work
   where a longer budget is intended.
+
+  **For Ollama, use the `OLLAMA` backend rather than its OpenAI-compatible
+  endpoint.** That endpoint ignores the thinking parameters, so a reasoning
+  model spends a short budget on thinking and returns empty content. The
+  native backend sends `think` and gets a real reply.
 - `reasoning_fallback=True` (the default) returns the model's reasoning text
   when the reply itself is empty, so a caller always gets something back.
   **Set it to `False` when only genuine output is acceptable** — spoken

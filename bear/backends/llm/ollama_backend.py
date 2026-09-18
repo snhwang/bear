@@ -14,6 +14,41 @@ from bear.backends.llm.base import (
 
 logger = logging.getLogger(__name__)
 
+# Addresses a server binds to, which a client cannot dial.
+_WILDCARD_HOSTS = {"0.0.0.0", "::", "[::]", "*"}
+
+
+def normalize_host(raw: str | None) -> str | None:
+    """Turn an ``OLLAMA_HOST`` value into a URL a client can connect to.
+
+    ``OLLAMA_HOST`` is also how the *server* is told what to bind to, so it is
+    often a wildcard address such as ``0.0.0.0``. Dialing that fails, so the
+    loopback address is used instead. A missing scheme or port is filled in.
+    """
+    if not raw:
+        return None
+    host = raw.strip().rstrip("/")
+    if not host:
+        return None
+    if not host.startswith("http"):
+        host = f"http://{host}"
+    scheme, _, rest = host.partition("://")
+
+    if rest.startswith("["):              # bracketed IPv6, e.g. [::1]:11434
+        hostname, _, tail = rest.partition("]")
+        hostname += "]"
+        port = tail.lstrip(":")
+    elif rest.count(":") > 1:             # bare IPv6, e.g. :: or ::1
+        hostname, port = rest, ""
+    else:
+        hostname, _, port = rest.partition(":")
+
+    if hostname.strip("[]") in _WILDCARD_HOSTS:
+        hostname = "127.0.0.1"
+    elif ":" in hostname and not hostname.startswith("["):
+        hostname = f"[{hostname}]"        # IPv6 literals need brackets in a URL
+    return f"{scheme}://{hostname}:{port or '11434'}"
+
 
 class OllamaBackend(LLMBackendBase):
     """Ollama backend for local or cloud LLM inference.
@@ -44,8 +79,9 @@ class OllamaBackend(LLMBackendBase):
                     host=host,
                     headers={"Authorization": f"Bearer {api_key}"},
                 )
-            if self.host:
-                return client_cls(host=self.host)
+            host = self.host or normalize_host(os.environ.get("OLLAMA_HOST"))
+            if host:
+                return client_cls(host=host)
             return client_cls()
         except ImportError:
             raise ImportError(

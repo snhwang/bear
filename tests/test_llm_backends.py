@@ -134,3 +134,37 @@ def test_ollama_retries_without_think_when_the_model_rejects_it(fake_ollama, mon
     assert response.content == "hello"
     client = _FakeOllamaAsyncClient.instances[-1]
     assert len(client.calls) == 2 and "think" not in client.calls[1]
+
+
+def test_wildcard_ollama_host_is_dialed_on_loopback(fake_ollama, monkeypatch):
+    """OLLAMA_HOST doubles as the server's bind address, often 0.0.0.0."""
+    from bear.backends.llm.ollama_backend import OllamaBackend, normalize_host
+
+    assert normalize_host("0.0.0.0") == "http://127.0.0.1:11434"
+    assert normalize_host("::") == "http://127.0.0.1:11434"
+    assert normalize_host("myhost") == "http://myhost:11434"
+    assert normalize_host("http://box:1234") == "http://box:1234"
+    assert normalize_host("[::]:11434") == "http://127.0.0.1:11434"
+    assert normalize_host("::1") == "http://[::1]:11434"
+    assert normalize_host("") is None
+
+    captured = {}
+
+    def init(self, *args, **kwargs):
+        captured["host"] = kwargs.get("host")
+        self.calls = []
+        self.reject_think = False
+
+    monkeypatch.setattr(_FakeOllamaAsyncClient, "__init__", init)
+    monkeypatch.setenv("OLLAMA_HOST", "0.0.0.0")
+    asyncio.run(OllamaBackend(model="qwen3.8:27b").generate(GenerateRequest(user="hi")))
+    assert captured["host"] == "http://127.0.0.1:11434"
+
+
+def test_llm_probe_hosts_skip_the_wildcard(monkeypatch):
+    from bear.llm import LLM
+
+    monkeypatch.setenv("OLLAMA_HOST", "0.0.0.0")
+    hosts = LLM._get_ollama_hosts()
+    assert "http://0.0.0.0:11434" not in hosts
+    assert hosts[0] == "http://127.0.0.1:11434"

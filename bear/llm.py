@@ -137,16 +137,14 @@ class LLM:
 
         hosts: list[str] = []
 
-        # 1. Honour the standard OLLAMA_HOST env var.
-        env_host = os.environ.get("OLLAMA_HOST")
+        # 1. Honour the standard OLLAMA_HOST env var.  It doubles as the
+        #    server's bind address, so a wildcard there is rewritten to
+        #    loopback rather than dialed.
+        from bear.backends.llm.ollama_backend import normalize_host
+
+        env_host = normalize_host(os.environ.get("OLLAMA_HOST"))
         if env_host:
-            h = env_host.rstrip("/")
-            if not h.startswith("http"):
-                h = f"http://{h}"
-            # Ensure a port is present.
-            if h.count(":") < 2 and ":11434" not in h:
-                h += ":11434"
-            hosts.append(h)
+            hosts.append(env_host)
 
         # 2. Default localhost.
         hosts.append("http://localhost:11434")

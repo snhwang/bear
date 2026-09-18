@@ -45,6 +45,11 @@ the initial submission of the *Retrieval-Governed Context* paper.
 - Ollama backend uses the asynchronous client. It previously made blocking
   calls inside `async def generate`, which stalled the caller's event loop —
   visible in any application that keeps running while an agent speaks.
+- Ollama backend resolves `OLLAMA_HOST` itself. That variable doubles as the
+  address the server binds to, so a wildcard value such as `0.0.0.0` was passed
+  to the client verbatim and every call failed to connect; it is now dialed on
+  loopback, with scheme, port and IPv6 brackets filled in. `LLM._get_ollama_hosts`
+  uses the same normalization.
 - Anthropic backend sends sampling parameters via `extra_body` and no longer
   retries errors that cannot succeed on retry. The OpenAI request timeout is
   settable.
