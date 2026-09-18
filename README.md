@@ -340,6 +340,21 @@ The embedding backend controls how instruction vectors are stored and searched. 
 | `numpy` | (included) | Small corpora (< 500 instructions). No extra deps. |
 | `faiss` | `uv pip install -e ".[faiss]"` | Large corpora needing fast ANN search. |
 | `chromadb` | `uv pip install -e ".[chromadb]"` | Persistence, metadata filtering, or both. |
+| `bm25` | (included) | Lexical (sparse) retrieval with no embedding model at all. CPU-only deployments, and corpora whose instructions share the vocabulary of the query. |
+| `itr` | `uv pip install -e ".[itr]"` | Hybrid sparse and dense retrieval. |
+
+```python
+from bear import Config, EmbeddingBackend, Retriever
+
+# CPU-only: no embedding model is loaded at all
+cfg = Config(embedding_backend=EmbeddingBackend.BM25)
+retriever = Retriever(corpus, config=cfg)
+retriever.build_index()
+```
+
+BM25 scores are normalized so the best match in a query scores 1.0. Rankings
+are meaningful, absolute scores are not comparable across queries, so a fixed
+`default_threshold` behaves differently than it does with cosine similarity.
 
 ### Using ChromaDB
 
@@ -444,6 +459,106 @@ The retriever will automatically use metadata-aware methods when `supports_metad
 | `OPENAI` | gpt-4o, gpt-4o-mini | `OPENAI_API_KEY` |
 | `ANTHROPIC` | claude-sonnet, claude-opus | `ANTHROPIC_API_KEY` |
 | `GEMINI` | gemini-2.0-flash, etc. | `GEMINI_API_KEY` |
+
+The `OPENAI` backend speaks to any server implementing the same API. Point it
+at a local one with `base_url` (vLLM, SGLang, LM Studio, or Ollama's
+`/v1` endpoint):
+
+```python
+llm = LLM(backend=LLMBackend.OPENAI, model="qwen3.8-27b",
+          base_url="http://localhost:8355/v1")
+```
+
+### Thinking and reasoning output
+
+Reasoning models spend the token budget on thinking before they answer, which
+leaves short replies empty. Two options control this:
+
+```python
+response = await llm.generate(
+    system=guidance,
+    user=message,
+    max_tokens=80,
+    thinking=False,           # default: ask local servers to disable thinking
+    reasoning_fallback=True,  # default: fall back to the reasoning text
+)
+response.used_reasoning       # True when that fallback was applied
+```
+
+- `thinking=False` (the default) tells local servers to turn thinking off, via
+  `chat_template_kwargs.enable_thinking` for Qwen-family chat templates on
+  vLLM and SGLang, and via `think` for Ollama. A model that rejects the
+  parameter is retried without it. Set `thinking=True` for reasoning-heavy work
+  where a longer budget is intended.
+- `reasoning_fallback=True` (the default) returns the model's reasoning text
+  when the reply itself is empty, so a caller always gets something back.
+  **Set it to `False` when only genuine output is acceptable** — spoken
+  dialogue, structured answers, anything shown to a user — and treat empty
+  content as a failed generation. `response.used_reasoning` reports whether
+  the fallback was applied.
+
+
+## Markers
+
+Markers are how BEAR text carries structure: behavior that a domain executes,
+citations that a policy governs, and signals a system emits. The parsers are
+domain-free — a domain supplies meaning by registering handlers.
+
+**Action markers** `[!name(args)]` say *do something*. They live inside
+instruction content, so the behavior and the situation that triggers it stay in
+one sentence, which is what lets an evolved or bred instruction keep working.
+
+```python
+from bear import MarkerRegistry, MarkerAction, parse_kv_args
+
+class GoHandler:
+    name = "go"
+    def to_action(self, marker, context=None):
+        place = parse_kv_args(marker.args_raw).get("to")
+        return MarkerAction("go", {"place": place}) if place else None
+
+registry = MarkerRegistry()
+registry.register(GoHandler())
+
+text, actions = registry.process("When it gets dark, head home. [!go(to=home)]")
+# text    -> "When it gets dark, head home."
+# actions -> [MarkerAction(kind="go", data={"place": "home"})]
+```
+
+An unknown marker, or a handler that returns `None` or raises, is dropped
+silently rather than breaking a turn, so a caller can fall through to its next
+candidate instruction.
+
+**Rewriting text without losing markers.** An LLM asked to blend or mutate an
+instruction will paraphrase markers away, which removes the behavior from the
+population entirely. `pin_actions` replaces each marker and its triggering
+clause with a placeholder before the rewrite, and `repair_actions` puts them
+back and rejects markers the model invented:
+
+```python
+from bear import express, marker_blend
+
+# A co-dominant locus resolves its two alleles through a marker-preserving
+# blend instead of a free paraphrase.  With no rewrite function the blend is
+# the deterministic concatenation of both alleles.
+blend = marker_blend(rewrite, allowed_markers={"go", "flee"})
+expressed = express(corpus, loci, blend_fn=blend)
+```
+
+**Reference markers** `[[kind:id|label]]` say *point at something*. They
+resolve only after a policy check, so a citation cannot leak an entity the
+viewer may not see (`resolve_references` with `permits` and `render`
+callbacks). **Emitted markers** (`emit("mri", "train_complete", ...)`) are
+produced programmatically rather than parsed from text, for signals a governed
+policy reads.
+
+## Provenance
+
+`Provenance` records one decision: an actor decided something about a subject,
+in a context, for a reason. A subject is a `(kind, id)` pair, the same
+vocabulary as a reference marker, so a provenance subject round-trips to and
+from `[[kind:id]]`. Use it where a system must answer "why did this appear?"
+after the fact.
 
 ## Examples
 

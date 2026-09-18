@@ -31,21 +31,22 @@ class OllamaBackend(LLMBackendBase):
         self.host = host
         self._is_cloud = bool((os.environ.get("OLLAMA_API_KEY") or "").strip())
 
-    def _get_client(self):
+    def _get_client(self, asynchronous: bool = True):
         try:
             import ollama
+            client_cls = ollama.AsyncClient if asynchronous else ollama.Client
             api_key = (os.environ.get("OLLAMA_API_KEY") or "").strip()
             if api_key:
                 # Ollama Cloud
                 host = self.host or "https://ollama.com"
                 logger.info(f"Using Ollama Cloud at {host}")
-                return ollama.Client(
+                return client_cls(
                     host=host,
                     headers={"Authorization": f"Bearer {api_key}"},
                 )
             if self.host:
-                return ollama.Client(host=self.host)
-            return ollama.Client()
+                return client_cls(host=self.host)
+            return client_cls()
         except ImportError:
             raise ImportError(
                 "Ollama backend requires the ollama package. "
@@ -53,6 +54,8 @@ class OllamaBackend(LLMBackendBase):
             )
 
     async def generate(self, request: GenerateRequest) -> GenerateResponse:
+        # Async client: a blocking call here would stall the caller's event
+        # loop, which matters for simulations that tick while agents speak.
         client = self._get_client()
 
         messages = []
@@ -83,8 +86,19 @@ class OllamaBackend(LLMBackendBase):
         # Ollama supports OpenAI-style tool schemas natively
         if request.tools:
             kwargs["tools"] = request.tools
+        # Thinking models spend the token budget on reasoning unless told not
+        # to.  Models that don't support the parameter reject the request, so
+        # fall back to a plain call.
+        kwargs["think"] = request.thinking
 
-        response = client.chat(**kwargs)
+        try:
+            response = await client.chat(**kwargs)
+        except Exception as exc:  # noqa: BLE001 - only the think param is retried
+            if "think" not in str(exc).lower():
+                raise
+            logger.debug("Model %s does not support 'think'; retrying without it", self.model)
+            kwargs.pop("think", None)
+            response = await client.chat(**kwargs)
 
         # Parse response — handle both dict-style (older client) and
         # object-style (newer client) responses
@@ -120,7 +134,7 @@ class OllamaBackend(LLMBackendBase):
 
     def is_available(self) -> bool:
         try:
-            client = self._get_client()
+            client = self._get_client(asynchronous=False)
             client.list()
             return True
         except Exception:

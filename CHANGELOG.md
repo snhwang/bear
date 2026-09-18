@@ -10,6 +10,78 @@ from the git log; detailed context lives in the commit history and tag
 messages. Detailed entries begin at `v0.1.9`, the first release made after
 the initial submission of the *Retrieval-Governed Context* paper.
 
+## [Unreleased]
+
+### Added
+
+- `bear.markers`: embedded marker grammars, previously carried only in the
+  development repo. Action markers `[!name(args)]` map to handlers registered
+  on a `MarkerRegistry`; reference markers `[[kind:id|label]]` resolve a
+  governed entity only after a policy check, so a citation cannot leak a
+  withheld entity; emitted markers carry programmatic signals. Also the
+  marker-preserving rewrite operators (`pin_actions`, `repair_actions`,
+  `blend_texts`, `marker_blend`), which keep an LLM paraphrase from deleting
+  behavior from a bred or evolved corpus.
+- `bear.provenance`: one record for "an actor decided something about a
+  subject, in a context, for a reason", sharing the `(kind, id)` subject
+  vocabulary with reference markers.
+- `bear.genetics.genotype`: reusable genotype and corpus helpers
+  (`genes_to_corpus`, `expressed_genes`, `locus_registry`, `breeding_config`).
+- `Corpus.from_dicts()`, to round-trip `to_dicts()` output.
+- `LLMMemoryExtractor`: `scope_to_agent` hard-gates a memory on its agent id,
+  and `reserved_tags` stops an LLM-generated topic from becoming a mandatory
+  tag.
+- LLM: `thinking` and `reasoning_fallback` parameters on `LLM.generate()`, and
+  `GenerateResponse.used_reasoning`. `thinking=False` (the default) now tells
+  local servers to disable thinking through `chat_template_kwargs.enable_thinking`
+  (Qwen-family templates on vLLM and SGLang) or `think` (Ollama), so short
+  replies are not spent on reasoning.
+- README: new sections for markers and provenance; BM25 and ITR added to the
+  vector-backend table with a CPU-only example; local `base_url` usage and the
+  thinking and reasoning options documented under LLM backends.
+
+### Changed
+
+- Ollama backend uses the asynchronous client. It previously made blocking
+  calls inside `async def generate`, which stalled the caller's event loop —
+  visible in any application that keeps running while an agent speaks.
+- Anthropic backend sends sampling parameters via `extra_body` and no longer
+  retries errors that cannot succeed on retry. The OpenAI request timeout is
+  settable.
+- Retriever: when a hard gate (`required_tags`) is active, the over-fetch
+  widens to the full corpus so the admissible set is ranked by real similarity.
+
+### Fixed
+
+- A model that returns empty content while exposing its reasoning no longer
+  has that reasoning silently returned as its reply unless the caller allows
+  it. `reasoning_fallback=True` keeps the old behavior and stays the default;
+  callers that need genuine output only (spoken dialogue, structured answers)
+  pass `reasoning_fallback=False` and treat empty content as a failure.
+
+## [0.1.10] — 2026-07-07
+
+### Added
+
+- Optional `EvolutionConfig.allowed_markers`. An application can declare
+  exactly which action markers it implements, and `generate_with_llm` then
+  forbids anything else, so a synthesized instruction never references an
+  action the host cannot execute. Defaults to `None`, which preserves the
+  previous inference from style examples.
+
+### Changed
+
+- `instruction-tool-retrieval` is an optional dependency (new `itr` extra, also
+  in `all` and `eval`), so `pip install bear` and `import bear` work without it.
+
+### Fixed
+
+- Retrieval under a hard gate: when `required_tags` applies to a query, the
+  over-fetch widens to the full corpus, instead of admissible instructions
+  being displaced by the flat-priority backfill on large corpora. Non-gated
+  queries are unchanged. Regression tests cover both the fixed path and the
+  reintroduced bug.
+
 ## [0.1.9] — 2026-07-02
 
 ### Added

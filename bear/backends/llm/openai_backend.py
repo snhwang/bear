@@ -178,17 +178,25 @@ class OpenAIBackend(LLMBackendBase):
 
                 msg = response.choices[0].message
                 content = msg.content or ""
+                used_reasoning = False
 
                 # Some reasoning models (qwen3, deepseek-r1) put their output
                 # in a "reasoning" field and leave content empty.  Use it as a
-                # fallback so callers always get *something* back.
+                # fallback so callers always get *something* back — unless the
+                # caller asked for real output only.
                 if not content:
                     reasoning = getattr(msg, "reasoning", None) or ""
-                    if reasoning:
+                    if reasoning and request.reasoning_fallback:
                         content = reasoning
+                        used_reasoning = True
                         logger.debug(
                             "Content empty, using reasoning field (%d chars)",
                             len(content),
+                        )
+                    elif reasoning:
+                        logger.debug(
+                            "Content empty and reasoning_fallback off; "
+                            "returning empty content (thinking left on?)",
                         )
 
                 # Safety net: strip reasoning blocks that some models embed
@@ -232,6 +240,7 @@ class OpenAIBackend(LLMBackendBase):
                         "completion_tokens": response.usage.completion_tokens if response.usage else 0,
                     },
                     tool_calls=tool_calls,
+                    used_reasoning=used_reasoning,
                 )
             except Exception as e:
                 last_exc = e

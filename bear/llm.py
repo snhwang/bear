@@ -338,6 +338,8 @@ class LLM:
         top_k: int | None = None,
         min_p: float | None = None,
         max_tokens: int | None = None,
+        thinking: bool = False,
+        reasoning_fallback: bool = True,
         response_format: dict | None = None,
         seed: int | None = None,
     ) -> GenerateResponse:
@@ -354,6 +356,14 @@ class LLM:
             top_k: Top-k sampling limit.
             min_p: Minimum probability threshold.
             max_tokens: Maximum tokens to generate.
+            thinking: Ask the model to reason before replying.  Left off,
+                local backends (Ollama, vLLM, LM Studio) are told to disable
+                thinking so short replies are not spent on reasoning.
+            reasoning_fallback: When the model returns empty content but
+                exposes its reasoning, return that reasoning as the content.
+                Set False when only real output is acceptable; the response
+                then carries empty content, and ``used_reasoning`` says
+                whether a fallback was applied.
             response_format: Optional structured-output schema.
             seed: Optional sampling seed. Backends that support it
                 (ollama, OpenAI-compatible servers) become reproducible
@@ -372,6 +382,8 @@ class LLM:
             top_k=top_k,
             min_p=min_p,
             max_tokens=max_tokens,
+            thinking=thinking,
+            reasoning_fallback=reasoning_fallback,
             response_format=response_format,
             seed=seed,
         )

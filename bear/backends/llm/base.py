@@ -40,6 +40,11 @@ class GenerateRequest:
     thinking: bool = False
     response_format: dict | None = None
     seed: int | None = None
+    # When a model returns empty content but exposes its reasoning, use the
+    # reasoning text as the reply.  Callers that need real output only (spoken
+    # dialogue, structured answers) should set this False and handle the empty
+    # response themselves.
+    reasoning_fallback: bool = True
 
 
 @dataclass
@@ -50,6 +55,9 @@ class GenerateResponse:
     model: str = ""
     usage: dict | None = None
     tool_calls: list[ToolCall] = field(default_factory=list)
+    # True when ``content`` came from the model's reasoning field because the
+    # reply itself was empty (see GenerateRequest.reasoning_fallback).
+    used_reasoning: bool = False
 
 
 class LLMBackendBase(ABC):
