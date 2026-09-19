@@ -346,3 +346,53 @@ class TestGatedOverfetch:
         retriever._has_required_tags = False
         results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
         assert results and results[0].instruction.id != "gold"
+
+
+class TestInjectedEmbedder:
+    """A caller can supply vectors from anywhere: a service, a stand-in, a fake."""
+
+    def _corpus(self):
+        from bear import Corpus, Instruction, InstructionType
+
+        return Corpus.from_dicts([
+            {"id": "a", "type": InstructionType.DIRECTIVE, "priority": 50,
+             "content": "when it rains, go home"},
+            {"id": "b", "type": InstructionType.DIRECTIVE, "priority": 50,
+             "content": "when the sun shines, work the fields"},
+        ])
+
+    def test_injected_embedder_is_used_for_corpus_and_query(self):
+        import numpy as np
+
+        from bear import Retriever
+
+        class Recording:
+            def __init__(self):
+                self.corpus_texts = None
+                self.queries = []
+
+            def embed(self, texts, is_query=False):
+                self.corpus_texts = list(texts)
+                # "rains" first, "sun" second, in orthogonal directions
+                return np.array([[1.0, 0.0] if "rain" in t else [0.0, 1.0]
+                                 for t in texts], dtype=np.float32)
+
+            def embed_single(self, text, is_query=False):
+                self.queries.append((text, is_query))
+                return np.array([1.0, 0.0], dtype=np.float32)
+
+        embedder = Recording()
+        retriever = Retriever(self._corpus(), embedder=embedder)
+        retriever.build_index()
+        assert embedder.corpus_texts is not None and len(embedder.corpus_texts) == 2
+
+        results = retriever.retrieve("it is pouring", top_k=1)
+        assert embedder.queries and embedder.queries[0][1] is True
+        assert results[0].id == "a"        # ranked by the injected vectors
+
+    def test_without_an_embedder_the_configured_model_is_used(self):
+        from bear import Config, Retriever
+
+        retriever = Retriever(self._corpus(), config=Config(embedding_model="hash"))
+        retriever.build_index()
+        assert retriever.retrieve("anything", top_k=1)

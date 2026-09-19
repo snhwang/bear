@@ -375,7 +375,17 @@ class Retriever:
         embedding_model: str = "BAAI/bge-base-en-v1.5",
         config: Config | None = None,
         persist_directory: str | Path | None = None,
+        embedder: Any | None = None,
     ):
+        """Retrieve over ``corpus``.
+
+        ``embedder`` supplies vectors from somewhere other than the built-in
+        :class:`Embedder`: a remote embedding service, a lexical stand-in, a
+        fake in tests. Anything with ``embed(texts, is_query=False)`` and
+        ``embed_single(text, is_query=False)`` returning numpy arrays will do.
+        Without it the model named in the config is loaded in-process, as
+        before.
+        """
         self.corpus = corpus
         self._config = config or Config(
             embedding_backend=backend,
@@ -389,7 +399,7 @@ class Retriever:
         _suppress = self._config.embedding_backend in (
             EmbeddingBackend.BM25, EmbeddingBackend.ITR,
         )
-        self._embedder = Embedder(
+        self._embedder = embedder or Embedder(
             model_name=self._config.embedding_model,
             dim=self._config.embedding_dim,
             query_prefix=self._config.embedding_query_prefix,

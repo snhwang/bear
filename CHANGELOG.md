@@ -14,6 +14,10 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ### Added
 
+- `Retriever(corpus, embedder=...)`: supply vectors from anywhere — a remote
+  embedding service, a lexical stand-in, a fake in a test. Anything with
+  `embed(texts, is_query)` and `embed_single(text, is_query)` will do. Omitted,
+  the configured model is loaded in-process as before.
 - `bear.markers`: embedded marker grammars, previously carried only in the
   development repo. Action markers `[!name(args)]` map to handlers registered
   on a `MarkerRegistry`; reference markers `[[kind:id|label]]` resolve a
