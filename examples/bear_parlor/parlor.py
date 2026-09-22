@@ -24,6 +24,7 @@ import asyncio
 import base64
 import json
 import logging
+import os
 import random
 import sys
 import time
@@ -54,7 +55,7 @@ from bear.models import Instruction, InstructionType, ScopeCondition
 
 import tempfile
 
-from knowledge_rag import KnowledgeStore, InsightExtractor, CrossHatDiffuser
+from knowledge_rag import KnowledgeStore, InsightExtractor, CrossHatDiffuser, SOURCE_HAT_ID
 from fastapi import FastAPI, File, Form, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
@@ -80,12 +81,15 @@ class SessionLogger:
     """
 
     def __init__(self, panel_id: str, enabled: bool = True,
-                 topic: str = "", condition: str = "") -> None:
+                 topic: str = "", condition: str = "",
+                 subdir: str = "") -> None:
         self._enabled = enabled
         if not enabled:
             return
         log_dir = _HERE / "session_logs"
-        log_dir.mkdir(exist_ok=True)
+        if subdir:
+            log_dir = log_dir / subdir
+        log_dir.mkdir(parents=True, exist_ok=True)
         ts = time.strftime("%Y%m%d_%H%M%S")
         self._path = log_dir / f"{panel_id}_{ts}.md"
         self._stats_path = log_dir / f"{panel_id}_{ts}.stats.json"
@@ -96,6 +100,14 @@ class SessionLogger:
         self._ingestions: list[dict] = []
         self._diffusion_stored = 0
         self._diffusion_skipped = 0
+        # items the access gate dropped: (turn, receiving hat, source, tags)
+        self._gated: list[dict] = []
+        # per turn, the knowledge items a speaker retrieved (id, tags, section)
+        self._rag_events: list[dict] = []
+        # phase-2 answers given alone from the role's own store
+        self._answers: list[dict] = []
+        self._diffusion_errors: dict[str, int] = {}
+        self._run_info: dict = {}
         self._start_ts = time.strftime("%Y-%m-%d %H:%M:%S")
         with open(self._path, "w", encoding="utf-8") as f:
             f.write(f"# Session Log — {panel_id}\n")
@@ -123,6 +135,12 @@ class SessionLogger:
             "n_diffusion_stored": self._diffusion_stored,
             "n_diffusion_skipped": self._diffusion_skipped,
             "ingestions": self._ingestions,
+            "diffusion_errors": self._diffusion_errors,
+            "n_gated": len(self._gated),
+            "gated": self._gated,
+            "rag_events": self._rag_events,
+            "answers": self._answers,
+            "run_info": self._run_info,
             "log_path": str(self._path),
         }
         try:
@@ -204,9 +222,71 @@ class SessionLogger:
                 f"**stored**{dist_str} — {content}\n\n"
             )
 
+    def set_run_info(self, info: dict) -> None:
+        """Record how this session was configured (models, lenses, code)."""
+        if not self._enabled:
+            return
+        self._run_info = info
+        self._save_stats()
+
+    def log_diffusion_error(self, receiving_hat: str, kind: str) -> None:
+        """Count a dropped diffusion batch (call error, parse failure, no lens)."""
+        if not self._enabled:
+            return
+        key = f"{receiving_hat}:{kind}"
+        self._diffusion_errors[key] = self._diffusion_errors.get(key, 0) + 1
+        ts = time.strftime("%H:%M:%S")
+        self._append(f"> *[Diffusion {ts}]* {receiving_hat}: **dropped** ({kind})\n\n")
+        self._save_stats()
+
+    def log_gate(self, receiving_hat: str, source: str, tags: list[str]) -> None:
+        """Record an item the access gate kept from a hat."""
+        if not self._enabled:
+            return
+        ts = time.strftime("%H:%M:%S")
+        self._gated.append({"time": ts, "turn": self._turn, "hat": receiving_hat,
+                            "source": source, "tags": list(tags)})
+        self._append(f"> *[Gate {ts}]* {receiving_hat} ← {source}: "
+                     f"**withheld** ({', '.join(tags)})\n\n")
+        self._save_stats()
+
+    def log_rag_meta(self, speaker_name: str, items: list[dict]) -> None:
+        """Record which knowledge items a speaker retrieved for this turn."""
+        if not self._enabled or not items:
+            return
+        self._rag_events.append({
+            "turn": self._turn, "speaker": speaker_name,
+            "items": [{"id": it.get("id"),
+                       "citation": (it.get("metadata") or {}).get("citation"),
+                       "source": (it.get("metadata") or {}).get("source"),
+                       "source_hat": (it.get("metadata") or {}).get("source_hat"),
+                       "section": (it.get("metadata") or {}).get("section"),
+                       "classification": (it.get("metadata") or {}).get("classification", "")}
+                      for it in items],
+        })
+        self._save_stats()
+
+    def log_answer(self, hat_name: str, question: str, answer: str,
+                   retrieved: list[dict], question_id: str | None = None) -> None:
+        """Record a phase-2 answer given from the role's own store alone."""
+        if not self._enabled:
+            return
+        ts = time.strftime("%H:%M:%S")
+        self._answers.append({
+            "time": ts, "hat": hat_name, "question_id": question_id,
+            "question": question, "answer": answer,
+            "retrieved": [{"id": it.get("id"),
+                           "citation": (it.get("metadata") or {}).get("citation"),
+                           "classification": (it.get("metadata") or {}).get("classification", "")}
+                          for it in retrieved],
+        })
+        self._append(f"> *[Answer {ts}]* **{hat_name}** asked: {question}\n>\n> {answer}\n\n")
+        self._save_stats()
+
     def log_ingestion(self, hat_name: str, paper_title: str,
-                      chunk_count: int) -> None:
-        """Log a PDF knowledge ingestion event."""
+                      chunk_count: int, extractor: str | None = None,
+                      classification: list[str] | None = None) -> None:
+        """Log a document ingestion event."""
         if not self._enabled:
             return
         ts = time.strftime("%H:%M:%S")
@@ -216,6 +296,8 @@ class SessionLogger:
             "hat": hat_name,
             "title": paper_title,
             "chunks": chunk_count,
+            "extractor": extractor,
+            "classification": sorted(classification or []),
         })
         self._append(
             f"> *[Ingestion {ts}]* {hat_name}: indexed {chunk_count} chunks "
@@ -244,8 +326,8 @@ class SessionLogger:
             if col.count() == 0:
                 return
             json_path = str(self._path).replace('.md', '.knowledge.json')
-            hat_ids = ['white-hat', 'red-hat', 'black-hat',
-                       'blue-hat', 'green-hat', 'yellow-hat']
+            # every store with content, including the shared "source" store
+            hat_ids = knowledge_store.hat_ids()
             snapshot = {}
             total = 0
             for hat_id in hat_ids:
@@ -754,7 +836,10 @@ class MemoryManager:
         chars = {cid: c for cid, c in CHARACTERS.items()
                  if panel_character_ids is None or cid in panel_character_ids}
         self._extractors: dict[str, LLMMemoryExtractor] = {
-            cid: LLMMemoryExtractor(agent_name=char.short_name)
+            cid: LLMMemoryExtractor(
+                agent_name=char.short_name, scope_to_agent=True,
+                # hat ids too, so a memory's owner stays unambiguous
+                reserved_tags=RESERVED_TOPIC_TAGS + list(CHARACTERS))
             for cid, char in chars.items()
         }
         self._load_existing()
@@ -816,7 +901,9 @@ class MemoryManager:
                 "type": inst.type.value,
                 "priority": inst.priority,
                 "content": inst.content,
-                "scope": {"tags": list(inst.scope.tags)},
+                "scope": {"tags": list(inst.scope.tags),
+                          **({"required_tags": list(inst.scope.required_tags)}
+                             if inst.scope.required_tags else {})},
                 "tags": inst.tags,
                 "metadata": inst.metadata,
             }
@@ -991,7 +1078,7 @@ class Parlor:
 
         cfg = Config(
             embedding_model="BAAI/bge-base-en-v1.5" if use_semantic else "hash",
-            mandatory_tags=["safety"],
+            mandatory_tags=MANDATORY_TAGS,
         )
         # Inject panel room context as a mandatory top-priority instruction
         if self.panel.room_context.strip():
@@ -1016,7 +1103,14 @@ class Parlor:
             from bear.config import LLMBackend as _LLMBackend
             import os as _os
             _base_url = _os.environ.get("BEAR_LLM_BASE_URL") or None
-            self.llm = LLM(backend=_LLMBackend(default_backend), model=default_model or None, base_url=_base_url)
+            _llm_kwargs = {}
+            if _base_url and _os.environ.get("BEAR_LLM_API_KEY"):
+                # Explicit key for a self-hosted server; otherwise the OpenAI
+                # backend would fall back to OPENAI_API_KEY from .env and send
+                # a cloud credential to that server.
+                _llm_kwargs["api_key"] = _os.environ["BEAR_LLM_API_KEY"]
+            self.llm = LLM(backend=_LLMBackend(default_backend), model=default_model or None,
+                           base_url=_base_url, **_llm_kwargs)
         else:
             self.llm = LLM.auto()
         print(f"using {self.llm.backend_type.value}"
@@ -1058,7 +1152,7 @@ class Parlor:
         self.memories._rebuild_fn = self.retriever.build_index
 
         # Knowledge RAG store + insight extractor + cross-hat diffusion
-        self.knowledge = KnowledgeStore(panel_id=panel_id)
+        self.knowledge = KnowledgeStore(panel_id=panel_id, shared=_shared_knowledge)
         self.insights = InsightExtractor(self.knowledge)
         self.diffuser = CrossHatDiffuser(
             store=self.knowledge,
@@ -1069,6 +1163,8 @@ class Parlor:
             hat_llms=self._char_llm,
             default_llm=self.llm,
             naive=_naive_diffusion,
+            lens_map=wrong_lens_map(list(self.characters.keys())) if _wrong_lens else None,
+            gate=not _no_gate,
         )
 
         # Session logger — structured markdown log
@@ -1181,7 +1277,8 @@ class Parlor:
         guidance = self.composer.compose(scored)
 
         # 3.5. Query knowledge store for relevant background (RAG)
-        rag_chunks = self.knowledge.query(trigger or query, hat_id=character_id)
+        rag_items = self.knowledge.query_with_meta(trigger or query, hat_id=character_id)
+        rag_chunks = [it["text"] for it in rag_items]
         rag_section = ""
         if rag_chunks:
             rag_section = (
@@ -1189,6 +1286,8 @@ class Parlor:
                 + "\n".join(f"- {c}" for c in rag_chunks)
             )
             bear_instructions["knowledge"] = rag_chunks
+            # provenance of this turn: which items, with what classification
+            bear_instructions["knowledge_meta"] = rag_items
 
         # 4. System prompt
         system = (
@@ -1473,7 +1572,8 @@ class Parlor:
                 raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
             data = json.loads(raw)
             content = data.get("content", "").strip()
-            topics = [str(t) for t in data.get("topics", [])][:5]
+            topics = [str(t) for t in data.get("topics", [])
+                      if str(t).lower() not in set(RESERVED_TOPIC_TAGS) | set(CHARACTERS)][:5]
             priority = max(50, min(65, int(data.get("priority", 55))))
 
             if not content:
@@ -1485,7 +1585,8 @@ class Parlor:
                 type=InstructionType.DIRECTIVE,
                 priority=priority,
                 content=content,
-                scope=ScopeCondition(tags=[character_id] + topics),
+                scope=ScopeCondition(required_tags=[character_id],
+                                     tags=[character_id] + topics),
                 tags=["evolved", character_id] + topics,
                 metadata={"source": "evolution", "created": time.time()},
             )
@@ -1635,6 +1736,16 @@ class Parlor:
             char.short_name, bear_instructions.get("instructions", []))
         self.session_log.log_knowledge_rag(
             char.short_name, bear_instructions.get("knowledge", []))
+        rag_meta = bear_instructions.get("knowledge_meta", []) or []
+        self.session_log.log_rag_meta(char.short_name, rag_meta)
+        # The utterance's provenance: the union of the classification tags of
+        # the knowledge items behind it. The access gate checks it per listener.
+        utterance_tags: set[str] = set()
+        for it in rag_meta:
+            tags = (it.get("metadata") or {}).get("classification", "")
+            utterance_tags |= {t.strip() for t in str(tags).split(",") if t.strip()}
+        # the insight panel does not need the raw metadata
+        bear_instructions.pop("knowledge_meta", None)
 
         # Generate TTS audio (can happen in parallel with queue drain)
         audio_b64 = await self._generate_tts(text, char)
@@ -1664,17 +1775,20 @@ class Parlor:
 
         # Record exchange for memory manager (P2) — any exchange that has a trigger
         if trigger:
-            self.memories.record_exchange(character_id, trigger, text)
-            self.insights.record(
-                character_id, trigger, text,
-                self._char_llm.get(character_id, self.llm),
-            )
+            if not _no_memories:
+                self.memories.record_exchange(character_id, trigger, text)
+            if not _no_insights:
+                self.insights.record(
+                    character_id, trigger, text,
+                    self._char_llm.get(character_id, self.llm),
+                )
             # Cross-hat knowledge diffusion — other hats learn from this exchange
             self.diffuser.observe(
                 speaker_id=character_id,
                 speaker_name=char.short_name,
                 trigger=trigger,
                 response=text,
+                classification=utterance_tags,
             )
 
         return True
@@ -1798,6 +1912,46 @@ class Parlor:
     # ------------------------------------------------------------------
     # Handle user message
     # ------------------------------------------------------------------
+
+    async def answer_alone(self, character_id: str, question: str,
+                           question_id: str | None = None) -> dict:
+        """Answer one question from the role's own stores only.
+
+        The phase-2 probe: no conversation history, no other roles, only the
+        role's behavioural instructions (which include its scoped memories),
+        its own knowledge store, and the question. A role asked about
+        something it never absorbed is expected to say so.
+        """
+        char = self.characters[character_id]
+        llm = self._char_llm.get(character_id, self.llm)
+        context = Context(domain="conversation",
+                          tags=[character_id, self.moods.get_mood(character_id)],
+                          query=question)
+        scored = self.retriever.retrieve(query=question, context=context, top_k=10)
+        guidance = self.composer.compose(scored) if scored else ""
+        rag_items = self.knowledge.query_with_meta(question, hat_id=character_id, top_k=6)
+        rag_section = ""
+        if rag_items:
+            rag_section = ("\n\n## What you know (your own notes):\n"
+                           + "\n".join(f"- {it['text']}" for it in rag_items))
+        system = (
+            f"You are {char.name}. You are being asked a question on your own, "
+            f"outside any meeting. Answer only from your own notes below and "
+            f"your own role. If your notes do not contain the information, say "
+            f"plainly that you do not have it; do not guess and do not repeat "
+            f"anything you were not given.\n"
+            f"Answer in 1-3 sentences.\n\n{guidance}{rag_section}"
+        )
+        try:
+            resp = await llm.generate(system=system, user=question,
+                                      temperature=0.3, max_tokens=300)
+            text = (resp.content or "").strip()
+        except Exception as e:
+            text = f"[error: {e}]"
+        self.session_log.log_answer(char.short_name, question, text, rag_items, question_id)
+        return {"hat_id": character_id, "hat_name": char.short_name,
+                "question_id": question_id, "question": question, "answer": text,
+                "retrieved": [it["id"] for it in rag_items]}
 
     async def handle_user_message(self, content: str):
         """Process a message from the user."""
@@ -1937,8 +2091,72 @@ _default_backend: str | None = None  # set by --backend arg
 _default_model: str | None = None    # set by --model arg
 _override_model: bool = False        # set by --override-model arg
 _naive_diffusion: bool = False       # set by --naive-diffusion arg
+_no_gate: bool = False               # set by --no-gate arg (lenses on, access gate off)
+_document_diffusion: bool = False    # set by --document-diffusion arg
+_shared_knowledge: bool = False      # set by --shared-knowledge arg (shared-memory control)
+# The insight extractor and the memory manager write to a role's stores from
+# the conversation it took part in, outside the diffusion gate. For scenarios
+# where what a role retains must be governed, both can be switched off so
+# gated diffusion is the only path into a role's persistent state.
+_no_insights: bool = False           # set by --no-insights arg
+_no_memories: bool = False           # set by --no-memories arg
 _session_topic: str = ""            # set by --topic arg (for session log metadata)
 _session_condition: str = ""        # set by --condition arg (bear or naive)
+_wrong_lens: bool = False           # set by --wrong-lens arg
+_log_subdir: str = ""               # set by --log-subdir arg
+
+
+# Tags with special meaning to retrieval. LLM-generated topic tags (memories,
+# evolved instructions) must never take these: a memory whose topic is "safety"
+# would otherwise become a mandatory instruction in every agent's prompt.
+MANDATORY_TAGS = ["safety"]
+RESERVED_TOPIC_TAGS = MANDATORY_TAGS + ["room-context", "knowledge-diffusion",
+                                        "facet", "memory", "evolved"]
+
+
+# Wrong-lens control: each hat's diffusion uses the NEXT hat's lens. The order
+# matches MISMATCH_MAP in the artifacts replay (eval_instruction_source_replay),
+# so the live and replayed controls apply the same substitution.
+WRONG_LENS_MAP = {
+    "white-hat": "red-hat",
+    "red-hat": "black-hat",
+    "black-hat": "blue-hat",
+    "blue-hat": "green-hat",
+    "green-hat": "yellow-hat",
+    "yellow-hat": "white-hat",
+}
+
+
+def wrong_lens_map(character_ids: list[str]) -> dict[str, str]:
+    """Each role diffuses through the next role's lens.
+
+    The Six Hats keep their published map (so v6 sessions stay reproducible);
+    any other panel rotates its roles one step in panel order.
+    """
+    if set(character_ids) == set(WRONG_LENS_MAP):
+        return dict(WRONG_LENS_MAP)
+    ids = list(character_ids)
+    return {ids[i]: ids[(i + 1) % len(ids)] for i in range(len(ids))}
+
+
+def _llm_label(llm) -> str:
+    """backend/model actually in use, including a backend's default model."""
+    backend = getattr(getattr(llm, "backend_type", None), "value", "?")
+    model = getattr(getattr(llm, "_backend", None), "model", None) or llm.model
+    return f"{backend}/{model}"
+
+
+def _code_version() -> dict:
+    import subprocess as _sp
+    try:
+        commit = _sp.run(["git", "-C", str(_HERE), "rev-parse", "HEAD"],
+                         capture_output=True, text=True, timeout=10).stdout.strip()
+        dirty = bool(_sp.run(["git", "-C", str(_HERE), "status", "--porcelain",
+                              "--", str(_HERE), str(_HERE.parent.parent / "bear")],
+                             capture_output=True, text=True, timeout=10).stdout.strip())
+        return {"bear_dev_commit": commit or None, "uncommitted_changes": dirty}
+    except Exception:
+        return {"bear_dev_commit": None, "uncommitted_changes": None}
 
 
 @asynccontextmanager
@@ -1957,11 +2175,41 @@ async def lifespan(app: FastAPI):
         enabled=True,
         topic=_session_topic,
         condition=_session_condition,
+        subdir=_log_subdir,
     )
     parlor.diffuser.on_diffusion = (
         lambda recv, src, content, action, dist=None:
             parlor.session_log.log_diffusion(recv, src, content, action, dist)
     )
+    parlor.diffuser.on_diffusion_error = (
+        lambda recv, kind: parlor.session_log.log_diffusion_error(recv, kind)
+    )
+    parlor.diffuser.on_gate = (
+        lambda recv, src, tags: parlor.session_log.log_gate(recv, src, tags)
+    )
+    speaking = {cid: _llm_label(parlor._char_llm.get(cid, parlor.llm))
+                for cid in parlor.characters}
+    parlor.session_log.set_run_info({
+        "session_default_llm": _llm_label(parlor.llm),
+        "llm_base_url": os.environ.get("BEAR_LLM_BASE_URL"),
+        "override_model": _override_model,
+        "speaking_llm": speaking,
+        "diffusion": ("naive" if _naive_diffusion else "per-hat"),
+        # per-hat diffusion runs on each hat's own model
+        "diffusion_llm": ({} if _naive_diffusion else dict(speaking)),
+        "lens_map": (dict(parlor.diffuser._lens_map) if not _naive_diffusion else {}),
+        "access_gate": bool(parlor.diffuser._gate),
+        "insight_extractor": not _no_insights,
+        "memory_manager": not _no_memories,
+        "access_policy": parlor.diffuser.access_policy(),
+        "document_diffusion": _document_diffusion,
+        "shared_knowledge": bool(parlor.knowledge.shared),
+        # Mathpix is used only if both credentials reach the process; without
+        # python-dotenv the .env is never read and extraction falls to pypdf
+        "mathpix_credentials": bool(os.environ.get("MATHPIX_APP_ID")
+                                    and os.environ.get("MATHPIX_APP_KEY")),
+        **_code_version(),
+    })
     parlor.start_speech_consumer()
     _bg_task = asyncio.create_task(parlor.spontaneous_loop())
     yield
@@ -1983,29 +2231,58 @@ async def index():
     return FileResponse(str(_HERE / "static" / "index.html"))
 
 
+@app.get("/health")
+async def health():
+    """Lets a runner confirm it reached *this* Parlor, on the panel it asked
+    for, rather than whatever else happens to be listening on the port."""
+    return JSONResponse({"ok": True, "service": "bear-parlor", "panel": _panel_id,
+                         "ready": parlor is not None})
+
+
 @app.post("/ingest")
 async def ingest_pdf(
     file: UploadFile = File(...),
     hat_id: str = Form(...),
     domain: str = Form(""),
+    classification: str = Form(""),
+    title: str = Form(""),
 ):
+    """Ingest a PDF, Markdown or text document for one role, or for the
+    shared ``source`` store (``hat_id=source``).
+
+    ``classification`` is a comma-separated list; for Markdown it defaults
+    to the document's front matter. With ``--document-diffusion`` every other
+    role's lens is then offered the chunks, gated by its access policy.
+    """
     if not parlor:
         return JSONResponse({"success": False, "error": "Session not started"})
-    if hat_id not in parlor.characters:
+    if hat_id not in parlor.characters and hat_id != SOURCE_HAT_ID:
         return JSONResponse({"success": False, "error": f"Unknown character: {hat_id}"})
 
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+    suffix = Path(file.filename or "").suffix.lower() or ".pdf"
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp.write(await file.read())
         tmp_path = Path(tmp.name)
 
     try:
-        paper_title = Path(file.filename).stem
+        paper_title = title or Path(file.filename).stem
+        tags = [t.strip() for t in classification.split(",") if t.strip()] or None
 
-        chunk_count = await asyncio.to_thread(
-            parlor.knowledge.ingest_pdf, tmp_path, paper_title, hat_id
-        )
+        if suffix in (".md", ".markdown", ".txt"):
+            chunk_count = await asyncio.to_thread(
+                parlor.knowledge.ingest_document, tmp_path, paper_title, hat_id, tags
+            )
+        else:
+            chunk_count = await asyncio.to_thread(
+                parlor.knowledge.ingest_pdf, tmp_path, paper_title, hat_id, tags
+            )
+        # the tags actually stored (front matter may have supplied them)
+        stored = parlor.knowledge.chunks_for(hat_id, paper_title)
+        stored_tags = sorted({t for c in stored
+                              for t in str(c["metadata"].get("classification", "")).split(",") if t})
 
-        hat_name = parlor.characters[hat_id].short_name
+        is_role = hat_id in parlor.characters
+        hat_name = parlor.characters[hat_id].short_name if is_role else SOURCE_HAT_ID
         await parlor.broadcast({
             "type": "ingest_complete",
             "hat": hat_id,
@@ -2013,25 +2290,52 @@ async def ingest_pdf(
             "count": chunk_count,
             "source": file.filename,
         })
-        parlor.session_log.log_ingestion(hat_name, paper_title, chunk_count)
+        parlor.session_log.log_ingestion(hat_name, paper_title, chunk_count,
+                                         parlor.knowledge.last_extractor, stored_tags)
 
-        # Hat gives a brief in-character reaction
-        _title = paper_title
-        _hid = hat_id
-        async def _ack() -> None:
-            async with parlor._gen_lock:
-                await parlor._speech_queue.join()
-                await parlor._generate_and_broadcast(
-                    _hid,
-                    trigger=f"You just received a research paper titled '{_title}'. "
-                            f"React through your hat's lens in 1-2 sentences.",
-                    spontaneous=True,
-                )
-        asyncio.create_task(_ack())
+        # Document diffusion: every other role's lens reads the chunks, gated
+        if _document_diffusion and chunk_count:
+            offered = await parlor.diffuser.diffuse_document(paper_title, source_hat_id=hat_id)
+            print(f"  [Diffusion] document '{paper_title}': chunks offered per role: {offered}")
 
-        return JSONResponse({"success": True, "count": chunk_count})
+        # A role that received a document reacts in character
+        if is_role:
+            _title = paper_title
+            _hid = hat_id
+            async def _ack() -> None:
+                async with parlor._gen_lock:
+                    await parlor._speech_queue.join()
+                    await parlor._generate_and_broadcast(
+                        _hid,
+                        trigger=f"You just received a document titled '{_title}'. "
+                                f"React from your role's standpoint in 1-2 sentences.",
+                        spontaneous=True,
+                    )
+            asyncio.create_task(_ack())
+
+        return JSONResponse({"success": True, "count": chunk_count,
+                             "classification": stored_tags})
     finally:
         tmp_path.unlink(missing_ok=True)
+
+
+@app.post("/ask")
+async def ask_alone(payload: dict):
+    """Phase-2 probe: one role answers one question from its own stores.
+
+    Body: ``{"hat_id": ..., "question": ..., "question_id": ...}``.
+    """
+    if not parlor:
+        return JSONResponse({"success": False, "error": "Session not started"})
+    hat_id = str(payload.get("hat_id", ""))
+    question = str(payload.get("question", "")).strip()
+    if hat_id not in parlor.characters:
+        return JSONResponse({"success": False, "error": f"Unknown character: {hat_id}"})
+    if not question:
+        return JSONResponse({"success": False, "error": "empty question"})
+    async with parlor._gen_lock:
+        result = await parlor.answer_alone(hat_id, question, payload.get("question_id"))
+    return JSONResponse({"success": True, **result})
 
 
 @app.websocket("/ws")
@@ -2205,6 +2509,7 @@ async def _handle_ws_message(ws: WebSocket, msg: dict):
 
             # Rebuild retriever index so future retrievals use new content
             parlor.retriever.build_index()
+            parlor.diffuser.rebuild_facet_index()
 
             # Persist change to source YAML file
             _save_instruction_to_yaml(inst_id, updates)
@@ -2337,6 +2642,42 @@ def main():
              "For ablation comparison against BEAR-guided cognitive filtering.",
     )
     parser.add_argument(
+        "--wrong-lens", action="store_true",
+        help="Wrong-lens control: each hat's diffusion uses another hat's lens "
+             "(WRONG_LENS_MAP). Ignored with --naive-diffusion.",
+    )
+    parser.add_argument(
+        "--no-gate", action="store_true",
+        help="No-gate control: keep the lenses but switch off the access gate "
+             "declared by roles' allow:/deny: tags. Ignored with --naive-diffusion.",
+    )
+    parser.add_argument(
+        "--document-diffusion", action="store_true",
+        help="After each ingestion, offer every chunk to every other role's "
+             "lens (gated), so roles absorb documents directly as well as "
+             "through discussion.",
+    )
+    parser.add_argument(
+        "--shared-knowledge", action="store_true",
+        help="Shared-memory control: every role retrieves from the union of "
+             "all roles' knowledge at speaking time.",
+    )
+    parser.add_argument(
+        "--no-insights", action="store_true",
+        help="Switch off the session-insight extractor, which writes conversation "
+             "summaries into a role's knowledge store outside the diffusion gate.",
+    )
+    parser.add_argument(
+        "--no-memories", action="store_true",
+        help="Switch off the memory manager, which stores key moments of the "
+             "conversation as the role's instructions outside the diffusion gate.",
+    )
+    parser.add_argument(
+        "--log-subdir", default="",
+        help="Write session logs under session_logs/<subdir>/ to keep runs "
+             "from different pipeline versions apart.",
+    )
+    parser.add_argument(
         "--topic-meta", default="",
         help="Topic label for session log metadata (e.g. dmg, stroke).",
     )
@@ -2346,14 +2687,21 @@ def main():
     )
     args = parser.parse_args()
 
-    global _panel_id, _default_backend, _default_model, _override_model, _naive_diffusion, _session_topic, _session_condition
+    global _panel_id, _default_backend, _default_model, _override_model, _naive_diffusion, _session_topic, _session_condition, _wrong_lens, _log_subdir, _no_gate, _document_diffusion, _shared_knowledge, _no_insights, _no_memories
+    _no_insights = args.no_insights
+    _no_memories = args.no_memories
     _panel_id = args.panel
     _default_backend = args.backend
     _default_model = args.model
     _override_model = args.override_model
     _naive_diffusion = args.naive_diffusion
+    _no_gate = args.no_gate
+    _document_diffusion = args.document_diffusion
+    _shared_knowledge = args.shared_knowledge
     _session_topic = getattr(args, "topic_meta", "")
     _session_condition = getattr(args, "condition_meta", "")
+    _wrong_lens = args.wrong_lens
+    _log_subdir = args.log_subdir
 
     import uvicorn
     print(f"\n  BEAR Parlor [{args.panel}] — http://{args.host}:{args.port}\n")

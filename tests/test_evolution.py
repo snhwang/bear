@@ -2236,11 +2236,10 @@ class TestExpression:
         ), reg
 
     def test_dominant_with_default_scores_emits_both(self):
-        """When both alleles default to dominance=1.0, ties produce codominance — both emit."""
+        """When both alleles default to dominance=1.0, ties produce codominance."""
         result, reg = self._breed_diploid()
         expressed = express(result.child, reg, locus_key="gene")
         combat = [i for i in expressed if i.metadata.get("gene") == "combat"]
-        # Tie at default 1.0 → both alleles emit (codominance falls out naturally)
         assert len(combat) == 2
         assert {i.metadata.get("allele") for i in combat} == {"a", "b"}
 
@@ -2249,7 +2248,6 @@ class TestExpression:
         reg = LocusRegistry(loci=[
             GeneLocus(name="trait", position=0, dominance=Dominance.DOMINANT),
         ])
-        # Build a child corpus directly with two alleles having different scores
         child = Corpus()
         child.add(Instruction(
             id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
@@ -2698,6 +2696,8 @@ class TestPersonaGrowthAcrossGenerations:
         cur_a = _parent_a_corpus()
         cur_b = _parent_b_corpus()
         sizes = [len(self._persona_content(cur_a))]
+        # Five generations of selfing-style chaining: feed child back as
+        # both parents so the doubling is visible without population mixing
         for gen in range(5):
             result = breed(
                 cur_a, cur_b,
@@ -2707,6 +2707,9 @@ class TestPersonaGrowthAcrossGenerations:
             sizes.append(len(self._persona_content(result.child)))
             cur_a = result.child
             cur_b = result.child
+        # Each generation embeds both parents' personas + boilerplate, so
+        # gen N >= 2 * gen N-1 (more, with boilerplate). Final size should
+        # be at least 16x the initial size after 5 generations.
         assert sizes[-1] >= sizes[0] * 16, (
             f"persona did not grow as expected: {sizes}"
         )
@@ -2716,6 +2719,7 @@ class TestPersonaGrowthAcrossGenerations:
         cur_a = _parent_a_corpus()
         cur_b = _parent_b_corpus()
         max_seen = 0
+        # Many more generations than the recursive case can sustain
         for gen in range(20):
             child_name = f"child{gen}"
             result = breed(
@@ -2727,6 +2731,7 @@ class TestPersonaGrowthAcrossGenerations:
             max_seen = max(max_seen, len(self._persona_content(result.child)))
             cur_a = result.child
             cur_b = result.child
+        # Persona should equal the child name; never longer than ~50 chars.
         assert max_seen < 50, (
             f"custom_persona should keep persona bounded; saw {max_seen} chars"
         )

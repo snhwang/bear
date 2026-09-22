@@ -1499,27 +1499,14 @@ def express(
             continue
 
         if loc.dominance in (Dominance.DOMINANT, Dominance.CODOMINANT):
-            # Unified score-based expression for diploid loci.
-            #
-            # Both DOMINANT and CODOMINANT use the same rule under per-allele
-            # dominance scoring: emit the alleles tied at the maximum score.
-            # Almost all heterozygote pairings produce a single winner (real
-            # Mendelian dominance — recessive hidden); only deliberately-tied
-            # scores produce both-expressed (codominance, e.g., AB blood type
-            # where two alleles share the same dominance level by design).
-            #
-            # The two enum values are retained for backward-compatibility with
-            # existing code; they are now functionally equivalent. Future
-            # versions may collapse to a single ``DIPLOID`` value.
-            #
-            # Default dominance score is 1.0 if unspecified, so untagged
-            # corpora (no per-allele scoring) tie at the top and emit both
-            # alleles — preserving the prior CODOMINANT default behavior.
+            # Unified score-based expression: emit alleles tied at the max
+            # dominance score. Heterozygotes with distinct scores produce a
+            # single winner (classical dominance); ties produce codominance.
+            # DOMINANT and CODOMINANT enum values are functionally equivalent
+            # under per-allele scoring — kept as aliases for backward compat.
             def _score(inst):
                 return inst.metadata.get("dominance", 1.0)
 
-            # Dedupe by (content, situation_idx) so homozygous duplicates
-            # collapse to one set of template instructions.
             seen: set = set()
             deduped: list[Instruction] = []
             for inst in allele_a + allele_b:
@@ -1532,19 +1519,12 @@ def express(
             if not deduped:
                 continue
 
-            # Score-driven selection: emit alleles tied at the top score.
             max_score = max(_score(i) for i in deduped)
             winners = [i for i in deduped if _score(i) == max_score]
             distinct_winner_contents = {i.content for i in winners}
 
             if blend_fn is not None and len(distinct_winner_contents) > 1:
-                # Optional opt-in: fuse distinct allele texts via the supplied
-                # callable. WARNING: LLM-based blending often destroys
-                # structured content like action markers ([!flee],
-                # [!mood(happy)]). For analyses that depend on such structure,
-                # leave blend_fn=None — the deduped pass-through preserves
-                # each allele's text verbatim and lets retrieval gate which
-                # allele expresses per situation.
+                # Optional opt-in blend; leave None to preserve action markers.
                 a_insts = [i for i in winners if i in allele_a]
                 b_insts = [i for i in winners if i in allele_b]
                 a_text = "\n".join(i.content for i in a_insts)

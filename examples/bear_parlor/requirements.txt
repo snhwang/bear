@@ -12,3 +12,5 @@ torch>=2.2,<2.7               # torch nightly builds (2.10+) have MPS init hangs
 sentence-transformers>=2.2.0  # optional, for --semantic embeddings
 edge-tts>=6.1.0              # optional, for text-to-speech
 chromadb>=0.4.0               # knowledge RAG store for PDF ingestion
+edge-tts
+aiohttp>=3.9                  # scripted session runners (run_demo_session*.py)

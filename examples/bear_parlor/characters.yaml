@@ -201,3 +201,175 @@ characters:
     llm_backend: openai
     llm_model: gpt-5.4
     llm_max_tokens: 400
+
+  # -- Scenario A: incident response (DRAFT) ---------------------------------
+
+  - id: commander
+    name: Incident Commander
+    short_name: Commander
+    color: "#4a6fa5"
+    avatar: IC
+    description: "Runs the bridge. Holds the whole picture and the decisions."
+    talk_probability: 0.5
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: security-lead
+    name: Security Lead
+    short_name: Security
+    color: "#b23a48"
+    avatar: SL
+    description: "Root cause, exploit path, indicators, containment."
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: oncall-engineer
+    name: On-call Engineer
+    short_name: Engineer
+    color: "#5eb87e"
+    avatar: OE
+    description: "Affected systems, remediation, rollback, timeline."
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: legal
+    name: Legal Counsel
+    short_name: Legal
+    color: "#8d6cab"
+    avatar: LC
+    description: "Exposure, obligations, deadlines. Holds privilege."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: comms
+    name: Communications Lead
+    short_name: Comms
+    color: "#e8a735"
+    avatar: CM
+    description: "The public account, in plain language."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: support
+    name: Customer Support Lead
+    short_name: Support
+    color: "#e87ec4"
+    avatar: CS
+    description: "What customers experienced and what they can do."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  # -- Scenario B: paper review (DRAFT) --------------------------------------
+
+  - id: methodologist
+    name: Methodologist
+    short_name: Methods
+    color: "#4a6fa5"
+    avatar: ME
+    description: "Design, acquisition, processing, pitfalls."
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: statistician
+    name: Statistician
+    short_name: Stats
+    color: "#b23a48"
+    avatar: ST
+    description: "Samples, tests, intervals, validity threats."
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: synthesizer
+    name: Synthesizer
+    short_name: Synthesis
+    color: "#5eb87e"
+    avatar: SY
+    description: "Findings and what they mean in context."
+    talk_probability: 0.5
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: skeptic
+    name: Skeptic
+    short_name: Skeptic
+    color: "#8d6cab"
+    avatar: SK
+    description: "Limitations, alternative explanations, over-claims."
+    talk_probability: 0.45
+    spontaneous_min: 20
+    spontaneous_max: 40
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: replicator
+    name: Replicator
+    short_name: Replication
+    color: "#e8a735"
+    avatar: RE
+    description: "What reproduction needs, and what is missing."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4
+
+  - id: communicator
+    name: Communicator
+    short_name: Plain
+    color: "#e87ec4"
+    avatar: CO
+    description: "Plain-language meaning; no numbers, no jargon."
+    talk_probability: 0.4
+    spontaneous_min: 25
+    spontaneous_max: 45
+    mood_low: content
+    mood_high: focused
+    mood_low_threshold: -0.5
+    mood_high_threshold: 0.4

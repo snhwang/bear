@@ -723,17 +723,9 @@ def build_corpus(
 ) -> Corpus:
     """Build BEAR Corpus with situational instructions per gene category.
 
-    Each template entry is either:
-        (scope_tags, content_template)
-        (scope_tags, content_template, required_tags)
-    When required_tags is provided, ALL listed tags must be present in the
-    retrieval context for the instruction to be retrieved (AND logic).
-
-    *dominances* maps gene category -> per-allele dominance score (0.0..1.0,
-    higher is more dominant). Used by ``express()`` for DOMINANT loci to
-    decide which allele wins in a heterozygote pairing. If None, all
-    instructions get a default score of 1.0 (which makes legacy untagged
-    corpora behave as homozygous-equivalent under the score-max rule).
+    *dominances* maps gene category -> per-allele dominance score; used by
+    ``express()`` for DOMINANT loci to decide which allele wins in a
+    heterozygote pairing. Default 1.0 if absent.
     """
     corpus = Corpus()
     for cat in BEHAVIOR_CATEGORIES:
@@ -751,7 +743,7 @@ def build_corpus(
                 id       = f"{name}-{cat}-{idx}",
                 type     = InstructionType.DIRECTIVE,
                 priority = _CATEGORY_PRIORITY.get(cat, 60),
-                content  = text,  # raw gene text — creature genetics drive similarity
+                content  = text,
                 scope    = ScopeCondition(tags=scope_tags, required_tags=req_tags),
                 tags     = [name, cat, f"cat:{cat}"] + scope_tags,
                 metadata = {"gene_category": cat, "situation_idx": idx,
@@ -764,13 +756,7 @@ def random_founder_dominances(
     rng: random.Random,
     categories: list[str] | None = None,
 ) -> dict[str, float]:
-    """Draw per-category dominance scores for a founder NPC.
-
-    Founders sample uniformly from [0, 1]: roughly half are dominant-leaning,
-    half recessive-leaning at any given locus. This produces biologically
-    realistic gen-0 populations where archetype alleles aren't all clustered
-    at the top of the dominance hierarchy.
-    """
+    """Per-category Uniform(0,1) dominance scores for a founder NPC."""
     cats = categories if categories is not None else GENE_CATEGORIES
     return {cat: rng.random() for cat in cats}
 
@@ -781,24 +767,12 @@ def random_mutation_dominance(
     alpha: float = 1.0,
     beta: float = 4.0,
 ) -> float:
-    """Draw a dominance score for a newly-mutated allele.
-
-    Defaults to ``Beta(1, 4)``: heavily biased recessive (mean ~0.2,
-    most mass below 0.4), modeling the biological observation that most
-    de novo mutations are recessive deleterious. Tunable via *alpha*
-    and *beta*; ``alpha=beta=1`` recovers a uniform distribution.
-    """
+    """Beta(α, β) draw for new mutations. Default biases recessive (mean ~0.2)."""
     return rng.betavariate(alpha, beta)
 
 
 def random_spontaneous_dominance(rng: random.Random) -> float:
-    """Draw a dominance score for a spontaneously-generated (fully novel) allele.
-
-    Spontaneous alleles produce content unrelated to any parent allele
-    — equivalent to a mutation event large enough to be functionally a
-    new variant. Such variants are biologically the most often recessive;
-    we sample from ``Beta(1, 6)`` (mean ~0.14, strongly skewed toward 0).
-    """
+    """Beta(1, 6) draw for spontaneously-generated alleles — strongly recessive-biased (mean ~0.14)."""
     return rng.betavariate(1.0, 6.0)
 
 
@@ -1074,9 +1048,9 @@ async def spontaneous_gene(llm: LLM, category: str) -> str:
 
     Unlike ``mutate_gene`` which produces a variation of an existing parent
     allele, ``spontaneous_gene`` invokes the LLM with no parent content,
-    producing a gene text that has no lineage relationship to any existing
-    allele in the population. Used to model rare spontaneous mutation
-    events that introduce genuinely novel content into the gene pool.
+    producing a gene text with no lineage relationship to any existing
+    allele. Models rare spontaneous mutation events that introduce
+    genuinely novel content into the gene pool.
     """
     resp = await llm.generate(
         system=_SYSTEM,
@@ -1158,9 +1132,8 @@ async def _mutate_corpus(
     chosen allele. All instructions sharing the same (locus, allele)
     receive the same mutated content so the diploid genotype stays
     self-consistent across template variants. Mutated alleles also receive
-    a fresh dominance score (Beta-distributed, recessive-biased), so
-    novel alleles enter the gene pool more often as recessive carriers
-    than as dominant variants.
+    a fresh dominance score (Beta-distributed, recessive-biased) so novel
+    alleles enter the gene pool mostly as recessive carriers.
     """
     by_pair: dict[tuple[str, str | None], list[Instruction]] = {}
     other: list[Instruction] = []
@@ -1249,9 +1222,6 @@ async def breed_offspring(
          a diploid child corpus with allele "a" from parent A's drawn
          allele and allele "b" from parent B's.
       2. Mutation: applied per (locus, allele) on the bred corpus.
-         Mutated alleles receive a Beta-distributed (recessive-biased)
-         dominance score so novel alleles enter the gene pool mostly as
-         recessive carriers.
       3. The corpus is the genotype source of truth; child_genes is a
          haploid-view summary derived from the expressed phenotype.
     """
@@ -1301,12 +1271,14 @@ async def breed_offspring(
         # per parent per locus before pairing), so we just pass the
         # parent corpora through.
         if recomb == "splice":
+            # Splice: legacy per-instruction crossover (no locus grouping)
             config = BreedingConfig(
                 crossover_rate=0.5,
                 seed=rng.randint(0, 2**31),
                 scope_to_child=False,
             )
         else:
+            # Locus-based: per-category selection with registry
             config = BreedingConfig(
                 crossover_rate=0.5,
                 locus_key="gene_category",

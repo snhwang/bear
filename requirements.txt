@@ -5,7 +5,7 @@ pydantic>=2.0
 
 # Embedding model (pulls in torch as a transitive dep — CPU wheel from PyPI by default).
 # For a CUDA build of torch, install it explicitly first, e.g.:
-#   uv pip install torch --index-url https://download.pytorch.org/whl/cu128
+#   uv pip install torch --index-url https://download.pytorch.org/whl/cu130
 sentence-transformers>=2.2
 
 # LLM backends (at least one needed for generation)
@@ -37,7 +37,8 @@ matplotlib>=3.5
 # mlx-embeddings>=0.0.5
 
 # GPU acceleration (CUDA only — optional, improves Nemotron-Embed-8B performance)
-flash-attn>=2.6           # Requires CUDA; install with: uv pip install flash-attn --no-build-isolation
+# Not installed by default. If reproducing the Nemotron-Embed-8B row, install manually:
+#   uv pip install flash-attn --no-build-isolation
 
 # Evaluation baselines (optional — only needed for paper reproducibility)
 instruction-tool-retrieval>=0.1.1  # ITR baseline/integration comparison

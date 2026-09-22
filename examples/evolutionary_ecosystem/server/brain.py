@@ -209,7 +209,7 @@ def markers_to_decision(
                 result["effect"] = args
 
         elif command == "thought":
-            if args and len(args) <= 80:
+            if args:
                 result["thought"] = args
 
         elif command == "busy":
@@ -762,7 +762,7 @@ class CreatureAgent(EntityAgent):
         d_dict = markers_to_decision(markers, c, world, self.rng)
         thought_text = strip_markers(text).strip('"\'')
         if not d_dict.get("thought") and thought_text:
-            d_dict["thought"] = thought_text[:80]
+            d_dict["thought"] = thought_text
 
         return CreatureDecision(
             target_x          = d_dict.get("target_x"),
@@ -1122,7 +1122,7 @@ class BrainEngine:
                     system=system,
                     user=query,
                     temperature=0.80,
-                    max_tokens=60,
+                    max_tokens=150,
                 )
                 logger.debug("LLM raw [%s] trigger=%s: %s", agent_id, trigger, resp.content)
                 decision = agent.make_decision(resp.content, self.world)

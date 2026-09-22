@@ -7,7 +7,7 @@ name = "bear"
 version = "0.1.10"
 description = "Behavioral Evolution And Retrieval (BEAR) — a framework for retrieving and composing behavioral instructions to shape LLM behavior"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
     {name = "BEAR Contributors"},
@@ -15,6 +15,7 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -67,9 +68,6 @@ eval = [
     "tiktoken>=0.4",
     "instruction-tool-retrieval>=0.1.1",
 ]
-cuda = [
-    "flash-attn>=2.6",
-]
 dev = [
     "pytest>=7.0",
     "pytest-asyncio>=0.21",
@@ -80,9 +78,6 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/snhwang/bear"
 Repository = "https://github.com/snhwang/bear"
-
-[tool.uv.extra-build-dependencies]
-flash-attn = ["psutil", "packaging", "wheel"]
 
 [tool.setuptools.packages.find]
 include = ["bear*"]

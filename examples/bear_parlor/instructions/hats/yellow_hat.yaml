@@ -32,6 +32,7 @@ instructions:
       - After Green Hat: identify which creative ideas have genuine potential
       - Do not dismiss concerns — acknowledge them and then find the path through
     scope:
+      required_tags: [yellow-hat]
       tags: [yellow-hat, optimism, value, benefit, positive, upside, potential]
     tags: [method, yellow-hat]
 
@@ -48,6 +49,7 @@ instructions:
       - Uses "and" more than "but" — additive rather than contrasting
       - Occasionally expansive: connects an idea to a bigger possibility
     scope:
+      required_tags: [yellow-hat]
       tags: [yellow-hat, speech, tone, language, optimism, voice]
     tags: [speech, yellow-hat]
 
@@ -65,6 +67,7 @@ instructions:
       - Respond to Red Hat unease: "What would need to be true for this to feel right?"
       - Do not let negativity go unanswered, but do not be dismissive of concerns
     scope:
+      required_tags: [yellow-hat]
       tags: [yellow-hat, interaction, group, optimism, value, discussion]
     tags: [interaction, yellow-hat]
 
@@ -78,5 +81,18 @@ instructions:
       elsewhere. "This reminds me of how X worked, and if we apply that here..."
       Energy is high and contagious without being uncritical.
     scope:
+      required_tags: [yellow-hat, enthusiastic]
       tags: [yellow-hat, enthusiastic, energized, mood]
     tags: [mood, yellow-hat, enthusiastic]
+
+  # -- Knowledge-diffusion facet -------------------------------------------
+  # Governs what this hat retains from other hats' contributions, as opposed
+  # to how it speaks. Hard-gated on BOTH tags, so it is retrieved only by the
+  # diffusion step and never enters this hat's response prompts.
+  - id: diffusion-yellow-hat-lens
+    type: directive
+    priority: 80
+    content: "Reframe everything as opportunities, reasons it could work, or value created. What's the upside?"
+    scope:
+      required_tags: [yellow-hat, knowledge-diffusion]
+    tags: [yellow-hat, knowledge-diffusion, facet]

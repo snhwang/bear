@@ -15,6 +15,7 @@ import asyncio
 import json
 import logging
 import math
+import os
 import random
 import sys
 from contextlib import asynccontextmanager
@@ -24,16 +25,14 @@ _HERE = Path(__file__).resolve().parent
 # Locate the repo root by walking up looking for a parent that contains
 # the package we need to import. Two layouts are supported:
 #   - bear-style: <root>/examples/evolutionary_ecosystem/server/app.py
-#     (parent.parent.parent is the bear repo root, which has examples/)
 #   - artifacts-style: <root>/evolutionary_ecosystem/server/app.py
-#     (parent.parent is the artifacts repo root, which has evolutionary_ecosystem/)
 _ROOT = None
 for _candidate in (_HERE.parent.parent, _HERE.parent.parent.parent):
     if (_candidate / "evolutionary_ecosystem").is_dir() or (_candidate / "examples").is_dir():
         _ROOT = _candidate
         break
 if _ROOT is None:
-    _ROOT = _HERE.parent.parent.parent  # fallback to bear-style
+    _ROOT = _HERE.parent.parent.parent
 sys.path.insert(0, str(_ROOT))
 
 try:
@@ -113,10 +112,6 @@ async def _make_creature(
     appearance = extract_appearance(genes, embedder)
     skills     = extract_skills(genes, embedder)
     stats      = extract_stats(genes, embedder)
-    # Founder dominance scores: per-(creature, gene_category) Uniform(0,1)
-    # so gen-0 NPCs span the dominance hierarchy rather than all clustering
-    # at the top. Mutations in subsequent generations sample from a
-    # recessive-biased Beta distribution.
     from server.gene_engine import random_founder_dominances
     dominances = random_founder_dominances(rng)
     corpus     = build_corpus(name, genes, dominances=dominances)
@@ -690,6 +685,18 @@ def _auto_llm(base_url: str | None = None, model: str | None = None) -> LLM:
     if model and ("claude" in model.lower() or "anthropic" in model.lower()):
         logger.info("Using Anthropic backend for model=%s", model)
         return LLM(backend=LLMBackend.ANTHROPIC, model=model)
+
+    # Route Ollama Cloud model names (suffix ``-cloud``, e.g. gemma3:4b-cloud)
+    # to the Ollama backend; it auto-uses https://ollama.com when OLLAMA_API_KEY
+    # is set.
+    if model and model.lower().endswith("-cloud"):
+        if not os.environ.get("OLLAMA_API_KEY"):
+            raise RuntimeError(
+                f"Model {model!r} looks like an Ollama Cloud model but "
+                "OLLAMA_API_KEY is not set."
+            )
+        logger.info("Using Ollama Cloud backend for model=%s", model)
+        return LLM(backend=LLMBackend.OLLAMA, model=model)
 
     lms_url = "http://localhost:1234/v1"
     lms_model = _probe_openai_compat(lms_url)

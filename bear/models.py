@@ -38,32 +38,18 @@ class CrossoverMethod(str, Enum):
 
 
 class Dominance(str, Enum):
-    """Locus-level ploidy / expression policy for a gene category.
+    """Locus-level ploidy / expression policy.
 
-    - **HAPLOID** (default): One allele per locus. ``express()`` emits the
-      single allele unchanged.
-    - **DOMINANT**: Two alleles per locus. Score-driven expression — the
-      allele with the higher ``metadata["dominance"]`` score is emitted;
-      the lower-scored allele is hidden. Equal scores tie and both express
-      (codominance falls out naturally).
-    - **CODOMINANT**: Functionally equivalent to **DOMINANT** under the
-      per-allele scoring system; retained as an alias for backward
-      compatibility. May be collapsed in a future major release.
+    - **HAPLOID** (default): One allele per locus.
+    - **DOMINANT**: Two alleles per locus; score-driven expression
+      (highest score wins; ties produce codominance).
+    - **CODOMINANT**: Functionally equivalent to DOMINANT under the
+      per-allele scoring system; retained as a backward-compat alias.
 
-    **Per-allele dominance metadata.** Each allele instruction's
-    ``metadata["dominance"]`` is a float (default 1.0 if absent) used to
-    rank alleles. Higher score = more dominant. Mendelian dominance,
-    codominance, and recessive emergence all fall out of the score
-    distribution:
-
-    - Score(A)=0.9, Score(a)=0.1 → A wins (classical dominance).
-    - Score(A)=Score(B)=0.8 → both emit (codominance, e.g., AB blood type).
-    - Score(a)=Score(a')=0.05 → both emit (homozygous recessive surfaces).
-
-    Producers of allele instructions assign scores at corpus-build time
-    (e.g., founders drawn from one distribution, mutants from a more
-    recessive-biased distribution). Scores are preserved through breeding
-    via the standard metadata-copy mechanism.
+    Each allele instruction's ``metadata["dominance"]`` is a float
+    (default 1.0) used to rank alleles. Higher score = more dominant.
+    Mendelian dominance, codominance, and recessive emergence all fall
+    out of the score distribution.
     """
 
     HAPLOID = "haploid"

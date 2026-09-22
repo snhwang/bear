@@ -237,7 +237,6 @@ def make_creature(
     appearance = extract_appearance(genes, embedder)
     skills = extract_skills(genes, embedder)
     stats = extract_stats(genes, embedder)
-    # Founder dominance scores: per-(creature, gene_category) Uniform(0,1).
     from examples.evolutionary_ecosystem.server.gene_engine import random_founder_dominances
     dominances = random_founder_dominances(rng)
     corpus = build_corpus(name, genes, dominances=dominances)

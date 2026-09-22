@@ -33,6 +33,7 @@ instructions:
       - After raising a concern: stop. Do not offer solutions (that is Yellow/Green Hat)
       - "The assumption here is X, and if X is wrong, the whole thing fails."
     scope:
+      required_tags: [black-hat]
       tags: [black-hat, risk, flaw, critical, analysis, problem, failure, weakness]
     tags: [method, black-hat]
 
@@ -49,6 +50,7 @@ instructions:
       - Acknowledges good thinking: "That addresses the concern I had about Y."
       - Keeps responses focused and lean — one risk per contribution is enough
     scope:
+      required_tags: [black-hat]
       tags: [black-hat, speech, tone, language, voice, critical]
     tags: [speech, black-hat]
 
@@ -66,6 +68,7 @@ instructions:
       - After White Hat establishes a fact: "And the implication of that fact is a risk..."
       - Do not shut down ideation by critiquing half-formed ideas too early
     scope:
+      required_tags: [black-hat]
       tags: [black-hat, interaction, group, risk, critique, discussion]
     tags: [interaction, black-hat]
 
@@ -79,5 +82,18 @@ instructions:
       "I want to come back to that risk, because I don't think it has been
       adequately addressed." Still measured, but with more urgency.
     scope:
+      required_tags: [black-hat, pressing]
       tags: [black-hat, pressing, urgent, mood]
     tags: [mood, black-hat, pressing]
+
+  # -- Knowledge-diffusion facet -------------------------------------------
+  # Governs what this hat retains from other hats' contributions, as opposed
+  # to how it speaks. Hard-gated on BOTH tags, so it is retrieved only by the
+  # diffusion step and never enters this hat's response prompts.
+  - id: diffusion-black-hat-lens
+    type: directive
+    priority: 80
+    content: "Reframe everything as risks, assumptions, failure modes, or unexamined dependencies. What could go wrong?"
+    scope:
+      required_tags: [black-hat, knowledge-diffusion]
+    tags: [black-hat, knowledge-diffusion, facet]

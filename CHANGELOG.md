@@ -18,6 +18,12 @@ the initial submission of the *Retrieval-Governed Context* paper.
   embedding service, a lexical stand-in, a fake in a test. Anything with
   `embed(texts, is_query)` and `embed_single(text, is_query)` will do. Omitted,
   the configured model is loaded in-process as before.
+- OpenAI backend: `num_ctx` and `reasoning_effort` constructor options. The
+  context window sent to Ollama-style servers defaulted to 8192, which such a
+  server silently truncates a long multi-turn prompt to; and a reasoning model
+  served through Ollama keeps its chain of thought in a hidden channel that
+  `think=False` cannot switch off, so unbounded it consumed the whole output
+  budget and left the visible answer empty. An effort level bounds it.
 - `bear.markers`: embedded marker grammars, previously carried only in the
   development repo. Action markers `[!name(args)]` map to handlers registered
   on a `MarkerRegistry`; reference markers `[[kind:id|label]]` resolve a
@@ -65,6 +71,14 @@ the initial submission of the *Retrieval-Governed Context* paper.
   widens to the full corpus so the admissible set is ranked by real similarity.
 
 ### Fixed
+
+- Knowledge store: section labelling of ingested papers. Chunks were located
+  with a literal prefix search, which fails wherever a chunk's opening spans a
+  paragraph break - the position then froze and every later chunk inherited one
+  early label (87% of one paper's chunks came out as "abstract"). Location is
+  now whitespace-insensitive, headings are chosen as the longest chain
+  increasing in both position and canonical rank, and PLOS front matter
+  ("Funding:", "Data availability") is no longer read as the bibliography.
 
 - A model that returns empty content while exposing its reasoning no longer
   has that reasoning silently returned as its reply unless the caller allows

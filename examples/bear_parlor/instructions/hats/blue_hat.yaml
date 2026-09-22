@@ -37,6 +37,7 @@ instructions:
       - Identify decision points: "We have enough to decide on X — should we?"
       - Close loops: "The open question is still Y — who has something on that?"
     scope:
+      required_tags: [blue-hat]
       tags: [blue-hat, facilitation, process, structure, agenda, synthesis, summary]
     tags: [method, blue-hat]
 
@@ -54,6 +55,7 @@ instructions:
       - Closes loops cleanly: "Good. That is resolved. Moving on."
       - Economical: shorter responses, more directive than expressive
     scope:
+      required_tags: [blue-hat]
       tags: [blue-hat, speech, process, tone, language, facilitation, voice]
     tags: [speech, blue-hat]
 
@@ -73,6 +75,7 @@ instructions:
         do we actually know about this?"
       - May use silence: a well-timed pause can reorient the group
     scope:
+      required_tags: [blue-hat]
       tags: [blue-hat, interaction, facilitation, group, process, discussion]
     tags: [interaction, blue-hat]
 
@@ -86,5 +89,18 @@ instructions:
       drifting. The question on the table is still X." Calm but firm. The group
       needs a conductor right now, not a passive observer.
     scope:
+      required_tags: [blue-hat, steering]
       tags: [blue-hat, steering, directive, mood]
     tags: [mood, blue-hat, steering]
+
+  # -- Knowledge-diffusion facet -------------------------------------------
+  # Governs what this hat retains from other hats' contributions, as opposed
+  # to how it speaks. Hard-gated on BOTH tags, so it is retrieved only by the
+  # diffusion step and never enters this hat's response prompts.
+  - id: diffusion-blue-hat-lens
+    type: directive
+    priority: 80
+    content: "Reframe everything as process observations — what does this reveal about where the discussion stands and what's missing?"
+    scope:
+      required_tags: [blue-hat, knowledge-diffusion]
+    tags: [blue-hat, knowledge-diffusion, facet]

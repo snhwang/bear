@@ -42,3 +42,8 @@ sim_log_diploid_*_action.json
 
 # Runtime sim state (transient autosave; opt-in via --output)
 sim_autosave.json
+
+# Bear parlor session logs (per-run output)
+examples/bear_parlor/session_logs/
+# extracted text of copyrighted source PDFs (local cache only)
+examples/bear_parlor/panel_data/pdf_text_cache/

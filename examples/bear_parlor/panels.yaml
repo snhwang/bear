@@ -37,3 +37,52 @@ panels:
       direction; Blue Hat does NOT set the agenda independently.
       Other hats respond when their mode is relevant. Build on each other.
       Disagreement between hats is productive — that is the point of the method.
+
+  - id: benchmark-hats
+    name: "Six Thinking Hats task panel"
+    description: "Six Thinking Hats panel answering one benchmark item (SCT-Bench, BRAINTEASER)."
+    user_label: "The task"
+    # Hat instructions only: the common chat constraints ("respond ONLY with
+    # dialogue", "you are a person having a conversation") would conflict with
+    # a required answer format.
+    instruction_dirs: [hats]
+    characters: [white-hat, red-hat, black-hat, yellow-hat, green-hat, blue-hat]
+    room_context: |
+      This is a Six Thinking Hats panel working on a single question. Each
+      participant contributes from their assigned thinking mode. Follow the
+      task instructions in each message, including the required answer format.
+
+  # -- Scenario panels (DRAFT, 2026-09-18; see ../scenarios/DESIGN.md) ------
+
+  - id: incident-response
+    name: "XYZ incident bridge"
+    description: "Incident response team; knowledge is gated by role (containment) and transformed by role (plain language)."
+    user_label: "The facilitator"
+    primary_responder: commander
+    instruction_dirs: [common, incident]
+    characters: [commander, security-lead, oncall-engineer, legal, comms, support]
+    room_context: |
+      This is the incident bridge for XYZ. Each
+      participant speaks for one function and stays within it: security for
+      cause and containment, engineering for remediation, legal for exposure
+      and obligations, communications for the public account, support for
+      customers, and the commander for state and decisions. Everyone hears
+      the bridge; what each function retains and acts on is its own.
+      The facilitator directs the call. Answer the facilitator's question
+      from your function's standpoint, briefly, and hand off to the function
+      that owns the next part.
+
+  - id: paper-review
+    name: "Research review panel"
+    description: "Six reviewers read the same papers through different lenses and discuss them."
+    user_label: "The facilitator"
+    primary_responder: synthesizer
+    instruction_dirs: [common, review]
+    characters: [methodologist, statistician, synthesizer, skeptic, replicator, communicator]
+    room_context: |
+      This is a research review panel discussing the papers it has read.
+      Each participant reads from one standpoint: methods, statistics,
+      findings in context, limitations, reproducibility, or plain-language
+      meaning. Stay within your standpoint, build on what others have said,
+      and disagree when the evidence warrants it. The facilitator directs
+      the discussion and may change topic at any time; follow immediately.

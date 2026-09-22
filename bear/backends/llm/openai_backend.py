@@ -52,10 +52,21 @@ class OpenAIBackend(LLMBackendBase):
         base_url: str | None = None,
         no_system_role: bool = False,
         timeout: float | None = None,
+        num_ctx: int | None = None,
+        reasoning_effort: str | None = None,
     ):
         self.model = model
         self.base_url = base_url
         self.no_system_role = no_system_role
+        # Context window asked of Ollama-style servers (prompt + output). The
+        # default below is too small for long multi-turn prompts, which such a
+        # server then truncates silently.
+        self.num_ctx = num_ctx
+        # Reasoning models served through Ollama (e.g. gpt-oss) keep their
+        # chain of thought in a hidden channel that ``think=False`` cannot turn
+        # off; unbounded, it consumes the whole output budget and leaves the
+        # visible answer empty. Setting an effort level bounds it.
+        self.reasoning_effort = reasoning_effort
         # Request timeout in seconds. A heavily loaded self-hosted server can
         # take many minutes for one long completion, and the default below is
         # then far too short: every request times out and is retried forever.
@@ -163,9 +174,14 @@ class OpenAIBackend(LLMBackendBase):
         # - ``chat_template_kwargs.enable_thinking``: vLLM/Gemma/Qwen3-style param
         #   forwarded into the chat template.
         if self.is_local and not request.thinking:
-            extra["think"] = False
-            extra["num_ctx"] = 8192
+            if self.reasoning_effort:
+                extra["reasoning_effort"] = self.reasoning_effort
+            else:
+                extra["think"] = False
+            extra["num_ctx"] = self.num_ctx or 8192
             extra["chat_template_kwargs"] = {"enable_thinking": False}
+        elif self.is_local and self.num_ctx:
+            extra["num_ctx"] = self.num_ctx
 
         if extra:
             kwargs["extra_body"] = extra

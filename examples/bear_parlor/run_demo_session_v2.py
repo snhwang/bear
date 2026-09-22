@@ -20,6 +20,38 @@ from datetime import datetime
 
 HERE = Path(__file__).parent
 
+# Conditions for the v6 rerun. By default every hat -- and so every hat's
+# diffusion call -- uses the one model given by --backend/--model, so differences
+# between conditions come from the lenses, not from model differences.
+# --per-hat-models uses the per-hat models in characters.yaml instead.
+CONDITIONS = {
+    "bear":       [],                         # each hat's own lens
+    "naive":      ["--naive-diffusion"],      # verbatim sharing, no lens
+    "wrong-lens": ["--wrong-lens"],           # each hat uses another hat's lens
+}
+_OPTS: dict = {}   # set in main()
+
+
+def _read_env_var(name: str) -> str | None:
+    """Read ONE variable from the environment or a .env file, never a whole file.
+
+    Loading the bear-dev .env wholesale would expose its real OPENAI_API_KEY to
+    a self-hosted server. Searches bear-dev's .env and the paper artifacts .env.
+    """
+    import re
+    if os.environ.get(name):
+        return os.environ[name]
+    pattern = re.compile(r"^(?:export\s+)?" + re.escape(name) + r"\s*=\s*(.*)$")
+    for env in (HERE.parent.parent / ".env",
+                HERE.parent.parent.parent / "paper-knowledge-diffusion-artifacts" / ".env"):
+        if not env.is_file():
+            continue
+        for line in env.read_text(encoding="utf-8", errors="replace").splitlines():
+            m = pattern.match(line.strip())
+            if m and m.group(1).strip().strip("'\""):
+                return m.group(1).strip().strip("'\"")
+    return None
+
 # ── Session scripts: 7 facilitator prompts + 3 PDFs for all topics ──────────
 # All topics now use 3 PDFs (consistent protocol)
 SCRIPTS = {
@@ -329,28 +361,89 @@ async def run_ws_script(script: list) -> int:
     return turn_count
 
 
+PANEL_ID = "brainstorming-hats"
+
+
+def _panel_state_files() -> list[Path]:
+    """Files Parlor reloads at startup for this panel (memories, affinities)."""
+    return sorted((HERE / "panel_data").glob(f"*-{PANEL_ID}.yaml"))
+
+
+def isolate_panel_state() -> None:
+    """Start the session with no memories or affinities from earlier runs.
+
+    Parlor saves these to panel_data/ and reloads them at startup, so without
+    this every session retrieves memories formed in other sessions -- other
+    topics and other conditions. Anything already there when no run is in
+    progress (e.g. from before v6) is archived, never deleted.
+    """
+    leftovers = _panel_state_files()
+    if not leftovers:
+        return
+    dest = HERE / "panel_data" / "_archive" / datetime.now().strftime("pre-run_%Y%m%d_%H%M%S")
+    dest.mkdir(parents=True, exist_ok=True)
+    for f in leftovers:
+        f.rename(dest / f.name)
+    print(f"  Archived {len(leftovers)} persisted panel-state file(s) to {dest}")
+
+
+def collect_panel_state(topic: str, condition: str, timestamp: str) -> None:
+    """Move state a session created next to its logs, so the next starts clean."""
+    files = _panel_state_files()
+    if not files:
+        return
+    dest = (HERE / "session_logs" / _OPTS["log_subdir"] / "panel_state"
+            / f"{topic}__{condition}__{timestamp}")
+    dest.mkdir(parents=True, exist_ok=True)
+    for f in files:
+        f.rename(dest / f.name)
+    print(f"  Saved session panel state to {dest}")
+
+
+def build_server_cmd(topic: str, condition: str) -> list[str]:
+    """Parlor server command for one session under one condition.
+
+    Models are always passed explicitly. The April runner passed no --model,
+    so the session default silently became the backend's own default.
+    """
+    cmd = [
+        sys.executable, "-u", "parlor.py",
+        "--panel", "brainstorming-hats",
+        "--backend", _OPTS["backend"],
+        "--model", _OPTS["model"],
+        "--topic-meta", topic,
+        "--condition-meta", condition,
+        "--log-subdir", _OPTS["log_subdir"],
+    ]
+    if not _OPTS["per_hat_models"]:
+        cmd.append("--override-model")
+    cmd.extend(CONDITIONS[condition])
+    return cmd
+
+
+def server_env() -> dict:
+    """Environment for the Parlor server: local-server URL and key, if given."""
+    env = dict(os.environ)
+    if _OPTS.get("base_url"):
+        env["BEAR_LLM_BASE_URL"] = _OPTS["base_url"]
+    if _OPTS.get("api_key"):
+        env["BEAR_LLM_API_KEY"] = _OPTS["api_key"]
+    return env
+
+
 async def run_session(topic: str, condition: str = "bear") -> None:
     """Start parlor server, run one session, then shut down."""
     import signal
     import subprocess
 
     script = SCRIPTS[topic]
-    naive = condition == "naive"
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     print(f"\n{'='*60}")
     print(f"Starting: {topic} / {condition} / {timestamp}")
     print(f"{'='*60}")
 
-    cmd = [
-        sys.executable, "-u", "parlor.py",
-        "--panel", "brainstorming-hats",
-        "--backend", "anthropic",
-        "--topic-meta", topic,
-        "--condition-meta", condition,
-    ]
-    if naive:
-        cmd.append("--naive-diffusion")
+    cmd = build_server_cmd(topic, condition)
 
     # Wipe knowledge store for a clean evaluation run
     import shutil, platform, os
@@ -365,8 +458,10 @@ async def run_session(topic: str, condition: str = "bear") -> None:
         shutil.rmtree(kb_path)
         print(f"  Wiped knowledge store: {kb_path}")
 
+    isolate_panel_state()
+
     print("Starting BEAR Parlor server...", flush=True)
-    server = subprocess.Popen(cmd, cwd=str(HERE))
+    server = subprocess.Popen(cmd, cwd=str(HERE), env=server_env())
 
     try:
         await wait_for_server(timeout=180)
@@ -379,6 +474,7 @@ async def run_session(topic: str, condition: str = "bear") -> None:
             server.wait(timeout=10)
         except subprocess.TimeoutExpired:
             server.kill()
+        collect_panel_state(topic, condition, timestamp)
         print("Done.")
 
 
@@ -387,8 +483,22 @@ async def main():
     parser = argparse.ArgumentParser(description="Run v2 demo sessions")
     parser.add_argument("--topic", choices=list(SCRIPTS.keys()) + ["all"],
                         default="all")
-    parser.add_argument("--condition", choices=["bear", "naive", "both"],
-                        default="both")
+    parser.add_argument("--condition", nargs="+",
+                        choices=list(CONDITIONS) + ["all"], default=["all"])
+    parser.add_argument("--backend", default="openai",
+                        help="LLM backend for every hat and background task")
+    parser.add_argument("--model", required=True,
+                        help="Model for every hat. Required: never rely on a "
+                             "backend's built-in default.")
+    parser.add_argument("--base-url", default=None,
+                        help="OpenAI-compatible server, e.g. http://192.168.1.176:9010/v1")
+    parser.add_argument("--api-key-env", default=None,
+                        help="Name of the variable holding that server's API key "
+                             "(read from the environment or .env; only this one variable)")
+    parser.add_argument("--per-hat-models", action="store_true",
+                        help="Use characters.yaml per-hat models instead of --model for every hat")
+    parser.add_argument("--log-subdir", default="v6",
+                        help="Write logs under session_logs/<subdir>/ (default v6)")
     parser.add_argument("--topics", nargs="+", choices=list(SCRIPTS.keys()),
                         help="Run specific topics")
     parser.add_argument("--rerun-incomplete", action="store_true",
@@ -398,14 +508,24 @@ async def main():
     topics = args.topics or (
         list(SCRIPTS.keys()) if args.topic == "all" else [args.topic]
     )
-    conditions = (
-        ["bear", "naive"] if args.condition == "both" else [args.condition]
-    )
+    conditions = []
+    for c in args.condition:
+        for x in (list(CONDITIONS) if c == "all" else [c]):
+            if x not in conditions:
+                conditions.append(x)
+    api_key = None
+    if args.api_key_env:
+        api_key = _read_env_var(args.api_key_env)
+        if not api_key:
+            parser.error(f"{args.api_key_env} not found in the environment or .env")
+    _OPTS.update(backend=args.backend, model=args.model, base_url=args.base_url,
+                 api_key=api_key, per_hat_models=args.per_hat_models,
+                 log_subdir=args.log_subdir)
 
     # --rerun-incomplete: filter to only sessions missing .knowledge.json or not completed
     if args.rerun_incomplete:
         import json as _json
-        LOG_DIR = HERE / "session_logs"
+        LOG_DIR = HERE / "session_logs" / args.log_subdir
         _raw = []
         for _f in sorted(LOG_DIR.glob("brainstorming-hats_*.stats.json")):
             _d = _json.load(open(_f))
