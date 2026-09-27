@@ -563,8 +563,33 @@ class BreedingConfig(BaseModel):
         default=True,
         description=(
             "If True, every inherited instruction is re-scoped with "
-            "required_tags=[child_name]. If False, the parent's scope "
-            "is preserved."
+            "required_tags=[child_name], plus any of the parent's required "
+            "tags listed in preserve_required_tags. If False, the parent's "
+            "scope is preserved."
+        ),
+    )
+    preserve_required_tags: list[str] = Field(
+        default_factory=lambda: ["knowledge-diffusion"],
+        description=(
+            "Required tags that describe when a gene is expressed rather than "
+            "who owns it, kept when scope_to_child re-scopes an inherited "
+            "instruction. The default keeps a memory lens confined to "
+            "absorption: without it, a lens scoped [parent, knowledge-diffusion] "
+            "would become [child] and act while the child speaks. Tags not "
+            "present on an instruction have no effect, so the default leaves "
+            "other corpora unchanged."
+        ),
+    )
+    always_inherit_tags: list[str] = Field(
+        default_factory=lambda: ["access"],
+        description=(
+            "Instructions carrying any of these tags bypass crossover, locus "
+            "selection and mutation: the child inherits every one of them "
+            "from both parents. The default covers access policies, so a "
+            "child can never lose a parent's restriction by chance. A reader "
+            "of the policies should combine them restrictively (BEAR Parlor's "
+            "gate allows only what every policy allows and denies what any "
+            "denies). exclude_tags still takes precedence."
         ),
     )
     seed: int | None = Field(
@@ -676,7 +701,12 @@ def _make_child_instruction(
         },
     }
     if config.scope_to_child:
-        update["scope"] = ScopeCondition(required_tags=[child_name])
+        # Ownership passes to the child. Expression context (e.g. the
+        # knowledge-diffusion facet that confines a lens to absorption) is
+        # part of the gene and is inherited with it.
+        kept = [t for t in inst.scope.required_tags
+                if t in config.preserve_required_tags and t != child_name]
+        update["scope"] = ScopeCondition(required_tags=[child_name, *kept])
     return inst.model_copy(update=update)
 
 
@@ -1338,6 +1368,27 @@ def breed(
     )
     skipped_ids = skipped_a + skipped_b
 
+    # Always-inherited instructions (access policies by default) leave the
+    # crossover pool and go to the child from both parents
+    always_tag_set = set(config.always_inherit_tags)
+    always: list[Instruction] = []
+    if always_tag_set:
+        for pool in (eligible_a, eligible_b):
+            keep = []
+            for inst, pname in pool:
+                if set(inst.tags) & always_tag_set:
+                    ci = _make_child_instruction(
+                        inst, pname, child_name, base_tags, config, seed)
+                    if any(a.id == ci.id for a in always):
+                        # same id in both parents: Corpus.add would replace
+                        # one policy with the other, so keep both
+                        ci = ci.model_copy(
+                            update={"id": f"{child_name}-{pname}-{inst.id}"})
+                    always.append(ci)
+                else:
+                    keep.append((inst, pname))
+            pool[:] = keep
+
     # Crossover
     locus_choices: dict[str, str] = {}
     crossover_points: list[int] = []
@@ -1397,6 +1448,14 @@ def breed(
             else:
                 mutated.append(inst)
         inherited = mutated
+
+    # Added after mutation so a lethal mutation cannot drop a policy
+    for inst in always:
+        if inst.metadata["inherited_from"] == parent_a_name:
+            from_a += 1
+        else:
+            from_b += 1
+    inherited = inherited + always
 
     for inst in inherited:
         child.add(inst)

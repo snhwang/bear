@@ -42,9 +42,11 @@ from typing import Any
 
 import yaml
 
+from bear.config import Config
 from bear.corpus import Corpus
 from bear.evolution import BreedingConfig, BreedResult, breed
 from bear.llm import LLM
+from bear.retriever import Embedder
 from bear.twin import TwinBuilder
 
 logger = logging.getLogger(__name__)
@@ -192,7 +194,10 @@ class Population:
             subdirectory under ``pop_dir/agents/<name>/``.
         llm: Shared LLM instance for all agents.
         breeding_config: Configuration for the ``breed()`` function.
-        embedding_model: Embedding model passed to each TwinBuilder.
+        embedding_model: Embedding model for every agent.  Defaults to
+            ``Config.from_env().embedding_model`` (BGE-base unless
+            ``BEAR_EMBEDDING_MODEL`` says otherwise).  One embedder is
+            shared by all agents, so the model loads once per population.
     """
 
     def __init__(
@@ -200,12 +205,16 @@ class Population:
         pop_dir: str | Path,
         llm: LLM | None = None,
         breeding_config: BreedingConfig | None = None,
-        embedding_model: str = "hash",
+        embedding_model: str | None = None,
     ) -> None:
         self.pop_dir = Path(pop_dir)
         self.llm = llm
         self.breeding_config = breeding_config or BreedingConfig()
-        self._embedding_model = embedding_model
+        config = Config.from_env()
+        if embedding_model is not None:
+            config = config.model_copy(update={"embedding_model": embedding_model})
+        self._embedding_model = config.embedding_model
+        self._embedder = Embedder.from_config(config)
 
         self._agents_dir = self.pop_dir / "agents"
         self._meta_path = self.pop_dir / "population.yaml"
@@ -255,6 +264,7 @@ class Population:
                             name=name,
                             llm=self.llm,
                             embedding_model=self._embedding_model,
+                            embedder=self._embedder,
                         )
                         if name not in self._fitness:
                             self._fitness[name] = AgentFitness(name=name)
@@ -305,6 +315,7 @@ class Population:
             name=name,
             llm=self.llm,
             embedding_model=self._embedding_model,
+            embedder=self._embedder,
         )
         self._agents[name] = twin
         self._fitness[name] = AgentFitness(name=name)
@@ -726,6 +737,7 @@ class Population:
             name=child_name,
             llm=self.llm,
             embedding_model=self._embedding_model,
+            embedder=self._embedder,
         )
 
         # Replace its empty corpus with the bred one

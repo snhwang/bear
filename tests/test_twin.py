@@ -19,6 +19,12 @@ from bear.twin import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _hash_embeddings(monkeypatch):
+    """Twins default to the configured model. These tests don't need semantics."""
+    monkeypatch.setenv("BEAR_EMBEDDING_MODEL", "hash")
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -304,6 +310,58 @@ class TestTwinBuilderObserve:
 # ---------------------------------------------------------------------------
 # TwinBuilder: chat
 # ---------------------------------------------------------------------------
+
+
+    @pytest.mark.asyncio
+    async def test_observe_refine_without_id_is_an_add(self, tmp_path):
+        # A refine that names no instruction used to leave `inst` unbound.
+        llm = _mock_llm(_extract_response([
+            {"type": "directive", "content": "You prefer mornings.",
+             "topics": ["routine"], "action": "refine"},
+        ]))
+        twin = TwinBuilder(tmp_path / "alice", name="Alice", llm=llm)
+        added = await twin.observe("She likes mornings")
+        assert len(added) == 1
+        assert "mornings" in added[0].content
+        assert twin.instruction_count == 1
+
+    @pytest.mark.asyncio
+    async def test_observe_refine_unknown_id_is_an_add(self, tmp_path):
+        llm = _mock_llm(_extract_response([
+            {"type": "directive", "content": "You prefer mornings.",
+             "topics": ["routine"], "action": "refine", "refines_id": "no-such-id"},
+        ]))
+        twin = TwinBuilder(tmp_path / "alice", name="Alice", llm=llm)
+        added = await twin.observe("She likes mornings")
+        assert len(added) == 1
+        assert added[0].id != "no-such-id"
+
+    @pytest.mark.asyncio
+    async def test_observe_skips_malformed_items(self, tmp_path):
+        llm = _mock_llm(_extract_response([
+            "a bare string",
+            {"type": "directive", "content": "You delete things.", "action": "delete"},
+            {"type": 3, "content": "You hum while you work.", "topics": "music",
+             "action": "add"},
+        ]))
+        twin = TwinBuilder(tmp_path / "alice", name="Alice", llm=llm)
+        added = await twin.observe("She hums")
+        assert [a.content for a in added] == ["You hum while you work."]
+        assert added[0].type == InstructionType.DIRECTIVE
+
+    def test_embedder_is_shared_across_rebuilds(self, tmp_path):
+        twin = TwinBuilder(tmp_path / "alice", name="Alice")
+        twin.add_knowledge("Alice studies cardiology.", source="bio")
+        embedder = twin.get_retriever()._embedder
+        assert twin.get_knowledge_retriever()._embedder is embedder
+        twin._retriever = None
+        assert twin.get_retriever()._embedder is embedder
+
+    def test_embedding_model_defaults_to_config(self, tmp_path, monkeypatch):
+        monkeypatch.delenv("BEAR_EMBEDDING_MODEL")
+        from bear.config import Config
+        twin = TwinBuilder(tmp_path / "alice", name="Alice")
+        assert twin._embedding_model == Config().embedding_model != "hash"
 
 
 class TestTwinBuilderChat:

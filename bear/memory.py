@@ -31,6 +31,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
 
+from bear.config import Config
 from bear.llm import LLM
 from bear.models import Context, Instruction, InstructionType, ScopeCondition, ScoredInstruction
 
@@ -125,9 +126,13 @@ class LLMMemoryExtractor(MemoryExtractor):
                     persona / core directive priority so memories do not
                     dominate retrieval but surface when relevant.
         memory_tag: Tag applied to all produced instructions for easy filtering.
-        reserved_tags: Tags an LLM-generated topic may not become, e.g. the
-            retriever's mandatory tags. A memory about "safety" must not
-            turn into a mandatory instruction.
+        reserved_tags: Tags an LLM-generated topic may not become, in
+            addition to the mandatory tags from ``Config.from_env()``
+            (``["safety"]`` unless ``BEAR_MANDATORY_TAGS`` says otherwise),
+            which are always reserved. A memory about "safety" must not
+            turn into a mandatory instruction, which the retriever always
+            includes and nothing else can supersede. Pass the retriever's
+            mandatory tags here if it uses a custom ``Config``.
         scope_to_agent: If True, each memory is hard-gated on its agent id
             (``required_tags``), so only that agent can retrieve it. The
             default soft tag admits it for its agent but does not keep it
@@ -146,7 +151,11 @@ class LLMMemoryExtractor(MemoryExtractor):
     ) -> None:
         self._agent_name = agent_name
         self._scope_to_agent = scope_to_agent
-        self._reserved_tags = {t.lower() for t in reserved_tags} | {memory_tag.lower()}
+        self._reserved_tags = (
+            {t.lower() for t in reserved_tags}
+            | {t.lower() for t in Config.from_env().mandatory_tags}
+            | {memory_tag.lower()}
+        )
         self._batch_size = batch_size
         self._max_per_batch = max_memories_per_batch
         self._priority = priority
@@ -213,8 +222,15 @@ class LLMMemoryExtractor(MemoryExtractor):
         instructions: list[Instruction] = []
         now = time.time()
         for mem in memories[: self._max_per_batch]:
-            content = mem.get("content", "").strip()
-            topics = [str(t) for t in mem.get("topics", [])
+            # The model is asked for objects, but a bare string or a string
+            # "topics" is valid JSON too. Skip what does not fit the shape.
+            if not isinstance(mem, dict):
+                continue
+            content = str(mem.get("content") or "").strip()
+            raw_topics = mem.get("topics")
+            if not isinstance(raw_topics, list):
+                raw_topics = []
+            topics = [str(t) for t in raw_topics
                       if str(t).lower() not in self._reserved_tags][:5]
             if not content:
                 continue

@@ -2735,3 +2735,155 @@ class TestPersonaGrowthAcrossGenerations:
         assert max_seen < 50, (
             f"custom_persona should keep persona bounded; saw {max_seen} chars"
         )
+
+
+# ---------------------------------------------------------------------------
+# Memory lens as a gene locus
+# ---------------------------------------------------------------------------
+#
+# A role's memory lens (its knowledge-diffusion facet) is one gene. It is
+# scoped [role, knowledge-diffusion] so it is retrieved only while the role
+# absorbs material, never while it speaks. Inheritance must pass the gene on
+# with that expression context intact.
+
+def _lens_parent(role: str, lens: str, dominance: float) -> Corpus:
+    c = Corpus()
+    c.add(Instruction(
+        id=f"persona-{role}-core", type=InstructionType.PERSONA, priority=80,
+        content=f"You are the {role}.", scope=ScopeCondition(required_tags=[role]),
+        tags=["persona", role],
+    ))
+    c.add(Instruction(
+        id=f"directive-{role}-method", type=InstructionType.DIRECTIVE, priority=75,
+        content=f"{role} method.", scope=ScopeCondition(required_tags=[role]),
+        tags=["method", role],
+    ))
+    c.add(Instruction(
+        id=f"diffusion-{role}-lens", type=InstructionType.DIRECTIVE, priority=80,
+        content=lens, scope=ScopeCondition(required_tags=[role, "knowledge-diffusion"]),
+        tags=[role, "knowledge-diffusion", "facet"],
+        metadata={"gene_category": "memory-lens", "dominance": dominance},
+    ))
+    return c
+
+
+def _stat() -> Corpus:
+    return _lens_parent("statistician", "Retain the quantitative evidence.", 1.0)
+
+
+def _skep() -> Corpus:
+    return _lens_parent("skeptic", "Retain the weaknesses.", 0.7)
+
+
+def _lenses(corpus: Corpus) -> list[Instruction]:
+    return [i for i in corpus if i.metadata.get("gene_category") == "memory-lens"]
+
+
+class TestMemoryLensLocus:
+
+    def test_lens_is_inherited_as_one_locus(self):
+        cfg = BreedingConfig(locus_key="gene_category", seed=7)
+        child = breed(_stat(), _skep(), "reviewer-7", "statistician", "skeptic", config=cfg).child
+        lenses = _lenses(child)
+        assert len(lenses) == 1
+        assert lenses[0].metadata["inherited_from"] in ("statistician", "skeptic")
+
+    def test_inherited_lens_keeps_absorption_scope(self):
+        cfg = BreedingConfig(locus_key="gene_category", seed=7)
+        lens = _lenses(breed(_stat(), _skep(), "reviewer-7", "statistician", "skeptic",
+                             config=cfg).child)[0]
+        assert lens.scope.required_tags == ["reviewer-7", "knowledge-diffusion"]
+        # retrieved while the child absorbs, not while it speaks
+        assert lens.scope.matches(Context(tags=["reviewer-7", "knowledge-diffusion"]))
+        assert not lens.scope.matches(Context(tags=["reviewer-7"]))
+
+    def test_owner_only_scope_is_unchanged(self):
+        """Instructions scoped only to their owner re-scope exactly as before."""
+        cfg = BreedingConfig(locus_key="gene_category", crossover_rate=1.0, seed=7)
+        child = breed(_stat(), _skep(), "reviewer-7", "statistician", "skeptic", config=cfg).child
+        methods = [i for i in child if "method" in i.tags]
+        assert methods
+        assert all(i.scope.required_tags == ["reviewer-7"] for i in methods)
+
+    def test_empty_preserve_list_restores_previous_behaviour(self):
+        cfg = BreedingConfig(locus_key="gene_category", seed=7, preserve_required_tags=[])
+        lens = _lenses(breed(_stat(), _skep(), "reviewer-7", "statistician", "skeptic",
+                             config=cfg).child)[0]
+        assert lens.scope.required_tags == ["reviewer-7"]
+
+    def test_diploid_lens_expresses_the_dominant_allele(self):
+        registry = LocusRegistry(loci=[GeneLocus(name="memory-lens", dominance=Dominance.DOMINANT)])
+        cfg = BreedingConfig(locus_key="gene_category", locus_registry=registry, seed=7)
+        child = breed(_stat(), _skep(), "reviewer-7", "statistician", "skeptic", config=cfg).child
+        carried = _lenses(child)
+        assert {i.metadata.get("allele") for i in carried} == {"a", "b"}
+        assert all(i.scope.required_tags == ["reviewer-7", "knowledge-diffusion"] for i in carried)
+        expressed = [i for i in express(child, registry)
+                     if i.metadata.get("gene_category") == "memory-lens"]
+        assert [i.content for i in expressed] == ["Retain the quantitative evidence."]
+
+
+# ---------------------------------------------------------------------------
+# Access policies are always inherited
+# ---------------------------------------------------------------------------
+#
+# An access policy restricts what a role may retain. Losing it by crossover
+# would silently widen what a child may hold, so breeding passes every
+# policy from both parents and the reader combines them restrictively.
+
+def _access_parent(role: str, allow: list[str], deny: list[str]) -> Corpus:
+    c = _lens_parent(role, f"{role} lens.", 1.0)
+    c.add(Instruction(
+        id=f"diffusion-{role}-access", type=InstructionType.CONSTRAINT, priority=90,
+        content=f"{role} access.",
+        scope=ScopeCondition(required_tags=[role, "knowledge-diffusion"]),
+        tags=[role, "knowledge-diffusion", "facet", "access",
+              *[f"allow:{a}" for a in allow], *[f"deny:{d}" for d in deny]],
+    ))
+    return c
+
+
+def _policies(corpus: Corpus) -> list[Instruction]:
+    return [i for i in corpus if "access" in i.tags]
+
+
+class TestAccessPolicyInheritance:
+
+    def _parents(self):
+        return (_access_parent("comms", ["public", "timeline"], ["exploit-detail"]),
+                _access_parent("legal", ["public", "privileged"], ["internal-identifier"]))
+
+    @pytest.mark.parametrize("locus_key", [None, "gene_category"])
+    @pytest.mark.parametrize("seed", range(5))
+    def test_both_policies_survive_crossover(self, locus_key, seed):
+        a, b = self._parents()
+        cfg = BreedingConfig(locus_key=locus_key, crossover_rate=0.0, seed=seed)
+        child = breed(a, b, "liaison", "comms", "legal", config=cfg).child
+        pols = _policies(child)
+        assert sorted(p.metadata["original_id"] for p in pols) == [
+            "diffusion-comms-access", "diffusion-legal-access"]
+        assert all(p.scope.required_tags == ["liaison", "knowledge-diffusion"] for p in pols)
+
+    def test_lethal_mutation_cannot_drop_a_policy(self):
+        a, b = self._parents()
+        cfg = BreedingConfig(crossover_rate=1.0, seed=1, mutation_rate=1.0,
+                             mutator=lambda inst, rng: None)
+        result = breed(a, b, "liaison", "comms", "legal", config=cfg)
+        assert len(_policies(result.child)) == 2
+        assert result.inherited_count == 2
+
+    def test_same_id_in_both_parents_keeps_both(self):
+        a = _access_parent("comms", ["public"], [])
+        b = _access_parent("comms", ["timeline"], [])
+        child = breed(a, b, "liaison", "mom", "dad", config=BreedingConfig(seed=1)).child
+        assert sorted(p.metadata["inherited_from"] for p in _policies(child)) == ["dad", "mom"]
+
+    def test_exclude_tags_still_wins(self):
+        a, b = self._parents()
+        cfg = BreedingConfig(seed=1, exclude_tags=["access"])
+        assert _policies(breed(a, b, "liaison", "comms", "legal", config=cfg).child) == []
+
+    def test_empty_list_restores_crossover(self):
+        a, b = self._parents()
+        cfg = BreedingConfig(crossover_rate=0.0, seed=1, always_inherit_tags=[])
+        assert _policies(breed(a, b, "liaison", "comms", "legal", config=cfg).child) == []

@@ -54,6 +54,7 @@ from typing import Any
 import yaml
 
 from bear.composer import Composer
+from bear.config import Config
 from bear.corpus import Corpus
 from bear.llm import LLM
 from bear.models import (
@@ -63,7 +64,7 @@ from bear.models import (
     ScopeCondition,
     ScoredInstruction,
 )
-from bear.retriever import Retriever
+from bear.retriever import Embedder, Retriever
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +210,13 @@ class TwinBuilder:
         llm: LLM instance for extraction and chat.  If *None*, must be
             provided later via :attr:`llm`.
         embedding_model: Embedding model for retrieval.  Defaults to
-            ``"hash"`` for fast startup; use a real model for production.
+            ``Config.from_env().embedding_model`` (BGE-base unless
+            ``BEAR_EMBEDDING_MODEL`` says otherwise).  Pass ``"hash"`` for
+            fast startup in tests. Hash embeddings carry no semantic
+            signal, so retrieval ranking is arbitrary.
+        embedder: An embedder to use instead of building one, e.g. one
+            shared by every twin in a :class:`~bear.population.Population`.
+            It is reused across index rebuilds, so the model loads once.
     """
 
     def __init__(
@@ -217,12 +224,17 @@ class TwinBuilder:
         twin_dir: str | Path,
         name: str,
         llm: LLM | None = None,
-        embedding_model: str = "hash",
+        embedding_model: str | None = None,
+        embedder: Embedder | None = None,
     ) -> None:
         self.twin_dir = Path(twin_dir)
         self.name = name
         self.llm = llm
-        self._embedding_model = embedding_model
+        config = Config.from_env()
+        if embedding_model is not None:
+            config = config.model_copy(update={"embedding_model": embedding_model})
+        self._embedding_model = config.embedding_model
+        self._embedder = embedder or Embedder.from_config(config)
 
         # Paths
         self._instructions_path = self.twin_dir / "instructions.yaml"
@@ -287,6 +299,7 @@ class TwinBuilder:
         self._retriever = Retriever(
             self._corpus,
             embedding_model=self._embedding_model,
+            embedder=self._embedder,
         )
         self._retriever.build_index()
 
@@ -295,6 +308,7 @@ class TwinBuilder:
         self._knowledge_retriever = Retriever(
             self._knowledge_corpus,
             embedding_model=self._embedding_model,
+            embedder=self._embedder,
         )
         self._knowledge_retriever.build_index()
 
@@ -365,41 +379,48 @@ class TwinBuilder:
         # Process extracted instructions
         added: list[Instruction] = []
         for item in items:
+            if not isinstance(item, dict):
+                continue
             action = item.get("action", "add")
             if action == "skip":
                 continue
+            if action not in ("add", "refine"):
+                logger.warning("Ignoring extracted item with unknown action %r", action)
+                continue
 
-            content = item.get("content", "").strip()
+            content = str(item.get("content") or "").strip()
             if not content:
                 continue
 
             inst_type = _parse_type(item.get("type", "directive"))
-            topics = [str(t) for t in item.get("topics", [])][:6]
+            raw_topics = item.get("topics")
+            if not isinstance(raw_topics, list):
+                raw_topics = []
+            topics = [str(t) for t in raw_topics][:6]
             twin_tag = self.name.lower().replace(" ", "-")
 
+            # A refine names the instruction it replaces. Without a
+            # refines_id, or with one not in the corpus, it is an add.
+            old = None
             if action == "refine" and item.get("refines_id"):
-                # Remove the old instruction, add the refined one with same id
-                old_id = item["refines_id"]
-                old = self._corpus.get(old_id)
-                if old:
-                    self._corpus.remove(old_id)
-                    inst = Instruction(
-                        id=old_id,
-                        type=inst_type,
-                        priority=old.priority,
-                        content=content,
-                        scope=ScopeCondition(required_tags=[twin_tag]),
-                        tags=[twin_tag, "twin"] + topics,
-                        metadata={
-                            "refined_at": time.time(),
-                            "source": "observation",
-                        },
-                    )
-                else:
-                    # Old instruction not found — treat as add
-                    action = "add"
+                old = self._corpus.get(str(item["refines_id"]))
 
-            if action == "add":
+            if old is not None:
+                # Remove the old instruction, add the refined one with same id
+                self._corpus.remove(old.id)
+                inst = Instruction(
+                    id=old.id,
+                    type=inst_type,
+                    priority=old.priority,
+                    content=content,
+                    scope=ScopeCondition(required_tags=[twin_tag]),
+                    tags=[twin_tag, "twin"] + topics,
+                    metadata={
+                        "refined_at": time.time(),
+                        "source": "observation",
+                    },
+                )
+            else:
                 self._counter += 1
                 inst_id = f"twin-{twin_tag}-{self._counter}"
                 priority = _default_priority(inst_type)
@@ -936,7 +957,7 @@ def _transcribe_audio(path: Path) -> str:
 def _parse_type(type_str: str) -> InstructionType:
     """Parse instruction type string, defaulting to DIRECTIVE."""
     try:
-        return InstructionType(type_str.lower())
+        return InstructionType(str(type_str).lower())
     except ValueError:
         return InstructionType.DIRECTIVE
 

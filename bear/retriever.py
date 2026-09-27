@@ -110,8 +110,14 @@ class Embedder:
     3. **sentence-transformers** — PyTorch-based inference.  Works on
        any platform with ``sentence-transformers`` installed.
     4. **hash** — Deterministic character-n-gram embedding (no
-       semantics).  Used when no ML framework is available, or when
-       ``model_name="hash"`` is set explicitly.
+       semantics).  Used only when ``model_name="hash"`` is set
+       explicitly, or when ``allow_hash_fallback=True`` and the named
+       model cannot be loaded.
+
+    A named model that fails to load raises :class:`RuntimeError` by
+    default. Falling back to hash embeddings silently would leave
+    retrieval running with arbitrary ranking and nothing but a log line
+    to show for it.
 
     For models that support instruction prefixes (e.g. BGE), pass
     ``query_prefix`` and ``passage_prefix`` to prepend role-specific
@@ -128,6 +134,7 @@ class Embedder:
         model_kwargs: dict | None = None,
         tokenizer_kwargs: dict | None = None,
         trust_remote_code: bool = False,
+        allow_hash_fallback: bool = False,
         _suppress_hash_warning: bool = False,
     ):
         self.model_name = model_name
@@ -138,6 +145,7 @@ class Embedder:
         self.model_kwargs = model_kwargs or {}
         self.tokenizer_kwargs = tokenizer_kwargs or {}
         self.trust_remote_code = trust_remote_code
+        self.allow_hash_fallback = allow_hash_fallback
         self._model: Any = None
         self._tokenizer: Any = None
         self._mode: str = "hash"  # "openai" | "mlx" | "sentence_transformers" | "hash"
@@ -154,6 +162,23 @@ class Embedder:
                     "effectively arbitrary. Use a sentence-transformers model (e.g. "
                     "'BAAI/bge-base-en-v1.5') for meaningful semantic retrieval."
                 )
+
+    @classmethod
+    def from_config(cls, config: Config, **overrides: Any) -> Embedder:
+        """Build an embedder from the embedding fields of ``config``."""
+        kwargs: dict[str, Any] = dict(
+            model_name=config.embedding_model,
+            dim=config.embedding_dim,
+            query_prefix=config.embedding_query_prefix,
+            passage_prefix=config.embedding_passage_prefix,
+            device=config.embedding_device,
+            model_kwargs=config.embedding_model_kwargs,
+            tokenizer_kwargs=config.embedding_tokenizer_kwargs,
+            trust_remote_code=config.embedding_trust_remote_code,
+            allow_hash_fallback=config.embedding_allow_hash_fallback,
+        )
+        kwargs.update(overrides)
+        return cls(**kwargs)
 
     @property
     def _is_mlx_model(self) -> bool:
@@ -186,8 +211,23 @@ class Embedder:
         if self._try_load_sentence_transformers():
             return
 
-        # Fall back to hash
-        logger.info("No ML embedding framework available. Using hash-based embeddings.")
+        if not self.allow_hash_fallback:
+            # Leave the embedder unloaded, so a later call retries the model
+            # rather than quietly running on hash embeddings.
+            self._loaded = False
+            raise RuntimeError(
+                f"Could not load embedding model {self.model_name!r} (see the "
+                "log for the cause). Install sentence-transformers and check "
+                "the model name and network access. To run on hash embeddings "
+                "instead, which carry no semantic signal, pass "
+                "model_name='hash', or allow the fallback with "
+                "allow_hash_fallback=True (BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1)."
+            )
+        logger.warning(
+            "Could not load embedding model %s. Falling back to hash "
+            "embeddings, so retrieval ranking carries no semantic signal.",
+            self.model_name,
+        )
         self._mode = "hash"
 
     def _load_openai(self) -> None:
@@ -254,7 +294,7 @@ class Embedder:
         except ImportError:
             logger.info("sentence-transformers not installed.")
         except Exception as exc:
-            logger.warning("Could not load model %s (%s). Falling back to hash.", self.model_name, exc)
+            logger.warning("Could not load model %s (%s).", self.model_name, exc)
         return False
 
     def embed(self, texts: list[str], is_query: bool = False) -> np.ndarray:
@@ -366,6 +406,12 @@ class Retriever:
     4. Include mandatory instructions (safety constraints always included)
     5. Deduplicate and sort by priority
     6. Return top-k
+
+    An admissible mandatory instruction (one tagged with a
+    ``Config.mandatory_tags`` tag whose ``required_tags`` gate the context
+    satisfies) is always returned. The top-k cut fills the remaining slots
+    around it. Another instruction's ``supersedes`` or ``conflicts_with``
+    can remove it only if that instruction is mandatory too.
     """
 
     def __init__(
@@ -399,16 +445,8 @@ class Retriever:
         _suppress = self._config.embedding_backend in (
             EmbeddingBackend.BM25, EmbeddingBackend.ITR,
         )
-        self._embedder = embedder or Embedder(
-            model_name=self._config.embedding_model,
-            dim=self._config.embedding_dim,
-            query_prefix=self._config.embedding_query_prefix,
-            passage_prefix=self._config.embedding_passage_prefix,
-            device=self._config.embedding_device,
-            model_kwargs=self._config.embedding_model_kwargs,
-            tokenizer_kwargs=self._config.embedding_tokenizer_kwargs,
-            trust_remote_code=self._config.embedding_trust_remote_code,
-            _suppress_hash_warning=_suppress,
+        self._embedder = embedder or Embedder.from_config(
+            self._config, _suppress_hash_warning=_suppress,
         )
         self._instruction_list: list[Instruction] = []
         self._built = False
@@ -622,8 +660,8 @@ class Retriever:
         # Step 6: Sort by final_score descending, then by priority
         scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
 
-        # Step 7: Return top-k
-        result = scored[:top_k]
+        # Step 7: Return top-k, with mandatory instructions exempt from the cut
+        result = self._top_k_keeping_mandatory(scored, top_k)
 
         # Emit retrieval event for observability / evolution hooks
         emit_event(RetrievalEvent(
@@ -734,8 +772,7 @@ class Retriever:
         self, context: Context, already_seen: set[str]
     ) -> list[ScoredInstruction]:
         """Get instructions with mandatory tags that must always be included."""
-        mandatory_tags = set(self._config.mandatory_tags)
-        if not mandatory_tags:
+        if not self._config.mandatory_tags:
             return []
 
         results = []
@@ -752,8 +789,7 @@ class Retriever:
                 if not set(inst.scope.required_tags) <= ctx_tags:
                     continue
 
-            inst_tags = set(inst.tags) | set(inst.scope.tags)
-            if inst_tags & mandatory_tags:
+            if self._is_mandatory(inst):
                 priority_normalized = inst.priority / 100.0
                 results.append(ScoredInstruction(
                     instruction=inst,
@@ -774,17 +810,26 @@ class Retriever:
 
         for s in scored:
             inst = s.instruction
+            inst_mandatory = self._is_mandatory(inst)
 
-            # supersedes: remove lower-priority instructions
+            # supersedes: remove lower-priority instructions. Only a mandatory
+            # instruction may displace a mandatory one, so a generated memory
+            # or evolved instruction cannot switch a safety rule off.
             for sup_id in inst.supersedes:
                 if sup_id in id_map and sup_id not in to_remove:
+                    if self._is_mandatory(id_map[sup_id].instruction) and not inst_mandatory:
+                        continue
                     to_remove.add(sup_id)
 
-            # conflicts_with: keep higher priority
+            # conflicts_with: a mandatory instruction beats a non-mandatory
+            # one. Otherwise keep the higher priority.
             for conflict_id in inst.conflicts_with:
                 if conflict_id in id_map and conflict_id not in to_remove:
                     other = id_map[conflict_id]
-                    if inst.priority >= other.priority:
+                    other_mandatory = self._is_mandatory(other.instruction)
+                    if inst_mandatory != other_mandatory:
+                        to_remove.add(conflict_id if inst_mandatory else inst.id)
+                    elif inst.priority >= other.priority:
                         to_remove.add(conflict_id)
                     else:
                         to_remove.add(inst.id)
@@ -807,6 +852,33 @@ class Retriever:
 
         result = [s for s in scored if s.instruction.id not in to_remove]
         result.extend(required_to_add)
+        return result
+
+    def _is_mandatory(self, inst: Instruction) -> bool:
+        """True if ``inst`` carries one of the configured mandatory tags."""
+        mandatory_tags = self._config.mandatory_tags
+        if not mandatory_tags:
+            return False
+        return bool((set(inst.tags) | set(inst.scope.tags)) & set(mandatory_tags))
+
+    def _top_k_keeping_mandatory(
+        self, scored: list[ScoredInstruction], top_k: int
+    ) -> list[ScoredInstruction]:
+        """Cut sorted ``scored`` to ``top_k`` without dropping a mandatory one.
+
+        Mandatory instructions keep their place in the ranking and the rest
+        fill the remaining slots. The result is longer than ``top_k`` only
+        when there are more mandatory instructions than ``top_k``.
+        """
+        n_mandatory = sum(1 for s in scored if self._is_mandatory(s.instruction))
+        room = max(0, top_k - n_mandatory)
+        result: list[ScoredInstruction] = []
+        for s in scored:
+            if self._is_mandatory(s.instruction):
+                result.append(s)
+            elif room > 0:
+                result.append(s)
+                room -= 1
         return result
 
     def _build_metadata_filter(self, context: Context) -> MetadataFilter | None:

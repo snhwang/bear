@@ -396,3 +396,118 @@ class TestInjectedEmbedder:
         retriever = Retriever(self._corpus(), config=Config(embedding_model="hash"))
         retriever.build_index()
         assert retriever.retrieve("anything", top_k=1)
+
+
+class TestMandatoryInstructions:
+    """A mandatory (safety-tagged) instruction survives the top-k cut and cannot
+    be switched off by a non-mandatory instruction's supersedes/conflicts_with."""
+
+    class _Fake:
+        # Ordinary instructions match the query exactly. The safety one matches not at all.
+        def embed(self, texts, is_query=False):
+            import numpy as np
+            return np.array([[0.0, 1.0] if "SAFETY" in t else [1.0, 0.0]
+                             for t in texts], dtype=np.float32)
+
+        def embed_single(self, text, is_query=False):
+            return self.embed([text], is_query)[0]
+
+    def _retriever(self, extra=(), safety_priority=50, n_chat=10):
+        corpus = Corpus()
+        corpus.add(Instruction(
+            id="safety-crisis", type=InstructionType.CONSTRAINT,
+            priority=safety_priority, tags=["safety"],
+            content="SAFETY: if the user mentions self-harm, give the 988 line.",
+        ))
+        for i in range(n_chat):
+            corpus.add(Instruction(id=f"chat-{i}", type=InstructionType.DIRECTIVE,
+                                   priority=50, content=f"Be warm, variant {i}."))
+        corpus.add_many(list(extra))
+        retriever = Retriever(corpus, embedder=self._Fake())
+        retriever.build_index()
+        return retriever
+
+    def test_survives_top_k_cut(self):
+        ids = [s.id for s in self._retriever().retrieve("I want to hurt myself", top_k=5)]
+        assert "safety-crisis" in ids
+        assert len(ids) == 5
+
+    def test_keeps_ranking_order(self):
+        results = self._retriever().retrieve("q", top_k=3)
+        scores = [s.final_score for s in results]
+        assert scores == sorted(scores, reverse=True)
+
+    def test_more_mandatory_than_top_k_returns_all_mandatory(self):
+        extra = [Instruction(id=f"safety-{i}", type=InstructionType.CONSTRAINT,
+                             priority=50, tags=["safety"], content=f"SAFETY rule {i}")
+                 for i in range(3)]
+        ids = [s.id for s in self._retriever(extra).retrieve("q", top_k=2)]
+        assert set(ids) == {"safety-crisis", "safety-0", "safety-1", "safety-2"}
+
+    def test_non_mandatory_supersedes_is_ignored(self):
+        extra = [Instruction(id="mem-1", type=InstructionType.DIRECTIVE, priority=45,
+                             content="Keep it casual.", supersedes=["safety-crisis"])]
+        ids = [s.id for s in self._retriever(extra, safety_priority=95).retrieve("q", top_k=20)]
+        assert "safety-crisis" in ids and "mem-1" in ids
+
+    def test_mandatory_supersedes_mandatory(self):
+        extra = [Instruction(id="safety-crisis-v2", type=InstructionType.CONSTRAINT,
+                             priority=95, tags=["safety"], content="SAFETY: updated rule.",
+                             supersedes=["safety-crisis"])]
+        ids = [s.id for s in self._retriever(extra).retrieve("q")]
+        assert "safety-crisis-v2" in ids and "safety-crisis" not in ids
+
+    def test_conflict_with_higher_priority_non_mandatory_keeps_mandatory(self):
+        extra = [Instruction(id="casual", type=InstructionType.DIRECTIVE, priority=99,
+                             content="Never mention hotlines.",
+                             conflicts_with=["safety-crisis"])]
+        ids = [s.id for s in self._retriever(extra).retrieve("q")]
+        assert "safety-crisis" in ids and "casual" not in ids
+
+    def test_conflict_between_non_mandatory_still_uses_priority(self):
+        extra = [
+            Instruction(id="hi", type=InstructionType.DIRECTIVE, priority=80,
+                        content="Be formal.", conflicts_with=["lo"]),
+            Instruction(id="lo", type=InstructionType.DIRECTIVE, priority=20,
+                        content="Be casual."),
+        ]
+        ids = [s.id for s in self._retriever(extra).retrieve("q", top_k=20)]
+        assert "hi" in ids and "lo" not in ids
+
+
+class TestHashFallback:
+    """A named model that fails to load is an error unless the fallback is allowed."""
+
+    def _broken(self, monkeypatch, **kwargs):
+        embedder = Embedder(model_name="no-such/model", **kwargs)
+        monkeypatch.setattr(embedder, "_try_load_sentence_transformers", lambda: False)
+        return embedder
+
+    def test_load_failure_raises(self, monkeypatch):
+        embedder = self._broken(monkeypatch)
+        with pytest.raises(RuntimeError, match="no-such/model"):
+            embedder.embed(["x"])
+        # It stays unloaded, so a second call retries rather than hashing quietly.
+        with pytest.raises(RuntimeError):
+            embedder.embed(["x"])
+
+    def test_fallback_when_allowed(self, monkeypatch, caplog):
+        embedder = self._broken(monkeypatch, allow_hash_fallback=True)
+        vecs = embedder.embed(["x"])
+        assert vecs.shape[0] == 1 and embedder._mode == "hash"
+        assert "no semantic signal" in caplog.text
+
+    def test_config_flag_reaches_embedder(self):
+        cfg = Config(embedding_model="hash", embedding_allow_hash_fallback=True)
+        assert Embedder.from_config(cfg).allow_hash_fallback is True
+        assert Embedder.from_config(Config()).allow_hash_fallback is False
+
+    def test_env_flag(self, monkeypatch):
+        monkeypatch.setenv("BEAR_EMBEDDING_ALLOW_HASH_FALLBACK", "1")
+        assert Config.from_env().embedding_allow_hash_fallback is True
+
+    def test_bm25_backend_never_loads_the_model(self, medical_corpus):
+        cfg = Config(embedding_backend=EmbeddingBackend.BM25, embedding_model="no-such/model")
+        retriever = Retriever(medical_corpus, config=cfg)
+        retriever.build_index()
+        assert retriever.retrieve("diagnosis")

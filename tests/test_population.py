@@ -18,6 +18,12 @@ from bear.population import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _hash_embeddings(monkeypatch):
+    """Populations default to the configured model. These tests don't need semantics."""
+    monkeypatch.setenv("BEAR_EMBEDDING_MODEL", "hash")
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

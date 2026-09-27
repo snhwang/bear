@@ -41,6 +41,8 @@ class Config(BaseModel):
     embedding_model_kwargs: dict = Field(default_factory=dict)
     embedding_tokenizer_kwargs: dict = Field(default_factory=dict)
     embedding_trust_remote_code: bool = False
+    # When off, a named model that fails to load is an error, not hash embeddings.
+    embedding_allow_hash_fallback: bool = False
     llm_backend: LLMBackend = LLMBackend.OPENAI
     llm_model: str = ""
     llm_base_url: str = ""
@@ -63,6 +65,7 @@ class Config(BaseModel):
             "EMBEDDING_DIM": "embedding_dim",
             "EMBEDDING_QUERY_PREFIX": "embedding_query_prefix",
             "EMBEDDING_PASSAGE_PREFIX": "embedding_passage_prefix",
+            "EMBEDDING_ALLOW_HASH_FALLBACK": "embedding_allow_hash_fallback",
             "LLM_BACKEND": "llm_backend",
             "LLM_MODEL": "llm_model",
             "LLM_BASE_URL": "llm_base_url",
@@ -81,7 +84,7 @@ class Config(BaseModel):
 
             if field_name == "mandatory_tags":
                 kwargs[field_name] = [t.strip() for t in value.split(",")]
-            elif field_name == "cache_embeddings":
+            elif field_name in ("cache_embeddings", "embedding_allow_hash_fallback"):
                 kwargs[field_name] = value.lower() in ("true", "1", "yes")
             elif field_name in ("default_top_k", "embedding_dim"):
                 kwargs[field_name] = int(value)
