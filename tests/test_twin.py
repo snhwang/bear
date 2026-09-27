@@ -526,9 +526,7 @@ class TestTwinBuilderKnowledge:
 
         # Add behavioral instruction
         import asyncio
-        asyncio.get_event_loop().run_until_complete(
-            twin.observe("Alice is warm and empathetic")
-        )
+        asyncio.run(twin.observe("Alice is warm and empathetic"))
         # Add knowledge
         twin.add_knowledge("The heart has four chambers. " * 20, source="textbook")
 
