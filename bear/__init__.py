@@ -30,6 +30,18 @@ from bear.evolution import (
     BreedResult,
 )
 from bear.logging import RetrievalEvent, set_log_handler
+from bear.audit import (
+    AuditLog,
+    Auditor,
+    AuditWriteError,
+    JsonlSink,
+    ReplayResult,
+    Turn,
+    current_turn,
+    detach,
+    read_audit_log,
+    verify_audit_log,
+)
 from bear.memory import ExperienceEvent, MemoryExtractor, LLMMemoryExtractor
 from bear.query_refiner import QueryRefiner
 from bear.twin import TwinBuilder, ObservationKind
@@ -51,22 +63,43 @@ from bear.references import (
 )
 from bear.markers import (
     ActionMarker,
+    ConservedUnit,
     EmittedMarker,
     MarkerAction,
     MarkerHandler,
     MarkerRegistry,
+    PinnedText,
     Reference,
     ReferenceResolution,
+    RepairReport,
     coerce_enum,
     coerce_float,
     coerce_int,
     emit,
+    blend_texts,
+    marker_blend,
+    marker_names,
+    merge_pinned,
     parse_actions,
     parse_kv_args,
     parse_references,
+    pin_actions,
     reference,
+    repair_actions,
     resolve_references,
     strip_actions,
+)
+from bear.marker_code import (
+    CachedInterpreter,
+    EmbeddingInterpreter,
+    EntailmentInterpreter,
+    InsertedMarker,
+    LLMInterpreter,
+    MarkerCode,
+    MarkerInterpretation,
+    MarkerInterpreter,
+    MarkerMeaning,
+    cross_encoder_nli,
 )
 from bear.provenance import Provenance
 
@@ -123,6 +156,27 @@ __all__ = [
     "ReferenceResolution",
     "parse_actions",
     "strip_actions",
+    # Markers (conservation under rewrite)
+    "ConservedUnit",
+    "PinnedText",
+    "RepairReport",
+    "blend_texts",
+    "marker_blend",
+    "marker_names",
+    "merge_pinned",
+    "pin_actions",
+    "repair_actions",
+    # Markers (expressed from meaning)
+    "MarkerCode",
+    "MarkerMeaning",
+    "MarkerInterpreter",
+    "MarkerInterpretation",
+    "InsertedMarker",
+    "EmbeddingInterpreter",
+    "EntailmentInterpreter",
+    "LLMInterpreter",
+    "CachedInterpreter",
+    "cross_encoder_nli",
     "parse_kv_args",
     "coerce_float",
     "coerce_int",
@@ -137,6 +191,17 @@ __all__ = [
     # Logging
     "RetrievalEvent",
     "set_log_handler",
+    # Turn audit
+    "AuditLog",
+    "Auditor",
+    "AuditWriteError",
+    "JsonlSink",
+    "ReplayResult",
+    "Turn",
+    "current_turn",
+    "detach",
+    "read_audit_log",
+    "verify_audit_log",
     # Evolution
     "Evolution",
     "EvolutionConfig",

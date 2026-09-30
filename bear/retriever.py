@@ -10,6 +10,7 @@ from typing import Any, Callable
 
 import numpy as np
 
+from bear.audit import _RetrievalTrace, _start, current_turn
 from bear.backends.embeddings.base import EmbeddingBackendBase, MetadataFilter
 from bear.backends.embeddings.numpy_backend import NumpyBackend
 from bear.config import Config, EmbeddingBackend
@@ -93,6 +94,18 @@ def _get_embedding_backend(
             f"Available: {list(_BACKEND_REGISTRY)}"
         )
     return factory(persist_directory=persist_directory)
+
+
+def _index_version(instructions: list[Instruction]) -> str:
+    """First 16 hex digits of a SHA-256 over the instructions' canonical JSON.
+
+    Instructions are sorted by id, so the hash depends on content only, not
+    on the order they were added.
+    """
+    dumps = sorted((i.model_dump(mode="json") for i in instructions),
+                   key=lambda d: d["id"])
+    blob = json.dumps(dumps, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
 
 
 class Embedder:
@@ -422,6 +435,7 @@ class Retriever:
         config: Config | None = None,
         persist_directory: str | Path | None = None,
         embedder: Any | None = None,
+        label: str = "",
     ):
         """Retrieve over ``corpus``.
 
@@ -431,8 +445,12 @@ class Retriever:
         ``embed_single(text, is_query=False)`` returning numpy arrays will do.
         Without it the model named in the config is loaded in-process, as
         before.
+
+        ``label`` names this retriever in audit records (see
+        :mod:`bear.audit`), to tell apart several retrievers used in one turn.
         """
         self.corpus = corpus
+        self.label = label
         self._config = config or Config(
             embedding_backend=backend,
             embedding_model=embedding_model,
@@ -453,6 +471,16 @@ class Retriever:
         self._cache_dir: Path | None = None
         # Set at build time: True if any instruction carries a hard gate.
         self._has_required_tags = False
+        self._index_version = ""
+
+    @property
+    def index_version(self) -> str:
+        """Hash of the indexed instructions, set by :meth:`build_index`.
+
+        Changes whenever any indexed instruction changes, including a new
+        text under an existing id. Empty until the index is built.
+        """
+        return self._index_version
 
     @property
     def _is_bm25(self) -> bool:
@@ -473,6 +501,7 @@ class Retriever:
             cache_dir: If provided, cache embeddings to this directory.
         """
         self._instruction_list = list(self.corpus)
+        self._index_version = _index_version(self._instruction_list)
         self._has_required_tags = any(
             inst.scope.required_tags for inst in self._instruction_list
         )
@@ -502,25 +531,13 @@ class Retriever:
             logger.info("ITR hybrid index built with %d instructions.", len(self._instruction_list))
             return
 
-        # Dense path: compute embeddings
-        embeddings = None
+        # Dense path: compute embeddings, reusing any cached per text
+        store_dir: Path | None = None
         if cache_dir and self._config.cache_embeddings:
             self._cache_dir = Path(cache_dir)
             self._cache_dir.mkdir(parents=True, exist_ok=True)
-            cache_file = self._cache_dir / self._cache_key()
-            if cache_file.exists():
-                logger.info("Loading cached embeddings from %s", cache_file)
-                embeddings = np.load(cache_file)
-                if embeddings.shape[0] != len(texts):
-                    logger.info("Cache size mismatch, re-embedding.")
-                    embeddings = None
-
-        if embeddings is None:
-            logger.info("Embedding %d instructions...", len(texts))
-            embeddings = self._embedder.embed(texts, is_query=False)
-            if self._cache_dir and self._config.cache_embeddings:
-                cache_file = self._cache_dir / self._cache_key()
-                np.save(cache_file, embeddings)
+            store_dir = self._cache_dir
+        embeddings = self._embed_texts_cached(texts, store_dir)
 
         if self._backend.supports_metadata_filtering:
             self._backend.build_index_with_metadata(embeddings, self._instruction_list)
@@ -546,7 +563,27 @@ class Retriever:
 
         Returns:
             List of ScoredInstruction sorted by final_score descending.
+
+        Inside an open :mod:`bear.audit` turn, the call is recorded with
+        every candidate left out and the reason.
         """
+        turn = current_turn()
+        if turn is None:
+            return self._retrieve(query, context, top_k, threshold, None)
+        started = _start()
+        trace = _RetrievalTrace()
+        result = self._retrieve(query, context, top_k, threshold, trace)
+        turn._record_retrieval(self, query, trace, result, started)
+        return result
+
+    def _retrieve(
+        self,
+        query: str,
+        context: Context | None,
+        top_k: int | None,
+        threshold: float | None,
+        trace: _RetrievalTrace | None,
+    ) -> list[ScoredInstruction]:
         if not self._built:
             raise RuntimeError("Index not built. Call build_index() first.")
 
@@ -563,6 +600,12 @@ class Retriever:
         top_k = top_k or self._config.default_top_k
         threshold = threshold if threshold is not None else self._config.default_threshold
         priority_weight = self._config.priority_weight
+
+        if trace is not None:
+            trace.effective_query = query
+            trace.context = context
+            trace.top_k = top_k
+            trace.threshold = threshold
 
         if not self._instruction_list:
             return []
@@ -621,16 +664,24 @@ class Retriever:
             # tags don't match).
             if inst.scope.required_tags and context and context.tags is not None:
                 if not all(t in context.tags for t in inst.scope.required_tags):
+                    if trace is not None:
+                        trace.exclude(inst.id, "gate", similarity)
                     continue
             elif inst.scope.required_tags:
                 # No context tags at all — required_tags can't be satisfied
+                if trace is not None:
+                    trace.exclude(inst.id, "gate", similarity)
                 continue
 
             scope_match = inst.scope.matches(context)
             if similarity < threshold and not scope_match:
+                if trace is not None:
+                    trace.exclude(inst.id, "threshold", similarity)
                 continue
 
             seen_ids.add(inst.id)
+            if trace is not None:
+                trace.admit(inst.id, "search")
 
             # Final score combines similarity with priority
             priority_normalized = inst.priority / 100.0
@@ -651,17 +702,28 @@ class Retriever:
         scored.extend(required_matches)
 
         # Step 4: Add mandatory instructions (e.g., safety) that aren't already included
-        mandatory = self._get_mandatory_instructions(context, seen_ids)
+        mandatory = self._get_mandatory_instructions(context, seen_ids, trace)
         scored.extend(mandatory)
 
+        if trace is not None:
+            for s in required_matches:
+                trace.admit(s.id, "required_tags")
+            for s in mandatory:
+                trace.admit(s.id, "mandatory")
+
         # Step 5: Handle instruction relationships
-        scored = self._resolve_relationships(scored)
+        scored = self._resolve_relationships(scored, trace)
 
         # Step 6: Sort by final_score descending, then by priority
         scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
 
         # Step 7: Return top-k, with mandatory instructions exempt from the cut
         result = self._top_k_keeping_mandatory(scored, top_k)
+        if trace is not None:
+            kept = {s.id for s in result}
+            for s in scored:
+                if s.id not in kept:
+                    trace.exclude(s.id, "top_k", s.similarity)
 
         # Emit retrieval event for observability / evolution hooks
         emit_event(RetrievalEvent(
@@ -769,7 +831,8 @@ class Retriever:
         return results
 
     def _get_mandatory_instructions(
-        self, context: Context, already_seen: set[str]
+        self, context: Context, already_seen: set[str],
+        trace: _RetrievalTrace | None = None,
     ) -> list[ScoredInstruction]:
         """Get instructions with mandatory tags that must always be included."""
         if not self._config.mandatory_tags:
@@ -787,6 +850,10 @@ class Retriever:
             if inst.scope.required_tags:
                 ctx_tags = set(context.tags) if context and context.tags else set()
                 if not set(inst.scope.required_tags) <= ctx_tags:
+                    # Recorded, since "why did the safety rule not apply?" is
+                    # the question an audit most needs to answer.
+                    if trace is not None and self._is_mandatory(inst):
+                        trace.exclude(inst.id, "gate")
                     continue
 
             if self._is_mandatory(inst):
@@ -802,11 +869,17 @@ class Retriever:
         return results
 
     def _resolve_relationships(
-        self, scored: list[ScoredInstruction]
+        self, scored: list[ScoredInstruction],
+        trace: _RetrievalTrace | None = None,
     ) -> list[ScoredInstruction]:
         """Handle conflicts_with, requires, and supersedes relationships."""
         id_map = {s.instruction.id: s for s in scored}
         to_remove: set[str] = set()
+
+        def remove(inst_id: str, reason: str, by: str) -> None:
+            to_remove.add(inst_id)
+            if trace is not None:
+                trace.exclude(inst_id, reason, id_map[inst_id].similarity, by)
 
         for s in scored:
             inst = s.instruction
@@ -819,7 +892,7 @@ class Retriever:
                 if sup_id in id_map and sup_id not in to_remove:
                     if self._is_mandatory(id_map[sup_id].instruction) and not inst_mandatory:
                         continue
-                    to_remove.add(sup_id)
+                    remove(sup_id, "superseded", inst.id)
 
             # conflicts_with: a mandatory instruction beats a non-mandatory
             # one. Otherwise keep the higher priority.
@@ -828,11 +901,13 @@ class Retriever:
                     other = id_map[conflict_id]
                     other_mandatory = self._is_mandatory(other.instruction)
                     if inst_mandatory != other_mandatory:
-                        to_remove.add(conflict_id if inst_mandatory else inst.id)
-                    elif inst.priority >= other.priority:
-                        to_remove.add(conflict_id)
+                        inst_wins = inst_mandatory
                     else:
-                        to_remove.add(inst.id)
+                        inst_wins = inst.priority >= other.priority
+                    if inst_wins:
+                        remove(conflict_id, "conflict", inst.id)
+                    else:
+                        remove(inst.id, "conflict", conflict_id)
 
         # Add required instructions that are missing
         required_to_add: list[ScoredInstruction] = []
@@ -843,12 +918,17 @@ class Retriever:
                 if req_id not in id_map and req_id not in to_remove:
                     req_inst = self.corpus.get(req_id)
                     if req_inst:
-                        required_to_add.append(ScoredInstruction(
+                        added = ScoredInstruction(
                             instruction=req_inst,
                             similarity=0.0,
                             scope_match=True,
                             final_score=req_inst.priority / 100.0,
-                        ))
+                        )
+                        required_to_add.append(added)
+                        # Two instructions requiring the same one add it once.
+                        id_map[req_id] = added
+                        if trace is not None:
+                            trace.admit(req_id, "requires")
 
         result = [s for s in scored if s.instruction.id not in to_remove]
         result.extend(required_to_add)
@@ -944,10 +1024,94 @@ class Retriever:
     _EMBEDDING_FORMAT_VERSION = 2
 
     def _cache_key(self) -> str:
-        """Generate a cache key based on corpus content and embedding format."""
-        content = json.dumps(
-            [i.id for i in self._instruction_list], sort_keys=True
-        )
-        h = hashlib.md5(content.encode()).hexdigest()[:12]
+        """The cache file holding vectors for this model and text format.
+
+        Keyed on the embedding model and format version only, never on which
+        instructions are present: one text's vector does not depend on the rest
+        of the corpus, so adding an instruction must not invalidate the others.
+        The earlier key was a hash over every instruction id, which meant a
+        corpus that grew while running re-embedded itself in full on every
+        addition and left one file behind per corpus state.
+        """
         model_slug = self._config.embedding_model.replace("/", "_")
-        return f"embeddings_v{self._EMBEDDING_FORMAT_VERSION}_{model_slug}_{h}.npy"
+        return f"embeddings_v{self._EMBEDDING_FORMAT_VERSION}_{model_slug}.npz"
+
+    def _vector_key(self, text: str) -> str:
+        """Cache key for one text, under this model and format version.
+
+        The model slug is in the file name and in the key, so a hit can never
+        serve a vector computed by a different model. ``is_query`` is part of
+        the key as well: a task-aware embedder encodes a passage and a query
+        differently, and only passages are stored here.
+        """
+        payload = "\x00".join((
+            str(self._EMBEDDING_FORMAT_VERSION),
+            self._config.embedding_model,
+            "passage",
+            text,
+        ))
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+    def _embed_texts_cached(
+        self, texts: list[str], store_dir: Path | None
+    ) -> np.ndarray:
+        """Vectors for ``texts``, embedding only the ones not already cached.
+
+        ``store_dir`` is the cache directory this build was given, or ``None``.
+        It is a parameter rather than the retained ``_cache_dir`` so that a
+        build is cached only when *this* call asks for it: a retriever handed a
+        directory once and nothing later must not quietly keep using it.
+
+        With no directory this embeds everything, exactly as an uncached build
+        always did. A corrupt or unreadable store logs and re-embeds rather than
+        failing the build, since a cache is an optimisation.
+        """
+        if not (store_dir and self._config.cache_embeddings):
+            logger.info("Embedding %d instructions...", len(texts))
+            return self._embedder.embed(texts, is_query=False)
+
+        cache_file = store_dir / self._cache_key()
+        store: dict[str, np.ndarray] = {}
+        if cache_file.exists():
+            try:
+                with np.load(cache_file) as data:
+                    store = {k: data[k] for k in data.files}
+                logger.info("Loaded %d cached vectors from %s", len(store), cache_file)
+            except (OSError, ValueError, EOFError) as exc:
+                logger.warning("Ignoring unreadable embedding cache %s: %s",
+                               cache_file, exc)
+                store = {}
+
+        keys = [self._vector_key(t) for t in texts]
+        # dict.fromkeys keeps first-seen order and drops duplicate texts, so a
+        # repeated instruction text is embedded once.
+        missing = [k for k in dict.fromkeys(keys) if k not in store]
+        if missing:
+            wanted = {}
+            for key, text in zip(keys, texts):
+                wanted.setdefault(key, text)
+            logger.info("Embedding %d of %d instructions (%d cached)...",
+                        len(missing), len(texts), len(texts) - len(missing))
+            fresh = self._embedder.embed([wanted[k] for k in missing], is_query=False)
+            for key, vector in zip(missing, fresh):
+                store[key] = vector
+        else:
+            logger.info("All %d instruction vectors came from the cache.", len(texts))
+
+        vectors = [store[k] for k in keys]
+        widths = {v.shape[-1] for v in vectors}
+        if len(widths) > 1:
+            # A store that mixes widths cannot be stacked. Only reachable if a
+            # file was hand-edited or two models shared one slug, so rebuild.
+            logger.warning("Embedding cache %s mixes vector widths %s, re-embedding.",
+                           cache_file, sorted(widths))
+            return self._embedder.embed(texts, is_query=False)
+        embeddings = np.vstack(vectors)
+
+        if missing:
+            try:
+                np.savez(cache_file, **store)
+            except OSError as exc:
+                logger.warning("Could not write embedding cache %s: %s",
+                               cache_file, exc)
+        return embeddings

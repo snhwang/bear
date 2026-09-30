@@ -585,7 +585,13 @@ class BreedingConfig(BaseModel):
         description=(
             "Instructions carrying any of these tags bypass crossover, locus "
             "selection and mutation: the child inherits every one of them "
-            "from both parents. The default covers access policies, so a "
+            "from both parents. A policy both parents carry is inherited "
+            "once, from parent A. Both copies must have the same content, "
+            "type, priority, tags and scope. The parent and child names and "
+            "child_tags are ignored in the tags. They are ignored in the "
+            "scope only when scope_to_child re-scopes the child's copy. "
+            "Without it each copy keeps its parent's scope, so the scopes "
+            "must match exactly. The default covers access policies, so a "
             "child can never lose a parent's restriction by chance. A reader "
             "of the policies should combine them restrictively (BEAR Parlor's "
             "gate allows only what every policy allows and denies what any "
@@ -595,8 +601,10 @@ class BreedingConfig(BaseModel):
     seed: int | None = Field(
         default=None,
         description=(
-            "RNG seed for deterministic breeding. "
-            "If None, uses hash(child_name) for reproducibility."
+            "RNG seed for deterministic breeding. If None, breed() falls "
+            "back to hash(child_name), which varies with PYTHONHASHSEED, so "
+            "the result can differ between processes. Pass a seed for "
+            "reproducible breeding."
         ),
     )
     locus_registry: LocusRegistry | None = Field(
@@ -692,7 +700,10 @@ def _make_child_instruction(
     new_id = f"{child_name}-{inst.id}"
     update: dict[str, Any] = {
         "id": new_id,
-        "tags": list(set(inst.tags + base_tags)),
+        # Order-preserving dedupe. A set would order the tags by string
+        # hash, which changes with PYTHONHASHSEED. The tags feed the
+        # embedded text and the index version, so they must not.
+        "tags": list(dict.fromkeys(inst.tags + base_tags)),
         "metadata": {
             **inst.metadata,
             "inherited_from": parent_name,
@@ -708,6 +719,29 @@ def _make_child_instruction(
                 if t in config.preserve_required_tags and t != child_name]
         update["scope"] = ScopeCondition(required_tags=[child_name, *kept])
     return inst.model_copy(update=update)
+
+
+def _policy_key(inst: Instruction, name_tags: set[str], rescoped: bool) -> tuple:
+    """Identify an always-inherited policy apart from lineage names.
+
+    Two copies with the same key are the same policy. The key holds the
+    content, type, priority, tags and scope. The names are always removed
+    from the tags. They are removed from the scope's tags and required_tags
+    only when *rescoped* is True (scope_to_child), because the child's copy
+    then gets a new scope built from the child's name. Otherwise each copy
+    keeps its parent's scope, so the scopes must match exactly, names
+    included. A copy scoped to another parent applies in another context
+    and is kept. Tag order is ignored in the tags and in the scope's tags
+    and required_tags. Actions, requires, conflicts_with, supersedes and
+    metadata are not compared.
+    """
+    drop = name_tags if rescoped else set()
+    scope = inst.scope.model_copy(update={
+        "tags": sorted(set(inst.scope.tags) - drop),
+        "required_tags": sorted(set(inst.scope.required_tags) - drop),
+    })
+    return (inst.content, inst.type, inst.priority,
+            frozenset(set(inst.tags) - name_tags), scope.model_dump_json())
 
 
 def _eligible_instructions(
@@ -1373,10 +1407,22 @@ def breed(
     always_tag_set = set(config.always_inherit_tags)
     always: list[Instruction] = []
     if always_tag_set:
-        for pool in (eligible_a, eligible_b):
+        # Name tags record lineage, not policy. A copy from parent B that
+        # matches one from parent A apart from these names is the same
+        # policy, so the child keeps parent A's copy only. Otherwise
+        # self-crossing would double the policies every generation. Names
+        # in the scope are ignored only with scope_to_child (see _policy_key).
+        name_tags = {parent_a_name, parent_b_name, child_name, *config.child_tags}
+        from_parent_a: set[tuple] = set()
+        for pool, first in ((eligible_a, True), (eligible_b, False)):
             keep = []
             for inst, pname in pool:
                 if set(inst.tags) & always_tag_set:
+                    key = _policy_key(inst, name_tags, config.scope_to_child)
+                    if first:
+                        from_parent_a.add(key)
+                    elif key in from_parent_a:
+                        continue
                     ci = _make_child_instruction(
                         inst, pname, child_name, base_tags, config, seed)
                     if any(a.id == ci.id for a in always):
@@ -1490,13 +1536,14 @@ def express(
     locus_key: str = "gene_category",
     *,
     blend_fn: Callable[[str, str], str] | None = None,
+    use_cache: bool = True,
 ) -> list[Instruction]:
     """Resolve diploid genotype to expressed phenotype (lazy evaluation).
 
     Iterates loci in *registry* and applies dominance rules to determine
     which alleles are expressed from the corpus.  Haploid loci pass
     through unchanged.  Results are cached on the corpus via a
-    ``_expressed_cache`` attribute keyed by ``(registry id, locus_key)``.
+    ``_expressed_cache`` attribute keyed by ``(registry id, locus_key, blend_fn)``.
 
     Parameters
     ----------
@@ -1510,7 +1557,20 @@ def express(
     blend_fn:
         Optional callable ``(content_a, content_b) -> blended_content`` for
         co-dominant loci.  When ``None``, co-dominant loci express both
-        alleles (equivalent to ``locus_blend``).
+        alleles (equivalent to ``locus_blend``).  A marker-bearing corpus
+        should pass a conserving blender (e.g.
+        :func:`bear.markers.marker_blend`) so the AI merge of the two
+        alleles cannot destroy embedded action markers.  The cache compares
+        ``blend_fn`` by identity, so hold it in a variable to benefit from
+        caching.  :func:`bear.markers.marker_blend` builds a new function on
+        every call, so ``blend_fn=marker_blend()`` written inline never hits
+        the cache.
+    use_cache:
+        Default ``True``: the blended phenotype is computed once and cached on
+        the corpus, so the individual expresses stably across accesses.  Pass
+        ``False`` to re-resolve on every call — with a non-deterministic
+        ``blend_fn`` (e.g. an LLM) this yields a fresh blend per access, i.e.
+        stochastic expression of the same genotype.
 
     Returns
     -------
@@ -1519,11 +1579,15 @@ def express(
         are included as-is.
     """
     # Cache check
-    cache_key = (id(registry), locus_key)
-    cache: dict[tuple[int, str], list[Instruction]] | None = getattr(
+    # blend_fn is part of the key because the phenotype depends on it. One
+    # corpus expressed with and without a blend must not share a cached answer.
+    # id(registry) has a pre-existing latent hazard. Once a registry is garbage
+    # collected, a new one can land at the same address and get its stale entry.
+    cache_key = (id(registry), locus_key, blend_fn)
+    cache: dict[tuple[int, str, Callable[[str, str], str] | None], list[Instruction]] | None = getattr(
         corpus, "_expressed_cache", None,
     )
-    if cache is not None and cache_key in cache:
+    if use_cache and cache is not None and cache_key in cache:
         return cache[cache_key]
 
     # Bucket corpus instructions by locus
@@ -1583,7 +1647,10 @@ def express(
             distinct_winner_contents = {i.content for i in winners}
 
             if blend_fn is not None and len(distinct_winner_contents) > 1:
-                # Optional opt-in blend; leave None to preserve action markers.
+                # Opt-in AI merge of the co-expressed alleles. With blend_fn
+                # None the alleles are expressed verbatim (markers intact by
+                # construction); a caller that passes a blend_fn should use a
+                # marker-preserving one (bear.markers.marker_blend).
                 a_insts = [i for i in winners if i in allele_a]
                 b_insts = [i for i in winners if i in allele_b]
                 a_text = "\n".join(i.content for i in a_insts)
@@ -1609,11 +1676,13 @@ def express(
     for locus, insts in by_locus.items():
         expressed.extend(insts)
 
-    # Cache the result
-    if cache is None:
-        cache = {}
-        object.__setattr__(corpus, "_expressed_cache", cache)
-    cache[cache_key] = expressed
+    # Cache the result (skipped when use_cache is False, so a non-deterministic
+    # blend_fn re-blends on every access)
+    if use_cache:
+        if cache is None:
+            cache = {}
+            object.__setattr__(corpus, "_expressed_cache", cache)
+        cache[cache_key] = expressed
 
     return expressed
 

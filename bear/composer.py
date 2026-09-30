@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+from bear.audit import current_turn
 from bear.models import InstructionType, ScoredInstruction
 
 
@@ -157,14 +158,16 @@ class Composer:
         # Compose text guidance using the selected strategy
         if text_instructions:
             if self.strategy == CompositionStrategy.PRIORITY_CONCAT:
-                guidance = self._compose_priority_concat(text_instructions)
+                included = self._order_priority_concat(text_instructions)
             elif self.strategy == CompositionStrategy.CONFLICT_RESOLUTION:
-                guidance = self._compose_conflict_resolution(text_instructions)
+                included = self._order_conflict_resolution(text_instructions)
             elif self.strategy == CompositionStrategy.HIERARCHICAL:
-                guidance = self._compose_hierarchical(text_instructions)
+                included = self._order_hierarchical(text_instructions)
             else:
-                guidance = self._compose_priority_concat(text_instructions)
+                included = self._order_priority_concat(text_instructions)
+            guidance = self._format(included)
         else:
+            included = []
             guidance = ""
 
         # Build tool schemas from tool-type instructions
@@ -179,20 +182,36 @@ class Composer:
             if summary:
                 guidance = (guidance + "\n\n" + summary).lstrip("\n")
 
+        turn = current_turn()
+        if turn is not None:
+            kept = {s.id for s in included}
+            turn._record_composition(
+                strategy=self.strategy.value,
+                included=[s.id for s in included],
+                dropped=[s.id for s in text_instructions if s.id not in kept],
+                tool_names=[t["function"]["name"] for t in tools],
+                guidance=guidance,
+            )
+
         return ComposedOutput(guidance=guidance, tools=tools)
 
     # ------------------------------------------------------------------
-    # Text composition strategies (unchanged logic)
+    # Text composition strategies: each returns the instructions to
+    # include, in order
     # ------------------------------------------------------------------
 
-    def _compose_priority_concat(self, instructions: list[ScoredInstruction]) -> str:
+    def _order_priority_concat(
+        self, instructions: list[ScoredInstruction]
+    ) -> list[ScoredInstruction]:
         """Concatenate all instructions sorted by priority (highest first)."""
         sorted_insts = sorted(instructions, key=lambda s: s.priority, reverse=True)
         if self.max_instructions:
             sorted_insts = sorted_insts[:self.max_instructions]
-        return self._format(sorted_insts)
+        return sorted_insts
 
-    def _compose_conflict_resolution(self, instructions: list[ScoredInstruction]) -> str:
+    def _order_conflict_resolution(
+        self, instructions: list[ScoredInstruction]
+    ) -> list[ScoredInstruction]:
         """Resolve conflicts by keeping higher-priority instructions."""
         sorted_insts = sorted(instructions, key=lambda s: s.priority, reverse=True)
 
@@ -209,9 +228,11 @@ class Composer:
 
         if self.max_instructions:
             kept = kept[:self.max_instructions]
-        return self._format(kept)
+        return kept
 
-    def _compose_hierarchical(self, instructions: list[ScoredInstruction]) -> str:
+    def _order_hierarchical(
+        self, instructions: list[ScoredInstruction]
+    ) -> list[ScoredInstruction]:
         """Group by instruction type, ordered by type importance."""
         type_order = ["constraint", "persona", "protocol", "directive", "fallback"]
 
@@ -234,7 +255,7 @@ class Composer:
 
         if self.max_instructions:
             ordered = ordered[:self.max_instructions]
-        return self._format(ordered)
+        return ordered
 
     def _format(self, instructions: list[ScoredInstruction]) -> str:
         """Format instructions into the final guidance string."""

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 
+from bear.audit import _start, current_turn
 from bear.backends.llm.base import (
     GenerateRequest,
     GenerateResponse,
@@ -385,7 +386,17 @@ class LLM:
             response_format=response_format,
             seed=seed,
         )
-        return await self._backend.generate(request)
+        turn = current_turn()
+        if turn is None:
+            return await self._backend.generate(request)
+        started = _start()
+        try:
+            response = await self._backend.generate(request)
+        except Exception as exc:
+            turn._record_generation(self, request, None, exc, started)
+            raise
+        turn._record_generation(self, request, response, None, started)
+        return response
 
     async def generate_batch(
         self,
@@ -404,7 +415,20 @@ class LLM:
         Returns:
             Responses in the same order as *requests*.
         """
-        return await self._backend.generate_batch(requests, max_concurrency)
+        turn = current_turn()
+        if turn is None:
+            return await self._backend.generate_batch(requests, max_concurrency)
+        started = _start()
+        try:
+            responses = await self._backend.generate_batch(requests, max_concurrency)
+        except Exception as exc:
+            # The batch failed as a whole, so each request carries the error.
+            for request in requests:
+                turn._record_generation(self, request, None, exc, started, batch=True)
+            raise
+        for request, response in zip(requests, responses):
+            turn._record_generation(self, request, response, None, started, batch=True)
+        return responses
 
     def is_available(self) -> bool:
         """Check if the backend is available."""

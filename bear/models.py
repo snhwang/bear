@@ -11,6 +11,8 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
+from bear.audit import current_turn
+
 
 class InstructionType(str, Enum):
     """Types of behavioral instructions."""
@@ -392,4 +394,7 @@ def collect_actions(scored: list[ScoredInstruction]) -> ActionSet:
                 # Concatenate lists (e.g. notify lists from multiple instructions)
                 merged[key] = merged[key] + value
 
+    turn = current_turn()
+    if turn is not None:
+        turn._record_actions(merged, sources)
     return ActionSet(actions=merged, sources=sources)

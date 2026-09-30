@@ -146,6 +146,23 @@ scope = ScopeCondition(
 )
 ```
 
+### Ownership in a Shared Corpus
+
+When many entities share one corpus, most instructions serve everyone and a few belong to one entity, such as a persona or a lesson it learned. `bear.ownership` keeps the private few private with a hard gate.
+
+```python
+from bear import Context
+from bear.ownership import context_tags, own, violations
+
+private = own(lesson, "bryn", instruction_id="bryn-lesson-1")  # required_tags gains "char_bryn"
+corpus.add(private)
+
+ctx = Context(tags=context_tags("bryn", also=["raining"]))      # the owner tag, plus the situation
+problems = violations(corpus, require_owner=["bryn-lesson-1"])  # [] when the corpus is sound
+```
+
+Ownership is always a hard gate, because a soft tag admits an instruction for its owner without keeping anyone else out. Situational tags (weather, time of day) are better left soft. Hardening them turns the corpus into a lookup table. `violations()` finds what reached the corpus without `own()`, such as a checkpoint restore or hand-written YAML. `in_group()` gates a set of entities together, for example a world agent's instructions against the population's.
+
 ### Instruction Relationships
 
 ```yaml
@@ -281,7 +298,7 @@ Mendelian dominance, codominance, and recessive emergence all fall out of the sc
 
 **Meiosis is automatic across generations.** When parents are themselves diploid (their corpora already contain `allele:"a"` and `allele:"b"` instructions from a previous breeding), `breed()` randomly draws one allele per parent per locus before pairing — true Mendelian segregation. No manual gamete-formation step required.
 
-**Optional `blend_fn` (avoid for action-marker-bearing content).** For loci where you want LLM-blended phenotypes instead of multi-allele expression, pass a `blend_fn` to `express()`. WARNING: LLM-based blending often destroys structured content like action markers (`[!flee]`, `[!mood(happy)]`). Default behavior (`blend_fn=None`) preserves allele text verbatim and lets retrieval gate which allele expresses per query.
+**Optional `blend_fn`.** For loci where you want LLM-blended phenotypes instead of multi-allele expression, pass a `blend_fn` to `express()`. A free LLM paraphrase often destroys action markers (`[!flee]`, `[!mood(happy)]`), so wrap the rewrite in `marker_blend` (see [Markers](#markers)), which keeps each marker with its clause. Default behavior (`blend_fn=None`) preserves allele text verbatim and lets retrieval gate which allele expresses per query.
 
 The `Dominance` docstring in [`bear/models.py`](bear/models.py) has more detail.
 
@@ -301,6 +318,10 @@ config = Config(
     cache_embeddings=True,
 )
 ```
+
+An instruction tagged with one of the `mandatory_tags` is always retrieved when its `required_tags` gate admits it. It is exempt from the `default_top_k` cut, and another instruction's `supersedes` or `conflicts_with` can remove it only if that instruction is mandatory too. `LLMMemoryExtractor` never gives a generated memory one of these tags.
+
+With `cache_embeddings` on (the default), `retriever.build_index(cache_dir="...")` stores one vector per instruction text in that directory. A later build embeds only text it has not seen, so a corpus that grows while running does not re-embed itself. Without `cache_dir` nothing is cached.
 
 Or via environment variables:
 
@@ -330,6 +351,8 @@ cfg = Config(embedding_model="BAAI/bge-base-en-v1.5")
 # Development only — fast startup, no semantic signal
 cfg = Config(embedding_model="hash")
 ```
+
+A named model that fails to load (not installed, wrong name, no network and no cached copy) raises `RuntimeError`. BEAR does not quietly switch to hash mode. If you want that fallback anyway, set `BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1` or `Config(embedding_allow_hash_fallback=True)`. The fallback is logged as a warning.
 
 ## Vector Backends
 
@@ -545,7 +568,10 @@ candidate instruction.
 instruction will paraphrase markers away, which removes the behavior from the
 population entirely. `pin_actions` replaces each marker and its triggering
 clause with a placeholder before the rewrite, and `repair_actions` puts them
-back and rejects markers the model invented:
+back and rejects markers the model invented. A marker and its clause survive
+together or not at all. If the model drops a placeholder and writes the marker
+into its own wording instead, that copy goes along with its clause, and the
+original unit is re-inserted whole:
 
 ```python
 from bear import express, marker_blend
@@ -556,6 +582,49 @@ from bear import express, marker_blend
 blend = marker_blend(rewrite, allowed_markers={"go", "flee"})
 expressed = express(corpus, loci, blend_fn=blend)
 ```
+
+**Passing an instruction between agents.** `bear.culture.adopt` lets one agent take up another's instruction in its own words, through its own lens. The markers are pinned and repaired around the rewrite, so the wording changes and the behavior does not. With `llm=None` the instruction is adopted word for word.
+
+```python
+from bear.culture import adopt
+from bear.ownership import own
+
+adoption = await adopt(teacher_instruction, llm, learner="Nell",
+                       lens="You keep anything that bears on safety.",
+                       how="watched Ada do")
+corpus.add(own(adoption.instruction, "nell"))
+```
+
+**Expressing markers from meaning.** Pin and repair makes a marker survive
+every rewrite, whether or not the new text still means it. `bear.marker_code`
+offers the alternative. Only text is inherited, and markers are expressed from
+what it means. A `MarkerCode` keys each marker to a meaning. After a rewrite, an
+interpreter strips the old markers and inserts the ones the new prose supports,
+each into the clause that supports it:
+
+```python
+from bear import CachedInterpreter, EmbeddingInterpreter, MarkerCode
+
+code = MarkerCode.from_dict({
+    "[!flee]": "Run away from a predator or other danger.",
+    "[!approach(item=food)]": "Go to food and eat it.",
+})
+interpreter = CachedInterpreter(EmbeddingInterpreter(code, embedder, radius=0.6))
+result = await interpreter.interpret("When wolves appear, you run uphill.")
+# result.text carries [!flee] if that clause falls within the radius of its
+# meaning. result.inserted records each marker, its clause and its score.
+```
+
+`EmbeddingInterpreter` is deterministic and cheap, but blind to negation, so
+"you never flee" can still receive `[!flee]`. `EntailmentInterpreter` asks a
+natural-language inference model whether a clause entails each meaning. It runs
+on a CPU (`cross_encoder_nli` builds one from a sentence-transformers
+cross-encoder) and separates fleeing from not fleeing, though small models read
+text very literally. `LLMInterpreter` handles negation and indirect description
+best, and accepts a model's reply only if the prose came back unchanged.
+Calibrate on labelled text before relying on any of them.
+`code.shuffled(seed)` gives every marker another marker's meaning. That is the
+control for asking whether meaning did the work.
 
 **Reference markers** `[[kind:id|label]]` say *point at something*. They
 resolve only after a policy check, so a citation cannot leak an entity the
@@ -571,6 +640,39 @@ in a context, for a reason. A subject is a `(kind, id)` pair, the same
 vocabulary as a reference marker, so a provenance subject round-trips to and
 from `[[kind:id]]`. Use it where a system must answer "why did this appear?"
 after the fact.
+
+## Turn Audit
+
+Wrap a turn in an audit block and BEAR records everything that shaped the reply. The record includes:
+
+- the query and context
+- the instructions retrieved, and each candidate left out with the reason (`gate`, `threshold`, `superseded`, `conflict` or `top_k`)
+- the composed guidance, and which instructions it kept or dropped
+- the actions triggered
+- every LLM call with its full prompt, parameters and output
+- the reply shown to the user
+
+No call signatures change. The retriever, composer, `collect_actions` and `LLM` find the open turn themselves.
+
+```python
+from bear import Auditor, JsonlSink
+
+auditor = Auditor([JsonlSink("audit/session-42.jsonl")])
+
+async with auditor.turn(session_id="s42", user_id="u7", agent_id="coach") as turn:
+    scored = retriever.retrieve(message, context)
+    guidance = composer.compose(scored)
+    resp = await llm.generate(system=str(guidance), user=message)
+    turn.set_response(resp.content)
+```
+
+Each turn is one JSON line. The first time a turn uses a new version of the corpus, the log also stores that corpus in full, so every record can be traced back to the exact instruction text, even after memories or evolution have changed the corpus. To check a log, run the following. It rebuilds each retriever from the log and re-runs every retrieval, reporting any that no longer match:
+
+```bash
+python -m bear verify-audit audit/session-42.jsonl
+```
+
+The log holds raw messages and replies. If those must not be stored, pass `redact=` (a `str -> str` function) to `Auditor`. By default a failed write raises `AuditWriteError` when the turn closes. Pass `strict=False` to log it instead. Use `detach(coro)` to start background work that should stay out of the turn. The full specification, including the record schema, is in [design/turn-audit.md](design/turn-audit.md).
 
 ## Examples
 

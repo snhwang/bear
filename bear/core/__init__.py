@@ -31,6 +31,18 @@ from bear.backends.llm.base import (
     ToolCall,
 )
 from bear.logging import RetrievalEvent, set_log_handler
+from bear.audit import (
+    AuditLog,
+    Auditor,
+    AuditWriteError,
+    JsonlSink,
+    ReplayResult,
+    Turn,
+    current_turn,
+    detach,
+    read_audit_log,
+    verify_audit_log,
+)
 from bear.query_refiner import QueryRefiner
 from bear.references import (
     ContentReferences,
@@ -81,4 +93,15 @@ __all__ = [
     # Observability
     "RetrievalEvent",
     "set_log_handler",
+    # Turn audit
+    "AuditLog",
+    "Auditor",
+    "AuditWriteError",
+    "JsonlSink",
+    "ReplayResult",
+    "Turn",
+    "current_turn",
+    "detach",
+    "read_audit_log",
+    "verify_audit_log",
 ]

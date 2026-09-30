@@ -53,6 +53,7 @@ from typing import Any
 
 import yaml
 
+from bear.audit import current_turn
 from bear.composer import Composer
 from bear.config import Config
 from bear.corpus import Corpus
@@ -300,6 +301,7 @@ class TwinBuilder:
             self._corpus,
             embedding_model=self._embedding_model,
             embedder=self._embedder,
+            label="behavior",
         )
         self._retriever.build_index()
 
@@ -309,6 +311,7 @@ class TwinBuilder:
             self._knowledge_corpus,
             embedding_model=self._embedding_model,
             embedder=self._embedder,
+            label="knowledge",
         )
         self._knowledge_retriever.build_index()
 
@@ -475,6 +478,9 @@ class TwinBuilder:
 
         Returns:
             The twin's response.
+
+        Inside an open :mod:`bear.audit` turn, the reply is recorded as the
+        turn's response.
         """
         if self.llm is None:
             raise RuntimeError("No LLM configured. Pass llm= to TwinBuilder.")
@@ -522,6 +528,9 @@ class TwinBuilder:
             user=message,
             history=msgs or None,
         )
+        turn = current_turn()
+        if turn is not None:
+            turn.set_response(resp.content)
         return resp.content
 
     # -- Inspection ----------------------------------------------------------

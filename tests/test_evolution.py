@@ -2315,6 +2315,143 @@ class TestExpression:
         expressed2 = express(result.child, reg, locus_key="gene")
         assert expressed1 is expressed2  # same object from cache
 
+    def test_use_cache_false_reblends_each_access(self):
+        """A non-deterministic blend_fn re-runs on every access when
+        use_cache=False (stochastic expression of the same genotype)."""
+        from bear.markers import marker_blend
+
+        calls = []
+
+        def rewrite(pa, pb):
+            calls.append(1)
+            return f"{pa.text} {pb.text} [round {len(calls)}]"
+
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="trait", position=0, dominance=Dominance.CODOMINANT),
+        ])
+        child = Corpus()
+        child.add(Instruction(
+            id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent a text",
+            metadata={"gene": "trait", "allele": "a"},
+        ))
+        child.add(Instruction(
+            id="child-trait-b", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent b text",
+            metadata={"gene": "trait", "allele": "b"},
+        ))
+        blend = marker_blend(rewrite=rewrite)
+        e1 = express(child, reg, locus_key="gene", blend_fn=blend, use_cache=False)
+        e2 = express(child, reg, locus_key="gene", blend_fn=blend, use_cache=False)
+        assert len(calls) == 2
+        assert e1 is not e2
+        contents = {i.content for i in e1 if i.metadata.get("gene") == "trait"}
+        assert any("[round 1]" in c for c in contents)
+        contents2 = {i.content for i in e2 if i.metadata.get("gene") == "trait"}
+        assert any("[round 2]" in c for c in contents2)
+
+    def test_use_cache_true_blends_once(self):
+        from bear.markers import marker_blend
+
+        calls = []
+
+        def rewrite(pa, pb):
+            calls.append(1)
+            return f"{pa.text} {pb.text}"
+
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="trait", position=0, dominance=Dominance.CODOMINANT),
+        ])
+        child = Corpus()
+        child.add(Instruction(
+            id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent a text",
+            metadata={"gene": "trait", "allele": "a"},
+        ))
+        child.add(Instruction(
+            id="child-trait-b", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent b text",
+            metadata={"gene": "trait", "allele": "b"},
+        ))
+        blend = marker_blend(rewrite=rewrite)
+        express(child, reg, locus_key="gene", blend_fn=blend)
+        express(child, reg, locus_key="gene", blend_fn=blend)
+        assert len(calls) == 1  # second call served from the cached phenotype
+
+    def test_cache_does_not_leak_across_blend_fn(self):
+        """The phenotype depends on blend_fn, so the cache must key on it.
+
+        Expressing one corpus without a blend and then with one must return
+        the blended phenotype the second time, not the first call's cached
+        answer. The same blend_fn twice is still served from the cache.
+        """
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="trait", position=0, dominance=Dominance.CODOMINANT),
+        ])
+        child = Corpus()
+        child.add(Instruction(
+            id="child-trait-a", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent a text",
+            metadata={"gene": "trait", "allele": "a"},
+        ))
+        child.add(Instruction(
+            id="child-trait-b", type=InstructionType.DIRECTIVE, priority=60,
+            content="parent b text",
+            metadata={"gene": "trait", "allele": "b"},
+        ))
+
+        def blend(a: str, b: str) -> str:
+            return f"BLEND({a}|{b})"
+
+        plain = express(child, reg, locus_key="gene")
+        blended = express(child, reg, locus_key="gene", blend_fn=blend)
+
+        plain_trait = [i for i in plain if i.metadata.get("gene") == "trait"]
+        blended_trait = [i for i in blended if i.metadata.get("gene") == "trait"]
+        assert len(plain_trait) == 2
+        assert len(blended_trait) == 1
+        assert blended_trait[0].content.startswith("BLEND(")
+        # each blend_fn keeps its own cached phenotype
+        assert express(child, reg, locus_key="gene") is plain
+        assert express(child, reg, locus_key="gene", blend_fn=blend) is blended
+
+    def test_marker_preserving_blend_fn_keeps_markers(self):
+        """The co-dominant AI merge of two marker-bearing alleles conserves
+        every marker-plus-trigger unit from both parents."""
+        from bear.markers import marker_blend
+
+        reg = LocusRegistry(loci=[
+            GeneLocus(name="combat", position=0, dominance=Dominance.CODOMINANT),
+        ])
+        child = Corpus()
+        child.add(Instruction(
+            id="child-combat-a", type=InstructionType.DIRECTIVE, priority=60,
+            content=(
+                "When a predator closes in, [!flee] toward the treeline. "
+                "You keep to cover."
+            ),
+            metadata={"gene": "combat", "allele": "a"},
+        ))
+        child.add(Instruction(
+            id="child-combat-b", type=InstructionType.DIRECTIVE, priority=60,
+            content=(
+                "You stand your ground. If kin are nearby, [!rally] them. "
+                "You challenge rivals openly."
+            ),
+            metadata={"gene": "combat", "allele": "b"},
+        ))
+        expressed = express(
+            child, reg, locus_key="gene", blend_fn=marker_blend(),
+        )
+        combat = [i for i in expressed if i.metadata.get("gene") == "combat"]
+        assert len(combat) == 1
+        assert combat[0].metadata.get("allele") == "expressed"
+        assert "[!flee]" in combat[0].content
+        assert "[!rally]" in combat[0].content
+        # both parents' triggering clauses come through intact
+        assert "predator closes in" in combat[0].content
+        assert "kin are nearby" in combat[0].content
+
 
 # ---------------------------------------------------------------------------
 # Test Linkage Groups
@@ -2887,3 +3024,335 @@ class TestAccessPolicyInheritance:
         a, b = self._parents()
         cfg = BreedingConfig(crossover_rate=0.0, seed=1, always_inherit_tags=[])
         assert _policies(breed(a, b, "liaison", "comms", "legal", config=cfg).child) == []
+
+
+# ---------------------------------------------------------------------------
+# A policy both parents carry is inherited once
+# ---------------------------------------------------------------------------
+#
+# Self-crossing passes the same policy in from both sides. Kept twice, the
+# policies would double every generation. Copies that differ only in the
+# parent, child and child_tags names are the same policy. A difference in
+# content or in any other tag keeps both.
+
+class TestAccessPolicyDedupe:
+
+    @staticmethod
+    def _held(result: BreedResult) -> list[Instruction]:
+        return [i for i in result.child if i.type != InstructionType.PERSONA]
+
+    def test_self_crossing_keeps_one_policy_for_three_generations(self):
+        corpus, name = _access_parent("comms", ["public", "timeline"], ["exploit-detail"]), "comms"
+        for gen in range(1, 4):
+            child = f"comms-g{gen}"
+            result = breed(corpus, corpus, child, name, name, config=BreedingConfig(seed=gen))
+            (pol,) = _policies(result.child)
+            assert {t for t in pol.tags if ":" in t} == {
+                "allow:public", "allow:timeline", "deny:exploit-detail"}
+            assert pol.scope.required_tags == [child, "knowledge-diffusion"]
+            corpus, name = result.child, child
+
+    def test_siblings_pass_on_one_policy(self):
+        """Each sibling's copy carries its own name, which is not policy."""
+        p = _access_parent("comms", ["public"], ["exploit-detail"])
+        s1 = breed(p, p, "sib-1", "comms", "comms", config=BreedingConfig(seed=1)).child
+        s2 = breed(p, p, "sib-2", "comms", "comms", config=BreedingConfig(seed=2)).child
+        assert "sib-1" in _policies(s1)[0].tags and "sib-2" in _policies(s2)[0].tags
+        result = breed(s1, s2, "grandchild", "sib-1", "sib-2", config=BreedingConfig(seed=3))
+        (pol,) = _policies(result.child)
+        assert pol.metadata["inherited_from"] == "sib-1"
+
+    def test_child_tags_count_as_names(self):
+        p = _access_parent("comms", ["public"], ["exploit-detail"])
+        s1 = breed(p, p, "sib-1", "comms", "comms",
+                   config=BreedingConfig(seed=1, child_tags=["cohort"])).child
+        s2 = breed(p, p, "sib-2", "comms", "comms", config=BreedingConfig(seed=2)).child
+        # only one sibling's copy carries the cohort tag
+        with_cohort = BreedingConfig(seed=3, child_tags=["cohort"])
+        assert len(_policies(breed(s1, s2, "g", "sib-1", "sib-2", config=with_cohort).child)) == 1
+        without = BreedingConfig(seed=3)
+        assert len(_policies(breed(s1, s2, "g", "sib-1", "sib-2", config=without).child)) == 2
+
+    def test_different_policies_keep_both(self):
+        a = _access_parent("comms", ["public", "timeline"], ["exploit-detail"])
+        b = _access_parent("legal", ["public", "privileged"], ["internal-identifier"])
+        result = breed(a, b, "liaison", "comms", "legal", config=BreedingConfig(seed=1))
+        assert sorted(p.metadata["inherited_from"] for p in _policies(result.child)) == [
+            "comms", "legal"]
+
+    def test_same_id_different_content_keeps_both(self):
+        a = _access_parent("comms", ["public"], ["exploit-detail"])
+        b = _access_parent("comms", ["public"], ["exploit-detail"])
+        b.add(b.get("diffusion-comms-access").model_copy(
+            update={"content": "comms access, stricter wording."}))
+        result = breed(a, b, "liaison", "mom", "dad", config=BreedingConfig(seed=1))
+        pols = {p.id: p for p in _policies(result.child)}
+        assert sorted(pols) == ["liaison-dad-diffusion-comms-access",
+                                "liaison-diffusion-comms-access"]
+        assert pols["liaison-dad-diffusion-comms-access"].content == (
+            "comms access, stricter wording.")
+        assert pols["liaison-diffusion-comms-access"].content == "comms access."
+
+    @pytest.mark.parametrize("locus_key", [None, "gene_category"])
+    @pytest.mark.parametrize("case", ["self", "siblings", "distinct"])
+    def test_counts_match_what_the_child_holds(self, locus_key, case):
+        p = _access_parent("comms", ["public"], ["exploit-detail"])
+        if case == "self":
+            a, b = p, p
+        elif case == "siblings":
+            a = breed(p, p, "p-a", "comms", "comms", config=BreedingConfig(seed=1)).child
+            b = breed(p, p, "p-b", "comms", "comms", config=BreedingConfig(seed=2)).child
+        else:
+            a, b = p, _access_parent("legal", ["privileged"], ["internal-identifier"])
+        # crossover_rate=0 leaves out locus-less instructions, whose copies
+        # from a self-cross would share an id
+        cfg = BreedingConfig(locus_key=locus_key, crossover_rate=0.0, seed=4)
+        result = breed(a, b, "child", "p-a", "p-b", config=cfg)
+        held = self._held(result)
+        assert result.inherited_count == result.from_a_count + result.from_b_count == len(held)
+        assert result.from_b_count == sum(
+            i.metadata["inherited_from"] == "p-b" for i in held)
+        assert len(_policies(result.child)) == (2 if case == "distinct" else 1)
+
+    def test_lethal_mutation_self_cross_counts_one_policy(self):
+        p = _access_parent("comms", ["public"], ["exploit-detail"])
+        cfg = BreedingConfig(crossover_rate=1.0, seed=1, mutation_rate=1.0,
+                             mutator=lambda inst, rng: None)
+        result = breed(p, p, "child", "p-a", "p-b", config=cfg)
+        assert len(_policies(result.child)) == 1
+        assert (result.inherited_count, result.from_a_count, result.from_b_count) == (1, 1, 0)
+        assert len(self._held(result)) == 1
+
+
+# ---------------------------------------------------------------------------
+# Bred instructions are the same in every process
+# ---------------------------------------------------------------------------
+#
+# A bred instruction's tags go into the text the retriever embeds and into
+# the index version. Built from a set, their order followed the string hash,
+# which changes with PYTHONHASHSEED. Two runs of one breed could then index
+# different texts.
+
+_BREED_ONCE = r'''
+import json
+
+import bear
+from bear import Corpus, Instruction, InstructionType, Retriever, ScopeCondition
+from bear.evolution import BreedingConfig, breed
+
+
+def parent(role, extra):
+    c = Corpus()
+    c.add(Instruction(
+        id=f"{role}-method", type=InstructionType.DIRECTIVE, priority=70,
+        content=f"{role} method.", scope=ScopeCondition(required_tags=[role]),
+        tags=[role, "method", "evidence", "review", "tone", *extra],
+    ))
+    c.add(Instruction(
+        id=f"{role}-access", type=InstructionType.CONSTRAINT, priority=90,
+        content=f"{role} access.",
+        scope=ScopeCondition(required_tags=[role, "knowledge-diffusion"]),
+        tags=[role, "knowledge-diffusion", "facet", "access",
+              "allow:public", "allow:timeline", "deny:privileged", *extra],
+    ))
+    return c
+
+
+cfg = BreedingConfig(crossover_rate=1.0, seed=11, child_tags=["gen-1", "bred"])
+child = breed(parent("comms", ["press"]), parent("legal", ["counsel"]),
+              "liaison", "comms", "legal", config=cfg).child
+retriever = Retriever(child, embedding_model="hash")
+retriever.build_index()
+print(json.dumps({
+    "bear": bear.__file__,
+    "tags": {i.id: i.tags for i in child},
+    "text": {i.id: retriever._instruction_text(i) for i in child},
+    "index_version": retriever.index_version,
+}))
+'''
+
+
+class TestBreedAcrossProcesses:
+
+    @staticmethod
+    def _breed_in_subprocess(tmp_path, hashseed: str) -> dict:
+        import json
+        import os
+        import subprocess
+        import sys
+        from pathlib import Path
+
+        import bear
+
+        script = tmp_path / "breed_once.py"
+        script.write_text(_BREED_ONCE, encoding="utf-8")
+        # the subprocess must import the bear under test
+        root = str(Path(bear.__file__).resolve().parents[1])
+        env = {**os.environ, "PYTHONHASHSEED": hashseed,
+               "PYTHONPATH": os.pathsep.join(
+                   p for p in (root, os.environ.get("PYTHONPATH")) if p)}
+        proc = subprocess.run([sys.executable, str(script)], env=env,
+                              capture_output=True, text=True, timeout=120)
+        assert proc.returncode == 0, proc.stderr
+        out = json.loads(proc.stdout.strip().splitlines()[-1])
+        assert Path(out["bear"]).resolve() == Path(bear.__file__).resolve()
+        return out
+
+    def test_child_is_identical_under_different_hash_seeds(self, tmp_path):
+        first = self._breed_in_subprocess(tmp_path, "0")
+        second = self._breed_in_subprocess(tmp_path, "1")
+        assert len(first["tags"]) == 5  # persona, two methods, two policies
+        assert first["tags"] == second["tags"]
+        assert first["text"] == second["text"]
+        assert first["index_version"] == second["index_version"]
+        # parent tags first, in their order, then the child's name and child_tags
+        assert first["tags"]["liaison-comms-method"] == [
+            "comms", "method", "evidence", "review", "tone", "press",
+            "liaison", "gen-1", "bred"]
+
+    def test_tags_keep_parent_order_without_duplicates(self):
+        c = Corpus()
+        c.add(Instruction(id="m", type=InstructionType.DIRECTIVE, content="m.",
+                          tags=["zeta", "gen", "alpha", "liaison"]))
+        cfg = BreedingConfig(crossover_rate=1.0, seed=1, child_tags=["gen", "bred"])
+        child = breed(c, Corpus(), "liaison", "a", "b", config=cfg).child
+        assert child.get("liaison-m").tags == ["zeta", "gen", "alpha", "liaison", "bred"]
+
+    def test_child_tags_are_parent_order_then_names(self, capsys):
+        """Pin the order itself, not only its stability.
+
+        Any fixed order passes the hash-seed check above. Another one, such
+        as sorted tags, would still change every bred text and index
+        version, so a change to it must be deliberate. This runs the same
+        breed in this process.
+        """
+        import json
+
+        exec(compile(_BREED_ONCE, "breed_once", "exec"), {})
+        out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+        names = ["liaison", "gen-1", "bred"]
+        assert out["tags"] == {
+            "liaison-persona": [*names, "personality"],
+            "liaison-comms-method": [
+                "comms", "method", "evidence", "review", "tone", "press", *names],
+            "liaison-legal-method": [
+                "legal", "method", "evidence", "review", "tone", "counsel", *names],
+            "liaison-comms-access": [
+                "comms", "knowledge-diffusion", "facet", "access", "allow:public",
+                "allow:timeline", "deny:privileged", "press", *names],
+            "liaison-legal-access": [
+                "legal", "knowledge-diffusion", "facet", "access", "allow:public",
+                "allow:timeline", "deny:privileged", "counsel", *names],
+        }
+
+
+# ---------------------------------------------------------------------------
+# Only names are ignored when two policy copies are compared
+# ---------------------------------------------------------------------------
+#
+# A parent-B copy is dropped only when it matches a parent-A copy in content,
+# type, priority, scope and tags once the names are removed. A copy with a
+# different priority or scope can apply where parent A's does not, so the
+# child keeps both. Names leave the scope only with scope_to_child, which
+# re-scopes the child's copy. Without it each copy keeps its parent's scope,
+# so a copy scoped to the other parent's name is kept as well.
+
+def _shared_policy_parents(**b_change) -> tuple[Corpus, Corpus]:
+    """comms and legal, whose policies match apart from the role name.
+
+    ``b_change`` is applied to legal's copy.
+    """
+    def parent(role: str) -> Corpus:
+        c = _lens_parent(role, f"{role} lens.", 1.0)
+        c.add(Instruction(
+            id=f"diffusion-{role}-access", type=InstructionType.CONSTRAINT, priority=90,
+            content="Shared access policy.",
+            scope=ScopeCondition(required_tags=[role, "knowledge-diffusion"]),
+            tags=[role, "knowledge-diffusion", "facet", "access",
+                  "allow:public", "deny:exploit-detail"],
+        ))
+        return c
+
+    a, b = parent("comms"), parent("legal")
+    b.add(b.get("diffusion-legal-access").model_copy(update=b_change))
+    return a, b
+
+
+class TestAccessPolicyDedupeKey:
+
+    @staticmethod
+    def _breed(a: Corpus, b: Corpus, **cfg) -> BreedResult:
+        # crossover_rate=0 leaves only the policies in the child
+        config = BreedingConfig(seed=1, crossover_rate=0.0, **cfg)
+        return breed(a, b, "liaison", "comms", "legal", config=config)
+
+    def test_copies_that_differ_only_in_names_are_one_policy(self):
+        result = self._breed(*_shared_policy_parents())
+        (pol,) = _policies(result.child)
+        assert pol.metadata["inherited_from"] == "comms"
+        assert (result.inherited_count, result.from_a_count, result.from_b_count) == (1, 1, 0)
+
+    def test_names_in_scope_tags_are_ignored(self):
+        a, b = _shared_policy_parents(scope=ScopeCondition(
+            required_tags=["legal", "knowledge-diffusion"], tags=["legal", "liaison"]))
+        a.add(a.get("diffusion-comms-access").model_copy(update={"scope": ScopeCondition(
+            required_tags=["comms", "knowledge-diffusion"], tags=["comms"])}))
+        assert len(_policies(self._breed(a, b).child)) == 1
+
+    @pytest.mark.parametrize("scope_to_child", [True, False])
+    @pytest.mark.parametrize("change", [
+        {"priority": 40},
+        {"type": InstructionType.DIRECTIVE},
+        {"scope": ScopeCondition(required_tags=["legal"])},
+        {"scope": ScopeCondition(required_tags=["legal", "knowledge-diffusion"],
+                                 tags=["incident"])},
+    ], ids=["priority", "type", "scope-required-tags", "scope-tags"])
+    def test_any_other_difference_keeps_both_copies(self, change, scope_to_child):
+        result = self._breed(*_shared_policy_parents(**change), scope_to_child=scope_to_child)
+        pols = _policies(result.child)
+        assert sorted(p.metadata["inherited_from"] for p in pols) == ["comms", "legal"]
+        assert (result.inherited_count, result.from_a_count, result.from_b_count) == (2, 1, 1)
+        (from_b,) = [p for p in pols if p.metadata["inherited_from"] == "legal"]
+        assert all(getattr(from_b, k) == v for k, v in change.items() if k != "scope")
+
+    def test_copy_scoped_elsewhere_stays_scoped_elsewhere(self):
+        """Only B's copy would act while the child speaks, so it must survive."""
+        a, b = _shared_policy_parents(priority=40, scope=ScopeCondition(required_tags=["legal"]))
+        pols = {p.metadata["inherited_from"]: p for p in _policies(self._breed(a, b).child)}
+        assert pols["comms"].scope.required_tags == ["liaison", "knowledge-diffusion"]
+        assert (pols["legal"].priority, pols["legal"].scope.required_tags) == (40, ["liaison"])
+
+    def test_names_in_the_scope_count_without_scope_to_child(self):
+        """Each copy keeps its parent's scope, so legal's acts where comms' does not."""
+        result = self._breed(*_shared_policy_parents(), scope_to_child=False)
+        pols = {p.metadata["inherited_from"]: p for p in _policies(result.child)}
+        assert sorted(pols) == ["comms", "legal"]
+        assert (result.inherited_count, result.from_a_count, result.from_b_count) == (2, 1, 1)
+        assert pols["comms"].scope.required_tags == ["comms", "knowledge-diffusion"]
+        assert pols["legal"].scope.required_tags == ["legal", "knowledge-diffusion"]
+
+    def test_names_in_scope_tags_count_without_scope_to_child(self):
+        a, b = _shared_policy_parents(scope=ScopeCondition(
+            required_tags=["legal", "knowledge-diffusion"], tags=["legal", "liaison"]))
+        a.add(a.get("diffusion-comms-access").model_copy(update={"scope": ScopeCondition(
+            required_tags=["comms", "knowledge-diffusion"], tags=["comms"])}))
+        assert len(_policies(self._breed(a, b, scope_to_child=False).child)) == 2
+
+    @pytest.mark.parametrize("scope_to_child", [True, False])
+    @pytest.mark.parametrize("case", ["self", "siblings"])
+    def test_self_and_sibling_crosses_keep_one_copy(self, case, scope_to_child):
+        p, _ = _shared_policy_parents()
+
+        def cfg(seed: int) -> BreedingConfig:
+            return BreedingConfig(seed=seed, crossover_rate=0.0, scope_to_child=scope_to_child)
+
+        if case == "self":
+            a, b, na, nb = p, p, "comms", "comms"
+        else:
+            a = breed(p, p, "sib-1", "comms", "comms", config=cfg(1)).child
+            b = breed(p, p, "sib-2", "comms", "comms", config=cfg(2)).child
+            na, nb = "sib-1", "sib-2"
+        result = breed(a, b, "liaison", na, nb, config=cfg(3))
+        (pol,) = _policies(result.child)
+        assert pol.metadata["inherited_from"] == na
+        assert (result.inherited_count, result.from_a_count, result.from_b_count) == (1, 1, 0)
