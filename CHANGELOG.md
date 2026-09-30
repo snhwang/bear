@@ -12,6 +12,8 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-09-30
+
 ### Added
 
 - `Retriever(corpus, embedder=...)`: supply vectors from anywhere — a remote
@@ -328,6 +330,9 @@ the initial submission of the *Retrieval-Governed Context* paper.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/snhwang/bear/releases/tag/v0.2.0
+[0.1.10]: https://github.com/snhwang/bear/releases/tag/v0.1.10
 [0.1.9]: https://github.com/snhwang/bear/releases/tag/v0.1.9
 [0.1.8]: https://github.com/snhwang/bear/releases/tag/v0.1.8
 [0.1.7]: https://github.com/snhwang/bear/releases/tag/v0.1.7
