@@ -40,6 +40,7 @@ from bear.audit import (
     Turn,
     current_turn,
     detach,
+    check_generation_models,
     read_audit_log,
     verify_audit_log,
 )
@@ -102,6 +103,7 @@ __all__ = [
     "Turn",
     "current_turn",
     "detach",
+    "check_generation_models",
     "read_audit_log",
     "verify_audit_log",
 ]

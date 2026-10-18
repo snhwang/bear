@@ -26,6 +26,15 @@ logger = logging.getLogger(__name__)
 # Placeholder key accepted by local servers that don't check auth.
 _LOCAL_PLACEHOLDER_KEY = "not-needed"
 
+# OpenAI's reasoning models take no sampling parameters (temperature / top_p):
+# GPT-5.5 answers 400 to any temperature but the default (2026-10-01). A local
+# server is sent them whatever its model is called.
+_NO_SAMPLING_PREFIXES = ("gpt-5", "o1", "o3", "o4")
+
+
+def _accepts_sampling(model: str) -> bool:
+    return not model.startswith(_NO_SAMPLING_PREFIXES)
+
 
 class OpenAIBackend(LLMBackendBase):
     """OpenAI-compatible API backend.
@@ -134,19 +143,28 @@ class OpenAIBackend(LLMBackendBase):
             system_text = ""
         for msg in request.history:
             messages.append({"role": msg.role, "content": msg.content})
-        if request.user:
+        if request.user or request.images:
             user_content = request.user
             if system_text:
                 user_content = f"[System instructions: {system_text}]\n\n{user_content}"
+            if request.images:
+                # The OpenAI content-part form, which vLLM and other
+                # compatible servers read for a model that sees.
+                user_content = ([{"type": "text", "text": user_content}] if user_content else []) + [
+                    {"type": "image_url", "image_url": {"url": url}} for url in request.images]
             messages.append({"role": "user", "content": user_content})
 
         kwargs: dict = {
             "model": self.model,
             "messages": messages,
-            "temperature": request.temperature,
         }
-        if request.top_p is not None:
-            kwargs["top_p"] = request.top_p
+        sampling = self.is_local or _accepts_sampling(self.model)
+        if sampling:
+            kwargs["temperature"] = request.temperature
+            if request.top_p is not None:
+                kwargs["top_p"] = request.top_p
+        else:
+            logger.debug("%s does not accept sampling parameters; omitting them", self.model)
         if request.max_tokens:
             # Newer OpenAI models require max_completion_tokens
             if not self.is_local and not self.base_url and self.model.startswith("gpt-"):

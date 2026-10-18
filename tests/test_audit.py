@@ -10,6 +10,8 @@ import pytest
 from bear import (
     Auditor,
     AuditWriteError,
+    check_generation_models,
+    verify_item_deltas,
     Composer,
     CompositionStrategy,
     Config,
@@ -264,10 +266,28 @@ class TestRetrievalRecord:
         entry = next(x for x in r["results"] if x["id"] == "s")
         assert entry["admitted_by"] == "mandatory" and entry["mandatory"] is True
 
-    def test_required_tags_injection(self):
+    def test_threshold_holds_for_a_gated_instruction(self):
+        # The required-tags scan recovers what the search never returned. What
+        # the search returned and the threshold set aside stays out.
         gated = _inst("g", content="other",
                       scope=ScopeCondition(required_tags=["alice"], **self._elsewhere))
-        _, _, r = self._retrieve([_inst("a"), gated], context=Context(tags=["alice"]))
+        _, results, r = self._retrieve([_inst("a"), gated], context=Context(tags=["alice"]))
+        assert "g" not in [x.id for x in results]
+        assert any(e["id"] == "g" and e["reason"] == "threshold" for e in r["excluded"])
+
+    def test_required_tags_injection(self):
+        # Before the threshold fix, the scan put the same instruction back.
+        # restore_below_threshold keeps that, and the record says which path
+        # admitted it.
+        gated = _inst("g", content="other",
+                      scope=ScopeCondition(required_tags=["alice"], **self._elsewhere))
+        records = []
+        retriever = _retriever([_inst("a"), gated], label="behavior",
+                               config=Config(restore_below_threshold=True))
+        with Auditor([records.append]).turn():
+            retriever.retrieve("q", Context(tags=["alice"]))
+        r = _one_turn(records)["retrievals"][0]
+        assert r["config"]["restore_below_threshold"] is True
         assert not any(e["id"] == "g" for e in r["excluded"])
         entry = next(x for x in r["results"] if x["id"] == "g")
         assert entry["admitted_by"] == "required_tags"
@@ -516,6 +536,36 @@ class TestJsonlAndVerify:
         results = verify_audit_log(self._log(tmp_path, backend=EmbeddingBackend.NUMPY))
         assert [r.status for r in results] == ["match", "match"]
 
+    def test_a_record_from_before_the_threshold_switch_replays_as_it_ran(self, tmp_path):
+        """A record without restore_below_threshold was made before it existed,
+        when the backfill put back what the threshold set aside."""
+        path = tmp_path / "audit.jsonl"
+        corpus = Corpus()
+        corpus.add_many([
+            _inst("liver", content="Measure the liver span in the midclavicular line."),
+            _inst("gated", content="Describe the heart rhythm and rate.",
+                  scope=ScopeCondition(required_tags=["alice"], domains=["cardiology"])),
+        ])
+        retriever = Retriever(corpus, config=Config(
+            embedding_backend=EmbeddingBackend.NUMPY, embedding_model="hash",
+            mandatory_tags=[], restore_below_threshold=True), label="kb")
+        retriever.build_index()
+        with Auditor([JsonlSink(path)]).turn(session_id="s1"):
+            results = retriever.retrieve("how big is the liver", Context(tags=["alice"]),
+                                         top_k=2, threshold=0.99)
+        assert "gated" in [s.id for s in results]
+
+        # Remove the switch from the record, as an older bear wrote it.
+        lines, removed = [], 0
+        for line in path.read_text(encoding="utf-8").splitlines():
+            record = json.loads(line)
+            for retrieval in record.get("retrievals", []):
+                removed += retrieval["config"].pop("restore_below_threshold", None) is not None
+            lines.append(json.dumps(record))
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        assert removed == 1
+        assert [r.status for r in verify_audit_log(path)] == ["match"]
+
     def test_verify_detects_tampered_snapshot(self, tmp_path):
         path = self._log(tmp_path)
         lines = path.read_text(encoding="utf-8").splitlines()
@@ -577,3 +627,194 @@ async def test_twin_chat_records_labelled_retrievals_and_response(tmp_path, monk
     rec = _one_turn(records)
     assert [r["label"] for r in rec["retrievals"]] == ["behavior", "knowledge"]
     assert rec["response"] == reply == "I am Alice."
+
+
+class TestImages:
+    async def test_generation_record_keeps_what_was_shown_but_not_the_picture(self):
+        import base64
+        import hashlib
+
+        records = []
+        raw = b"picture bytes"
+        picture = "data:image/png;base64," + base64.b64encode(raw).decode()
+        async with Auditor([records.append]).turn():
+            await _llm().generate(user="look", images=[picture, "https://example.org/p.png"])
+        g = _one_turn(records)["generations"][0]
+        assert g["images"] == [
+            {"media_type": "image/png", "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()},
+            {"url": "https://example.org/p.png"}]
+        assert base64.b64encode(raw).decode() not in json.dumps(records)
+
+    async def test_a_generation_without_images_records_none(self):
+        records = []
+        async with Auditor([records.append]).turn():
+            await _llm().generate(user="hi")
+        assert _one_turn(records)["generations"][0]["images"] == []
+
+    async def test_redaction_covers_an_image_address(self):
+        records = []
+        auditor = Auditor([records.append], redact=lambda s: s.replace("SECRET", "[x]"))
+        async with auditor.turn():
+            await _llm().generate(user="look", images=["https://example.org/SECRET.png"])
+        assert "SECRET" not in json.dumps(records)
+class TestCheckGenerationModels:
+    """Which models a log's generations actually ran on.
+
+    Every generation already recorded the model asked for and the model the
+    server said answered. Nothing read them: verify_audit_log replays the
+    retrievals and never looks at a generation, so a server restarted onto
+    other weights left the evidence in the log and no one saw it.
+    """
+
+    def _log(self, tmp_path, generations, name="audit.jsonl"):
+        path = tmp_path / name
+        turns = [{"schema": "bear.turn/1", "turn_id": "t1",
+                  "generations": generations}]
+        with open(path, "w", encoding="utf-8") as f:
+            for t in turns:
+                f.write(json.dumps(t) + "\n")
+        return path
+
+    def _gen(self, requested, reported, backend="openai"):
+        return {"backend": backend, "requested_model": requested,
+                "reported_model": reported}
+
+    def test_one_model_throughout_is_one_entry_that_agrees(self, tmp_path):
+        path = self._log(tmp_path, [self._gen("Qwen3.8-27B", "Qwen3.8-27B")] * 3)
+        uses = check_generation_models(path)
+        assert len(uses) == 1
+        assert uses[0].requested == "Qwen3.8-27B"
+        assert uses[0].generations == 3
+        assert uses[0].agrees
+
+    def test_a_server_answering_as_another_model_does_not_agree(self, tmp_path):
+        path = self._log(tmp_path, [self._gen("Qwen3.8-27B", "something-else")])
+        use = check_generation_models(path)[0]
+        assert not use.agrees
+        assert use.reported == "something-else"
+
+    def test_a_model_changing_mid_session_is_several_entries(self, tmp_path):
+        """The case a single agreeing pair cannot show: both halves agree with
+        themselves, and the session still did not run on one model."""
+        path = self._log(tmp_path, [self._gen("model-a", "model-a")] * 2
+                         + [self._gen("model-b", "model-b")])
+        uses = check_generation_models(path)
+        assert len(uses) == 2
+        assert all(u.agrees for u in uses)
+        assert [u.generations for u in uses] == [2, 1]   # most used first
+
+    def test_a_backend_that_reports_nothing_is_not_a_disagreement(self, tmp_path):
+        """A blank reported model means there is nothing to compare, not
+        something that failed to match."""
+        path = self._log(tmp_path, [self._gen("claude-opus-4", "")])
+        use = check_generation_models(path)[0]
+        assert use.agrees and use.reported == ""
+
+    def test_backends_are_kept_apart(self, tmp_path):
+        path = self._log(tmp_path, [self._gen("m", "m", backend="openai"),
+                                    self._gen("m", "m", backend="ollama")])
+        assert len(check_generation_models(path)) == 2
+
+    def test_a_log_with_no_generations_gives_nothing(self, tmp_path):
+        assert check_generation_models(self._log(tmp_path, [])) == []
+
+    def test_it_accepts_a_parsed_log(self, tmp_path):
+        """So a caller that has already read a log does not read it twice."""
+        path = self._log(tmp_path, [self._gen("m", "m")])
+        assert (check_generation_models(read_audit_log(path))
+                == check_generation_models(path))
+class TestItemsAreLoggedAsDeltas:
+    """A snapshot per item_version would write every item again on each
+    change, which is the cost the delta log avoids. Instructions are still
+    snapshotted whole, because there are few of them."""
+
+    def _session(self, tmp_path, with_instruction=False):
+        from bear.items import ITEM_FACET, item
+        from bear.ownership import owner_tag
+
+        corpus = Corpus()
+        if with_instruction:
+            corpus.add(Instruction(id="d", type=InstructionType.DIRECTIVE,
+                                   priority=50, content="Speak plainly."))
+        for n in range(3):
+            corpus.add(item(f"Fact {n} about the river.", "k", id=f"i{n}",
+                            tags=["news"]))
+        r = Retriever(corpus, config=Config(
+            embedding_backend=EmbeddingBackend.NUMPY,
+            embedding_model="hash", default_threshold=0.0, mandatory_tags=[]))
+        r.build_index()
+        path = tmp_path / "audit.jsonl"
+        auditor = Auditor([JsonlSink(path)])
+        ctx = Context(domain="conversation",
+                      gate_tags=[ITEM_FACET, owner_tag("k")],
+                      select_all=["news"], query="the river")
+
+        async def turn():
+            async with auditor.turn(agent_id="a"):
+                r.retrieve(query="the river", context=ctx, top_k=5)
+
+        asyncio.run(turn())
+        r.add(item("The barn burned.", "k", id="barn", tags=["news"]))
+        r.reinforce("barn", 50.0)
+        asyncio.run(turn())
+        return r, read_audit_log(path)
+
+    def test_the_log_holds_deltas_not_snapshots(self, tmp_path):
+        _, log = self._session(tmp_path)
+        kinds = [d["kind"] for d in log.item_deltas]
+        assert kinds == ["baseline", "add", "reinforce"]
+
+    def test_an_all_item_corpus_writes_no_instruction_snapshot(self, tmp_path):
+        """The saving. index_version is empty, so the Auditor's existing guard
+        skips the snapshot."""
+        _, log = self._session(tmp_path)
+        assert log.corpora == {}
+
+    def test_instructions_are_still_snapshotted(self, tmp_path):
+        _, log = self._session(tmp_path, with_instruction=True)
+        assert len(log.corpora) == 1
+
+    def test_a_retrieval_records_the_item_version_and_buckets(self, tmp_path):
+        r, log = self._session(tmp_path)
+        records = [rec for turn in log.turns
+                   for rec in turn.get("retrievals", [])]
+        assert len(records) == 2
+        assert records[-1]["item_version"] == r.item_version
+        assert records[-1]["item_buckets"] == r.item_buckets
+        assert records[0]["item_version"] != records[-1]["item_version"]
+
+    def test_every_recorded_version_replays(self, tmp_path):
+        _, log = self._session(tmp_path)
+        results = verify_item_deltas(log)
+        assert results and all(r.status == "match" for r in results)
+        assert [r.items for r in results] == [3, 4]
+
+    def test_a_tampered_delta_is_caught(self, tmp_path):
+        _, log = self._session(tmp_path)
+        log.item_deltas[0]["items"][0]["content"] = "Something else."
+        results = verify_item_deltas(log)
+        assert any(r.status == "differs" for r in results)
+
+    def test_a_log_with_no_deltas_is_skipped_not_failed(self, tmp_path):
+        _, log = self._session(tmp_path)
+        log.item_deltas.clear()
+        results = verify_item_deltas(log)
+        assert results and all(r.status == "skipped" for r in results)
+
+    def test_a_log_without_items_has_nothing_to_verify(self, tmp_path):
+        corpus = Corpus()
+        corpus.add(Instruction(id="d", type=InstructionType.DIRECTIVE,
+                               priority=50, content="Speak plainly."))
+        r = Retriever(corpus, config=Config(
+            embedding_backend=EmbeddingBackend.NUMPY,
+            embedding_model="hash", default_threshold=0.0, mandatory_tags=[]))
+        r.build_index()
+        path = tmp_path / "audit.jsonl"
+        auditor = Auditor([JsonlSink(path)])
+
+        async def turn():
+            async with auditor.turn(agent_id="a"):
+                r.retrieve(query="x", context=Context(), top_k=5)
+
+        asyncio.run(turn())
+        assert verify_item_deltas(read_audit_log(path)) == []

@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from urllib.parse import unquote_to_bytes
 
 
 @dataclass
@@ -45,6 +47,60 @@ class GenerateRequest:
     # dialogue, structured answers) should set this False and handle the empty
     # response themselves.
     reasoning_fallback: bool = True
+    # Pictures shown with the user message, after its text, for a model that
+    # sees them. Each is a URL: a data URL such as "data:image/png;base64,...",
+    # which every backend sends, or an http(s) address, which only the
+    # OpenAI-compatible backend passes on. The others raise on an address
+    # (``image_data``) rather than drop the picture unseen.
+    images: list[str] = field(default_factory=list)
+
+
+def image_data(url: str, backend: str) -> tuple[str, str]:
+    """A picture given as a data URL, as its media type and base64 data, for a
+    backend whose API takes pictures as data. An http(s) address raises, so a
+    picture is never silently left out of what the model was shown."""
+    if not url.startswith("data:"):
+        raise ValueError(f"the {backend} backend takes images as data URLs "
+                         "(data:image/png;base64,...), not addresses")
+    head, _, data = url.partition(",")
+    if not head.endswith(";base64"):
+        data = base64.b64encode(unquote_to_bytes(data)).decode("ascii")
+    return head[5:].split(";")[0], data
+
+
+def structured_output(request: GenerateRequest, backend: str) -> tuple[str, dict | None] | None:
+    """A request's ``response_format``, OpenAI's shape, as what a backend must
+    apply: ``("json", None)`` for ``{"type": "json_object"}``, ``("schema",
+    schema)`` for ``{"type": "json_schema", "json_schema": {"schema": ...}}``,
+    and None for none or ``{"type": "text"}``. A shape it does not know raises,
+    so a format is never accepted and then not applied."""
+    fmt = request.response_format
+    if not fmt or fmt.get("type") == "text":
+        return None
+    if fmt.get("type") == "json_object":
+        return "json", None
+    if fmt.get("type") == "json_schema" and isinstance(fmt.get("json_schema", {}).get("schema"), dict):
+        return "schema", fmt["json_schema"]["schema"]
+    raise ValueError(f"the {backend} backend does not know the response_format {fmt!r}; "
+                     'use {"type": "json_object"} or {"type": "json_schema", '
+                     '"json_schema": {"name": ..., "schema": {...}}}')
+
+
+def refuse_response_format(request: GenerateRequest, backend: str) -> None:
+    """Raise if a request carries a response_format this backend cannot apply,
+    so a caller asking for structured output never gets free text recorded as
+    though the format had been applied."""
+    if structured_output(request, backend) is not None:
+        raise ValueError(f"the {backend} backend cannot apply response_format yet; "
+                         "use an OpenAI-compatible server, Ollama or Gemini for structured output")
+
+
+def refuse_images(request: GenerateRequest, backend: str) -> None:
+    """Raise if a request carries pictures this backend cannot send yet, so a
+    picture is never silently left out of what the model was shown."""
+    if request.images:
+        raise ValueError(f"the {backend} backend cannot send images yet; "
+                         "use an OpenAI-compatible server for requests with images")
 
 
 @dataclass

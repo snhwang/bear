@@ -163,6 +163,25 @@ problems = violations(corpus, require_owner=["bryn-lesson-1"])  # [] when the co
 
 Ownership is always a hard gate, because a soft tag admits an instruction for its owner without keeping anyone else out. Situational tags (weather, time of day) are better left soft. Hardening them turns the corpus into a lookup table. `violations()` finds what reached the corpus without `own()`, such as a checkpoint restore or hand-written YAML. `in_group()` gates a set of entities together, for example a world agent's instructions against the population's.
 
+### Checks: Regulated Decisions
+
+An agent that decides with one retrieval lets the situation act only as a soft score, so an instruction written for one situation wins others. `bear.checks` gives each thing an agent checks regularly, such as danger, weather or hunger, its own retrieval. Only the instructions that answer a check can be retrieved for it, and the most urgent check decides. When none fires, a general check decides.
+
+```python
+from bear.checks import Check, Checks
+
+checks = Checks(
+    [Check("danger", sense=danger_urgency, ask=danger_query),    # urgency in [0, 1], or None
+     Check("hunger", sense=hunger_urgency, ask=hunger_query)],
+    general=Check("general", sense=lambda s: 0.0, ask=general_query),
+    actionable=lambda inst: has_action_marker(inst.content),
+)
+outcome = checks.decide(retriever, state, resolve)   # resolve: a decision, or None if it can't be done now
+outcome.check, outcome.decision                       # -> "hunger", the decision to apply
+```
+
+An instruction names the checks it answers with condition markers, such as `[!on(danger)]`, which say when it acts, never what it does. An instruction with no condition answers the general check. `decide` resolves each check's answers down its ranking, and a check whose answers cannot be carried out gives way to the next. Each check's ranking is filtered before any cut, so an answer is never lost below a top-k. Sensing, the queries and what markers do stay with the application, and the module draws no random numbers. `outcome.to_record()` lists every check asked, with its ranking and refusals. See `design/checks.md`.
+
 ### Instruction Relationships
 
 ```yaml
@@ -182,6 +201,33 @@ Ownership is always a hard gate, because a soft tag admits an instruction for it
 | `PRIORITY_CONCAT` | Concatenate all, highest priority first (default) |
 | `CONFLICT_RESOLUTION` | Detect conflicts, keep higher priority |
 | `HIERARCHICAL` | Group by type, apply most specific |
+
+A strategy decides the order. Two settings then decide how much survives it.
+`max_instructions` caps the total. `quotas` caps each category, which is the
+shape you want when several instructions of one kind are admitted at once,
+since a model handed every persona-shaped instruction together tends to obey
+all of them in every reply.
+
+```python
+composer = Composer(
+    quotas={"persona": 1, "role": 1, "temperament": 3},
+    # defaults to the instruction's type, so quotas={"persona": 1} needs no
+    # second argument. Pass a function to key on something else.
+    category=lambda inst: inst.metadata.get("gene_category", inst.type.value),
+)
+out = composer.compose(scored)
+
+out.guidance   # the system prompt section
+out.tools      # structured tool schemas
+out.included   # ids of the instructions in the guidance, in order
+out.dropped    # ids of the ones that did not make it
+```
+
+A category with no quota is unlimited, so capping is opt-in and adding one
+quota never trims another kind. A mandatory instruction is never dropped to
+satisfy a quota, exactly as under `max_instructions`. Quotas run before the
+flat cap, and both run after the strategy. Details in
+[design/composer-quotas.md](design/composer-quotas.md).
 
 ### Tool Emission (New in 0.1.9)
 
@@ -319,7 +365,11 @@ config = Config(
 )
 ```
 
-An instruction tagged with one of the `mandatory_tags` is always retrieved when its `required_tags` gate admits it. It is exempt from the `default_top_k` cut, and another instruction's `supersedes` or `conflicts_with` can remove it only if that instruction is mandatory too. `LLMMemoryExtractor` never gives a generated memory one of these tags.
+An item also carries an `importance` in `[0, 1]`, which is a floor on its effective significance: `max(importance, salience * 0.5 ** (age / half_life))`. It does not decay, so a memory that matters keeps mattering when it has not been mentioned for a year, and it defaults to `0.0`, which leaves fading exactly as it was. `Retriever.set_importance(ids, importance)` sets it, and `Retriever.adjust(ids, delta=…)` or `adjust(ids, scale=…)` revises salience either way without moving the clock, so a memory thought less of does not look freshly witnessed. Both take a mapping of id to value where the amount differs per item. Prefer `scale` for a judgement, since decay is multiplicative and an added amount means less the older the item is. Because `min_salience` tests the effective value, an item whose importance clears it stays retrievable however far its salience has fallen, which is what makes lowering recoverable. See `design/agent-memory.md`.
+
+`default_threshold` sets aside an instruction whose similarity to the query is below it, unless its scope matches the context. An instruction with no soft conditions (no `scope.tags`, roles, task types, domains, trigger patterns or session phase) always matches, so the threshold never sets it aside. That is how an instruction that must apply on every turn, such as a persona gated on its role, survives a query it has nothing to do with. Give it a soft tag the context lacks and it can drop out on exactly those queries. So keep it gate-only, give it a soft tag the context always carries, or make it mandatory. Parlor uses the third for gated instructions that need soft tags for ranking, with the role's own id as the tag. The soft match reads `Context.tags` alone, so a tag that arrives as a `gate_tags` entry does not satisfy it. An instruction that is set aside stays out, gated or not. `restore_below_threshold=True` brings back the behavior before that was fixed, when a gated instruction set aside was put back at a score of `priority / 100`, to reproduce earlier runs.
+
+An instruction tagged with one of the `mandatory_tags` is always retrieved when its `required_tags` gate admits it. It is exempt from the `default_top_k` cut, and another instruction's `supersedes` or `conflicts_with` can remove it only if that instruction is mandatory too. The retriever marks it (`ScoredInstruction.mandatory`), and the composer keeps a marked instruction too. `max_instructions` fills the slots around it, and only another marked instruction can win a conflict with it. `LLMMemoryExtractor` never gives a generated memory one of these tags.
 
 With `cache_embeddings` on (the default), `retriever.build_index(cache_dir="...")` stores one vector per instruction text in that directory. A later build embeds only text it has not seen, so a corpus that grows while running does not re-embed itself. Without `cache_dir` nothing is cached.
 
@@ -396,31 +446,44 @@ With `persist_directory`, embeddings survive restarts — no re-embedding on sta
 
 ### Metadata Filtering
 
-ChromaDB (and any metadata-aware backend) can **pre-filter** instructions at query time, narrowing the search space before similarity computation. This avoids the over-fetch-then-discard approach used by numpy/FAISS.
+A metadata-aware backend can **pre-filter** instructions at query time,
+narrowing the search space before similarity is computed. This avoids the
+over-fetch-then-discard approach a plain vector scan needs.
 
-Filtering happens automatically when your `Context` has tags:
+Say what to narrow by with `select_all` or `select_any`. Context tags rank,
+gate tags gate, select tags select:
 
 ```python
 from bear import Context
 
-# Only searches instructions tagged "combat" or "stealth", then
-# ranks by similarity within that subset.
+# Only instructions tagged both "combat" and "stealth" are scored at all.
 results = retriever.retrieve(
     "how should I approach the enemy camp?",
-    Context(tags=["combat", "stealth"]),
+    Context(role="scout", select_all=["combat", "stealth"]),
 )
 ```
+
+> **Changed.** `Context.tags` used to prefilter as well, on whichever backends
+> could filter. That made the soft ranking channel a hard gate, so the same
+> query over the same corpus returned different candidates depending on the
+> backend. Tags now only rank. If you relied on tags narrowing, name the same
+> tags in `select_all` or `select_any`.
+
+A selection that matches nothing returns nothing. It is not retried unfiltered,
+because widening would answer a different question: a query for only an agent's
+family memories that has none wants none, not the whole corpus.
 
 For direct backend access, use `MetadataFilter`:
 
 ```python
 from bear import MetadataFilter
 
-# Filter by tag, priority, and/or instruction type
 mf = MetadataFilter(
-    tags_any=["combat", "safety"],  # OR: match either tag
-    min_priority=50,                # AND: priority >= 50
-    type_in=["constraint"],         # AND: only constraints
+    tags_all=["combat", "stealth"],  # AND: every tag
+    tags_any=["combat", "safety"],   # OR: at least one tag
+    min_priority=50,                 # AND: priority >= 50
+    type_in=["constraint"],          # AND: only constraints
+    min_salience=0.2, now=t,         # AND: drop faded items
 )
 ```
 
@@ -485,7 +548,10 @@ The retriever will automatically use metadata-aware methods when `supports_metad
 
 The `OPENAI` backend speaks to any server implementing the same API. Point it
 at a local one with `base_url` (vLLM, SGLang, LM Studio, or Ollama's
-`/v1` endpoint):
+`/v1` endpoint). Every backend can show a model that sees pictures, with
+`llm.generate(user=..., images=["data:image/png;base64,..."])`. Only the
+`OPENAI` backend also takes an http(s) address. The others refuse one rather
+than drop the picture.
 
 ```python
 llm = LLM(backend=LLMBackend.OPENAI, model="qwen3.8-27b",
@@ -495,6 +561,12 @@ llm = LLM(backend=LLMBackend.OPENAI, model="qwen3.8-27b",
 `OLLAMA_HOST` is honored, and because that variable doubles as the address the
 Ollama *server* binds to, a wildcard such as `0.0.0.0` is dialed on loopback
 instead of being used verbatim.
+
+`LLM.auto()` tries the server named by `BEAR_LLM_BASE_URL`, then a local Ollama
+with a model loaded, then the cloud backends (OpenAI, Anthropic, Gemini) whose
+keys are set. Reaching a cloud backend means prompts go to a provider nobody
+configured, so `auto()` logs a warning naming it. Where data must stay local,
+set `BEAR_LLM_ALLOW_CLOUD_FALLBACK=0` and `auto()` raises instead.
 
 ### Thinking and reasoning output
 
@@ -623,6 +695,23 @@ cross-encoder) and separates fleeing from not fleeing, though small models read
 text very literally. `LLMInterpreter` handles negation and indirect description
 best, and accepts a model's reply only if the prose came back unchanged.
 Calibrate on labelled text before relying on any of them.
+
+A meaning can also say where its boundary lies. Give an entry `includes` and
+`excludes`, short wordings that do and do not count, and `LLMInterpreter` shows
+them to the model. Write them from what the action does in your application,
+not from what the word suggests. Run a reasoning model with thinking off.
+
+```python
+from bear import LLMInterpreter, MarkerCode
+
+code = MarkerCode.from_dict({
+    "[!flee]": {"meaning": "Runs away from a predator or other danger.",
+                "includes": ["running from a predator", "escaping to safety"],
+                "excludes": ["freezing or playing dead", "standing its ground"]},
+    "[!approach(item=food)]": "Goes to food and eats it.",
+})
+interpreter = LLMInterpreter(code, llm, thinking=False, reasoning_fallback=False)
+```
 `code.shuffled(seed)` gives every marker another marker's meaning. That is the
 control for asking whether meaning did the work.
 
@@ -632,6 +721,113 @@ viewer may not see (`resolve_references` with `permits` and `render`
 callbacks). **Emitted markers** (`emit("mri", "train_complete", ...)`) are
 produced programmatically rather than parsed from text, for signals a governed
 policy reads.
+
+## Items
+
+An item is a piece of data an agent holds, as opposed to an instruction about
+how it should behave: a document chunk, a statement someone made, a note, a
+memory, a piece of news. Items are Instructions of type `item`, so the same
+retriever finds them, the same hard gates admit them and `bear.ownership`
+owns them.
+
+```python
+from bear import Corpus, Retriever, item
+
+fact = item(
+    "The north well ran dry in the third week of summer.",
+    owner="mira",                 # gated as the tag char_mira
+    id="fact-204",
+    tags=["well", "water", "summer"],
+    classes=["village"],          # classifications, which a reply inherits
+    kind="news",
+)
+```
+
+An item embeds its content alone, with no instruction framing around it, so
+retrieval compares the text an agent holds against the question asked.
+
+### Selecting by declared tags
+
+Similarity decides ranking. It should not decide membership. `select_all` and
+`select_any` narrow the corpus before anything is scored, so an item outside
+the selection never appears however similar it reads.
+
+```python
+from bear import Context
+
+ctx = Context(role="villager", select_all=["water"])      # AND over tags
+ctx = Context(role="villager", select_any=["well", "rain"])  # OR over tags
+```
+
+The narrowing is enforced by the retriever rather than by the caller, which is
+what makes it checkable. `Context.gate_tags` carries tags that gate without
+steering ranking, for a clearance or any other permission that should decide
+admission and nothing else: a context's ordinary `tags` are embedded with the
+query, so a permission list carried there would move every similarity score.
+
+### Adding and removing without a rebuild
+
+```python
+retriever.add(fact)                      # one item, or a list
+retriever.reinforce("fact-204", now=t)   # it was used again, so it fades slower
+retriever.remove("fact-204")
+retriever.flush_cache()                  # write the vector store, once
+```
+
+An add on a dense backend returns exactly what a rebuild would return, because
+both read the same embedding cache rather than re-embedding. Without a cache a
+service embedder agrees only to a tolerance, since the batch an add embeds in
+differs from the batch a rebuild embeds in. BM25 is exact once its statistics
+refresh on the next query, since adding documents moves the term
+frequencies. Between mutations
+the vector store is held in memory, so a caller decides when writing happens
+rather than paying for it per add.
+
+### Salience and time
+
+An item fades. `effective_salience` combines a stored salience with how long
+ago the item was last reinforced, on a half-life, and scoring multiplies by
+it, so an old fact sinks below a fresh one of equal similarity.
+`Context.min_salience` drops faded items before scoring. Neither applies to a
+mandatory or injected instruction: a hard rule does not fade.
+
+### Responses are items
+
+```python
+from bear import respond
+
+reply = respond(
+    "The well is dry, so we are hauling from the river.",
+    parents=[fact],
+    owner="mira",
+    id="statement-77",
+)
+```
+
+A response carries its parents and the union of what they require, so a reply
+built from a restricted item is itself restricted. That is what lets a chain
+of statements keep its classification without the caller tracking it.
+
+### Declared instructions, resting and waking
+
+An instruction an agent writes for itself can declare what it answers, how
+often it acts again and how long it stays. The vocabularies are the
+application's, and BEAR checks a declared name against them.
+
+```python
+config = EvolutionConfig(
+    recurrences={"each_time": "once each time its event happens",
+                 "always": "whenever it applies"},
+    lifetimes={"news": "while its news lasts", "life": "for life"})
+made = await generate_with_llm(llm, evaluation, existing, config,
+                               sources=[("fact-204", "The north well ran dry.")])
+made[0].metadata["about"], made[0].metadata["recurs"]   # ["fact-204"], "each_time"
+
+retriever.rest("lesson-9", now=t)    # its goal met: no urge until woken
+retriever.wake("lesson-9", now=t2)   # it came round again
+```
+
+See `design/declared-instructions.md`.
 
 ## Provenance
 
@@ -666,7 +862,11 @@ async with auditor.turn(session_id="s42", user_id="u7", agent_id="coach") as tur
     turn.set_response(resp.content)
 ```
 
-Each turn is one JSON line. The first time a turn uses a new version of the corpus, the log also stores that corpus in full, so every record can be traced back to the exact instruction text, even after memories or evolution have changed the corpus. To check a log, run the following. It rebuilds each retriever from the log and re-runs every retrieval, reporting any that no longer match:
+Each turn is one JSON line. The first time a turn uses a new version of the corpus, the log also stores that corpus in full, so every record can be traced back to the exact instruction text, even after memories or evolution have changed the corpus.
+
+Items are recorded as a delta log instead, under their own `item_version`. A store of a hundred thousand items would otherwise be snapshotted whole every time one was added, which turns an audit into a storage problem. A record states a baseline, an addition, a reinforcement or a removal, and `verify_item_deltas` replays the log and re-digests the result, so a log that cannot be replayed to the version it claims fails rather than passing quietly. The digest is a Merkle tree over buckets of SHA-256 item digests, so a mutation costs under a hundred hashes rather than one pass over the corpus, and the bucket count is part of the version because an open-ended run reshards as it grows.
+
+To check a log, run the following. It rebuilds each retriever from the log and re-runs every retrieval, reporting any that no longer match:
 
 ```bash
 python -m bear verify-audit audit/session-42.jsonl

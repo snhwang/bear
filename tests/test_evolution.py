@@ -3356,3 +3356,85 @@ class TestAccessPolicyDedupeKey:
         (pol,) = _policies(result.child)
         assert pol.metadata["inherited_from"] == na
         assert (result.inherited_count, result.from_a_count, result.from_b_count) == (1, 1, 0)
+
+
+# ---------------------------------------------------------------------------
+# TestDeclarations: what a generated instruction declares about itself
+# (design/declared-instructions.md)
+# ---------------------------------------------------------------------------
+
+class _Recorder:
+    """A stand-in model that records the prompt and returns fixed YAML."""
+
+    def __init__(self, reply: str = "instructions: []"):
+        self.reply, self.prompts = reply, []
+
+    async def generate(self, system, user, temperature):
+        self.prompts.append(user)
+        return type("Reply", (), {"content": self.reply})()
+
+
+RECURS = {"each_time": "once each time its event happens",
+          "always": "whenever it applies"}
+LASTS = {"news": "while its news lasts", "life": "for life"}
+SOURCES = [("f1", "Raiders were seen on the east road."),
+           ("f2", "The well water has turned."),
+           ("f3", "A storyteller is at the inn.")]
+
+
+def _prompt(config, sources=None):
+    import asyncio
+    from bear.evolution import EvaluationResult, generate_with_llm
+    llm = _Recorder()
+    evaluation = EvaluationResult(should_evolve=True, reason="r", coverage_gaps=[],
+                                  recurring_terms={"raiders": 2}, low_similarity_ratio=1.0)
+    asyncio.run(generate_with_llm(llm, evaluation, [], config, sources=sources))
+    return llm.prompts[0]
+
+
+class TestDeclarations:
+    def test_nothing_asked_leaves_the_prompt_as_it_was(self):
+        prompt = _prompt(EvolutionConfig())
+        assert 'tags: ["evolved", "weather", "crisis"]\n\nOutput valid YAML' in prompt
+        for word in ("about:", "recurs:", "lasts:", "Observations"):
+            assert word not in prompt
+
+    def test_the_prompt_numbers_the_sources_and_lists_the_vocabularies(self):
+        prompt = _prompt(EvolutionConfig(recurrences=RECURS, lifetimes=LASTS), SOURCES)
+        assert "[2] The well water has turned." in prompt
+        assert "about:" in prompt and "recurs:" in prompt and "lasts:" in prompt
+        assert "each_time: once each time its event happens" in prompt
+        assert "life: for life" in prompt
+        assert prompt.index("lasts:") < prompt.index("Output valid YAML")
+
+    def _parsed(self, fields, config=None, sources=SOURCES):
+        from bear.evolution import _parse_generated_instructions
+        yaml_text = ("instructions:\n  - id: evo-1\n    type: directive\n"
+                     "    priority: 30\n    content: Warn whoever is near.\n" + fields)
+        config = config or EvolutionConfig(recurrences=RECURS, lifetimes=LASTS)
+        return _parse_generated_instructions(yaml_text, config, sources=sources)[0].metadata
+
+    def test_cited_numbers_become_ids_in_order(self):
+        meta = self._parsed("    about: [3, 1]\n    recurs: each_time\n    lasts: news\n")
+        assert meta["about"] == ["f3", "f1"]
+        assert meta["recurs"] == "each_time" and meta["lasts"] == "news"
+
+    def test_numbers_out_of_range_and_repeats_are_dropped(self):
+        assert self._parsed("    about: [0, 2, 2, 9, x]\n")["about"] == ["f2"]
+
+    def test_bracketed_and_single_numbers_are_read(self):
+        assert self._parsed('    about: "[2]"\n')["about"] == ["f2"]
+        assert self._parsed("    about: 1\n")["about"] == ["f1"]
+
+    def test_a_general_rule_is_told_from_an_omission(self):
+        assert self._parsed("    about: []\n")["about"] == []
+        assert self._parsed("")["about"] is None
+
+    def test_a_name_outside_the_vocabulary_is_not_kept(self):
+        meta = self._parsed("    recurs: weekly\n    lasts: forever\n")
+        assert meta["recurs"] is None and meta["lasts"] is None
+
+    def test_what_was_not_asked_is_not_recorded(self):
+        meta = self._parsed("    about: [1]\n    recurs: always\n",
+                            config=EvolutionConfig(), sources=None)
+        assert "about" not in meta and "recurs" not in meta and "lasts" not in meta

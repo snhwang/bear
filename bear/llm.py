@@ -243,11 +243,17 @@ class LLM:
         Priority:
         1. Explicit config (only when user sets BEAR_LLM_BASE_URL)
         2. Ollama probe (checks OLLAMA_HOST, localhost, WSL gateway)
-        3. Remaining backends (Ollama native, OpenAI, Anthropic, Gemini)
+        3. Cloud backends (OpenAI, Anthropic, Gemini)
+
+        Step 3 sends prompts to a provider nobody configured, so it logs a
+        warning naming the provider. With ``BEAR_LLM_ALLOW_CLOUD_FALLBACK=0``
+        (``Config.llm_allow_cloud_fallback``) it raises instead.
         """
+        from bear.config import Config
+
         # 1. If the user explicitly configured a base URL, honour it.
+        config: Config | None = None
         try:
-            from bear.config import Config
             config = Config.from_env()
             if config.llm_base_url:
                 instance = cls(
@@ -262,8 +268,14 @@ class LLM:
                         config.llm_base_url,
                     )
                     return instance
+                logger.warning(
+                    "Configured LLM at %s is not responding. Trying other backends.",
+                    config.llm_base_url,
+                )
         except Exception as e:
             logger.debug("Config-based LLM not available: %s", e)
+        configured_model = config.llm_model if config else ""
+        allow_cloud = config.llm_allow_cloud_fallback if config else True
 
         # 2. Probe local Ollama using only stdlib (no pip packages needed)
         try:
@@ -275,8 +287,8 @@ class LLM:
                 model = None
                 if loaded_model:
                     model = loaded_model
-                elif config.llm_model and any(config.llm_model in m for m in available):
-                    model = config.llm_model
+                elif configured_model and any(configured_model in m for m in available):
+                    model = configured_model
                 if not model:
                     logger.info(
                         "Ollama is running at %s but no model is loaded. "
@@ -305,12 +317,22 @@ class LLM:
         except Exception as e:
             logger.debug("Local Ollama detection failed: %s", e)
 
-        # 3. Try remaining backends (Ollama already probed above)
+        # 3. Try the cloud backends (Ollama already probed above)
+        if not allow_cloud:
+            raise RuntimeError(
+                "No local LLM backend available, and cloud fallback is off "
+                "(BEAR_LLM_ALLOW_CLOUD_FALLBACK=0). Start a local server, or "
+                "set BEAR_LLM_BASE_URL to the one you mean to use."
+            )
         for backend_type in [LLMBackend.OPENAI, LLMBackend.ANTHROPIC, LLMBackend.GEMINI]:
             try:
                 backend = _create_backend(backend_type)
                 if backend.is_available():
-                    logger.info("Auto-detected LLM backend: %s", backend_type.value)
+                    logger.warning(
+                        "No local LLM found. Using the %s cloud backend, so prompts "
+                        "go to that provider. Set BEAR_LLM_ALLOW_CLOUD_FALLBACK=0 "
+                        "to forbid this.", backend_type.value,
+                    )
                     instance = cls.__new__(cls)
                     instance.backend_type = backend_type
                     instance.model = None
@@ -341,6 +363,7 @@ class LLM:
         reasoning_fallback: bool = True,
         response_format: dict | None = None,
         seed: int | None = None,
+        images: list[str] | None = None,
     ) -> GenerateResponse:
         """Generate a response using the configured backend.
 
@@ -367,6 +390,10 @@ class LLM:
             seed: Optional sampling seed. Backends that support it
                 (ollama, OpenAI-compatible servers) become reproducible
                 for a fixed model build and sampling configuration.
+            images: Optional pictures shown with the user message, for a
+                model that sees them, each an http(s) URL or a data URL
+                ("data:image/png;base64,..."). The OpenAI-compatible backend
+                sends them. The others raise rather than drop them.
 
         Returns:
             GenerateResponse with the generated content and any tool calls.
@@ -385,6 +412,7 @@ class LLM:
             reasoning_fallback=reasoning_fallback,
             response_format=response_format,
             seed=seed,
+            images=list(images or []),
         )
         turn = current_turn()
         if turn is None:

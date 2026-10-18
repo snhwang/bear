@@ -104,6 +104,68 @@ def test_shuffling_a_single_entry_changes_nothing():
     assert single.shuffled(seed=1) == single
 
 
+# --- descriptions -----------------------------------------------------------------
+
+
+DESCRIBED = MarkerCode.from_dict({
+    "[!flee]": {"meaning": "run away and escape",
+                "includes": ["running from a predator"],
+                "excludes": ["freezing or playing dead"]},
+    "[!challenge(nearest)]": {"meaning": "fight the nearest rival",
+                              "excludes": ["fighting a predator"]},
+    "[!approach(item=food)]": "go and eat food",
+})
+
+
+def test_meaning_takes_includes_and_excludes():
+    entry = MarkerMeaning("[!flee]", "run away", ["  running from a predator "], ("freezing",))
+    assert entry.includes == ("running from a predator",)
+    assert entry.excludes == ("freezing",)
+
+
+def test_meaning_without_descriptions_is_unchanged():
+    entry = MarkerMeaning("[!flee]", "run away")
+    assert entry.includes == () and entry.excludes == ()
+    assert entry == MarkerMeaning("[!flee]", "run away", (), ())
+
+
+def test_phrases_must_be_a_list_of_nonempty_strings():
+    with pytest.raises(ValueError):
+        MarkerMeaning("[!flee]", "run away", includes="running")
+    with pytest.raises(ValueError):
+        MarkerMeaning("[!flee]", "run away", excludes=["  "])
+    with pytest.raises(ValueError):
+        MarkerMeaning("[!flee]", "run away", includes=[3])
+
+
+def test_from_dict_reads_a_lookup_table():
+    flee, fight, food = DESCRIBED.meanings
+    assert flee.includes == ("running from a predator",)
+    assert flee.excludes == ("freezing or playing dead",)
+    assert fight.includes == () and fight.excludes == ("fighting a predator",)
+    assert food.meaning == "go and eat food" and food.includes == ()
+
+
+def test_from_dict_rejects_unknown_keys_and_bad_values():
+    with pytest.raises(ValueError):
+        MarkerCode.from_dict({"[!flee]": {"meaning": "run", "examples": ["x"]}})
+    with pytest.raises(ValueError):
+        MarkerCode.from_dict({"[!flee]": ["run"]})
+    with pytest.raises(ValueError):
+        MarkerCode.from_dict({"[!flee]": {"includes": ["run"]}})
+
+
+def test_shuffle_moves_the_whole_description():
+    shuffled = DESCRIBED.shuffled(seed=7)
+    plain = CODE.shuffled(seed=7)
+    by_meaning = {m.meaning: m for m in DESCRIBED.meanings}
+    for moved, same_slot in zip(shuffled.meanings, plain.meanings):
+        # the same permutation as a code without descriptions
+        assert moved.meaning == same_slot.meaning
+        source = by_meaning[moved.meaning]
+        assert (moved.includes, moved.excludes) == (source.includes, source.excludes)
+
+
 # --- the embedding interpreter ---------------------------------------------------
 
 
@@ -227,6 +289,49 @@ def test_model_sees_the_vocabulary_and_stripped_prose():
     assert "[!flee]: run away and escape" in prompt
     assert PROSE in prompt and "[!rally]" not in prompt
     assert llm.calls[0]["temperature"] == 0.0
+
+
+def test_vocabulary_shows_includes_and_excludes():
+    llm = StubLLM(PROSE)
+    interpret(LLMInterpreter(DESCRIBED, llm), PROSE)
+    prompt = llm.calls[0]["user"]
+    assert "[!flee]: run away and escape\n  Counts: running from a predator\n" \
+           "  Does not count: freezing or playing dead" in prompt
+    assert "[!challenge(nearest)]: fight the nearest rival\n  Does not count: fighting a predator" in prompt
+    assert '"Does not count" lists near misses' in prompt
+
+
+def test_vocabulary_without_descriptions_has_no_extra_lines():
+    llm = StubLLM(PROSE)
+    interpret(LLMInterpreter(CODE, llm), PROSE)
+    prompt = llm.calls[0]["user"]
+    assert "Counts" not in prompt and "Does not count" not in prompt
+
+
+class OptionsLLM:
+    def __init__(self, reply):
+        self.reply = reply
+        self.kwargs = []
+
+    async def generate(self, **kwargs):
+        self.kwargs.append(kwargs)
+        return SimpleNamespace(content=self.reply)
+
+
+def test_generate_kwargs_reach_every_call():
+    llm = OptionsLLM(PROSE)
+    interpreter = LLMInterpreter(CODE, llm, thinking=False, reasoning_fallback=False)
+    interpret(interpreter, PROSE)
+    assert llm.kwargs[0]["thinking"] is False
+    assert llm.kwargs[0]["reasoning_fallback"] is False
+    assert llm.kwargs[0]["temperature"] == 0.0
+
+
+def test_generate_kwargs_cannot_override_the_prompt():
+    with pytest.raises(ValueError):
+        LLMInterpreter(CODE, OptionsLLM(PROSE), user="something else")
+    with pytest.raises(ValueError):
+        LLMInterpreter(CODE, OptionsLLM(PROSE), max_tokens=10, temperature=0.5, system="x")
 
 
 def test_faithful_reply_is_accepted():
@@ -413,3 +518,77 @@ def test_cross_encoder_loads_lazily_once_on_the_cpu(monkeypatch):
     score([("a", "b")])
     score([("c", "d")])
     assert loads == [("fake", "cpu")]
+
+
+# --- place_markers: conservation for a rewrite ---------------------------------------
+
+
+class _Words:
+    """Bag-of-words vectors over a fixed vocabulary, so a clause's fit follows
+    the words it shares with a meaning or an old clause."""
+
+    VOCAB = ("danger", "runs", "flee", "food", "eats", "berries", "kin", "fight", "night", "stream")
+
+    def embed(self, texts, is_query=False):
+        import re
+        out = np.zeros((len(texts), len(self.VOCAB)), dtype=np.float32)
+        for row, text in enumerate(texts):
+            for word in re.findall(r"[a-z]+", text.lower()):
+                if word in self.VOCAB:
+                    out[row, self.VOCAB.index(word)] += 1.0
+        return out
+
+
+_PLACE_CODE = MarkerCode.from_dict({
+    "[!flee]": "Runs away from danger.",
+    "[!approach(item=food)]": "Goes to food and eats it.",
+    "[!rally]": "Calls kin together to fight.",
+})
+
+
+def test_each_marker_goes_to_the_clause_that_fits_it():
+    from bear.marker_code import place_markers
+    source = "Bolts from danger [!flee]. Hunts down food [!approach(item=food)]."
+    text = "It eats berries by the stream. At night it runs from any danger."
+    placed = place_markers(text, source, _PLACE_CODE, _Words())
+    assert placed.text == ("It eats berries by the stream [!approach(item=food)]. "
+                           "At night it runs from any danger [!flee].")
+    assert {(m.signature, m.clause_index) for m in placed.inserted} == {
+        ("[!approach(item=food)]", 0), ("[!flee]", 1)}
+
+
+def test_markers_are_neither_lost_nor_gained():
+    from bear.marker_code import place_markers
+    sources = ["Runs from danger [!flee].", "Flees at night [!flee]. Calls kin to fight [!rally]."]
+    text = "A calm thing. It [!wander]s and [!flee]s by the stream."
+    placed = place_markers(text, sources, _PLACE_CODE, _Words())
+    assert placed.text.count("[!flee]") == 1 and placed.text.count("[!rally]") == 1
+    assert "[!wander]" not in placed.text
+    assert [m.signature for m in placed.inserted] == ["[!flee]", "[!rally]"]
+
+
+def test_a_marker_outside_the_code_follows_its_old_clause():
+    from bear.marker_code import place_markers
+    source = "Gathers berries by the stream [!hum(low)]."
+    placed = place_markers("It runs from danger. It eats berries by the stream.", source,
+                           _PLACE_CODE, _Words())
+    assert placed.text == "It runs from danger. It eats berries by the stream [!hum(low)]."
+
+
+def test_place_markers_edge_cases():
+    from bear.marker_code import place_markers
+    assert place_markers("Plain text [!flee].", "No markers here.", _PLACE_CODE, _Words()).text == "Plain text."
+    assert place_markers("", "Runs from danger [!flee].", _PLACE_CODE, _Words()).text == "[!flee]"
+    lone = place_markers("Sits.", "[!flee]", _PLACE_CODE, _Words())          # no source clause, no fit
+    assert lone.text == "Sits [!flee]."
+
+
+def test_placement_reports_both_parts_of_its_fit():
+    from bear.marker_code import place_markers
+    source = "Bolts from danger [!flee]."
+    placed = place_markers("At night it runs from any danger.", source, _PLACE_CODE, _Words())
+    (marker,) = placed.inserted
+    assert marker.meaning_score is not None and marker.source_score is not None
+    assert marker.score == pytest.approx((marker.meaning_score + marker.source_score) / 2)
+    outside = place_markers("It sings.", "Hums softly [!hum(low)].", _PLACE_CODE, _Words())
+    assert outside.inserted[0].meaning_score is None and outside.inserted[0].source_score is not None

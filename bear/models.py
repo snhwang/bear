@@ -23,6 +23,9 @@ class InstructionType(str, Enum):
     DIRECTIVE = "directive"
     FALLBACK = "fallback"
     TOOL = "tool"
+    # Data an agent holds rather than behaviour it follows. See
+    # bear.items and design/items.md.
+    ITEM = "item"
 
 
 class CrossoverMethod(str, Enum):
@@ -212,9 +215,12 @@ class ScopeCondition(BaseModel):
         AND logic for required_tags: all must be present in context tags.
         An empty scope matches everything.
         """
-        # If required_tags are set, ALL must be present in context
+        # If required_tags are set, ALL must be present in context. Gate-only
+        # tags count here and nowhere else in this method, which is what makes
+        # them gate-only: they decide admission without entering the soft
+        # matching below.
         if self.required_tags:
-            context_tags = set(context.tags)
+            context_tags = set(context.all_tags)
             if not all(tag in context_tags for tag in self.required_tags):
                 return False
 
@@ -291,6 +297,9 @@ class ScoredInstruction(BaseModel):
     similarity: float = 0.0
     scope_match: bool = False
     final_score: float = 0.0
+    # Set by the retriever when the instruction carries one of its mandatory
+    # tags. The composer never drops such an instruction.
+    mandatory: bool = False
 
     @property
     def id(self) -> str:
@@ -320,10 +329,45 @@ class Context(BaseModel):
     task_type: str = ""
     domain: str = ""
     tags: list[str] = Field(default_factory=list)
+    # Tags a hard gate checks but which never steer retrieval. They are left
+    # out of the text embedded for the query and out of soft scope matching,
+    # so adding one changes what a query may retrieve without changing how the
+    # rest of the corpus ranks against it. A classification or a clearance
+    # belongs here: it decides what the caller may be shown, not which
+    # instruction is most relevant. Put such a tag in ``tags`` instead and
+    # every other instruction's similarity shifts with it.
+    gate_tags: list[str] = Field(default_factory=list)
+    # Declared tags a query demands of what it retrieves, as opposed to what
+    # an instruction demands of a query (``required_tags``) or what merely
+    # ranks (``tags``). An instruction missing them is not a candidate however
+    # similar it is. ``select_all`` requires every one, ``select_any`` at
+    # least one, and both together require every ``select_all`` tag and at
+    # least one ``select_any`` tag.
+    select_all: list[str] = Field(default_factory=list)
+    select_any: list[str] = Field(default_factory=list)
+    # The application's clock, for fading an item's salience at query time
+    # (see bear.items.fade). None means nothing fades, whatever an item's
+    # timestamps say, so an application that keeps no clock is unaffected.
+    now: float | None = None
+    # Default half-life for an item that carries none of its own. An item's
+    # metadata half_life wins, since how fast a thing fades is a property of
+    # the thing: a rumour fades and a death does not. None means no fading
+    # unless an item asks for it.
+    half_life: float | None = None
+    # An item whose faded salience is below this is not a candidate. It never
+    # drops an instruction, mandatory or otherwise.
+    min_salience: float | None = None
+    # An item reinforced within this of ``now`` does not fade at all.
+    recent: float = 0.0
     session_phase: str = ""
     query: str = ""
     refined_query: str = ""  # Cross-cycle: if set, overrides query in retrieve()
     custom: dict[str, Any] = Field(default_factory=dict)
+
+    @property
+    def all_tags(self) -> list[str]:
+        """``tags`` and ``gate_tags`` together: every tag a hard gate checks."""
+        return [*self.tags, *self.gate_tags]
 
 
 class SessionState(BaseModel):

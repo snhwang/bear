@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import logging
 import os
 from typing import Any
@@ -11,6 +12,8 @@ from bear.backends.llm.base import (
     GenerateResponse,
     LLMBackendBase,
     ToolCall,
+    image_data,
+    structured_output,
 )
 
 logger = logging.getLogger(__name__)
@@ -40,8 +43,13 @@ class GeminiBackend(LLMBackendBase):
         for msg in request.history:
             role = "user" if msg.role == "user" else "model"
             contents.append(types.Content(role=role, parts=[types.Part(text=msg.content)]))
-        if request.user:
-            contents.append(types.Content(role="user", parts=[types.Part(text=request.user)]))
+        if request.user or request.images:
+            parts = [types.Part(text=request.user)] if request.user else []
+            # Each picture as inline data, after the text.
+            for url in request.images:
+                media_type, data = image_data(url, "Gemini")
+                parts.append(types.Part.from_bytes(data=base64.b64decode(data), mime_type=media_type))
+            contents.append(types.Content(role="user", parts=parts))
 
         config_kwargs: dict[str, Any] = {
             "temperature": request.temperature,
@@ -54,6 +62,12 @@ class GeminiBackend(LLMBackendBase):
             config_kwargs["max_output_tokens"] = request.max_tokens
         if request.system:
             config_kwargs["system_instruction"] = request.system
+        # Structured output: JSON, and the schema when one is given.
+        wanted = structured_output(request, "Gemini")
+        if wanted is not None:
+            config_kwargs["response_mime_type"] = "application/json"
+            if wanted[0] == "schema":
+                config_kwargs["response_json_schema"] = wanted[1]
 
         logger.info(f"Gemini config: model={self.model}, max_tokens={config_kwargs.get('max_output_tokens', 'NOT SET')}, temp={config_kwargs.get('temperature')}")
         config = types.GenerateContentConfig(**config_kwargs)

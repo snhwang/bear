@@ -11,6 +11,8 @@ from bear.backends.llm.base import (
     GenerateResponse,
     LLMBackendBase,
     ToolCall,
+    image_data,
+    refuse_response_format,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,6 +33,11 @@ _NO_SAMPLING_PREFIXES = (
 
 def _accepts_sampling(model: str) -> bool:
     return not model.startswith(_NO_SAMPLING_PREFIXES)
+
+
+def _image_block(url: str) -> dict:
+    media_type, data = image_data(url, "Anthropic")
+    return {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": data}}
 
 
 def _openai_tool_to_anthropic(tool: dict) -> dict:
@@ -66,11 +73,20 @@ class AnthropicBackend(LLMBackendBase):
             )
 
     async def generate(self, request: GenerateRequest) -> GenerateResponse:
+        # The Messages API has no response_format. Structured output would go
+        # through a tool, which this backend does not build yet, so it refuses
+        # rather than return free text the audit records as formatted.
+        refuse_response_format(request, "Anthropic")
         messages = []
         for msg in request.history:
             messages.append({"role": msg.role, "content": msg.content})
-        if request.user:
-            messages.append({"role": "user", "content": request.user})
+        if request.user or request.images:
+            content = request.user
+            if request.images:
+                # The text, then each picture as an image block.
+                content = ([{"type": "text", "text": request.user}] if request.user else []) + [
+                    _image_block(url) for url in request.images]
+            messages.append({"role": "user", "content": content})
 
         kwargs: dict = {
             "model": self.model,

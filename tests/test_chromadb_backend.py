@@ -284,17 +284,53 @@ class TestRetrieverWithChromaDB:
         result_ids = {r.id for r in results}
         assert "safety-1" in result_ids
 
-    def test_metadata_filter_narrows_results(self, corpus):
-        """Context tags should cause metadata pre-filtering."""
+    def test_context_tags_do_not_narrow(self):
+        """They used to, which made the soft ranking channel a hard prefilter
+        on this backend alone, so the same query over the same corpus
+        returned different candidates depending on the backend. Selection
+        says it explicitly now. The test that stood here asserted only that a
+        tagged instruction was present, which similarity alone satisfies, so
+        it never checked that anything was narrowed.
+        """
+        corpus = Corpus()
+        corpus.add_many([
+            Instruction(id="combat-1", type=InstructionType.DIRECTIVE,
+                        priority=50, content="Strike the enemy.",
+                        tags=["combat"]),
+            Instruction(id="calm-1", type=InstructionType.DIRECTIVE,
+                        priority=50, content="Speak softly and wait.",
+                        tags=["calm"]),
+        ])
         retriever = Retriever(corpus, backend=EmbeddingBackend.CHROMADB)
         retriever.build_index()
-        results = retriever.retrieve(
-            "fight monsters",
-            Context(tags=["combat"]),
-        )
-        # combat-1 should be present (matched by tag filter)
-        result_ids = {r.id for r in results}
-        assert "combat-1" in result_ids
+
+        ids = {r.id for r in retriever.retrieve(
+            "strike the enemy", Context(tags=["combat"]), top_k=10)}
+        assert ids == {"combat-1", "calm-1"}, "a context tag must not exclude"
+
+    def test_selection_narrows_and_is_verified_to(self, corpus):
+        """What the old test claimed. An instruction outside the selection is
+        absent however similar it is to the query."""
+        retriever = Retriever(corpus, backend=EmbeddingBackend.CHROMADB)
+        retriever.build_index()
+
+        unselected = retriever.retrieve(
+            "fight monsters", Context(), top_k=10)
+        assert any(r.id != "combat-1" for r in unselected), "need a contrast"
+
+        selected = retriever.retrieve(
+            "fight monsters", Context(select_all=["combat"]), top_k=10)
+        # safety-1 is mandatory, so it is included whatever the query selects.
+        assert {r.id for r in selected} == {"combat-1", "safety-1"}
+
+    def test_a_selection_matching_nothing_returns_nothing(self, corpus):
+        """It used to retry without the filter, so an empty selection
+        returned the whole corpus."""
+        retriever = Retriever(corpus, backend=EmbeddingBackend.CHROMADB)
+        retriever.build_index()
+        got = retriever.retrieve(
+            "fight monsters", Context(select_all=["nonexistent"]), top_k=10)
+        assert [r.id for r in got] == ["safety-1"]   # the mandatory one only
 
     def test_top_k_respected(self, corpus):
         retriever = Retriever(corpus, backend=EmbeddingBackend.CHROMADB)

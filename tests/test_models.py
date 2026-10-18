@@ -257,3 +257,28 @@ class TestSessionState:
         assert context.session_phase == "active"
         assert context.query == "test query"
         assert context.tags == ["urgent"]
+class TestGateOnlyTags:
+    """A gate-only tag decides admission without steering retrieval."""
+
+    def test_gate_tags_satisfy_required_tags(self):
+        scope = ScopeCondition(required_tags=["class:privileged"])
+        assert scope.matches(Context(gate_tags=["class:privileged"]))
+        assert not scope.matches(Context(gate_tags=["class:public"]))
+        # and they combine with ordinary tags, which gate as before
+        scope = ScopeCondition(required_tags=["commander", "class:privileged"])
+        assert scope.matches(Context(tags=["commander"],
+                                     gate_tags=["class:privileged"]))
+        assert not scope.matches(Context(tags=["commander"]))
+
+    def test_a_gate_tag_does_not_satisfy_a_soft_tag_match(self):
+        """Soft matching is the ranking channel, which a gate tag stays out
+        of. Otherwise a clearance would pull in instructions merely for
+        sharing one of its classes."""
+        scope = ScopeCondition(tags=["privileged"])
+        assert scope.matches(Context(tags=["privileged"]))
+        assert not scope.matches(Context(gate_tags=["privileged"]))
+
+    def test_all_tags_is_both_lists(self):
+        ctx = Context(tags=["commander"], gate_tags=["class:privileged"])
+        assert ctx.all_tags == ["commander", "class:privileged"]
+        assert Context().all_tags == []

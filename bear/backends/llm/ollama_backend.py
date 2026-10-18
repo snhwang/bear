@@ -10,6 +10,8 @@ from bear.backends.llm.base import (
     GenerateResponse,
     LLMBackendBase,
     ToolCall,
+    image_data,
+    structured_output,
 )
 
 logger = logging.getLogger(__name__)
@@ -99,8 +101,12 @@ class OllamaBackend(LLMBackendBase):
             messages.append({"role": "system", "content": request.system})
         for msg in request.history:
             messages.append({"role": msg.role, "content": msg.content})
-        if request.user:
-            messages.append({"role": "user", "content": request.user})
+        if request.user or request.images:
+            message = {"role": "user", "content": request.user}
+            if request.images:
+                # Ollama takes the pictures as base64, beside the text.
+                message["images"] = [image_data(url, "Ollama")[1] for url in request.images]
+            messages.append(message)
 
         options = {"temperature": request.temperature}
         if request.top_p is not None:
@@ -119,6 +125,10 @@ class OllamaBackend(LLMBackendBase):
             "messages": messages,
             "options": options,
         }
+        # Structured output, natively: "json", or the JSON schema itself.
+        wanted = structured_output(request, "Ollama")
+        if wanted is not None:
+            kwargs["format"] = "json" if wanted[0] == "json" else wanted[1]
         # Ollama supports OpenAI-style tool schemas natively
         if request.tools:
             kwargs["tools"] = request.tools

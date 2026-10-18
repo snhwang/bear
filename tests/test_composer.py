@@ -477,3 +477,245 @@ class TestEmitToolSummary:
                 summary_names.add(name)
 
         assert structured_names == summary_names
+
+
+class TestMandatoryKept:
+    """Instructions the retriever marked mandatory survive composition."""
+
+    def _scored(self, id, priority, mandatory=False, conflicts_with=(),
+                type=InstructionType.DIRECTIVE):
+        return ScoredInstruction(
+            instruction=Instruction(id=id, type=type, priority=priority,
+                                    content=f"text {id}",
+                                    conflicts_with=list(conflicts_with)),
+            mandatory=mandatory,
+        )
+
+    def _ids(self, composer, scored):
+        text = composer.compose(scored).guidance
+        return [s.id for s in scored if f"] {s.id}\n" in text]
+
+    def test_max_instructions_keeps_mandatory(self):
+        scored = [self._scored("hi", 90), self._scored("mid", 70),
+                  self._scored("safety", 20, mandatory=True)]
+        composer = Composer(max_instructions=2)
+        assert self._ids(composer, scored) == ["hi", "safety"]
+
+    def test_max_instructions_below_mandatory_count_keeps_all_mandatory(self):
+        scored = [self._scored("a", 90), self._scored("s1", 20, mandatory=True),
+                  self._scored("s2", 10, mandatory=True)]
+        assert self._ids(Composer(max_instructions=1), scored) == ["s1", "s2"]
+
+    def test_cap_applies_to_every_strategy(self):
+        scored = [self._scored("hi", 90), self._scored("mid", 70),
+                  self._scored("safety", 20, mandatory=True,
+                               type=InstructionType.CONSTRAINT)]
+        for strategy in CompositionStrategy:
+            composer = Composer(strategy=strategy, max_instructions=2)
+            assert "safety" in self._ids(composer, scored), strategy
+
+    def test_conflict_from_higher_priority_ordinary_keeps_mandatory(self):
+        scored = [self._scored("casual", 99, conflicts_with=["safety"]),
+                  self._scored("safety", 20, mandatory=True)]
+        composer = Composer(strategy=CompositionStrategy.CONFLICT_RESOLUTION)
+        assert self._ids(composer, scored) == ["safety"]
+
+    def test_mandatory_removes_conflicting_ordinary(self):
+        scored = [self._scored("casual", 99),
+                  self._scored("safety", 20, mandatory=True, conflicts_with=["casual"])]
+        composer = Composer(strategy=CompositionStrategy.CONFLICT_RESOLUTION)
+        assert self._ids(composer, scored) == ["safety"]
+
+    def test_between_mandatory_priority_wins(self):
+        scored = [self._scored("s-new", 95, mandatory=True, conflicts_with=["s-old"]),
+                  self._scored("s-old", 50, mandatory=True)]
+        composer = Composer(strategy=CompositionStrategy.CONFLICT_RESOLUTION)
+        assert self._ids(composer, scored) == ["s-new"]
+
+    def test_between_ordinary_unchanged(self):
+        scored = [self._scored("hi", 80, conflicts_with=["lo"]), self._scored("lo", 20),
+                  self._scored("other", 50)]
+        composer = Composer(strategy=CompositionStrategy.CONFLICT_RESOLUTION)
+        assert self._ids(composer, scored) == ["hi", "other"]
+
+
+def test_retriever_marks_mandatory_results():
+    import numpy as np
+
+    from bear import Corpus, Retriever
+
+    class Fake:
+        def embed(self, texts, is_query=False):
+            return np.ones((len(texts), 2), dtype=np.float32)
+
+        def embed_single(self, text, is_query=False):
+            return np.ones(2, dtype=np.float32)
+
+    corpus = Corpus()
+    corpus.add_many([
+        Instruction(id="safety", type=InstructionType.CONSTRAINT, priority=20,
+                    content="Give the 988 line.", tags=["safety"]),
+        *[Instruction(id=f"c{i}", type=InstructionType.DIRECTIVE, priority=90,
+                      content=f"Chat {i}.") for i in range(5)],
+    ])
+    retriever = Retriever(corpus, embedder=Fake())
+    retriever.build_index()
+    scored = retriever.retrieve("q", top_k=3)
+    assert {s.id: s.mandatory for s in scored}["safety"] is True
+    assert not any(s.mandatory for s in scored if s.id != "safety")
+    # End to end: a tight composer cap still keeps it.
+    assert "988" in Composer(max_instructions=1).compose(scored).guidance
+
+
+# ----------------------------------------------------------------------
+# Per-category quotas, and reporting what was kept
+# ----------------------------------------------------------------------
+
+
+def _scored(id, type, priority, content="Say something.", *, mandatory=False,
+            metadata=None):
+    return ScoredInstruction(
+        instruction=Instruction(
+            id=id, type=type, priority=priority, content=content,
+            metadata=metadata or {},
+        ),
+        similarity=0.8,
+        scope_match=True,
+        final_score=0.85,
+        mandatory=mandatory,
+    )
+
+
+class TestQuotas:
+    """A flat cap drops whatever ranks lowest. A quota drops the surplus of
+    one kind, which is the thing that actually goes wrong: handed every
+    persona-shaped instruction at once, a model obeys all of them."""
+
+    def _three_personas_and_a_rule(self):
+        return [
+            _scored("p1", InstructionType.PERSONA, 90, "Warm and talkative."),
+            _scored("p2", InstructionType.PERSONA, 80, "Curious."),
+            _scored("p3", InstructionType.PERSONA, 70, "Cautious."),
+            _scored("d1", InstructionType.DIRECTIVE, 60, "Keep it short."),
+        ]
+
+    def test_a_quota_keeps_the_highest_ranked_of_its_category(self):
+        out = Composer(quotas={"persona": 1}).compose(
+            self._three_personas_and_a_rule())
+        assert out.included == ["p1", "d1"]
+        assert out.dropped == ["p2", "p3"]
+
+    def test_a_category_with_no_quota_is_untouched(self):
+        """Capping is opt-in per category, so adding one quota must not
+        silently thin another kind."""
+        out = Composer(quotas={"persona": 1}).compose(
+            self._three_personas_and_a_rule())
+        assert "d1" in out.included, "the directive has no quota"
+
+    def test_no_quotas_changes_nothing(self):
+        items = self._three_personas_and_a_rule()
+        assert Composer().compose(items).included == \
+            Composer(quotas={}).compose(items).included
+
+    def test_a_mandatory_instruction_survives_its_quota(self):
+        """A quota is an editorial preference and mandatory is policy, so a
+        quota can be exceeded by its mandatory members, exactly as the flat
+        cap can."""
+        items = [
+            _scored("p1", InstructionType.PERSONA, 90, "Warm."),
+            _scored("p2", InstructionType.PERSONA, 80, "Curious.",
+                    mandatory=True),
+            _scored("p3", InstructionType.PERSONA, 70, "Cautious.",
+                    mandatory=True),
+        ]
+        out = Composer(quotas={"persona": 1}).compose(items)
+        assert out.included == ["p1", "p2", "p3"]
+        assert out.dropped == []
+
+    def test_quotas_run_before_the_flat_cap(self):
+        """Both apply. The quota thins each category, then the cap takes what
+        is left, so the two compose rather than one overriding the other."""
+        items = [
+            _scored("p1", InstructionType.PERSONA, 90, "Warm."),
+            _scored("p2", InstructionType.PERSONA, 80, "Curious."),
+            _scored("d1", InstructionType.DIRECTIVE, 70, "Short."),
+            _scored("d2", InstructionType.DIRECTIVE, 60, "Plain."),
+        ]
+        out = Composer(quotas={"persona": 1}, max_instructions=2).compose(items)
+        assert out.included == ["p1", "d1"]
+
+    def test_the_default_category_is_the_instruction_type(self):
+        out = Composer(quotas={"directive": 1}).compose([
+            _scored("d1", InstructionType.DIRECTIVE, 90, "First."),
+            _scored("d2", InstructionType.DIRECTIVE, 80, "Second."),
+            _scored("c1", InstructionType.CONSTRAINT, 70, "A rule."),
+        ])
+        # priority_concat orders by priority, so d1 (90) then c1 (70)
+        assert out.included == ["d1", "c1"]
+        assert out.dropped == ["d2"]
+
+    def test_a_custom_category_reads_metadata(self):
+        """Hearthwick's categories are loci, not types: one persona, one
+        role, three temperament, all of which are the same instruction
+        type."""
+        items = [
+            _scored("a", InstructionType.PERSONA, 90, "A.",
+                    metadata={"gene_category": "sociability"}),
+            _scored("b", InstructionType.PERSONA, 80, "B.",
+                    metadata={"gene_category": "sociability"}),
+            _scored("c", InstructionType.PERSONA, 70, "C.",
+                    metadata={"gene_category": "caution"}),
+        ]
+        out = Composer(
+            quotas={"sociability": 1},
+            category=lambda i: i.metadata.get("gene_category", i.type.value),
+        ).compose(items)
+        assert out.included == ["a", "c"]
+        assert out.dropped == ["b"]
+
+    def test_a_quota_of_zero_removes_the_category(self):
+        out = Composer(quotas={"persona": 0}).compose(
+            self._three_personas_and_a_rule())
+        assert out.included == ["d1"]
+        assert set(out.dropped) == {"p1", "p2", "p3"}
+
+
+class TestWhatItKept:
+    """The composer already computed these and returned neither, so a caller
+    that logs what produced an utterance had to log what it passed in, which
+    is wrong whenever the composer dropped any."""
+
+    def test_included_and_dropped_are_reported_without_an_auditor(self):
+        out = Composer(max_instructions=1).compose([
+            _scored("keep", InstructionType.CONSTRAINT, 90, "Kept."),
+            _scored("drop", InstructionType.DIRECTIVE, 50, "Dropped."),
+        ])
+        assert out.included == ["keep"]
+        assert out.dropped == ["drop"]
+
+    def test_they_partition_the_text_instructions(self):
+        items = [_scored(f"i{n}", InstructionType.DIRECTIVE, 90 - n, "x")
+                 for n in range(6)]
+        out = Composer(max_instructions=3).compose(items)
+        assert len(out.included) == 3
+        assert set(out.included) | set(out.dropped) == {s.id for s in items}
+        assert not set(out.included) & set(out.dropped)
+
+    def test_nothing_dropped_leaves_an_empty_list(self):
+        out = Composer().compose([
+            _scored("a", InstructionType.DIRECTIVE, 90, "A."),
+        ])
+        assert out.included == ["a"]
+        assert out.dropped == []
+
+    def test_an_empty_compose_reports_nothing(self):
+        out = Composer().compose([])
+        assert out.included == [] and out.dropped == []
+
+    def test_equality_still_ignores_the_report(self):
+        """Two results that differ only in what they say about themselves stay
+        equal, so every existing comparison keeps working."""
+        a = ComposedOutput(guidance="g", included=["x"])
+        b = ComposedOutput(guidance="g", included=["y"], dropped=["z"])
+        assert a == b
+        assert a == "g"

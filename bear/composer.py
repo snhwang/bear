@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from bear.audit import current_turn
-from bear.models import InstructionType, ScoredInstruction
+from bear.models import Instruction, InstructionType, ScoredInstruction
+
+
+def _type_category(instruction: "Instruction") -> str:
+    """Default category for a quota: the instruction's own type."""
+    return instruction.type.value
 
 
 class CompositionStrategy(str, Enum):
@@ -30,6 +36,16 @@ class ComposedOutput:
 
     guidance: str = ""
     tools: list[dict] = field(default_factory=list)
+    included: list[str] = field(default_factory=list)
+    """Ids of the text instructions in the guidance, in the order they appear.
+
+    Populated always, not only while an audit turn is open. A caller that
+    records which instructions produced an utterance has no other way to ask,
+    and the alternative, logging the list it passed in, is wrong whenever the
+    composer dropped any.
+    """
+    dropped: list[str] = field(default_factory=list)
+    """Ids of the text instructions that did not make it into the guidance."""
 
     # ------------------------------------------------------------------
     # Backward-compatible string behaviour
@@ -73,6 +89,8 @@ class Composer:
         header: str = "=== BEHAVIORAL GUIDANCE ===",
         footer: str = "=== END BEHAVIORAL GUIDANCE ===",
         max_instructions: int | None = None,
+        quotas: dict[str, int] | None = None,
+        category: "Callable[[Instruction], str]" = _type_category,
         emit_tool_summary: bool = False,
         tool_summary_header: str = "=== AVAILABLE TOOLS ===",
         tool_summary_footer: str = "=== END AVAILABLE TOOLS ===",
@@ -88,6 +106,26 @@ class Composer:
             Markers around the guidance block.
         max_instructions : int | None
             Cap the number of text instructions in the guidance.
+        quotas : dict[str, int] | None
+            The most instructions of each category the guidance may hold. A
+            category with no entry is unlimited, so capping is opt-in and
+            adding a quota for one category never trims another. A mandatory
+            instruction is never dropped to satisfy a quota, as under
+            ``max_instructions``: a quota is an editorial preference and
+            mandatory is policy.
+
+            A flat cap is the wrong shape when several instructions of one
+            kind are admitted at once. Handed every speech instruction
+            together, a model tends to obey all of them in every line, and
+            what a flat cap drops is whichever happened to rank lowest rather
+            than the surplus of one kind.
+        category : Callable[[Instruction], str]
+            Reads the category a quota applies to. Defaults to the
+            instruction's type, so ``quotas={"persona": 1}`` needs nothing
+            else. Pass a function to key on something else, for instance
+            ``lambda i: i.metadata.get("gene_category", i.type.value)``.
+            Instructions the retriever marked ``mandatory`` are kept
+            whatever the cap, and the rest fill the remaining slots.
         emit_tool_summary : bool, default False
             If True, append a short textual list of admitted tool names
             and one-line descriptions to the guidance string, in
@@ -131,6 +169,8 @@ class Composer:
         self.tool_summary_header = tool_summary_header
         self.tool_summary_footer = tool_summary_footer
         self.tool_summary_max_chars = tool_summary_max_chars
+        self.quotas = dict(quotas) if quotas else None
+        self.category = category
 
     def compose(self, instructions: list[ScoredInstruction]) -> ComposedOutput:
         """Compose scored instructions into guidance text and tool schemas.
@@ -182,18 +222,24 @@ class Composer:
             if summary:
                 guidance = (guidance + "\n\n" + summary).lstrip("\n")
 
+        # Computed once and both reported and returned, so the record and the
+        # result cannot be made to disagree.
+        kept = {s.id for s in included}
+        included_ids = [s.id for s in included]
+        dropped_ids = [s.id for s in text_instructions if s.id not in kept]
+
         turn = current_turn()
         if turn is not None:
-            kept = {s.id for s in included}
             turn._record_composition(
                 strategy=self.strategy.value,
-                included=[s.id for s in included],
-                dropped=[s.id for s in text_instructions if s.id not in kept],
+                included=included_ids,
+                dropped=dropped_ids,
                 tool_names=[t["function"]["name"] for t in tools],
                 guidance=guidance,
             )
 
-        return ComposedOutput(guidance=guidance, tools=tools)
+        return ComposedOutput(guidance=guidance, tools=tools,
+                              included=included_ids, dropped=dropped_ids)
 
     # ------------------------------------------------------------------
     # Text composition strategies: each returns the instructions to
@@ -205,30 +251,39 @@ class Composer:
     ) -> list[ScoredInstruction]:
         """Concatenate all instructions sorted by priority (highest first)."""
         sorted_insts = sorted(instructions, key=lambda s: s.priority, reverse=True)
-        if self.max_instructions:
-            sorted_insts = sorted_insts[:self.max_instructions]
-        return sorted_insts
+        return self._trim(sorted_insts)
 
     def _order_conflict_resolution(
         self, instructions: list[ScoredInstruction]
     ) -> list[ScoredInstruction]:
-        """Resolve conflicts by keeping higher-priority instructions."""
-        sorted_insts = sorted(instructions, key=lambda s: s.priority, reverse=True)
+        """Resolve conflicts by keeping higher-priority instructions.
 
-        kept: list[ScoredInstruction] = []
+        A mandatory instruction beats a non-mandatory one whatever the
+        priorities, as in the retriever. Between two mandatory or two
+        ordinary instructions, the higher priority wins.
+        """
+        sorted_insts = sorted(instructions, key=lambda s: s.priority, reverse=True)
+        mandatory_ids = {s.id for s in sorted_insts if s.mandatory}
+
+        kept_ids: set[str] = set()
         removed_ids: set[str] = set()
 
-        for scored in sorted_insts:
+        # Mandatory instructions settle their conflicts first.
+        for scored in sorted(sorted_insts, key=lambda s: not s.mandatory):
             if scored.id in removed_ids:
                 continue
-            kept.append(scored)
-            # Mark conflicting (lower-priority) instructions for removal
-            for conflict_id in scored.instruction.conflicts_with:
-                removed_ids.add(conflict_id)
+            conflicts = scored.instruction.conflicts_with
+            if not scored.mandatory and mandatory_ids & kept_ids & set(conflicts):
+                continue  # it conflicts with a mandatory instruction already kept
+            kept_ids.add(scored.id)
+            # Mark conflicting instructions for removal. An ordinary
+            # instruction cannot remove a mandatory one.
+            for conflict_id in conflicts:
+                if scored.mandatory or conflict_id not in mandatory_ids:
+                    removed_ids.add(conflict_id)
 
-        if self.max_instructions:
-            kept = kept[:self.max_instructions]
-        return kept
+        kept = [s for s in sorted_insts if s.id in kept_ids]
+        return self._trim(kept)
 
     def _order_hierarchical(
         self, instructions: list[ScoredInstruction]
@@ -253,9 +308,61 @@ class Composer:
             if type_name in groups:
                 ordered.extend(groups[type_name])
 
-        if self.max_instructions:
-            ordered = ordered[:self.max_instructions]
-        return ordered
+        return self._trim(ordered)
+
+    def _trim(self, ordered: list[ScoredInstruction]) -> list[ScoredInstruction]:
+        """Apply the per-category quotas, then the flat cap.
+
+        In that order, and both after the ordering strategy has run, so the
+        strategy decides the order, quotas thin each category within it, and
+        ``max_instructions`` takes what is left. Within a category the
+        survivors are the ones the strategy ranked highest.
+        """
+        return self._cap(self._quota(ordered))
+
+    def _quota(self, ordered: list[ScoredInstruction]) -> list[ScoredInstruction]:
+        """Keep at most ``quotas[category]`` of each category, in order.
+
+        A category the quotas do not name is unlimited, and a mandatory
+        instruction is kept whatever its category's quota says, so a quota can
+        be exceeded by its mandatory members exactly as the flat cap can.
+        """
+        if not self.quotas:
+            return ordered
+        seen: dict[str, int] = {}
+        result: list[ScoredInstruction] = []
+        for s in ordered:
+            if s.mandatory:
+                result.append(s)
+                continue
+            key = self.category(s.instruction)
+            limit = self.quotas.get(key)
+            if limit is None:
+                result.append(s)
+                continue
+            if seen.get(key, 0) < limit:
+                seen[key] = seen.get(key, 0) + 1
+                result.append(s)
+        return result
+
+    def _cap(self, ordered: list[ScoredInstruction]) -> list[ScoredInstruction]:
+        """Apply ``max_instructions`` without dropping a mandatory instruction.
+
+        Mandatory instructions keep their place and the rest fill the
+        remaining slots, in order. The result is longer than the cap only
+        when there are more mandatory instructions than the cap.
+        """
+        if not self.max_instructions:
+            return ordered
+        room = max(0, self.max_instructions - sum(1 for s in ordered if s.mandatory))
+        result: list[ScoredInstruction] = []
+        for s in ordered:
+            if s.mandatory:
+                result.append(s)
+            elif room > 0:
+                result.append(s)
+                room -= 1
+        return result
 
     def _format(self, instructions: list[ScoredInstruction]) -> str:
         """Format instructions into the final guidance string."""

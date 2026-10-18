@@ -47,11 +47,21 @@ class Config(BaseModel):
     llm_model: str = ""
     llm_base_url: str = ""
     llm_temperature: float = 0.7
+    # When off, LLM.auto() raises instead of falling through to a cloud
+    # provider (OpenAI, Anthropic, Gemini) it was not configured to use.
+    llm_allow_cloud_fallback: bool = True
     default_top_k: int = 10
     default_threshold: float = 0.3
     mandatory_tags: list[str] = Field(default_factory=lambda: ["safety"])
     cache_embeddings: bool = True
     priority_weight: float = 0.3
+    # The old threshold behavior, kept to reproduce runs made before it was
+    # fixed. When on, an instruction whose hard gates pass but which the
+    # threshold set aside is put back by the required-tags backfill (step 3.5
+    # of Retriever.retrieve) at a score of priority alone, which usually
+    # ranks it first, so the threshold never filters a gated instruction.
+    # Off, the threshold filters gated instructions as it does ungated ones.
+    restore_below_threshold: bool = False
 
     @classmethod
     def from_env(cls) -> Config:
@@ -70,6 +80,7 @@ class Config(BaseModel):
             "LLM_MODEL": "llm_model",
             "LLM_BASE_URL": "llm_base_url",
             "LLM_TEMPERATURE": "llm_temperature",
+            "LLM_ALLOW_CLOUD_FALLBACK": "llm_allow_cloud_fallback",
             "DEFAULT_TOP_K": "default_top_k",
             "DEFAULT_THRESHOLD": "default_threshold",
             "MANDATORY_TAGS": "mandatory_tags",
@@ -84,7 +95,8 @@ class Config(BaseModel):
 
             if field_name == "mandatory_tags":
                 kwargs[field_name] = [t.strip() for t in value.split(",")]
-            elif field_name in ("cache_embeddings", "embedding_allow_hash_fallback"):
+            elif field_name in ("cache_embeddings", "embedding_allow_hash_fallback",
+                                "llm_allow_cloud_fallback"):
                 kwargs[field_name] = value.lower() in ("true", "1", "yes")
             elif field_name in ("default_top_k", "embedding_dim"):
                 kwargs[field_name] = int(value)

@@ -74,6 +74,27 @@ class EvolutionConfig(BaseModel):
             "(best-effort) and may include markers the application does not implement."
         ),
     )
+    recurrences: dict[str, str] | None = Field(
+        default=None,
+        description=(
+            "Application-declared vocabulary for how often a generated instruction "
+            "acts again once its goal is met, as name to meaning, e.g. "
+            "{'each_time': 'once each time its event happens', 'always': 'whenever "
+            "it applies'}. When set, each instruction must declare one as "
+            "'recurs', recorded in metadata['recurs'], or None when it names none "
+            "of them. BEAR relays the meanings and never reads them "
+            "(design/declared-instructions.md)."
+        ),
+    )
+    lifetimes: dict[str, str] | None = Field(
+        default=None,
+        description=(
+            "Application-declared vocabulary for how long a generated instruction "
+            "stays with its owner, as name to meaning. When set, each instruction "
+            "must declare one as 'lasts', recorded in metadata['lasts']. The "
+            "application turns it into a half-life (design/declared-instructions.md)."
+        ),
+    )
 
     # Gate
     gate_policy: str = Field(
@@ -234,7 +255,7 @@ Generate 1-3 new instructions. Each must have:
 - content: clear behavioral guidance that matches the style of existing \
 instructions{style_hint}
 - tags: a YAML list including "{evolved_tag}" and any relevant domain tags. \
-Use square-bracket syntax, e.g. tags: ["evolved", "weather", "crisis"]
+Use square-bracket syntax, e.g. tags: ["evolved", "weather", "crisis"]{declarations}
 
 Output valid YAML under an "instructions:" key. Only output the YAML, \
 no explanation."""
@@ -260,12 +281,93 @@ def _format_allowed_markers_block(allowed_markers: list[str]) -> str:
     )
 
 
+def _format_declarations(
+    config: EvolutionConfig,
+    sources: list[tuple[str, str]] | None,
+) -> str:
+    """The fields a generated instruction declares about itself, appended to
+    the list of fields each must have. Empty when nothing is asked, so the
+    prompt is then exactly what it was before declarations existed.
+
+    *sources* are the observations an instruction may answer, numbered for
+    the model, which cites them by number in ``about``. Numbers rather than
+    ids, since a model copies a short number more reliably than an id, and
+    the parser maps them back (:func:`_declarations`).
+    """
+    parts: list[str] = []
+    if sources is not None:
+        parts.append(
+            "\n- about: a YAML list of the numbers of the observations below that "
+            "it answers, e.g. about: [2, 5], or about: [] if it is a general rule "
+            "that answers none of them")
+    if config.recurrences:
+        listing = "\n".join(f"    {name}: {meaning}"
+                            for name, meaning in config.recurrences.items())
+        parts.append(
+            "\n- recurs: how often it acts again once carried out, exactly one of:\n"
+            f"{listing}")
+    if config.lifetimes:
+        listing = "\n".join(f"    {name}: {meaning}"
+                            for name, meaning in config.lifetimes.items())
+        parts.append(
+            "\n- lasts: how long it stays with the agent, exactly one of:\n"
+            f"{listing}")
+    if sources is not None:
+        numbered = "\n".join(f"  [{n}] {text}"
+                             for n, (_, text) in enumerate(sources, start=1))
+        parts.append(
+            "\n\nObservations an instruction may answer:\n"
+            f"{numbered or '  (none)'}")
+    return "".join(parts)
+
+
+def _declarations(
+    raw: dict,
+    config: EvolutionConfig,
+    sources: list[tuple[str, str]] | None,
+) -> dict[str, Any]:
+    """What a generated instruction declared, checked against what was asked.
+
+    ``about`` becomes the ids of the cited observations, in the order cited,
+    with numbers out of range dropped. It is None when the model wrote no
+    ``about`` at all, and an empty list when it cited none, so an application
+    can tell a general rule from an omission. ``recurs`` and ``lasts`` are
+    kept only when they name an entry of their vocabulary, and are None
+    otherwise. A field that was not asked for is not recorded.
+    """
+    out: dict[str, Any] = {}
+    if sources is not None:
+        cited = raw.get("about")
+        if cited is None:
+            out["about"] = None
+        else:
+            if not isinstance(cited, list):
+                cited = [cited]
+            ids: list[str] = []
+            for c in cited:
+                match = re.fullmatch(r"\s*\[?\s*(\d+)\s*\]?\s*", str(c))
+                if not match:
+                    continue
+                n = int(match.group(1))
+                if 1 <= n <= len(sources) and sources[n - 1][0] not in ids:
+                    ids.append(sources[n - 1][0])
+            out["about"] = ids
+    if config.recurrences:
+        named = str(raw.get("recurs") or "").strip()
+        out["recurs"] = named if named in config.recurrences else None
+    if config.lifetimes:
+        named = str(raw.get("lasts") or "").strip()
+        out["lasts"] = named if named in config.lifetimes else None
+    return out
+
+
 async def generate_with_llm(
     llm: Any,
     evaluation: EvaluationResult,
     existing_ids: list[str],
     config: EvolutionConfig,
     style_examples: list[str] | None = None,
+    sources: list[tuple[str, str]] | None = None,
 ) -> list[Instruction]:
     """Use LLM to propose new instructions based on evaluation.
 
@@ -273,6 +375,12 @@ async def generate_with_llm(
         style_examples: Sample instruction content strings from the corpus.
             When provided, the LLM is shown these examples so that evolved
             instructions match the corpus style (e.g. inline action markers).
+        sources: The observations a generated instruction may answer, as
+            (id, text) pairs. When given, each instruction declares which it
+            answers, recorded as their ids in ``metadata["about"]``. With
+            ``config.recurrences`` and ``config.lifetimes`` it also declares
+            how it recurs and how long it lasts
+            (``design/declared-instructions.md``).
 
     When ``config.allowed_markers`` is set, generation is constrained to that
     application-declared marker set (see :class:`EvolutionConfig`); otherwise
@@ -342,6 +450,7 @@ async def generate_with_llm(
         evolved_tag=config.evolved_tag,
         style_section=style_section,
         style_hint=style_hint,
+        declarations=_format_declarations(config, sources),
     )
 
     response = await llm.generate(
@@ -350,7 +459,7 @@ async def generate_with_llm(
         temperature=0.4,
     )
 
-    return _parse_generated_instructions(response.content, config)
+    return _parse_generated_instructions(response.content, config, sources=sources)
 
 
 def generate_from_template(
@@ -429,8 +538,10 @@ def _fix_yaml_inline_lists(text: str) -> str:
 def _parse_generated_instructions(
     yaml_text: str,
     config: EvolutionConfig,
+    sources: list[tuple[str, str]] | None = None,
 ) -> list[Instruction]:
-    """Parse LLM YAML output into validated Instructions."""
+    """Parse LLM YAML output into validated Instructions, with whatever each
+    declared about itself (:func:`_declarations`) in its metadata."""
     text = yaml_text.strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1] if "\n" in text else text
@@ -466,7 +577,8 @@ def _parse_generated_instructions(
                 update={
                     "priority": min(inst.priority, config.max_evolved_priority),
                     "tags": _ensure_tags(inst.tags, config),
-                    "metadata": {**inst.metadata, "evolved": True},
+                    "metadata": {**inst.metadata, "evolved": True,
+                                 **_declarations(item, config, sources)},
                 }
             )
             instructions.append(inst)

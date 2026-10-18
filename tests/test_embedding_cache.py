@@ -112,7 +112,32 @@ class TestPerTextCache:
 
 
 class TestCacheIsolation:
-    def test_a_different_model_does_not_share_vectors(self, corpus, tmp_path):
+    def test_a_different_embedder_does_not_share_vectors(self, corpus, tmp_path):
+        """The cache is keyed on the embedder in use, so two embedders that
+        name themselves differently keep their vectors apart."""
+        first = CountingEmbedder()
+        first.model_name = "pretend/model-a"
+        make(corpus, first).build_index(cache_dir=tmp_path)
+
+        other = CountingEmbedder()
+        other.model_name = "pretend/model-b"
+        make(corpus, other).build_index(cache_dir=tmp_path)
+
+        assert len(other.embedded) == 2, "a different embedder must not reuse"
+        assert len(list(tmp_path.glob("*.npz"))) == 2
+
+    def test_one_embedder_shares_whatever_the_config_says(self, corpus, tmp_path):
+        """Two retrievers using the same embedder share its vectors even when
+        their configs name different models, because the vectors are the same
+        vectors: what computed them is the embedder, not the label beside it.
+
+        This test replaced one that set up exactly this case and asserted the
+        opposite. Both its embedders were hash embedders, so its two
+        "different models" produced identical vectors, and it passed only
+        because the key was built from the config label. Keying on the label
+        is what made a caller's own embedder read a cache file named after a
+        model it was not using.
+        """
         a = make(corpus, CountingEmbedder())
         a.build_index(cache_dir=tmp_path)
 
@@ -121,10 +146,31 @@ class TestCacheIsolation:
                         embedding_model="some/other-model",
                         default_threshold=0.0, mandatory_tags=[],
                         cache_embeddings=True)
-        b = Retriever(corpus, config=config, embedder=other)
-        b.build_index(cache_dir=tmp_path)
-        assert len(other.embedded) == 2, "a different model must not reuse vectors"
-        assert len(list(tmp_path.glob("*.npz"))) == 2
+        Retriever(corpus, config=config, embedder=other).build_index(
+            cache_dir=tmp_path)
+
+        assert other.embedded == [], "the same embedder's vectors are reusable"
+        assert len(list(tmp_path.glob("*.npz"))) == 1
+
+    def test_an_embedder_that_names_nothing_falls_back_to_the_config(
+            self, corpus, tmp_path):
+        """Then the configured model is the only thing left that could tell
+        two models behind one class apart."""
+        class _Anonymous(CountingEmbedder):
+            def __init__(self):
+                super().__init__()
+                self.model_name = None      # names nothing about itself
+
+        a = Retriever(corpus, config=Config(
+            embedding_backend=EmbeddingBackend.NUMPY, embedding_model="m-a",
+            default_threshold=0.0, mandatory_tags=[], cache_embeddings=True),
+            embedder=_Anonymous())
+        b = Retriever(corpus, config=Config(
+            embedding_backend=EmbeddingBackend.NUMPY, embedding_model="m-b",
+            default_threshold=0.0, mandatory_tags=[], cache_embeddings=True),
+            embedder=_Anonymous())
+        assert a._cache_key() != b._cache_key()
+        assert "_Anonymous" in a._cache_key() and "m-a" in a._cache_key()
 
     def test_changing_instruction_text_re_embeds_only_it(self, corpus, tmp_path):
         make(corpus, CountingEmbedder()).build_index(cache_dir=tmp_path)

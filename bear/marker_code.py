@@ -22,12 +22,15 @@ Interpreters share one interface:
 
 :meth:`MarkerCode.shuffled` builds the scramble control. It gives every marker
 another marker's meaning and changes nothing else.
+
+See ``design/marker-expression.md``.
 """
 
 from __future__ import annotations
 
 import random
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Protocol, Sequence, runtime_checkable
 
@@ -46,6 +49,7 @@ __all__ = [
     "MarkerInterpreter",
     "MarkerMeaning",
     "cross_encoder_nli",
+    "place_markers",
 ]
 
 _TERMINATORS = ".!?;"
@@ -59,6 +63,18 @@ _FENCE = re.compile(r"```[^\n]*\n(.*?)\n?```", re.DOTALL)
 # ---------------------------------------------------------------------------
 
 
+def _phrases(value: Any, signature: str, field: str) -> tuple[str, ...]:
+    """A tuple of trimmed, non-empty phrases. A bare string is refused, not split."""
+    if isinstance(value, str):
+        raise ValueError(f"{field} for {signature} must be a list of phrases, not a string")
+    phrases = []
+    for item in value or ():
+        if not isinstance(item, str) or not item.strip():
+            raise ValueError(f"{field} for {signature} holds an empty or non-string phrase")
+        phrases.append(item.strip())
+    return tuple(phrases)
+
+
 @dataclass(frozen=True)
 class MarkerMeaning:
     """One entry of a marker code: a concrete marker and what it means.
@@ -66,10 +82,17 @@ class MarkerMeaning:
     ``signature`` is a single action marker exactly as it should appear in text,
     such as ``[!flee]`` or ``[!approach(item=food)]``. ``meaning`` is a plain
     sentence describing the action.
+
+    ``includes`` and ``excludes`` optionally list short wordings that do and do
+    not count as the action, such as "running from a predator" and "freezing or
+    playing dead" for ``[!flee]``. Only :class:`LLMInterpreter` reads them. The
+    embedding and entailment interpreters use the meaning alone.
     """
 
     signature: str
     meaning: str
+    includes: tuple[str, ...] = ()
+    excludes: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         signature = (self.signature or "").strip()
@@ -80,6 +103,8 @@ class MarkerMeaning:
             raise ValueError(f"meaning for {signature} is empty")
         object.__setattr__(self, "signature", signature)
         object.__setattr__(self, "meaning", meaning)
+        object.__setattr__(self, "includes", _phrases(self.includes, signature, "includes"))
+        object.__setattr__(self, "excludes", _phrases(self.excludes, signature, "excludes"))
 
 
 @dataclass(frozen=True)
@@ -100,9 +125,26 @@ class MarkerCode:
         object.__setattr__(self, "meanings", meanings)
 
     @classmethod
-    def from_dict(cls, mapping: dict[str, str]) -> MarkerCode:
-        """Build a code from ``{signature: meaning}``, keeping the mapping's order."""
-        return cls(tuple(MarkerMeaning(sig, meaning) for sig, meaning in mapping.items()))
+    def from_dict(cls, mapping: Mapping[str, Any]) -> MarkerCode:
+        """Build a code from ``{signature: meaning}``, keeping the mapping's order.
+
+        A value may instead be a mapping with ``meaning`` and, optionally,
+        ``includes`` and ``excludes``, so a code can be loaded from a YAML or JSON
+        lookup table.
+        """
+        entries = []
+        for signature, value in mapping.items():
+            if isinstance(value, str):
+                entries.append(MarkerMeaning(signature, value))
+            elif isinstance(value, Mapping):
+                unknown = set(value) - {"meaning", "includes", "excludes"}
+                if unknown:
+                    raise ValueError(f"unknown keys for {signature}: {sorted(unknown)}")
+                entries.append(MarkerMeaning(signature, value.get("meaning", ""),
+                                             value.get("includes", ()), value.get("excludes", ())))
+            else:
+                raise ValueError(f"entry for {signature} must be a meaning or a mapping")
+        return cls(tuple(entries))
 
     @property
     def signatures(self) -> tuple[str, ...]:
@@ -112,17 +154,19 @@ class MarkerCode:
         """The scramble control. Every signature takes another signature's meaning.
 
         The permutation is a random cycle (Sattolo's algorithm), so no marker keeps
-        its own meaning. The same seed always gives the same code. A code with one
-        entry has nothing to swap with and comes back unchanged.
+        its own meaning. A meaning moves with its ``includes`` and ``excludes``, so
+        the whole description is scrambled. The same seed always gives the same
+        code. A code with one entry has nothing to swap with and comes back
+        unchanged.
         """
-        meanings = [entry.meaning for entry in self.meanings]
+        described = [(entry.meaning, entry.includes, entry.excludes) for entry in self.meanings]
         rng = random.Random(seed)
-        for i in range(len(meanings) - 1, 0, -1):
+        for i in range(len(described) - 1, 0, -1):
             j = rng.randrange(i)
-            meanings[i], meanings[j] = meanings[j], meanings[i]
+            described[i], described[j] = described[j], described[i]
         return MarkerCode(tuple(
-            MarkerMeaning(entry.signature, meaning)
-            for entry, meaning in zip(self.meanings, meanings)
+            MarkerMeaning(entry.signature, *description)
+            for entry, description in zip(self.meanings, described)
         ))
 
 
@@ -136,12 +180,18 @@ class InsertedMarker:
     """One marker an interpreter inserted, and the clause it went into.
 
     ``score`` is the cosine similarity between clause and meaning for the
-    embedding interpreter, and ``None`` when a model chose the marker.
+    embedding interpreter, and ``None`` when a model chose the marker. For
+    :func:`place_markers` it is the fit the clause won on, and ``meaning_score``
+    and ``source_score`` are its two parts: the clause's similarity to the
+    marker's meaning, and to the clause the marker sat in before. Either is
+    ``None`` when there was nothing to compare with.
     """
 
     clause_index: int
     signature: str
     score: float | None = None
+    meaning_score: float | None = None
+    source_score: float | None = None
 
 
 @dataclass(frozen=True)
@@ -424,6 +474,22 @@ Return the text with markers inserted where it says that action is taken.
 Output only the text."""
 
 
+def _vocabulary(code: MarkerCode) -> str:
+    """The vocabulary block of the prompt: each marker and its meaning, then its
+    includes and excludes when it has them."""
+    lines = []
+    if any(entry.includes or entry.excludes for entry in code.meanings):
+        lines.append('"Counts" lists wordings that are the action. '
+                     '"Does not count" lists near misses that are not.')
+    for entry in code.meanings:
+        lines.append(f"{entry.signature}: {entry.meaning}")
+        if entry.includes:
+            lines.append("  Counts: " + "; ".join(entry.includes))
+        if entry.excludes:
+            lines.append("  Does not count: " + "; ".join(entry.excludes))
+    return "\n".join(lines)
+
+
 class LLMInterpreter:
     """Ask a model to insert vocabulary markers, and accept only a faithful reply.
 
@@ -436,14 +502,33 @@ class LLMInterpreter:
     ``llm`` is anything with an async ``generate(system=, user=, temperature=,
     max_tokens=)`` whose result has ``.content``, such as :class:`bear.llm.LLM`.
     A temperature of 0 lowers variance but does not guarantee the same reply.
+
+    ``generate_kwargs`` go to every ``generate`` call. Run a reasoning model with
+    ``thinking=False, reasoning_fallback=False``, or it may spend its budget
+    reasoning, or return its reasoning as the reply.
+
+    A marker's ``includes`` and ``excludes`` appear in the vocabulary under its
+    meaning.
     """
 
-    def __init__(self, code: MarkerCode, llm: Any, *, temperature: float = 0.0, max_tokens: int = 512) -> None:
+    def __init__(
+        self,
+        code: MarkerCode,
+        llm: Any,
+        *,
+        temperature: float = 0.0,
+        max_tokens: int = 512,
+        **generate_kwargs: Any,
+    ) -> None:
+        reserved = {"system", "user", "temperature", "max_tokens"} & set(generate_kwargs)
+        if reserved:
+            raise ValueError(f"generate_kwargs may not set {sorted(reserved)}")
         self.code = code
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.generate_kwargs = dict(generate_kwargs)
         self._llm = llm
-        self._vocabulary = "\n".join(f"{m.signature}: {m.meaning}" for m in code.meanings)
+        self._vocabulary = _vocabulary(code)
 
     async def interpret(self, text: str) -> MarkerInterpretation:
         prose = _prose(text)
@@ -456,6 +541,7 @@ class LLMInterpreter:
             user=_LLM_PROMPT.format(vocabulary=self._vocabulary, text=prose),
             temperature=self.temperature,
             max_tokens=self.max_tokens,
+            **self.generate_kwargs,
         )
         reply = _THINK.sub("", getattr(response, "content", "") or "").strip()
         fence = _FENCE.fullmatch(reply)
@@ -505,6 +591,92 @@ def _clause_of(prefix: str) -> int:
     if closed and runs[-1].end() == len(body):
         closed -= 1
     return closed
+
+
+# ---------------------------------------------------------------------------
+# Placing a fixed set of markers
+# ---------------------------------------------------------------------------
+
+
+def _source_clauses(source: str) -> list[tuple[str, str]]:
+    """Each marker in ``source``, in order, with the clause it sits in: the last
+    clause of the prose before it, or "" when nothing comes before it."""
+    out: list[tuple[str, str]] = []
+    for marker in parse_actions(source or ""):
+        signature = source[marker.span[0]:marker.span[1]]
+        before = _prose(source[:marker.span[0]])
+        spans = _clause_spans(before)
+        out.append((signature, before[spans[-1][0]:spans[-1][1]].strip() if spans else ""))
+    return out
+
+
+def place_markers(text: str, sources: str | Sequence[str], code: MarkerCode,
+                  embedder: Any) -> MarkerInterpretation:
+    """Put the markers ``sources`` carry into ``text``, each at the clause that fits it best.
+
+    Conservation for a rewrite: the words are free and the markers are fixed.
+    ``text``'s own markers are stripped first, so a rewrite can neither drop a
+    marker nor add one. Each distinct marker the sources carry is placed once,
+    and several may share a clause.
+
+    A clause's fit for a marker is the mean of its cosine similarity to the
+    marker's meaning in ``code`` and to the clause the marker sat in within its
+    source (the first source that carries it). A marker outside ``code`` is
+    placed by its source clause alone, and one with neither goes after the last
+    clause. Ties go to the earlier clause. Text with no clauses gets the markers
+    appended.
+
+    ``embedder`` is anything with ``embed(texts, is_query=False)``, as for
+    :class:`EmbeddingInterpreter`.
+    """
+    if isinstance(sources, str):
+        sources = [sources]
+    hints: dict[str, str] = {}
+    for source in sources:
+        for signature, clause in _source_clauses(source):
+            hints.setdefault(signature, clause)
+    prose = _prose(text)
+    if not hints:
+        return MarkerInterpretation(text=prose)
+    spans = _clause_spans(prose)
+    if not spans:
+        placed = " ".join(hints)
+        return MarkerInterpretation(text=f"{prose.strip()} {placed}".strip(),
+                                    inserted=tuple(InsertedMarker(0, s) for s in hints))
+
+    meanings = {m.signature: m.meaning for m in code.meanings}
+    references: list[str] = []
+    rows: dict[str, tuple[int | None, int | None]] = {}   # (meaning row, source row)
+    for signature, clause in hints.items():
+        pair: list[int | None] = []
+        for reference in (meanings.get(signature), clause):
+            if reference:
+                pair.append(len(references))
+                references.append(reference)
+            else:
+                pair.append(None)
+        rows[signature] = (pair[0], pair[1])
+    clauses = _unit_rows(embedder.embed([prose[s:e] for s, e in spans], is_query=False))
+    targets = _unit_rows(embedder.embed(references, is_query=False)) if references else None
+
+    picks: dict[int, list[str]] = {}
+    inserted: list[InsertedMarker] = []
+    for signature in hints:
+        meaning_row, source_row = rows[signature]
+        cols = [row for row in (meaning_row, source_row) if row is not None]
+        if cols:
+            similarity = clauses @ targets[cols].T
+            fit = similarity.mean(axis=1)
+            index = int(np.argmax(fit))
+            part = {row: float(similarity[index, k]) for k, row in enumerate(cols)}
+            inserted.append(InsertedMarker(index, signature, float(fit[index]),
+                                           meaning_score=part.get(meaning_row),
+                                           source_score=part.get(source_row)))
+        else:
+            index = len(spans) - 1
+            inserted.append(InsertedMarker(index, signature))
+        picks.setdefault(index, []).append(signature)
+    return MarkerInterpretation(text=_assemble(prose, spans, picks), inserted=tuple(inserted))
 
 
 class CachedInterpreter:

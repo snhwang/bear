@@ -39,10 +39,26 @@ from bear.audit import (
     Turn,
     current_turn,
     detach,
+    check_generation_models,
+    verify_item_deltas,
     read_audit_log,
     verify_audit_log,
 )
 from bear.memory import ExperienceEvent, MemoryExtractor, LLMMemoryExtractor
+from bear.item_digest import ItemDigest, item_digest
+from bear.items import (
+    ITEM_FACET,
+    ItemError,
+    carries,
+    classes_of,
+    effective_salience,
+    is_item,
+    item,
+    adjust,
+    reinforce,
+    set_importance,
+    respond,
+)
 from bear.query_refiner import QueryRefiner
 from bear.twin import TwinBuilder, ObservationKind
 from bear.population import (
@@ -200,6 +216,8 @@ __all__ = [
     "Turn",
     "current_turn",
     "detach",
+    "check_generation_models",
+    "verify_item_deltas",
     "read_audit_log",
     "verify_audit_log",
     # Evolution
@@ -215,6 +233,19 @@ __all__ = [
     "MemoryExtractor",
     "LLMMemoryExtractor",
     # Query Refinement
+    "ItemDigest",
+    "item_digest",
+    "ITEM_FACET",
+    "ItemError",
+    "carries",
+    "classes_of",
+    "effective_salience",
+    "is_item",
+    "item",
+    "adjust",
+    "reinforce",
+    "set_importance",
+    "respond",
     "QueryRefiner",
     # Digital Twin
     "TwinBuilder",

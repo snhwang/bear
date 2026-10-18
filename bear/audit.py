@@ -29,7 +29,9 @@ The design and record schema are specified in ``design/turn-audit.md``.
 from __future__ import annotations
 
 import asyncio
+import base64
 import contextvars
+import hashlib
 import json
 import logging
 import os
@@ -51,6 +53,7 @@ logger = logging.getLogger(__name__)
 
 TURN_SCHEMA = "bear.turn/1"
 CORPUS_SCHEMA = "bear.corpus/1"
+ITEMS_SCHEMA = "bear.items/1"
 
 Sink = Callable[[dict], None]
 
@@ -172,6 +175,10 @@ class Turn:
             "generations": [],
         }
         self._snapshots: dict[str, list] = {}
+        # Item changes, as deltas rather than snapshots. A snapshot per
+        # item_version would write every item again on each change, which is
+        # the cost this avoids. See design/items.md.
+        self._item_deltas: list[dict] = []
         self._seq = 0
         self._lock = threading.Lock()
         self._opened = False
@@ -249,7 +256,7 @@ class Turn:
             "embedding_backend", "embedding_model", "embedding_dim",
             "embedding_query_prefix", "embedding_passage_prefix",
             "default_top_k", "default_threshold", "priority_weight",
-            "mandatory_tags",
+            "mandatory_tags", "restore_below_threshold",
         })
         embedder_mode = None
         if isinstance(embedder, Embedder):
@@ -265,11 +272,18 @@ class Turn:
         version = retriever.index_version
         if version and version not in self._snapshots:
             self._snapshots[version] = list(retriever._instruction_list)
+        # Item changes since the last audited retrieval. Drained here because
+        # the audit records what a turn did, and items change between turns.
+        taker = getattr(retriever, "take_item_deltas", None)
+        if taker is not None:
+            self._item_deltas.extend(taker())
 
         entry = {
             "duration_ms": _ms_since(started[1]),
             "label": retriever.label,
             "index_version": version,
+            "item_version": getattr(retriever, "item_version", ""),
+            "item_buckets": getattr(retriever, "item_buckets", 0),
             "corpus_size": len(retriever._instruction_list),
             "embedder": type(embedder).__name__,
             "embedder_mode": embedder_mode,
@@ -337,6 +351,8 @@ class Turn:
             "system": request.system,
             "user": request.user,
             "history": [{"role": m.role, "content": m.content} for m in request.history],
+            # What the model was shown, without the pictures themselves.
+            "images": [_image_record(url) for url in request.images],
             "tool_names": [
                 (t.get("function") or {}).get("name", "") for t in (request.tools or [])
             ],
@@ -408,6 +424,9 @@ class Auditor:
                         "captured_at": _now_iso(),
                         "instructions": [i.model_dump(mode="json") for i in instructions],
                     })
+        for delta in turn._item_deltas:
+            records.append({"schema": ITEMS_SCHEMA,
+                            "captured_at": _now_iso(), **delta})
         records.append(turn._record)
 
         # Normalize to plain JSON so every sink gets the same values.
@@ -469,6 +488,18 @@ def _redact_strings(value: Any, fn: Callable[[str], str]) -> Any:
     return value
 
 
+def _image_record(url: str) -> dict:
+    """What a turn's record keeps of a picture: its type, size and hash for a
+    data URL, and its address otherwise. The picture itself is left out, so a
+    log stays small."""
+    if not url.startswith("data:"):
+        return {"url": url}
+    head, _, data = url.partition(",")
+    raw = base64.b64decode(data) if head.endswith(";base64") else data.encode()
+    return {"media_type": head[5:].split(";")[0], "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest()}
+
+
 def _apply_redaction(record: dict, fn: Callable[[str], str]) -> None:
     """Redact the free-text fields listed in design/turn-audit.md, in place."""
     if record.get("schema") == CORPUS_SCHEMA:
@@ -492,6 +523,9 @@ def _apply_redaction(record: dict, fn: Callable[[str], str]) -> None:
         g["user"] = fn(g["user"])
         for m in g["history"]:
             m["content"] = fn(m["content"])
+        for img in g.get("images", []):
+            if "url" in img:
+                img["url"] = fn(img["url"])
         if g["content"] is not None:
             g["content"] = fn(g["content"])
         for call in g["tool_calls"]:
@@ -512,6 +546,9 @@ class AuditLog:
 
     turns: list[dict] = field(default_factory=list)
     corpora: dict[str, list[dict]] = field(default_factory=dict)
+    # Items come as a delta log in the order written, because a snapshot per
+    # change would write every item again each time.
+    item_deltas: list[dict] = field(default_factory=list)
 
 
 def read_audit_log(path: str | Path) -> AuditLog:
@@ -528,6 +565,8 @@ def read_audit_log(path: str | Path) -> AuditLog:
                 log.turns.append(record)
             elif schema == CORPUS_SCHEMA:
                 log.corpora.setdefault(record["index_version"], record["instructions"])
+            elif record.get("schema") == ITEMS_SCHEMA:
+                log.item_deltas.append(record)
             else:
                 logger.warning("bear.audit: %s line %d has unknown schema %r, skipped",
                                path, n, schema)
@@ -585,6 +624,10 @@ def _replay(turn: dict, record: dict, log: AuditLog,
         return result
 
     config = dict(record["config"])
+    # A record made before restore_below_threshold existed was retrieved
+    # with the backfill putting back what the threshold set aside, so it
+    # replays that way.
+    config.setdefault("restore_below_threshold", True)
     if record.get("embedder_mode") == "hash":
         # The recording ran on hash embeddings (explicitly or by fallback).
         config["embedding_model"] = "hash"
@@ -623,11 +666,142 @@ def _replay(turn: dict, record: dict, log: AuditLog,
     return result
 
 
+@dataclass
+class ModelUse:
+    """One (backend, requested model, reported model) seen in a log."""
+
+    backend: str
+    requested: str
+    reported: str
+    generations: int = 0
+
+    @property
+    def agrees(self) -> bool:
+        """Whether the server answered as the model that was asked for.
+
+        An empty ``reported`` is not a disagreement. A backend that does not
+        say which model answered leaves it blank, so there is nothing to
+        compare rather than something that failed to match.
+        """
+        return not self.reported or self.requested == self.reported
+
+
+def check_generation_models(path_or_log: "str | Path | AuditLog") -> list[ModelUse]:
+    """Which models a log's generations actually ran on, most used first.
+
+    Every generation records the model asked for and the model the server said
+    answered. Nothing read those until this: ``verify_audit_log`` rebuilds and
+    replays the retrievals and never looks at a generation. So a server
+    restarted onto different weights, or a served name repointed between
+    sessions, left the evidence in the log and no one saw it.
+
+    Two things make a log suspect. A disagreement between the model requested
+    and the model reported means the server answered as something else. More
+    than one entry in a single log means the model changed during the session,
+    whoever agreed with whom.
+
+    This cannot confirm that two logs ran the same weights, only that each
+    asked for and got the same name. A served name belongs to the serving
+    stack and can be pointed at different weights while every record still
+    reads the same string. What the server loaded is a separate record, which
+    the caller makes at session start.
+    """
+    log = (path_or_log if isinstance(path_or_log, AuditLog)
+           else read_audit_log(path_or_log))
+    seen: dict[tuple[str, str, str], ModelUse] = {}
+    for turn in log.turns:
+        for gen in turn.get("generations") or []:
+            gen = gen or {}
+            key = (str(gen.get("backend") or ""),
+                   str(gen.get("requested_model") or ""),
+                   str(gen.get("reported_model") or ""))
+            use = seen.get(key)
+            if use is None:
+                use = seen[key] = ModelUse(*key)
+            use.generations += 1
+    return sorted(seen.values(), key=lambda u: -u.generations)
+
+
+@dataclass
+class ItemReplay:
+    """The outcome of replaying one recorded ``item_version``."""
+
+    item_version: str
+    status: str
+    """``match``, ``differs`` or ``skipped`` (``reason`` says why)."""
+    reason: str = ""
+    items: int = 0
+
+
+def verify_item_deltas(path_or_log: "str | Path | AuditLog") -> list[ItemReplay]:
+    """Rebuild every item version a log records, and check each one.
+
+    Instructions are verified by replaying their retrievals against a recorded
+    snapshot. Items have no snapshot, by design, so they are verified the
+    other way round: the delta log is replayed to each version a retrieval
+    recorded, and the rebuilt set is re-digested and compared. A version a
+    retrieval names but the deltas cannot produce is the case worth catching,
+    since it means the log does not account for the set that retrieval ran
+    against.
+    """
+    log = (path_or_log if isinstance(path_or_log, AuditLog)
+           else read_audit_log(path_or_log))
+    from bear.item_digest import ItemReplayError, replay_items
+
+    wanted: list[str] = []
+    for turn in log.turns:
+        for record in turn.get("retrievals", []):
+            version = record.get("item_version")
+            if version and version not in wanted:
+                wanted.append(version)
+
+    results: list[ItemReplay] = []
+    for version in wanted:
+        if not log.item_deltas:
+            results.append(ItemReplay(version, "skipped",
+                                      "the log records no item deltas"))
+            continue
+        try:
+            items = replay_items(log.item_deltas, version)
+        except ItemReplayError as exc:
+            results.append(ItemReplay(version, "differs", str(exc)))
+        else:
+            results.append(ItemReplay(version, "match", items=len(items)))
+    return results
+
+
 def _verify_main(argv: list[str]) -> int:
     """``python -m bear verify-audit LOG`` — print a summary, non-zero if any differ."""
     if len(argv) != 1:
         print("usage: python -m bear verify-audit LOG")
         return 2
+    models = check_generation_models(argv[0])
+    total_gens = sum(u.generations for u in models)
+    for use in models:
+        mark = "" if use.agrees else "  <- server answered as another model"
+        reported = use.reported or "(not reported)"
+        print(f"model     {use.backend}/{use.requested} -> {reported} "
+              f"({use.generations} generations){mark}")
+    if len(models) > 1:
+        print(f"model     {len(models)} different models in one log, so the "
+              f"session did not run on one model throughout")
+    elif not models:
+        print("model     no generations recorded")
+    print(f"{total_gens} generations: "
+          f"{'one model' if len(models) == 1 and models[0].agrees else 'see above'}")
+
+    items = verify_item_deltas(argv[0])
+    for replay in items:
+        if replay.status == "match":
+            print(f"items     {replay.item_version} rebuilt from deltas "
+                  f"({replay.items} items)")
+        else:
+            detail = f": {replay.reason}" if replay.reason else ""
+            print(f"items     {replay.status} {replay.item_version}{detail}")
+    if items:
+        matched = sum(1 for r in items if r.status == "match")
+        print(f"{len(items)} item versions: {matched} rebuilt")
+
     results = verify_audit_log(argv[0])
     counts: dict[str, int] = {}
     for r in results:
@@ -641,4 +815,6 @@ def _verify_main(argv: list[str]) -> int:
     summary = ", ".join(f"{counts[s]} {s}" for s in
                         ("match", "reordered", "differs", "skipped") if s in counts)
     print(f"{len(results)} retrievals: {summary or 'none'}")
-    return 1 if counts.get("differs") else 0
+    model_fault = len(models) > 1 or any(not u.agrees for u in models)
+    item_fault = any(r.status == "differs" for r in items)
+    return 1 if (counts.get("differs") or model_fault or item_fault) else 0

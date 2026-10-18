@@ -1,5 +1,6 @@
 """Tests for bear.retriever."""
 
+import numpy as np
 import pytest
 
 from bear.corpus import Corpus
@@ -10,6 +11,7 @@ from bear.models import (
     InstructionType,
     ScopeCondition,
 )
+from bear.items import item
 from bear.retriever import Embedder, Retriever
 
 
@@ -348,6 +350,75 @@ class TestGatedOverfetch:
         assert results and results[0].instruction.id != "gold"
 
 
+class TestThresholdWithGates:
+    """Regression: the backfill must not put back what the threshold set aside.
+
+    Step 3 sets aside a gated instruction below the threshold whose soft tags
+    all fail. The required-tags backfill (Step 3.5) used to put it back at
+    priority/100, which outranked what passed the threshold, so the threshold
+    never filtered a gated instruction. ``restore_below_threshold`` keeps that
+    behavior for reproducing earlier runs.
+    """
+
+    @staticmethod
+    def _unit(sim):
+        import numpy as np
+        return np.array([sim, np.sqrt(max(0.0, 1.0 - sim * sim))], dtype=np.float32)
+
+    def _build(self, **config_overrides):
+        import numpy as np
+        # "fits" passes the threshold. "off" is gated the same way, carries a
+        # soft tag the context lacks, and sits below the threshold with a
+        # higher priority, so a flat priority/100 would rank it first.
+        specs = [("fits", 0.6, 40, ["morning"]), ("off", 0.05, 70, ["evening"])]
+        corpus = Corpus()
+        for name, _, priority, soft in specs:
+            corpus.add(Instruction(
+                id=name, type=InstructionType.DIRECTIVE, priority=priority,
+                content=f"do {name}",
+                scope=ScopeCondition(required_tags=["adult"], tags=soft),
+            ))
+        config = Config(
+            embedding_backend=EmbeddingBackend.NUMPY, embedding_dim=2,
+            priority_weight=0.3, default_threshold=0.15, default_top_k=5,
+            mandatory_tags=[], **config_overrides,
+        )
+        retriever = Retriever(corpus, config=config)
+        text_to_vec = {
+            retriever._instruction_text(inst): self._unit(sim)
+            for (_, sim, _, _), inst in zip(specs, corpus)
+        }
+
+        class _Stub:
+            def embed(self, texts, is_query=False):
+                return np.stack([text_to_vec[t] for t in texts])
+
+            def embed_single(self, text, is_query=True):
+                return TestThresholdWithGates._unit(1.0)
+
+        retriever._embedder = _Stub()
+        retriever.build_index()
+        return retriever
+
+    def test_threshold_filters_a_gated_instruction(self):
+        retriever = self._build()
+        results = retriever.retrieve("q", Context(tags=["adult", "morning"]))
+        assert [r.instruction.id for r in results] == ["fits"]
+
+    def test_switch_restores_the_old_behavior(self):
+        retriever = self._build(restore_below_threshold=True)
+        results = retriever.retrieve("q", Context(tags=["adult", "morning"]))
+        ids = [r.instruction.id for r in results]
+        assert ids == ["off", "fits"]
+        off = results[0]
+        assert off.similarity == 0.0 and off.final_score == pytest.approx(0.70)
+
+    def test_a_soft_match_still_passes_below_the_threshold(self):
+        retriever = self._build()
+        results = retriever.retrieve("q", Context(tags=["adult", "evening"]))
+        assert {r.instruction.id for r in results} == {"fits", "off"}
+
+
 class TestInjectedEmbedder:
     """A caller can supply vectors from anywhere: a service, a stand-in, a fake."""
 
@@ -511,3 +582,370 @@ class TestHashFallback:
         retriever = Retriever(medical_corpus, config=cfg)
         retriever.build_index()
         assert retriever.retrieve("diagnosis")
+class TestGateTagsDoNotSteerRanking:
+    """The reason Context.gate_tags exists.
+
+    A tag in ``tags`` is embedded with the query (see
+    ``Retriever._query_text``), so it changes every similarity score and can
+    reorder the whole result. A clearance expressed that way made two
+    versions of one reply rank their guidance differently for a reason
+    unrelated to what either may hold. In ``gate_tags`` it decides admission
+    and leaves the ranking alone.
+    """
+
+    def _corpus(self):
+        corpus = Corpus()
+        for i, name in enumerate(["persona", "method", "speech", "format"]):
+            corpus.add(Instruction(
+                id=name, type=InstructionType.DIRECTIVE, priority=50 + i,
+                content=f"Guidance about {name} for the commander.",
+                scope=ScopeCondition(tags=["commander"]),
+                tags=["commander", name]))
+        return corpus
+
+    def _retriever(self):
+        r = Retriever(self._corpus(), config=Config(embedding_model="hash"))
+        r.build_index()
+        return r
+
+    def test_the_ranking_is_identical_whatever_the_gate_tags(self):
+        r = self._retriever()
+        q = "how should the commander speak about the incident"
+
+        def ranked(gate):
+            ctx = Context(domain="conversation", tags=["commander"],
+                          gate_tags=gate, query=q)
+            return [(s.id, round(s.final_score, 9))
+                    for s in r.retrieve(query=q, context=ctx, top_k=10)]
+
+        none = ranked([])
+        narrow = ranked(["class:public"])
+        wide = ranked(["class:public", "class:privileged", "class:exposure",
+                       "class:timeline", "class:remediation"])
+        assert none == narrow == wide, (none, narrow, wide)
+
+    def test_the_same_tags_in_tags_do_change_the_ranking(self):
+        """The behaviour gate_tags exists to avoid, asserted so the
+        distinction cannot quietly stop mattering."""
+        r = self._retriever()
+        q = "how should the commander speak about the incident"
+
+        def ranked(extra):
+            ctx = Context(domain="conversation", tags=["commander"] + extra,
+                          query=q)
+            return [(s.id, round(s.final_score, 9))
+                    for s in r.retrieve(query=q, context=ctx, top_k=10)]
+
+        assert ranked([]) != ranked(
+            ["class:public", "class:privileged", "class:exposure",
+             "class:timeline", "class:remediation"])
+
+    def test_a_gate_tag_still_admits_a_hard_gated_instruction(self):
+        corpus = self._corpus()
+        corpus.add(Instruction(
+            id="classified", type=InstructionType.DIRECTIVE, priority=60,
+            content="Guidance the commander may hold only when cleared.",
+            scope=ScopeCondition(required_tags=["commander", "class:privileged"]),
+            tags=["commander"]))
+        r = Retriever(corpus, config=Config(embedding_model="hash"))
+        r.build_index()
+        q = "guidance for the commander"
+
+        def ids(gate):
+            ctx = Context(domain="conversation", tags=["commander"],
+                          gate_tags=gate, query=q)
+            return [s.id for s in r.retrieve(query=q, context=ctx, top_k=10)]
+
+        assert "classified" in ids(["class:privileged"])
+        assert "classified" not in ids(["class:public"])
+        assert "classified" not in ids([])
+
+
+class TestTheMaintainedCandidateSets:
+    """Mandatory injection and the required-tags backfill used to walk the
+    whole corpus on every query. At 86,944 items that was 93% of a query and
+    found nothing. Both now iterate a maintained set, and the failure mode of
+    a stale set is a safety rule quietly ceasing to be injected, so these test
+    the maintenance rather than the speed. See design/retrieval-candidates.md.
+    """
+
+    def _corpus(self):
+        c = Corpus()
+        # A scope that the test contexts do not satisfy, so with the
+        # threshold below it can only be retrieved by being injected. An
+        # empty scope matches everything and would arrive anyway, which is
+        # what made the first version of these tests toothless.
+        c.add(Instruction(id="safe", type=InstructionType.CONSTRAINT,
+                          priority=95, content="Never disclose a secret.",
+                          tags=["safety"],
+                          scope=ScopeCondition(tags=["safety-wanted"])))
+        c.add(Instruction(id="plain", type=InstructionType.DIRECTIVE,
+                          priority=50, content="Speak plainly.",
+                          tags=["speech"],
+                          scope=ScopeCondition(tags=["speech-wanted"])))
+        return c
+
+    def _retriever(self, corpus=None, **cfg):
+        cfg.setdefault("embedding_model", "hash")
+        # A threshold nothing clears, so the search drops every instruction
+        # whose scope does not match and mandatory injection is the only way
+        # back in. Without this the corpus is small enough that everything is
+        # scored anyway and the injection path is never exercised, which is
+        # how the first version of these tests passed with the maintenance
+        # removed.
+        cfg.setdefault("default_threshold", 0.995)
+        r = Retriever(corpus or self._corpus(), config=Config(**cfg))
+        r.build_index()
+        return r
+
+    def _ids(self, r, **ctx):
+        c = Context(domain="conversation", query="anything", **ctx)
+        return {s.instruction.id for s in
+                r.retrieve(query="anything", context=c, top_k=10)}
+
+    def test_a_mandatory_instruction_is_injected(self):
+        assert "safe" in self._ids(self._retriever())
+
+    def test_it_survives_an_incremental_add(self):
+        """The set is maintained rather than invalidated, so an add that
+        failed to update it would drop the safety rule from every later
+        query, silently."""
+        r = self._retriever()
+        assert "safe" in self._ids(r)          # builds the set
+        r.add(Instruction(id="later", type=InstructionType.DIRECTIVE,
+                          priority=40, content="A later note.",
+                          scope=ScopeCondition(tags=["nothing-matches"])))
+        assert "safe" in self._ids(r)
+        # And the added row did not displace it in the set
+        by_row = {row: i.id for row, i in enumerate(r._instruction_list)}
+        assert {by_row[x] for x in r._mandatory_rows()} == {"safe"}
+
+    def test_one_added_incrementally_is_injected(self):
+        r = self._retriever()
+        assert self._ids(r)                    # builds the set
+        r.add(Instruction(id="safe-late", type=InstructionType.CONSTRAINT,
+                          priority=99, content="A late safety rule.",
+                          tags=["safety"],
+                          scope=ScopeCondition(tags=["safety-wanted"])))
+        # Its scope does not match and the threshold admits nothing, so it is
+        # here only if the add brought it into the maintained set.
+        assert "safe-late" in self._ids(r), "the add left the set stale"
+
+    def test_changing_the_configured_tags_recomputes(self):
+        """A caller may change mandatory_tags after the index was built."""
+        r = self._retriever()
+        assert "safe" in self._ids(r)
+        r._config.mandatory_tags = ["speech"]
+        # plain's scope matches nothing and the threshold admits nothing, so
+        # it can only be here if the recomputed set found it.
+        got = self._ids(r)
+        assert "plain" in got, "the configured change was not noticed"
+        assert "safe" not in got, "the old set still decided"
+
+    def test_a_gate_still_keeps_a_mandatory_rule_out(self):
+        """Mandatory means always include where admissible, not always."""
+        c = self._corpus()
+        c.add(Instruction(id="safe-other", type=InstructionType.CONSTRAINT,
+                          priority=93, content="Commander owns the call.",
+                          tags=["safety"],
+                          scope=ScopeCondition(required_tags=["commander"])))
+        r = self._retriever(c)
+        got = self._ids(r, tags=["legal"])
+        assert "safe" in got and "safe-other" not in got
+        assert "safe-other" in self._ids(r, tags=["commander"])
+
+    def test_the_backfill_still_restores_under_the_old_behaviour(self):
+        """The backfill's candidates are maintained too, so this proves
+        restricting them did not stop it working where it still has work."""
+        c = Corpus()
+        c.add(Instruction(id="gated-soft", type=InstructionType.DIRECTIVE,
+                          priority=70,
+                          content="Zebra husbandry at high altitude.",
+                          scope=ScopeCondition(required_tags=["legal"],
+                                               tags=["husbandry"])))
+        for n in range(3):
+            c.add(Instruction(id=f"filler-{n}", type=InstructionType.DIRECTIVE,
+                              priority=50, content=f"Revenue note {n}.",
+                              scope=ScopeCondition(required_tags=["legal"])))
+        restored = self._retriever(c, restore_below_threshold=True,
+                                   default_threshold=0.9)
+        dropped = self._retriever(c, restore_below_threshold=False,
+                                  default_threshold=0.9)
+        assert "gated-soft" in self._ids(restored, tags=["legal"])
+        assert "gated-soft" not in self._ids(dropped, tags=["legal"])
+
+    def test_an_item_is_still_never_injected_by_the_backfill(self):
+        """An item's gate is its facet and its owner, which a question about
+        what an agent holds carries, so injecting items would flood the
+        ranking. The maintained set excludes them by construction."""
+        c = Corpus()
+        c.add(item("A remembered fact.", "legal", id="mem-1", created=0.0))
+        r = self._retriever(c, restore_below_threshold=True,
+                            default_threshold=0.99)
+        assert r._injectable_rows() == set()
+
+    def test_the_sets_hold_what_they_claim(self):
+        """Asserted directly, since every test above reaches them through a
+        retrieval and a wrong set can still give a right answer on a small
+        corpus."""
+        c = self._corpus()
+        c.add(Instruction(id="gated", type=InstructionType.DIRECTIVE,
+                          priority=60, content="A gated note.",
+                          scope=ScopeCondition(required_tags=["legal"])))
+        c.add(item("A remembered fact.", "legal", id="mem-1", created=0.0))
+        r = self._retriever(c)
+        by_row = {row: inst.id for row, inst
+                  in enumerate(r._instruction_list)}
+        assert {by_row[x] for x in r._mandatory_rows()} == {"safe"}
+        # the item has required_tags but is an item, so it is not injectable
+        assert {by_row[x] for x in r._injectable_rows()} == {"gated"}
+
+
+class TestTheQueryEmbeddingCache:
+    """Embedding one text is a pure function of the text, the model and the
+    prefix, so a repeated query can come from memory. A simulation that
+    describes situations from a small template set pays 8.3 ms of CPU
+    inference on every decision otherwise. Asked for by the
+    behavioral-genetics session."""
+
+    def _embedder(self, **kw):
+        kw.setdefault("_suppress_hash_warning", True)
+        return Embedder("hash", **kw)
+
+    def test_the_same_text_is_embedded_once(self):
+        e = self._embedder()
+        calls = []
+        inner = e.embed
+
+        def counting(texts, is_query=False):
+            calls.append(tuple(texts))
+            return inner(texts, is_query=is_query)
+
+        e.embed = counting
+        for _ in range(5):
+            e.embed_single("a situation", is_query=True)
+        assert len(calls) == 1, calls
+
+    def test_the_value_is_the_same_as_without_the_cache(self):
+        """The cache must not change what anything gets back."""
+        cached = self._embedder().embed_single("a situation", is_query=True)
+        direct = self._embedder(query_cache=0).embed_single("a situation",
+                                                            is_query=True)
+        assert np.array_equal(cached, direct)
+
+    def test_it_hands_back_a_copy(self):
+        """A caller that modified the array in place would otherwise corrupt
+        every later answer for that text."""
+        e = self._embedder()
+        first = e.embed_single("a situation", is_query=True)
+        first[:] = 0.0
+        again = e.embed_single("a situation", is_query=True)
+        assert not np.array_equal(again, first)
+        assert again.any()
+
+    def test_a_query_and_a_passage_are_keyed_apart(self):
+        """The same words embed differently as a query and as a passage
+        wherever a prefix applies, so one key for both would be wrong."""
+        e = self._embedder()
+        e.embed_single("x", is_query=True)
+        e.embed_single("x", is_query=False)
+        assert len(e._query_cache) == 2
+
+    def test_it_is_bounded(self):
+        """A long run must not grow memory without limit."""
+        e = self._embedder(query_cache=2)
+        for text in ("one", "two", "three"):
+            e.embed_single(text, is_query=True)
+        assert len(e._query_cache) == 2
+
+    def test_the_least_recently_used_is_the_one_evicted(self):
+        e = self._embedder(query_cache=2)
+        e.embed_single("one", is_query=True)
+        e.embed_single("two", is_query=True)
+        e.embed_single("one", is_query=True)      # now the more recent
+        e.embed_single("three", is_query=True)    # evicts "two"
+        held = {k[0] for k in e._query_cache}
+        assert held == {"one", "three"}, held
+
+    def test_zero_switches_it_off(self):
+        e = self._embedder(query_cache=0)
+        e.embed_single("one", is_query=True)
+        assert len(e._query_cache) == 0
+
+    def test_a_batch_is_not_cached(self):
+        """Only the query path. A document batch has the on-disk cache, and
+        caching whole lists would key on a batch that never repeats."""
+        e = self._embedder()
+        e.embed(["one", "two"], is_query=False)
+        assert len(e._query_cache) == 0
+
+
+class TestTheQueryCacheReportsItself:
+    """A cache nobody can measure is a cache nobody can size. The
+    behavioral-genetics session cannot infer its hit rate from its logs, which
+    keep the trigger and the markers but not the query text, so these counters
+    are its only instrument. Asserted through the public accessor, not the
+    dict they count."""
+
+    def _embedder(self, **kw):
+        kw.setdefault("_suppress_hash_warning", True)
+        return Embedder("hash", **kw)
+
+    def test_nothing_asked_means_no_rate(self):
+        """None rather than zero, since a rate of zero would read as a cache
+        that is failing rather than one that has not been used."""
+        s = self._embedder().query_cache_stats()
+        assert s["hits"] == 0 and s["misses"] == 0
+        assert s["hit_rate"] is None
+
+    def test_the_first_ask_is_a_miss_and_the_second_a_hit(self):
+        e = self._embedder()
+        e.embed_single("a situation", is_query=True)
+        assert e.query_cache_stats() == {
+            "hits": 0, "misses": 1, "size": 1, "capacity": 512,
+            "hit_rate": 0.0}
+        e.embed_single("a situation", is_query=True)
+        s = e.query_cache_stats()
+        assert (s["hits"], s["misses"], s["hit_rate"]) == (1, 1, 0.5)
+
+    def test_a_workload_of_distinct_texts_shows_as_misses(self):
+        """The behavioral-genetics case: queries carrying live numbers are
+        nearly all distinct, and the counters are what make that visible
+        rather than inferred from timings."""
+        e = self._embedder(query_cache=4)
+        for n in range(20):
+            e.embed_single(f"I am hungry (energy {n}/100)", is_query=True)
+        s = e.query_cache_stats()
+        assert s["hits"] == 0 and s["misses"] == 20
+        assert s["hit_rate"] == 0.0
+        assert s["size"] == 4, "and the cache is full of texts that never recur"
+
+    def test_a_fixed_phrase_shows_as_hits(self):
+        e = self._embedder()
+        for _ in range(20):
+            e.embed_single("What should I do?", is_query=True)
+        s = e.query_cache_stats()
+        assert (s["hits"], s["misses"]) == (19, 1)
+        assert s["hit_rate"] == 0.95
+
+    def test_capacity_is_reported_so_a_caller_can_see_thrashing(self):
+        e = self._embedder(query_cache=3)
+        for t in ("a", "b", "c", "d"):
+            e.embed_single(t, is_query=True)
+        s = e.query_cache_stats()
+        assert s["capacity"] == 3 and s["size"] == 3
+
+    def test_an_eviction_does_not_lose_the_counts(self):
+        """The counts are of calls, not of entries, so they survive eviction
+        and a caller can tell a thrashing cache from an idle one."""
+        e = self._embedder(query_cache=1)
+        e.embed_single("a", is_query=True)
+        e.embed_single("b", is_query=True)
+        e.embed_single("a", is_query=True)
+        s = e.query_cache_stats()
+        assert (s["hits"], s["misses"], s["size"]) == (0, 3, 1)
+
+    def test_the_switched_off_cache_counts_nothing(self):
+        e = self._embedder(query_cache=0)
+        e.embed_single("a", is_query=True)
+        assert e.query_cache_stats()["hit_rate"] is None

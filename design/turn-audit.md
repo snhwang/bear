@@ -186,7 +186,7 @@ concurrent LLM calls inside one turn the two orders can differ.
 | `corpus_size` | int | Instructions in the index |
 | `embedder` | str | `"Embedder"` for the built-in one, else the class name of an injected embedder |
 | `embedder_mode` | str or null | How the built-in embedder produced vectors (`sentence_transformers`, `mlx`, `openai` or `hash`), or null if it was never loaded (BM25 and ITR) or is not the built-in one |
-| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
+| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`, `restore_below_threshold`. A record without `restore_below_threshold` was made before it existed and replays with it on. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
 | `query` | str | The query argument as passed |
 | `effective_query` | str | The query actually searched (`context.refined_query` wins if set) |
 | `context` | object | The full `Context` as passed |
@@ -246,6 +246,7 @@ candidates, and listing them would copy the corpus into every turn.
 | `params` | object | `temperature`, `top_p`, `top_k`, `min_p`, `max_tokens`, `seed`, `thinking`, `reasoning_fallback`, `response_format` |
 | `system`, `user` | str | The prompt text |
 | `history` | list | `[{"role", "content"}]` |
+| `images` | list | Pictures shown with the user message: `{"media_type", "bytes", "sha256"}` for a data URL, `{"url"}` otherwise. Never the picture itself |
 | `tool_names` | list | Names of the tools offered |
 | `content` | str or null | The reply text |
 | `used_reasoning` | bool | The reply came from the reasoning field |
@@ -292,8 +293,8 @@ Apps that must not store raw text pass `redact`. It is applied to:
 - retrieval `query`, `effective_query`, `context.query` and
   `context.refined_query`, and every string inside `context.custom`
 - composition `guidance`
-- generation `system`, `user`, `history[].content` and `content`, and every
-  string inside `tool_calls[].arguments`
+- generation `system`, `user`, `history[].content`, `images[].url` and
+  `content`, and every string inside `tool_calls[].arguments`
 - `response`
 - every string inside `notes`
 - `content` of every instruction in corpus records
@@ -320,8 +321,8 @@ query is gone.
 - **Work inside one turn.** Tasks started inside a turn copy its context, so
   their retrievals and LLM calls join the turn. This is right for work the
   reply depends on.
-- **Background tasks.** Work that outlives the reply (a query refiner or an
-  evolution trigger, for example) should use `detach(coro)`, which starts the
+- **Background tasks.** Work that outlives the reply (the parlor's query
+  refiner and evolution trigger) should use `detach(coro)`, which starts the
   task with no open turn. Events that arrive after a turn has closed are
   dropped, with a debug log line, since the record is already written.
 - **Nesting.** Opening a turn inside another is allowed. The inner turn
@@ -367,6 +368,21 @@ same model available. BM25 needs nothing extra.
 
 - **`TwinBuilder`.** Its retrievers are labelled `behavior` and `knowledge`.
   `chat()` sets the turn's response.
+- **Parlor** (`examples/bear_parlor`). A new `--audit` flag writes
+  `session_logs/[<subdir>/]<panel>_<timestamp>.audit.jsonl` next to the
+  session log. Each character reply (in both BEAR and static mode) and each
+  phase-2 `answer_alone` is one turn, with `session_id` set to the session
+  log's stem and `agent_id` to the character. A static-mode turn has no
+  retrieval or composition, only the LLM call, which is what makes it the
+  static arm of an adaptive-versus-static comparison.
+  - Notes on every turn: `kind` (`reply` or `answer_alone`), `panel`, `mood`
+    and `static_mode`.
+  - Replies add `trigger`, `trigger_sender`, `spontaneous` and `knowledge`
+    (the knowledge-store items used, with their metadata).
+  - Answers add `question`, `question_id` and `knowledge_ids`.
+  - The query refiner and evolution trigger run through `detach`.
+  - The parlor uses `strict=False`, so a write error is logged and the
+    conversation continues.
 
 ## Decisions to confirm
 
@@ -378,7 +394,7 @@ These are defaults chosen for safety. Each is one argument to change.
    turn instead of leaving a silent gap in the audit trail. A demo may
    prefer `strict=False`.
 3. **Corpus snapshots on.** Logs are self-contained and verifiable, at the
-   cost of size. A session that hot-loads memories writes a snapshot
+   cost of size. A parlor session that hot-loads memories writes a snapshot
    after every rebuild.
 
 ## Testing
@@ -406,6 +422,7 @@ These are defaults chosen for safety. Each is one argument to change.
 ## Future work
 
 - A `to_provenance()` view of a turn, once a consumer needs one.
+- Recording `bear.verify` outcomes, if that proposal is built.
 - Scoping `Evolution` to its own retriever instead of the global handler.
 - Removing the always-empty `guidance` and `response` fields from
   `RetrievalEvent`.
@@ -424,7 +441,8 @@ What was built, and where it departs from or adds to the plan above.
 - Hooks in `Retriever.retrieve`, `Composer.compose`, `collect_actions`,
   `LLM.generate` and `LLM.generate_batch`. Each costs one context-variable
   read when no turn is open.
-- `bear/twin.py` as described under "Integrations".
+- `bear/twin.py` and `examples/bear_parlor/parlor.py` as described under
+  "Integrations".
 
 **Retriever.** `retrieve()` is now a thin wrapper around `_retrieve()`,
 which takes an optional trace. The trace is filled only while a turn is
@@ -440,12 +458,17 @@ record list `included_ids` and `dropped_ids`. Output is unchanged.
 the same third one, it was added to the results twice. It is now added
 once.
 
-**Gap found on the way, not fixed.** The retriever now guarantees that
-mandatory instructions are returned, but the composer does not know which
-instructions are mandatory. `max_instructions` and the
-`conflict_resolution` strategy can still drop one after retrieval. The
-composition record makes this visible (`dropped_ids`). Closing it means
-passing the mandatory tags to the composer.
+**Gap found on the way, since closed.** The retriever guaranteed that
+mandatory instructions were returned, but the composer did not know which
+instructions were mandatory, so `max_instructions` and the
+`conflict_resolution` strategy could still drop one. The composition
+record made this visible (`dropped_ids`). It is closed now. The retriever
+marks returned mandatory instructions (`ScoredInstruction.mandatory`) and
+the composer keeps them (see the changelog).
 
 **Testing.** `tests/test_audit.py` has 45 tests covering the list under
-"Testing".
+"Testing". A smoke test drove a real parlor (barbershop panel, a fake LLM
+backend) through a BEAR reply, a static-mode reply and a phase-2 answer
+with `--audit` wiring. It produced three turns and one corpus snapshot,
+retrievals with `gate`, `threshold` and `top_k` exclusions and
+`mandatory` admissions, and `verify-audit` matched both retrievals.

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Callable
 
@@ -15,8 +16,9 @@ from bear.backends.embeddings.base import EmbeddingBackendBase, MetadataFilter
 from bear.backends.embeddings.numpy_backend import NumpyBackend
 from bear.config import Config, EmbeddingBackend
 from bear.corpus import Corpus
+from bear.item_digest import ItemDigest, canonical_json
 from bear.logging import RetrievalEvent, emit_event
-from bear.models import Context, Instruction, ScoredInstruction
+from bear.models import Context, Instruction, InstructionType, ScoredInstruction
 
 logger = logging.getLogger(__name__)
 
@@ -96,16 +98,98 @@ def _get_embedding_backend(
     return factory(persist_directory=persist_directory)
 
 
+def _passes_gate(inst: Instruction, context: Context | None) -> bool:
+    """Whether a context satisfies everything an instruction demands.
+
+    Every ``required_tags`` entry must be in ``context.all_tags``, which is
+    its ``tags`` and ``gate_tags`` together. It fails closed: a context with
+    no tags at all satisfies nothing, so an instruction demanding anything is
+    refused rather than admitted.
+
+    One function because there are four places that gate, and a rule written
+    four times is a rule that drifts. One of them had already drifted, and it
+    let `requires` pull in an instruction the context could not hold.
+    """
+    required = inst.scope.required_tags
+    if not required:
+        return True
+    if context is None:
+        return False
+    admitted = context.all_tags
+    if not admitted:
+        return False
+    return all(t in admitted for t in required)
+
+
+def _selects(inst: Instruction, context: Context | None) -> bool:
+    """Whether an instruction answers a query's selection.
+
+    Selection is enforced here rather than left to the backend, so it means
+    the same thing on every one of them. A backend's filter is an
+    optimisation that must agree with this, and two of them do not on their
+    own: a backend without metadata support ignores a filter entirely, and
+    ChromaDB historically widened a filter that matched nothing. Neither can
+    admit something this rejects, because this runs afterwards.
+
+    ``select_all`` requires every tag and ``select_any`` at least one. A tag
+    counts wherever the instruction carries it: ``tags``, ``scope.tags`` or
+    ``scope.required_tags``. Required tags count because the useful narrowing
+    in a store of held data is by owner, and an owner tag lives in
+    ``required_tags`` since it is also a gate. Leaving them out made
+    ``select_all=[owner_tag("rosa")]`` match nothing at all, silently, which
+    is the most natural question anyone would ask of such a store.
+
+    Gating and selecting stay different questions even though they can name
+    the same tag. The gate asks what the instruction demands of the query;
+    selection asks what the query demands of the instruction. One tag can
+    answer both.
+
+    A mandatory instruction is not subject to this. Mandatory means always
+    included where admissible, which is a matter of policy rather than of
+    what a query asked for, and the same reasoning keeps it exempt from the
+    ``top_k`` cut. So a safety rule still reaches a prompt whose selection
+    names something else entirely.
+
+    Selection decides candidacy and not order, but not quite to the last bit.
+    A narrowed query multiplies a smaller matrix, so float32 scores can differ
+    from the unnarrowed ones in their final digits, measured at up to 1.5e-7
+    over 13,275 items. Two scores within that of each other could swap, which
+    none did across 120 real queries. Compare order, and round any score
+    compared across a narrowing.
+    """
+    if context is None:
+        return True
+    if not (context.select_all or context.select_any):
+        return True
+    declared = {*(inst.tags or ()), *(inst.scope.tags or ()),
+                *(inst.scope.required_tags or ())}
+    if context.select_all and not set(context.select_all) <= declared:
+        return False
+    if context.select_any and not (set(context.select_any) & declared):
+        return False
+    return True
+
+
 def _index_version(instructions: list[Instruction]) -> str:
     """First 16 hex digits of a SHA-256 over the instructions' canonical JSON.
 
     Instructions are sorted by id, so the hash depends on content only, not
     on the order they were added.
+
+    Items are left out, and covered by ``Retriever.item_version`` instead.
+    The audit snapshots the whole instruction list once per ``index_version``,
+    so an item set that advanced the version would write every item to the
+    log again on the next retrieval. Empty when there is nothing but items,
+    which keeps the audit from writing a snapshot at all.
     """
-    dumps = sorted((i.model_dump(mode="json") for i in instructions),
+    dumps = sorted((i.model_dump(mode="json")
+                    for i in instructions
+                    if i.type != InstructionType.ITEM),
                    key=lambda d: d["id"])
-    blob = json.dumps(dumps, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(blob.encode("utf-8")).hexdigest()[:16]
+    if not dumps:
+        return ""
+    return hashlib.sha256(
+        canonical_json(dumps).encode("utf-8")).hexdigest()[:16]
 
 
 class Embedder:
@@ -148,6 +232,7 @@ class Embedder:
         tokenizer_kwargs: dict | None = None,
         trust_remote_code: bool = False,
         allow_hash_fallback: bool = False,
+        query_cache: int = 512,
         _suppress_hash_warning: bool = False,
     ):
         self.model_name = model_name
@@ -164,6 +249,21 @@ class Embedder:
         self._mode: str = "hash"  # "openai" | "mlx" | "sentence_transformers" | "hash"
         self._openai_model: str = ""
         self._loaded = False
+        # Embedding one text is a pure function of the text, the model and
+        # the prefix, so a repeated query can be answered from memory. Only
+        # embed_single caches: that is the query path, and a document batch
+        # already has the on-disk cache in _embed_texts_cached. Measured on
+        # BAAI/bge-base-en-v1.5 on a CPU, one query embedding is 8.3 ms, and
+        # a simulation that describes situations from a small template set
+        # pays it on every decision. Set to 0 to switch it off.
+        self._query_cache_size = int(query_cache)
+        self._query_cache: "OrderedDict[tuple, np.ndarray]" = OrderedDict()
+        # Counted, because a cache nobody can measure is a cache nobody can
+        # size. The behavioral-genetics session cannot infer the hit rate
+        # from its logs, which keep the trigger and the markers but not the
+        # query text, so without these the only instrument is wall clock.
+        self._query_cache_hits = 0
+        self._query_cache_misses = 0
         # Eagerly resolve mode for explicit hash requests; defer real model loading
         if model_name == "hash":
             self._mode = "hash"
@@ -369,8 +469,60 @@ class Embedder:
         return np.array(outputs.text_embeds, dtype=np.float32)
 
     def embed_single(self, text: str, is_query: bool = False) -> np.ndarray:
-        """Embed a single text."""
-        return self.embed([text], is_query=is_query)[0]
+        """Embed a single text, from the cache where it has been seen before.
+
+        The key carries the mode as well as the text and whether it is a
+        query, because the same words embed differently as a query and as a
+        passage wherever a prefix applies, and differently again if the model
+        failed to load and the hash fallback took over. A cache keyed on the
+        text alone would hand back the wrong vector in both cases.
+
+        The returned array is a copy. A caller that modified it in place
+        would otherwise corrupt every later answer for that text, and the
+        copy costs microseconds against milliseconds of inference.
+        """
+        if self._query_cache_size <= 0:
+            return self.embed([text], is_query=is_query)[0]
+
+        # Before building the key, so the mode is resolved rather than the
+        # "hash" it is initialised to.
+        self._ensure_loaded()
+        key = (text, is_query, self._mode)
+        hit = self._query_cache.get(key)
+        if hit is None:
+            self._query_cache_misses += 1
+            hit = self.embed([text], is_query=is_query)[0]
+            self._query_cache[key] = hit
+            while len(self._query_cache) > self._query_cache_size:
+                self._query_cache.popitem(last=False)
+        else:
+            self._query_cache_hits += 1
+            self._query_cache.move_to_end(key)       # least recent evicts
+        return hit.copy()
+
+    def query_cache_stats(self) -> dict:
+        """What the query cache has done, and how full it is.
+
+        ``hits`` and ``misses`` count calls to :meth:`embed_single` since this
+        embedder was made, ``size`` is how many distinct keys are held and
+        ``capacity`` what it will hold before evicting. ``hit_rate`` is None
+        until something has been asked for.
+
+        Public because this is the only way to see whether the cache earns its
+        place. A simulation whose queries carry live numbers has thousands of
+        distinct texts and will mostly miss, where one drawing on a few fixed
+        phrases will mostly hit, and the difference is invisible from the
+        outside. Sizing it against wall clock instead would mean tuning a
+        mechanism by a number that ten other things also move.
+        """
+        asked = self._query_cache_hits + self._query_cache_misses
+        return {
+            "hits": self._query_cache_hits,
+            "misses": self._query_cache_misses,
+            "size": len(self._query_cache),
+            "capacity": self._query_cache_size,
+            "hit_rate": (self._query_cache_hits / asked) if asked else None,
+        }
 
     def _hash_embed(self, texts: list[str]) -> np.ndarray:
         """Deterministic hash-based embedding (for testing / no-dependency mode).
@@ -467,11 +619,86 @@ class Retriever:
             self._config, _suppress_hash_warning=_suppress,
         )
         self._instruction_list: list[Instruction] = []
+        # Rows carrying a mandatory tag, maintained rather than scanned. See
+        # _mandatory_rows for why, and _note_mandatory for the maintenance.
+        self._mandatory: set[int] = set()
+        self._mandatory_for: tuple[str, ...] | None = None
+        # Rows the required-tags backfill could ever return: a non-item
+        # carrying required_tags. Its first two tests, in list order.
+        self._injectable: set[int] = set()
         self._built = False
         self._cache_dir: Path | None = None
         # Set at build time: True if any instruction carries a hard gate.
         self._has_required_tags = False
-        self._index_version = ""
+        # Every tag any indexed instruction carries, for warning about a
+        # selection that can never match. Selecting an undeclared tag is
+        # almost always a mistake, and it returns nothing with no sign of why.
+        self._declared_tags: set[str] = set()
+        self._warned_unknown_select: set[str] = set()
+        # The vector store, held in memory. add() leaves new vectors here
+        # rather than rewriting the file, since the file holds every vector
+        # and rewriting it costs about what a rebuild costs. flush_cache()
+        # writes them, and build_index() flushes on its own.
+        self._vector_store: dict[str, "np.ndarray"] = {}
+        self._pending_vectors: dict[str, "np.ndarray"] = {}
+        self._cache_file: Path | None = None
+        self._loaded_cache = False
+        # id to row in _instruction_list, so a reinforcement reaches one item
+        # without a scan.
+        self._row_of_id: dict[str, int] = {}
+        # Items are versioned apart from instructions, incrementally. See
+        # bear.item_digest and design/items.md.
+        self._items = ItemDigest()
+        # Item changes not yet written to an audit log. The audit records what
+        # a turn did, and items change between turns, so the changes wait here
+        # and the next audited retrieval carries them. Each is keyed by the
+        # item_version it produced, so a replay can rebuild the set at any
+        # version by applying them in order.
+        self._item_deltas: list[dict] = []
+        # None means stale: computed on next read. See index_version.
+        self._index_version: str | None = ""
+
+    ALL = -1
+    """``top_k=Retriever.ALL`` means every row that passes the filters.
+
+    A sentinel rather than a number, because a count is the wrong thing to
+    pass once a corpus holds data. ``top_k=len(corpus)`` reaches tens of
+    thousands, and a backend's cost can follow ``top_k`` even when the filter
+    already narrowed the candidates: FAISS allocates results of that size and
+    ChromaDB's ``n_results`` may be capped. With the sentinel no backend is
+    told a size at all.
+    """
+
+    @property
+    def item_version(self) -> str:
+        """Version of the item set, advancing with each add, remove or
+        reinforce, and empty while there are no items.
+
+        Separate from :attr:`index_version` because the two are maintained
+        differently: instructions are few and hashed whole, items are many and
+        hashed incrementally. Both carry SHA-256's strength, so a log holding
+        both does not mix guarantees. See :class:`bear.item_digest.ItemDigest`.
+        """
+        return self._items.version
+
+    @property
+    def item_buckets(self) -> int:
+        """Buckets the item digest currently uses.
+
+        Part of ``item_version``'s definition, so a reader recomputing a
+        recorded version needs the count the writer used. It doubles as the
+        store grows, which is why it is read rather than assumed.
+        """
+        return self._items.buckets
+
+    @property
+    def size(self) -> int:
+        """How many instructions are indexed.
+
+        For callers that want the count without reaching into the corpus, and
+        for the ones that used ``len(retriever.corpus)`` to mean everything.
+        """
+        return len(self._instruction_list)
 
     @property
     def index_version(self) -> str:
@@ -479,7 +706,15 @@ class Retriever:
 
         Changes whenever any indexed instruction changes, including a new
         text under an existing id. Empty until the index is built.
+
+        Computed when read rather than when the index changes. It is a
+        SHA-256 over the canonical JSON of every instruction, so computing it
+        per mutation made an add cost about 90 ms at 8,000 instructions,
+        swamping the 5 ms of embedding the new ones. Several adds between
+        reads now cost one hash rather than one each.
         """
+        if self._index_version is None:
+            self._index_version = _index_version(self._instruction_list)
         return self._index_version
 
     @property
@@ -501,12 +736,31 @@ class Retriever:
             cache_dir: If provided, cache embeddings to this directory.
         """
         self._instruction_list = list(self.corpus)
-        self._index_version = _index_version(self._instruction_list)
+        self._mandatory_for = None            # recomputed on next use
+        self._row_of_id = {inst.id: row
+                           for row, inst in enumerate(self._instruction_list)}
+        self._items.rebuild(self._instruction_list)
+        # A build states the whole item set, so a replay can start from it
+        # without anything earlier. Earlier deltas are kept rather than
+        # discarded: a retrieval audited before this build was recorded at a
+        # version those deltas describe, and dropping them would leave that
+        # record unreplayable.
+        if self._items.count:
+            self._note_item_delta("baseline", items=[
+                i.model_dump(mode="json") for i in self._instruction_list
+                if i.type == InstructionType.ITEM])
+        self._index_version = None
         self._has_required_tags = any(
             inst.scope.required_tags for inst in self._instruction_list
         )
+        self._declared_tags = {
+            t for inst in self._instruction_list
+            for t in (*inst.tags, *inst.scope.tags, *inst.scope.required_tags)
+        }
+        self._warned_unknown_select = set()
         if not self._instruction_list:
             logger.warning("Corpus is empty, nothing to index.")
+            self._index_version = ""
             self._built = True
             return
 
@@ -545,6 +799,341 @@ class Retriever:
             self._backend.build_index(embeddings)
         self._built = True
         logger.info("Index built with %d instructions.", len(self._instruction_list))
+
+    def add(self, instructions: "Instruction | list[Instruction]",
+            cache_dir: str | Path | None = None) -> None:
+        """Index more instructions without rebuilding what is already indexed.
+
+        Only the texts with no vector yet are embedded, through the same
+        per-text cache :meth:`build_index` uses, and the corpus and the index
+        are extended together.
+
+        **The results equal a rebuild's exactly, and the cache is what makes
+        that true rather than the arithmetic.** A vector is not a pure
+        function of its text for a service embedder: what shares its batch
+        moves it, by about 1e-3 in one measurement, which is enough to reorder
+        a close pair. So this does not promise that re-embedding gives the
+        same answer twice. It promises that nothing is re-embedded, because a
+        vector computed once is cached by text and read back. With
+        ``cache_embeddings`` off, or no ``cache_dir`` ever given, a service
+        embedder holds only to a tolerance.
+
+        A backend that cannot append is rebuilt instead
+        (:attr:`~bear.backends.embeddings.base.EmbeddingBackendBase.supports_incremental`).
+        The results are identical either way, for the same reason: no vector is
+        recomputed. Only the cost differs. BM25 is rebuilt for a further
+        reason, that its IDF is corpus-wide, so adding one document moves every
+        other document's score and a correct add has to recompute it.
+        """
+        if isinstance(instructions, Instruction):
+            instructions = [instructions]
+        fresh = [i for i in instructions if self.corpus.get(i.id) is None]
+        for inst in instructions:
+            self.corpus.add(inst)
+        if not self._built:
+            return
+        if not fresh:
+            # Every id was already present, so the texts may have changed and
+            # row numbers would no longer line up. Rebuild rather than guess.
+            self.build_index(cache_dir or self._cache_dir)
+            return
+
+        if not self._backend.supports_incremental or self._is_bm25 or self._is_itr:
+            self.build_index(cache_dir or self._cache_dir)
+            return
+
+        store_dir = Path(cache_dir) if cache_dir else self._cache_dir
+        if store_dir:
+            store_dir.mkdir(parents=True, exist_ok=True)
+        texts = [self._instruction_text(i) for i in fresh]
+        embeddings = self._embed_texts_cached(texts, store_dir, persist=False)
+        self._backend.add_rows(embeddings, fresh)
+        before = self._items.buckets
+        for offset, inst in enumerate(fresh):
+            self._row_of_id[inst.id] = len(self._instruction_list) + offset
+            self._items.set(inst)
+        first_new = len(self._instruction_list)
+        self._instruction_list.extend(fresh)
+        # Incrementally, not by invalidating: an application that adds
+        # constantly would otherwise recompute the whole set on the next
+        # query and pay the scan this replaced.
+        self._note_rows(range(first_new, len(self._instruction_list)))
+        added = [i.model_dump(mode="json") for i in fresh
+                 if i.type == InstructionType.ITEM]
+        if added:
+            # The whole item, not its id: a replay has to rebuild it to re-run
+            # a retrieval against it.
+            self._note_item_delta("add", items=added, reshard_from=before)
+        self._has_required_tags = self._has_required_tags or any(
+            i.scope.required_tags for i in fresh)
+        self._declared_tags |= {
+            t for i in fresh
+            for t in (*i.tags, *i.scope.tags, *i.scope.required_tags)
+        }
+        self._index_version = None
+
+    def _note_item_delta(self, kind: str, *, reshard_from: int | None = None,
+                         **body) -> None:
+        """Record one item change, keyed by the version it produced.
+
+        A reshard is recorded too, because the bucket count is part of the
+        version's definition: without it, a replay after a reshard would
+        recompute with the wrong count and report a mismatch on a set it had
+        rebuilt correctly.
+        """
+        delta = {"kind": kind, "item_version": self._items.version,
+                 "item_buckets": self._items.buckets, **body}
+        if reshard_from is not None and reshard_from != self._items.buckets:
+            delta["resharded_from"] = reshard_from
+        self._item_deltas.append(delta)
+
+    def take_item_deltas(self) -> list[dict]:
+        """Hand over the item changes recorded since the last call.
+
+        Drained rather than copied, so a change is written to a log once. The
+        audit calls it when it records a retrieval, since the audit records
+        what a turn did and items change between turns.
+        """
+        deltas, self._item_deltas = self._item_deltas, []
+        return deltas
+
+    def reinforce(self, ids: "str | list[str]", now: float, *,
+                  boost: float = 0.0, cap: float = 1.0) -> int:
+        """Record that these items were reinforced at *now*, and say how many.
+
+        Metadata only, so nothing is re-embedded and nothing is rebuilt: the
+        content is unchanged, which means the vector still stands, and the
+        salience columns are rewritten in place. A reinforcement is the most
+        frequent thing that happens to a large item store, and the only path a
+        caller had before this, adding the reinforced copy back, rebuilt the
+        whole index: 16 ms at 4,000 items and growing with the store, for what
+        is a write to three numbers.
+
+        *boost* raises the stored salience to no more than *cap*, and defaults
+        to raising nothing, so a reinforcement moves recency alone unless
+        asked. An id that is absent, or that names something which is not an
+        item, is skipped. See :func:`bear.items.reinforce`, which this uses,
+        so the two cannot drift.
+        """
+        from bear.items import reinforce as _reinforce
+
+        updated = self._revise_items(
+            ids, lambda inst: _reinforce(inst, now, boost=boost, cap=cap))
+        if updated:
+            # Batched, since reinforcement is the most frequent change and one
+            # record per tick keeps the log small. Never sampled: a sampled
+            # log cannot be replayed exactly.
+            self._note_item_delta("reinforce", reinforced=[
+                {"id": fresh.id,
+                 "reinforced": fresh.metadata.get("reinforced"),
+                 "salience": fresh.metadata.get("salience")}
+                for _, fresh in updated])
+        return len(updated)
+
+    def _revise_items(self, ids, transform):
+        """Apply *transform* to each named item and write the result back.
+
+        The one write path for every revision: the corpus, the built row, the
+        item digest, the backend's salience columns and the index version.
+        reinforce, adjust and set_importance all go through here, so they
+        cannot drift in what they update or forget to update. Returns the
+        (before, after) pairs, which the caller records.
+
+        An id that is absent, or that names something which is not an item, is
+        skipped rather than raising, as reinforce has always done.
+        """
+        from bear.items import is_item
+
+        if isinstance(ids, str):
+            ids = [ids]
+        rows: list[int] = []
+        updated: list[tuple[Instruction, Instruction]] = []
+        for inst_id in ids:
+            inst = self.corpus.get(inst_id)
+            if inst is None or not is_item(inst):
+                continue
+            fresh = transform(inst)
+            self.corpus.add(fresh)
+            row = self._row_of_id.get(inst_id)
+            if row is not None and self._built:
+                self._instruction_list[row] = fresh
+                # A revision changes metadata alone, so membership cannot
+                # move. Updated anyway, so the invariant is not assumed.
+                self._note_rows([row])
+                rows.append(row)
+            updated.append((inst, fresh))
+        for _, fresh in updated:
+            self._items.set(fresh)
+        if rows:
+            setter = getattr(self._backend, "update_salience", None)
+            if setter is not None:
+                setter(rows, [self._instruction_list[r] for r in rows])
+        if updated:
+            self._index_version = None
+        return updated
+
+    def adjust(self, ids, *, delta=None, scale=None,
+               floor: float = 0.0, cap: float = 1.0,
+               now: float | None = None) -> int:
+        """Revise these items' salience, and say how many changed.
+
+        A changed estimate rather than a new event, so the clock is left alone
+        unless *now* is passed. See :func:`bear.items.adjust`, which this
+        uses, so the two cannot drift, and which explains why *scale* is the
+        right form for a judgement and *delta* for a correction.
+
+        *ids* may be a mapping of id to value, for when the computed amount
+        differs per item, which is the usual case when the amount comes from a
+        statistic. The mapping's values are deltas or scales according to
+        which keyword is given, and that keyword then carries no value itself.
+
+        Metadata only, so nothing is re-embedded and the salience columns are
+        rewritten in place.
+        """
+        from bear.items import adjust as _adjust
+
+        per_id = None
+        if isinstance(ids, dict):
+            if (delta is None) == (scale is None):
+                raise ValueError(
+                    "a mapping needs exactly one of delta= and scale= to say "
+                    "which it holds")
+            per_id, ids = dict(ids), list(ids)
+
+        def transform(inst):
+            d, s = delta, scale
+            if per_id is not None:
+                value = per_id[inst.id]
+                d, s = (value, None) if delta is not None else (None, value)
+            return _adjust(inst, delta=d, scale=s, floor=floor, cap=cap,
+                           now=now)
+
+        updated = self._revise_items(ids, transform)
+        if updated:
+            self._note_revisions(updated)
+        return len(updated)
+
+    def set_importance(self, ids, importance: float | None = None) -> int:
+        """Set these items' importance, and say how many changed.
+
+        Importance is a floor on effective significance and does not decay, so
+        this is how a memory that matters keeps mattering when it has not been
+        mentioned for a year. *ids* may be a mapping of id to importance, for
+        when it differs per item.
+
+        See :func:`bear.items.set_importance`, which this uses, for why
+        importance is set rather than nudged.
+        """
+        from bear.items import set_importance as _set
+
+        per_id = None
+        if isinstance(ids, dict):
+            per_id, ids = dict(ids), list(ids)
+        elif importance is None:
+            raise ValueError("importance is required unless ids is a mapping")
+
+        updated = self._revise_items(
+            ids,
+            lambda inst: _set(inst, per_id[inst.id] if per_id is not None
+                              else importance))
+        if updated:
+            self._note_revisions(updated)
+        return len(updated)
+
+    def rest(self, ids: "str | list[str]", now: float) -> int:
+        """Put these items to rest at *now*, their goal met, and say how many.
+
+        An item already at rest is skipped, so it keeps the time it first
+        rested. See :func:`bear.items.rest`, which this uses, so the two
+        cannot drift. Metadata only, so nothing is re-embedded.
+        """
+        from bear.items import rest as _rest, resting as _resting
+
+        ids = [ids] if isinstance(ids, str) else list(ids)
+        awake = [i for i in ids
+                 if self.corpus.get(i) is not None and _resting(self.corpus.get(i)) is None]
+        updated = self._revise_items(awake, lambda inst: _rest(inst, now))
+        if updated:
+            self._note_revisions(updated)
+        return len(updated)
+
+    def wake(self, ids: "str | list[str]", now: float, *,
+             salience: float = 1.0) -> int:
+        """Wake these resting items at *now*, back at *salience*, and say how
+        many. An item not at rest is skipped, since waking is for what rests.
+        See :func:`bear.items.wake`."""
+        from bear.items import resting as _resting, wake as _wake
+
+        ids = [ids] if isinstance(ids, str) else list(ids)
+        asleep = [i for i in ids
+                  if self.corpus.get(i) is not None and _resting(self.corpus.get(i)) is not None]
+        updated = self._revise_items(asleep, lambda inst: _wake(inst, now, salience=salience))
+        if updated:
+            self._note_revisions(updated)
+        return len(updated)
+
+    def resting(self) -> list[str]:
+        """The ids of the items at rest, in corpus order."""
+        from bear.items import is_item, resting as _resting
+
+        return [i.id for i in self.corpus.instructions
+                if is_item(i) and _resting(i) is not None]
+
+    def _note_revisions(self, updated) -> None:
+        """Record a revision in the item delta log.
+
+        One kind for every revision that is not a reinforcement, carrying the
+        value before as well as after. Replay needs only the after. The before
+        is what makes the log readable without replaying it, which is why the
+        log exists at all.
+
+        A field absent from an entry was not changed. So a revision that
+        leaves the clock alone writes no clock, and replay cannot set it to
+        None, which is what reusing the reinforce kind would have done.
+        """
+        entries = []
+        for before, after in updated:
+            entry = {"id": after.id}
+            for field in ("salience", "importance", "reinforced", "resting"):
+                was = before.metadata.get(field)
+                now_ = after.metadata.get(field)
+                if now_ != was:
+                    entry[field] = now_
+                    entry[field + "_before"] = was
+            if len(entry) > 1:
+                entries.append(entry)
+        if entries:
+            self._note_item_delta("revise", revised=entries)
+
+    def remove(self, ids: "str | list[str]",
+               cache_dir: str | Path | None = None) -> None:
+        """Drop these instructions from the corpus and the index.
+
+        Removal compacts rather than tombstoning: the index is rebuilt from
+        what is left. Row numbers must line up with ``_instruction_list``, and
+        leaving holes in it would mean every scan over that list, the hard-gate
+        injection and the mandatory sweep included, had to know about holes.
+        Nothing is re-embedded, since the cache holds a vector per text, so the
+        cost is restacking an array rather than embedding a corpus. If removal
+        ever becomes hot enough for that to matter, masking rows and compacting
+        occasionally is the next step, and it is a change behind this method
+        rather than in front of it.
+        """
+        if isinstance(ids, str):
+            ids = [ids]
+        gone = [i for i in ids if self.corpus.get(i) is not None]
+        for inst_id in gone:
+            self.corpus.remove(inst_id)
+        if not gone or not self._built:
+            return
+        # Rebuilding states the whole remaining set, so the baseline it writes
+        # already records the removal and no separate delta is needed. That
+        # makes a removal the one heavy entry in the log, which is acceptable
+        # while removal is rare, as it is in the workload this was built for.
+        # If removal ever becomes frequent, a compact delta and an incremental
+        # discard on the digest are the change, and both already exist
+        # (ItemDigest.discard).
+        self.build_index(cache_dir or self._cache_dir)
 
     def retrieve(
         self,
@@ -597,7 +1186,9 @@ class Retriever:
         # Inject query into context for trigger_pattern matching
         context = context.model_copy(update={"query": query})
 
-        top_k = top_k or self._config.default_top_k
+        # ALL means every row that passes, so no backend is told a size.
+        want_all = top_k == self.ALL
+        top_k = n_all if (n_all := len(self._instruction_list)) and want_all             else (top_k or self._config.default_top_k)
         threshold = threshold if threshold is not None else self._config.default_threshold
         priority_weight = self._config.priority_weight
 
@@ -622,11 +1213,13 @@ class Retriever:
         # corpora, lets flat-scored items displace genuinely-similar matches and
         # depresses retrieval quality.  Widen the over-fetch to the full corpus
         # when gated so the admissible set is ranked by real similarity; the
-        # backfill then becomes a no-op (all admissible items are already
-        # scored).  Non-gated queries are unaffected.
+        # backfill then becomes a no-op (every admissible item is already
+        # scored or was set aside by the threshold, which the backfill skips).
+        # Non-gated queries are unaffected.
         n = len(self._instruction_list)
-        gated = self._has_required_tags and context is not None and bool(context.tags)
-        overfetch_k = n if gated else min(n, top_k * 3)
+        gated = (self._has_required_tags and context is not None
+                 and bool(context.all_tags))
+        overfetch_k = n if (gated or want_all) else min(n, top_k * 3)
 
         if self._is_bm25:
             from bear.backends.embeddings.bm25_backend import BM25Backend
@@ -642,7 +1235,14 @@ class Retriever:
             if self._backend.supports_metadata_filtering and metadata_filter:
                 # Backend applies the gate itself and returns admissible items
                 # ranked by similarity; top_k*2 covers the requested top_k.
-                search_k = min(n, top_k * 2)
+                # Overfetch the whole corpus when gated, as the unfiltered
+                # path does. The filter narrows by selection across every
+                # holder, and the gate then drops the other holders' rows
+                # afterwards, so a window of top_k*2 selected rows can leave
+                # far fewer than top_k once gated, and nothing refills it:
+                # the injection scan skips items by design. Measured on a
+                # real store, one holder got 1 result where 5 were due.
+                search_k = n if (want_all or gated) else min(n, top_k * 2)
                 raw_results = self._backend.search_with_filter(
                     query_embedding, search_k, metadata_filter=metadata_filter,
                 )
@@ -652,6 +1252,19 @@ class Retriever:
         # Step 3: Score, filter by scope, and collect
         scored: list[ScoredInstruction] = []
         seen_ids: set[str] = set()
+        # What the threshold set aside. The backfill in Step 3.5 must not put
+        # it back, or the threshold never filters a gated instruction.
+        below_threshold: set[str] = set()
+
+        # Faded salience per row, in one array operation rather than a lookup
+        # into Instruction metadata per candidate. None when nothing fades.
+        salience_of = None
+        if context is not None and context.now is not None:
+            column = getattr(self._backend, "salience_at", None)
+            if column is not None:
+                values = column(context.now, context.half_life, context.recent)
+                if values is not None:
+                    salience_of = lambda row: float(values[row])  # noqa: E731
 
         for idx, similarity in raw_results:
             inst = self._instruction_list[idx]
@@ -662,19 +1275,22 @@ class Retriever:
             # similarity score.  Other scope fields remain soft (high
             # similarity can still include instructions whose optional
             # tags don't match).
-            if inst.scope.required_tags and context and context.tags is not None:
-                if not all(t in context.tags for t in inst.scope.required_tags):
-                    if trace is not None:
-                        trace.exclude(inst.id, "gate", similarity)
-                    continue
-            elif inst.scope.required_tags:
-                # No context tags at all — required_tags can't be satisfied
+            if not _passes_gate(inst, context):
                 if trace is not None:
                     trace.exclude(inst.id, "gate", similarity)
                 continue
 
+            # Selection, which a query demands of what it retrieves. Beside
+            # the gate rather than inside it: the gate is what an instruction
+            # demands of a query, and the two are different questions.
+            if not _selects(inst, context):
+                if trace is not None:
+                    trace.exclude(inst.id, "select", similarity)
+                continue
+
             scope_match = inst.scope.matches(context)
             if similarity < threshold and not scope_match:
+                below_threshold.add(inst.id)
                 if trace is not None:
                     trace.exclude(inst.id, "threshold", similarity)
                 continue
@@ -686,6 +1302,13 @@ class Retriever:
             # Final score combines similarity with priority
             priority_normalized = inst.priority / 100.0
             final_score = (1 - priority_weight) * similarity + priority_weight * priority_normalized
+            # An item's score is scaled by how salient it still is, so a
+            # faded memory sinks while similarity still leads. Items only:
+            # an instruction carries no salience, and nothing should fade a
+            # mandatory one, which is scored at priority/100 below and
+            # exempted from the top_k cut.
+            if salience_of is not None and inst.type == InstructionType.ITEM:
+                final_score *= salience_of(idx)
 
             scored.append(ScoredInstruction(
                 instruction=inst,
@@ -695,10 +1318,25 @@ class Retriever:
             ))
 
         # Step 3.5: Inject instructions whose required_tags match the context
-        # but were not returned by vector search (analogous to mandatory injection).
-        # This guarantees that hard-gated instructions are never missed due to
-        # the fixed over-fetch ratio in vector search.
-        required_matches = self._inject_required_tags_matches(context, seen_ids)
+        # but were not returned by the search (analogous to mandatory
+        # injection). A gated query over-fetches the whole corpus, so on the
+        # dense path this adds nothing, as Step 2's comment says. What the
+        # search did return and the threshold set aside was not missed, so it
+        # stays out, unless the config restores the old behavior to reproduce
+        # earlier runs.
+        skip = set() if self._config.restore_below_threshold else below_threshold
+        # Skipped where it provably cannot return anything: if the search
+        # returned every row then every gate-passing instruction was already
+        # scored or set aside by the threshold, and skip holds the set-aside
+        # ones. The scan re-checks the gate and selection itself, so those
+        # exclusions stand. Measured at 86,944 items it was 7% of a query
+        # spent finding nothing. With restore_below_threshold on, skip is
+        # empty and the scan does have work, so it runs.
+        if len(raw_results) >= n and not self._config.restore_below_threshold:
+            required_matches: list[ScoredInstruction] = []
+        else:
+            required_matches = self._inject_required_tags_matches(
+                context, seen_ids, skip)
         scored.extend(required_matches)
 
         # Step 4: Add mandatory instructions (e.g., safety) that aren't already included
@@ -712,13 +1350,16 @@ class Retriever:
                 trace.admit(s.id, "mandatory")
 
         # Step 5: Handle instruction relationships
-        scored = self._resolve_relationships(scored, trace)
+        scored = self._resolve_relationships(scored, trace, context)
 
         # Step 6: Sort by final_score descending, then by priority
         scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
 
         # Step 7: Return top-k, with mandatory instructions exempt from the cut
         result = self._top_k_keeping_mandatory(scored, top_k)
+        # Mark them, so the composer keeps them too.
+        for s in result:
+            s.mandatory = self._is_mandatory(s.instruction)
         if trace is not None:
             kept = {s.id for s in result}
             for s in scored:
@@ -731,6 +1372,7 @@ class Retriever:
             instructions=result,
             metadata={
                 "context_tags": context.tags if context else [],
+                "context_gate_tags": context.gate_tags if context else [],
                 "threshold": threshold,
                 "top_k": top_k,
             },
@@ -798,27 +1440,48 @@ class Retriever:
         return results
 
     def _inject_required_tags_matches(
-        self, context: Context, already_seen: set[str]
+        self, context: Context, already_seen: set[str],
+        skip: set[str] | frozenset[str] = frozenset(),
     ) -> list[ScoredInstruction]:
         """Inject instructions whose required_tags are satisfied by the context.
 
-        Vector search may miss these instructions when the over-fetch pool
-        is too small relative to the corpus.  This scan guarantees that any
-        instruction whose hard-gate tags match the current context is
-        included, regardless of vector similarity ranking.
+        This guarantees that a gate-passing instruction is not lost because
+        the search left it out of its pool. Since a gated query over-fetches
+        the whole corpus (Step 2), the dense path leaves nothing out, so on
+        that path the scan adds nothing. It can still add an instruction
+        where a search drops rows itself, as BM25 does with a zero score.
+
+        ``skip`` holds what the search returned and the threshold set aside.
+        Those were not missed, and injecting them at priority/100 would rank
+        them above what passed the threshold. With
+        ``Config.restore_below_threshold`` on, ``skip`` is empty and the scan
+        puts them back, as it did before the threshold fix.
         """
-        if not context or not context.tags:
+        if not context or not context.all_tags:
             return []
 
-        context_tags = set(context.tags)
+        context_tags = set(context.all_tags)
         results: list[ScoredInstruction] = []
 
-        for inst in self._instruction_list:
-            if inst.id in already_seen:
+        for row in sorted(self._injectable_rows()):
+            inst = self._instruction_list[row]
+            if inst.id in already_seen or inst.id in skip:
+                continue
+            # An item is never injected. The scan exists so a hard-gated
+            # instruction is not missed because of the over-fetch ratio, and
+            # an item's gate is its facet and its owner, which a question
+            # about what an agent holds carries. So every item that agent owns
+            # would be injected at a flat score on every query, ignoring
+            # similarity and selection alike, and a large held corpus would
+            # swamp the ranking and cost a full scan. An item is found by
+            # similarity within the selection, or not at all.
+            if inst.type == InstructionType.ITEM:
                 continue
             if not inst.scope.required_tags:
                 continue
-            if all(t in context_tags for t in inst.scope.required_tags):
+            if not _selects(inst, context):
+                continue
+            if _passes_gate(inst, context):
                 priority_normalized = inst.priority / 100.0
                 results.append(ScoredInstruction(
                     instruction=inst,
@@ -839,7 +1502,12 @@ class Retriever:
             return []
 
         results = []
-        for inst in self._instruction_list:
+        # Only the rows that carry a mandatory tag, in list order so the
+        # result is the same as the scan's. The scan also gate-checked every
+        # other instruction and did nothing with the outcome, since both the
+        # trace and the result below are guarded by _is_mandatory.
+        for row in sorted(self._mandatory_rows()):
+            inst = self._instruction_list[row]
             if inst.id in already_seen:
                 continue
 
@@ -847,32 +1515,45 @@ class Retriever:
             # where admissible", not "include for every agent". Without this,
             # an agent-scoped instruction that happens to carry a mandatory
             # tag is injected into every other agent's prompt.
-            if inst.scope.required_tags:
-                ctx_tags = set(context.tags) if context and context.tags else set()
-                if not set(inst.scope.required_tags) <= ctx_tags:
-                    # Recorded, since "why did the safety rule not apply?" is
-                    # the question an audit most needs to answer.
-                    if trace is not None and self._is_mandatory(inst):
-                        trace.exclude(inst.id, "gate")
-                    continue
+            if not _passes_gate(inst, context):
+                # Recorded, since "why did the safety rule not apply?" is
+                # the question an audit most needs to answer.
+                if trace is not None:
+                    trace.exclude(inst.id, "gate")
+                continue
 
-            if self._is_mandatory(inst):
-                priority_normalized = inst.priority / 100.0
-                results.append(ScoredInstruction(
-                    instruction=inst,
-                    similarity=0.0,
-                    scope_match=inst.scope.matches(context),
-                    final_score=priority_normalized,
-                ))
-                already_seen.add(inst.id)
+            # Every row here carries a mandatory tag by construction, so the
+            # second _is_mandatory check the scan needed is gone.
+            priority_normalized = inst.priority / 100.0
+            results.append(ScoredInstruction(
+                instruction=inst,
+                similarity=0.0,
+                scope_match=inst.scope.matches(context),
+                final_score=priority_normalized,
+            ))
+            already_seen.add(inst.id)
 
         return results
 
     def _resolve_relationships(
         self, scored: list[ScoredInstruction],
         trace: _RetrievalTrace | None = None,
+        context: Context | None = None,
     ) -> list[ScoredInstruction]:
-        """Handle conflicts_with, requires, and supersedes relationships."""
+        """Handle conflicts_with, requires, and supersedes relationships.
+
+        A required instruction is gated like any other. It used not to be:
+        ``requires`` read it straight from the corpus and asserted
+        ``scope_match=True``, so a shared instruction naming a gated one in
+        ``requires`` pulled it into every prompt, whatever the context held.
+        With owned and classified items in a corpus that is a leak, and before
+        items it already bypassed ownership.
+
+        Selection is not applied here, unlike the gate. ``requires`` is a
+        dependency the corpus declares, and selection is what one query asked
+        for, so a query's narrowing does not break a stated dependency. The
+        gate is not a preference and is applied unconditionally.
+        """
         id_map = {s.instruction.id: s for s in scored}
         to_remove: set[str] = set()
 
@@ -917,6 +1598,10 @@ class Retriever:
             for req_id in s.instruction.requires:
                 if req_id not in id_map and req_id not in to_remove:
                     req_inst = self.corpus.get(req_id)
+                    if req_inst and not _passes_gate(req_inst, context):
+                        if trace is not None:
+                            trace.exclude(req_inst.id, "gate", 0.0, s.instruction.id)
+                        continue
                     if req_inst:
                         added = ScoredInstruction(
                             instruction=req_inst,
@@ -933,6 +1618,65 @@ class Retriever:
         result = [s for s in scored if s.instruction.id not in to_remove]
         result.extend(required_to_add)
         return result
+
+    def _mandatory_rows(self) -> set[int]:
+        """The rows carrying a mandatory tag.
+
+        _get_mandatory_instructions used to iterate the whole corpus on every
+        query. Measured at 86,944 items it was 86% of a query's time, 869,440
+        gate checks for ten queries, and it found nothing, because the
+        mandatory set is a handful of instructions however large the corpus.
+
+        Membership is a property of an instruction's tags, so it changes only
+        when the instruction list does, and it is maintained there. Recomputed
+        in full only when the configured tags change, which a caller may do
+        after the index was built.
+        """
+        self._build_row_sets()
+        return self._mandatory
+
+    def _injectable_rows(self) -> set[int]:
+        """The rows the required-tags backfill could ever return.
+
+        Its first two tests are that the instruction is not an item, since an
+        item is never injected, and that it carries required_tags. Both are
+        properties of the instruction, so the candidates are maintained here
+        rather than rediscovered by walking the corpus on every query.
+        Measured at 86,944 items, that walk was 58% of a query once the
+        mandatory scan was gone, and it returned nothing.
+        """
+        self._build_row_sets()
+        return self._injectable
+
+    def _build_row_sets(self) -> None:
+        """Compute both maintained sets, if they are not already current.
+
+        In full only when first needed or when the configured mandatory tags
+        change, which a caller may do after the index was built.
+        """
+        tags = tuple(self._config.mandatory_tags or ())
+        if self._mandatory_for == tags:
+            return
+        self._mandatory_for = tags
+        self._mandatory = set()
+        self._injectable = set()
+        self._note_rows(range(len(self._instruction_list)))
+
+    def _note_rows(self, rows) -> None:
+        """Bring these rows' membership of both sets up to date."""
+        if self._mandatory_for is None:
+            return                     # nothing cached yet, so nothing stale
+        for row in rows:
+            inst = self._instruction_list[row]
+            if self._is_mandatory(inst):
+                self._mandatory.add(row)
+            else:
+                self._mandatory.discard(row)
+            if (inst.type != InstructionType.ITEM
+                    and inst.scope.required_tags):
+                self._injectable.add(row)
+            else:
+                self._injectable.discard(row)
 
     def _is_mandatory(self, inst: Instruction) -> bool:
         """True if ``inst`` carries one of the configured mandatory tags."""
@@ -964,12 +1708,48 @@ class Retriever:
     def _build_metadata_filter(self, context: Context) -> MetadataFilter | None:
         """Build a backend-agnostic :class:`MetadataFilter` from the context.
 
-        Returns *None* when no useful filter can be constructed.  Each
-        backend translates the filter into its own native DSL.
+        Returns *None* when no useful filter can be constructed. Each backend
+        translates the filter into its own native DSL.
+
+        Only ``select_all`` and ``select_any`` reach it. ``tags`` used to, as
+        ``tags_any``, which made the soft ranking channel a hard prefilter on
+        whichever backends could filter, so the same query over the same
+        corpus returned different candidates depending on the backend. That
+        was intended once, and the test asserting it did not check that
+        anything was narrowed. Selection is the explicit way to say it now, so
+        the implicit form is gone: context tags rank, gate tags gate, select
+        tags select.
         """
-        if not context.tags:
+        fading = (context.min_salience is not None and context.now is not None)
+        if not (context.select_all or context.select_any or fading):
             return None
-        return MetadataFilter(tags_any=list(context.tags))
+        self._warn_unknown_select(context)
+        return MetadataFilter(
+            tags_any=list(context.select_any),
+            tags_all=list(context.select_all),
+            min_salience=context.min_salience,
+            now=context.now,
+            half_life=context.half_life,
+            recent=context.recent,
+        )
+
+    def _warn_unknown_select(self, context: Context) -> None:
+        """Warn once about a select tag no indexed instruction carries.
+
+        Such a selection matches nothing and says nothing about why, which is
+        how a narrowing by owner went unnoticed while returning empty on every
+        query. Not an error: a corpus may legitimately hold nothing of a kind
+        yet, and refusing would make a query fail where it should simply find
+        nothing.
+        """
+        for tag in (*context.select_all, *context.select_any):
+            if tag in self._declared_tags or tag in self._warned_unknown_select:
+                continue
+            self._warned_unknown_select.add(tag)
+            logger.warning(
+                "Selection %r matches no indexed instruction: no tag, scope "
+                "tag or required tag declares it, so this query can only "
+                "return nothing.", tag)
 
     def _instruction_text(self, inst: Instruction) -> str:
         """Create structured text to embed for an instruction.
@@ -978,6 +1758,13 @@ class Retriever:
         fields, and tags — so the embedding captures both *what* the
         instruction says and *when* it applies.
         """
+        # An item is data, so it is embedded as its content alone. Its
+        # descriptive tags select it and its required tags gate it, and
+        # neither should move its ranking, which is the reasoning behind
+        # Context.gate_tags applied to the instruction side. See bear.items.
+        if inst.type == InstructionType.ITEM:
+            return inst.content
+
         header_parts: list[str] = []
         header_parts.append(f"[{inst.type.value.upper()}]")
         header_parts.append(f"[priority:{inst.priority}]")
@@ -1026,34 +1813,118 @@ class Retriever:
     def _cache_key(self) -> str:
         """The cache file holding vectors for this model and text format.
 
-        Keyed on the embedding model and format version only, never on which
-        instructions are present: one text's vector does not depend on the rest
-        of the corpus, so adding an instruction must not invalidate the others.
-        The earlier key was a hash over every instruction id, which meant a
-        corpus that grew while running re-embedded itself in full on every
-        addition and left one file behind per corpus state.
+        Keyed on the embedder in use and the format version only, never on
+        which instructions are present: one text's vector does not depend on
+        the rest of the corpus, so adding an instruction must not invalidate
+        the others. The earlier key was a hash over every instruction id,
+        which meant a corpus that grew while running re-embedded itself in
+        full on every addition and left one file behind per corpus state.
+
+        An embedder that names itself is asked, through ``model_id`` or
+        ``model_name``, because a caller may supply its own and then
+        ``Config.embedding_model`` describes a model that is not being used.
+        Two applications sharing a ``cache_dir`` would then name the same
+        file: at a different width the width guard catches it and re-embeds,
+        but at the same width they would read each other's vectors with
+        nothing to notice.
+
+        An embedder that names nothing falls back to its class name together
+        with the configured model, since that label is the only thing left
+        that distinguishes two models behind one class. Bear's own
+        :class:`Embedder` carries the configured model as its ``model_name``,
+        so the default file keeps the name it already had and an existing
+        cache stays valid.
         """
-        model_slug = self._config.embedding_model.replace("/", "_")
-        return f"embeddings_v{self._EMBEDDING_FORMAT_VERSION}_{model_slug}.npz"
+        slug = self._embedder_slug()
+        for bad in ("/", "\\", ":"):
+            slug = slug.replace(bad, "_")
+        return f"embeddings_v{self._EMBEDDING_FORMAT_VERSION}_{slug}.npz"
+
+    def _embedder_slug(self) -> str:
+        """What identifies the vectors this retriever's embedder produces.
+
+        Used by both the cache file's name and each text's key, because a
+        vector belongs to whatever computed it. Two names for one idea is how
+        this went wrong: the file was named for the configured model while the
+        per-text key was salted with it as well, so a caller supplying its own
+        embedder got a file named after a model it was not using, and every
+        cached vector was discarded whenever that unrelated label changed.
+        """
+        named = (getattr(self._embedder, "model_id", None)
+                 or getattr(self._embedder, "model_name", None))
+        if named:
+            return str(named)
+        return f"{type(self._embedder).__name__}_{self._config.embedding_model}"
 
     def _vector_key(self, text: str) -> str:
-        """Cache key for one text, under this model and format version.
+        """Cache key for one text, under this embedder and format version.
 
-        The model slug is in the file name and in the key, so a hit can never
-        serve a vector computed by a different model. ``is_query`` is part of
-        the key as well: a task-aware embedder encodes a passage and a query
-        differently, and only passages are stored here.
+        The embedder's identity is in the file name and in the key, so a hit
+        can never serve a vector computed by a different embedder. It is the
+        embedder's identity rather than the configured model's: a caller may
+        supply its own embedder, and then the configured name describes a
+        model that is not running. Salting this with that name meant every
+        cached vector was discarded whenever an unrelated label changed, and
+        two different embedders under one label would have read each other's.
+        ``is_query`` is part of the key as well: a task-aware embedder encodes
+        a passage and a query differently, and only passages are stored here.
         """
         payload = "\x00".join((
             str(self._EMBEDDING_FORMAT_VERSION),
-            self._config.embedding_model,
+            self._embedder_slug(),
             "passage",
             text,
         ))
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
+    def flush_cache(self) -> int:
+        """Write vectors held in memory to the cache file, and say how many.
+
+        :meth:`add` keeps new vectors in memory rather than rewriting the
+        store, because the store is one file holding every vector and
+        rewriting it costs about as much as a full rebuild: measured at 0.68
+        seconds against 0.73 for 13,000 vectors, which would dominate a run
+        that adds continuously. So an application that adds calls this where
+        it already saves its own state, and the two stay in step.
+
+        :meth:`build_index` flushes on its own, so a caller that only ever
+        builds needs nothing. Returns 0 when there is nothing to write.
+        """
+        if not self._pending_vectors or not self._cache_file:
+            return 0
+        written = len(self._pending_vectors)
+        self._vector_store.update(self._pending_vectors)
+        try:
+            np.savez(self._cache_file, **self._vector_store)
+        except OSError as exc:
+            logger.warning("Could not write embedding cache %s: %s",
+                           self._cache_file, exc)
+            return 0
+        self._pending_vectors = {}
+        logger.info("Flushed %d vectors to %s", written, self._cache_file)
+        return written
+
+    def __del__(self) -> None:
+        """Say so if vectors were never written, rather than losing them quietly.
+
+        Deferring the write is what makes an add cheap, and the cost is that
+        an application which never flushes keeps re-embedding the same texts
+        on every run with nothing to show why. A silent loss of a cache is
+        exactly the kind of fault that hides, so it announces itself.
+        """
+        try:
+            pending = len(getattr(self, "_pending_vectors", ()) or ())
+            if pending:
+                logger.warning(
+                    "%d embedded vectors were never written: call "
+                    "flush_cache() where the application saves, or they are "
+                    "re-embedded next run.", pending)
+        except Exception:        # interpreter shutdown, nothing to be done
+            pass
+
     def _embed_texts_cached(
-        self, texts: list[str], store_dir: Path | None
+        self, texts: list[str], store_dir: Path | None,
+        persist: bool = True,
     ) -> np.ndarray:
         """Vectors for ``texts``, embedding only the ones not already cached.
 
@@ -1061,6 +1932,9 @@ class Retriever:
         It is a parameter rather than the retained ``_cache_dir`` so that a
         build is cached only when *this* call asks for it: a retriever handed a
         directory once and nothing later must not quietly keep using it.
+
+        With *persist* false the new vectors stay in memory until
+        :meth:`flush_cache`, which is what :meth:`add` does.
 
         With no directory this embeds everything, exactly as an uncached build
         always did. A corrupt or unreadable store logs and re-embeds rather than
@@ -1071,21 +1945,34 @@ class Retriever:
             return self._embedder.embed(texts, is_query=False)
 
         cache_file = store_dir / self._cache_key()
-        store: dict[str, np.ndarray] = {}
-        if cache_file.exists():
-            try:
-                with np.load(cache_file) as data:
-                    store = {k: data[k] for k in data.files}
-                logger.info("Loaded %d cached vectors from %s", len(store), cache_file)
-            except (OSError, ValueError, EOFError) as exc:
-                logger.warning("Ignoring unreadable embedding cache %s: %s",
-                               cache_file, exc)
-                store = {}
+        if cache_file != self._cache_file:
+            # A different store than the one in memory, so start from it.
+            self.flush_cache()
+            self._cache_file = cache_file
+            self._vector_store = {}
+            self._loaded_cache = False
+        if not self._loaded_cache:
+            if cache_file.exists():
+                try:
+                    with np.load(cache_file) as data:
+                        self._vector_store = {k: data[k] for k in data.files}
+                    logger.info("Loaded %d cached vectors from %s",
+                                len(self._vector_store), cache_file)
+                except (OSError, ValueError, EOFError) as exc:
+                    logger.warning("Ignoring unreadable embedding cache %s: %s",
+                                   cache_file, exc)
+                    self._vector_store = {}
+            self._loaded_cache = True
+        # Looked up in both rather than merged into one: merging copies every
+        # vector reference on every call, which is O(corpus) per add.
+        def cached(key):
+            got = self._pending_vectors.get(key)
+            return got if got is not None else self._vector_store.get(key)
 
         keys = [self._vector_key(t) for t in texts]
         # dict.fromkeys keeps first-seen order and drops duplicate texts, so a
         # repeated instruction text is embedded once.
-        missing = [k for k in dict.fromkeys(keys) if k not in store]
+        missing = [k for k in dict.fromkeys(keys) if cached(k) is None]
         if missing:
             wanted = {}
             for key, text in zip(keys, texts):
@@ -1094,11 +1981,11 @@ class Retriever:
                         len(missing), len(texts), len(texts) - len(missing))
             fresh = self._embedder.embed([wanted[k] for k in missing], is_query=False)
             for key, vector in zip(missing, fresh):
-                store[key] = vector
+                self._pending_vectors[key] = vector
         else:
             logger.info("All %d instruction vectors came from the cache.", len(texts))
 
-        vectors = [store[k] for k in keys]
+        vectors = [cached(k) for k in keys]
         widths = {v.shape[-1] for v in vectors}
         if len(widths) > 1:
             # A store that mixes widths cannot be stacked. Only reachable if a
@@ -1108,10 +1995,6 @@ class Retriever:
             return self._embedder.embed(texts, is_query=False)
         embeddings = np.vstack(vectors)
 
-        if missing:
-            try:
-                np.savez(cache_file, **store)
-            except OSError as exc:
-                logger.warning("Could not write embedding cache %s: %s",
-                               cache_file, exc)
+        if missing and persist:
+            self.flush_cache()
         return embeddings

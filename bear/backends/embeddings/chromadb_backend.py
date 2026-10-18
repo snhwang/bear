@@ -93,8 +93,12 @@ class ChromaDBBackend(EmbeddingBackendBase):
 
         Stored metadata fields:
         - ``instruction_id``, ``type``, ``priority`` (always)
-        - ``tag_<name>: True`` for every tag on the instruction
-        - ``scope_tag_<name>: True`` for every tag on the scope
+        - ``tag_<name>: True`` for every tag the instruction carries, in
+          ``tags``, ``scope.tags`` or ``scope.required_tags``, since the
+          retriever's selection rule counts all three and a prefilter holding
+          fewer narrows more than the rule and runs first
+        - ``scope_tag_<name>: True`` for every tag on the scope, kept for
+          readers that want the distinction
         """
         self._ensure_client()
         self._recreate_collection()
@@ -106,7 +110,7 @@ class ChromaDBBackend(EmbeddingBackendBase):
                 "type": inst.type.value,
                 "priority": inst.priority,
             }
-            for tag in inst.tags:
+            for tag in (*inst.tags, *inst.scope.tags, *inst.scope.required_tags):
                 meta[f"tag_{tag}"] = True
             for tag in inst.scope.tags:
                 meta[f"scope_tag_{tag}"] = True
@@ -154,9 +158,18 @@ class ChromaDBBackend(EmbeddingBackendBase):
 
         pairs = self._parse_results(results)
 
-        # If the filter produced no results, retry without it so we don't
-        # return an empty set when there are valid candidates.
-        if not pairs and where:
+        # A filter that narrows by selection and matches nothing means
+        # nothing, so it is not retried without the filter. Widening would
+        # answer a different question from the one asked: a query for only an
+        # agent's family memories that has none wants none. The older
+        # behaviour widened, which made an empty selection return the whole
+        # corpus. A filter carrying no selection keeps the old retry, since
+        # there the filter is a narrowing of convenience rather than part of
+        # the question.
+        selective = bool(metadata_filter
+                         and (metadata_filter.tags_all
+                              or metadata_filter.type_in))
+        if not pairs and where and not selective:
             kwargs.pop("where", None)
             results = self._collection.query(**kwargs)
             pairs = self._parse_results(results)
@@ -178,6 +191,9 @@ class ChromaDBBackend(EmbeddingBackendBase):
                 clauses.append(tag_clauses[0])
             else:
                 clauses.append({"$or": tag_clauses})
+
+        if mf.tags_all:
+            clauses.extend({f"tag_{t}": True} for t in mf.tags_all)
 
         if mf.min_priority is not None:
             clauses.append({"priority": {"$gte": mf.min_priority}})
