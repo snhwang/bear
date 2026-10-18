@@ -12,6 +12,17 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-18
+
+This release brings the library (`bear/`) and its tests to bear-dev 1ceebc7.
+The examples are unchanged since 0.2.0, so the entries below about
+`evolutionary_ecosystem` and `bear_parlor` describe bear-dev's examples, which
+this release does not include. Held back with them are
+`tests/test_parlor_access.py`, `tests/test_parlor_protocol.py`,
+`tests/test_ecosystem_scope.py` and `tests/test_spans.py`. `design/checks.md`
+and `design/marker-expression.md` cite ecosystem design notes that are not
+published here.
+
 ### Fixed
 
 - `evolutionary_ecosystem`: the live runner keeps the world paused until every
@@ -1263,7 +1274,8 @@ the initial submission of the *Retrieval-Governed Context* paper.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/snhwang/bear/releases/tag/v0.3.0
 [0.2.0]: https://github.com/snhwang/bear/releases/tag/v0.2.0
 [0.1.10]: https://github.com/snhwang/bear/releases/tag/v0.1.10
 [0.1.9]: https://github.com/snhwang/bear/releases/tag/v0.1.9
