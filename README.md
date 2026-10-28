@@ -244,6 +244,52 @@ result = composer.compose(instructions)
 
 The textual summary is built from the same partitioned instruction set as the structured tool array, so the two views cannot drift. The flag is off by default; existing behavior is unchanged.
 
+### Tool-Call Gate (New in 0.3.1)
+
+Retrieval decides what an agent is told. `bear.gate` decides whether a tool call the agent proposes may run, and answers allow, approve (ask a human) or block. Its rules are instructions in the same corpus, so they are scoped and prioritised like any other.
+
+```yaml
+instructions:
+  - id: tool-terminal
+    type: tool
+    priority: 70
+    content: "Shell access for maintenance."
+    scope:
+      required_tags: [role:operator]
+    actions:
+      function: terminal
+      gate:
+        decision: approve            # ask a human by default
+        args:
+          - match: {command: '^\s*git\s+status\b'}
+            decision: allow          # but a read-only git status may run
+
+  - id: protect-audit-log
+    type: constraint
+    priority: 100
+    tags: [must-have]
+    content: "Never touch the audit log."
+    actions:
+      forbid:
+        - tool: terminal
+          args: {command: 'audit[^ ]*\.jsonl'}
+```
+
+```python
+from bear.gate import ToolCall, evaluate, lint
+from bear.models import Context
+
+operator = Context(tags=["role:operator"])
+evaluate(ToolCall("terminal", {"command": "git status"}), operator, corpus)       # allow
+evaluate(ToolCall("terminal", {"command": "rm -rf build"}), operator, corpus)     # approve
+evaluate(ToolCall("terminal", {"command": "cat audit.jsonl"}), operator, corpus)  # block: must_have
+evaluate(ToolCall("terminal", {"command": "git status"}),
+         Context(tags=["role:guest"]), corpus)                                     # block: out_of_scope
+lint(corpus)   # [] when every rule can be read
+```
+
+A must-have that forbids the call blocks it whatever else the corpus says. A tool with no allow rule gets the `unlisted` decision, approve by default. Otherwise the highest-priority allow rule whose `required_tags` the context satisfies decides, by its first matching argument rule or else its default. Scope is tested by `bear.scope.passes_gate`, the same test the retriever applies. The gate does no I/O, reads no clock and calls no model, so the same inputs always give the same decision, and a recorded decision can be checked by running it again. Each `Decision` carries the `action`, a `reason` and the ids of the rules that decided it.
+
 ## Breeding & Evolution
 
 BEAR supports behavioral inheritance: two parent corpora can be combined to produce an offspring corpus.
