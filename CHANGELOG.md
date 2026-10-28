@@ -12,6 +12,27 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.3.1] — 2026-10-28
+
+This release adds the tool-call gate to the library (`bear/`) and its test.
+The examples are unchanged since 0.2.0.
+
+### Added
+
+- `bear.gate`: a deterministic tool-call gate. Given a proposed call, a
+  `Context` and the corpus, `evaluate` returns allow, approve (ask a human) or
+  block, with the reason. It does no I/O, reads no clock and calls no model, so
+  the same inputs always give the same decision, and a recorded decision can be
+  checked by running it again. An allow rule is a `type: tool` instruction whose `actions.function`
+  names the tool, with an optional `actions.gate` holding the default decision
+  and argument rules. A must-have, an instruction tagged `must-have` with
+  `actions.forbid`, blocks whatever else the corpus says. `lint` reports gate
+  rules `evaluate` cannot read, and allow rules that a tag an integration adds
+  itself could widen.
+- `bear.scope.passes_gate`: the required-tags test as a public function. It is
+  the test the retriever applies, so a tool and the guidance that goes with it
+  are admitted on the same terms.
+
 ## [0.3.0] — 2026-10-18
 
 This release brings the library (`bear/`) and its tests to bear-dev 1ceebc7.
