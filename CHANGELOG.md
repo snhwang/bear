@@ -12,6 +12,128 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-10-29
+
+This release adds the Hermes Agent plugin, tool narrowing and gate with
+reason to the library, and a public retrieval trace. It also fixes five
+retriever behaviours. They change results, and each has a `Config` switch
+that reproduces the old one. The examples are unchanged since 0.2.0.
+
+### Added
+
+- `bear.audit`: an explicit turn lifecycle (`Auditor.open_turn`,
+  `Turn.activate`, `Turn.close`) for turns that span threads, and tool-call
+  records written as they happen (`bear.decision/1` before the tool runs,
+  `bear.outcome/1` after). `verify-audit` re-runs the gate for every recorded
+  decision.
+- `bear.integrations.hermes`: a Hermes Agent plugin that composes BEAR
+  guidance into each turn, gates every tool call, and records both. Installed
+  with the `hermes` extra, found through the `hermes_agent.plugins` entry
+  point. Setup is in the README (Hermes Agent Plugin).
+- `bear.remote_embedder.RemoteEmbedder`: embeddings from any
+  OpenAI-compatible `/v1/embeddings` service, such as a local embedding
+  server, with no
+  packages beyond the core. `identity()` returns the model the service
+  reports (`model_id` and `dim` from `/health`, else `/v1/models`), so a
+  record names it.
+- `Retriever.retrieve_with_trace` and `bear.audit.RetrievalTrace`: the
+  results of `retrieve` with how each candidate came in, why each one left
+  out was left out, the pool the search ranked and whether a gate applied.
+  The trace was private (`_RetrievalTrace`, still importable).
+- `bear.narrowing`: which of a host's tools to offer a model. A tool is
+  withheld when the gate would block every call to it. The rest are ranked by
+  BEAR retrieval over the host's own tool descriptions, with the allow rules
+  supplying only scope, priority and tags, and cut to `k`. The ranking scores
+  the whole tool corpus, so a larger cut is always a superset. The cut is pure,
+  so a recorded ranking can be checked again.
+- `bear.audit`: `bear.narrowing/1` and `bear.model_call/1` records, and
+  `verify_narrowings`, which `verify-audit` runs. Under BM25 a narrowing
+  replays fully. Under a remote embedder its policy part replays from the
+  recorded similarities (`match_recorded`).
+- Hermes plugin: tool narrowing through Hermes's `llm_request` middleware
+  (`narrow: off | observe | on`, per turn or per session), and token usage per
+  model call through `llm_execution`. Tool-call decisions record whether the
+  tool was offered. Off by default, and with it off every record is unchanged.
+- Gate with reason (`annotate_tools`): the Hermes plugin tells the model why
+  each tool was offered and why the others are unavailable, in a block
+  appended to the turn's user message. The tools array is the same byte for
+  byte with it on or off. `withheld_disclosure` (`names`, `counts` or `none`)
+  sets how much the withheld part says, since naming a withheld tool reveals
+  that it exists. `bear.narrowing.annotate` builds the text from the
+  selection with fixed phrases, and `verify-audit` checks it on replay.
+- Hermes plugin, after the first run inside Hermes v0.22.2. A turn with no
+  platform is a CLI turn, as Hermes treats it. Observe mode under Hermes's
+  tool search ranks Hermes's whole registry (`registry_toolsets`), since the
+  request then carries only the direct tools. Tool-call decisions record
+  `sent` (was the tool in the request Hermes sent) beside `offered`.
+  Model-call records carry the BEAR `turn_id`. `narrow_top_k: null` offers
+  every tool the gate admits. `withheld_names_max` caps the list of withheld
+  tools that `names` disclosure writes.
+
+### Changed
+
+- **Breaking.** `sentence-transformers` is no longer a core dependency, so a
+  plain `pip install bear` no longer brings torch. Code that uses the default
+  in-process dense model must install `bear[embeddings]`. BM25, remote
+  embedders and the Hermes plugin run without it. The `all`, `eval` and `dev`
+  extras and `requirements.txt` still include it, and the default model's
+  error names the extra when it is missing.
+- Every audit turn record carries `decision_ids`, the ids of the tool-call
+  decisions recorded during the turn, empty when there were none. Logs written
+  before this still verify.
+- The retriever's required-tags test is now `bear.scope.passes_gate`, the
+  function the tool gate uses, in place of its own copy of the same test.
+
+### Fixed
+
+- `bear.__version__` matches the package version. 0.3.1 reported 0.3.0
+  while pip reported 0.3.1, and audit records copy it into `bear_version`, so
+  logs written by 0.3.1 name 0.3.0. A test now checks it against
+  `pyproject.toml`.
+- `Retriever`: an instruction added because another `requires` it was never
+  checked against `conflicts_with` or `supersedes`, so a dependency could
+  bring a conflicting pair into the result, and its own requirements were
+  never added. Added instructions now meet the same rules as retrieved ones,
+  with the instruction already chosen keeping a tie, and their requirements
+  are added in turn. An instruction also used to appear without a
+  prerequisite that was gated out, displaced, missing from the corpus, or cut
+  by `top_k` or the composer. Now an ordinary instruction never appears
+  without what it requires. It is dropped, the drop cascades, and anything in
+  only because it was required leaves with it. A mandatory instruction stays
+  and the audit record lists what it is missing (`missing_prerequisites`).
+  Prerequisites of a kept instruction are exempt from the `top_k` cut and the
+  composer's caps, so a result can exceed `top_k`. An instruction in only
+  because another requires it never takes a `top_k` slot of its own, and it
+  stays only while a chain of `requires` from an instruction retrieved on its
+  own merit reaches it. The trace gains the reasons
+  `prerequisite` and `unrequired`. `restore_unchecked_requires=True` on
+  `Config` and on `Composer` reproduces the old result.
+- `Retriever`: an ungated search ranked a pool of `top_k * 3`, so a larger
+  `top_k` searched a larger pool, and an instruction in the top 1 could drop
+  out of the top 2. The pool is now `Config.retrieval_pool` (by default three
+  times `default_top_k`, the pool the default k always had), or `top_k` when a
+  call asks for more, so every cut up to the pool is a prefix of one ranking.
+  A call at `default_top_k` gets the same pool as before.
+  `Config.restore_pool_by_k=True` reproduces the old pool. Audit records carry
+  the three settings, and a record without them replays the old way.
+- `Retriever`: conflicts and supersedes were resolved in the order the search
+  ranked the candidates, so which instructions survived could depend on which
+  was most similar (7% of random cases). They are now resolved in a fixed
+  order, mandatory first, then priority descending, then id.
+  `Config.restore_ranked_resolution=True` reproduces the old order.
+- `Retriever`: an instruction already removed by a conflict or a supersedes
+  still applied its own `conflicts_with` and `supersedes`, and one that lost a
+  conflict partway through its list went on through the rest. So a removed
+  instruction could remove others, and the result was smaller than the rules
+  justify. A removed instruction now removes nothing.
+  `Config.restore_removed_acting=True` reproduces the old pass.
+- `Retriever`: an ungated search pooled the most similar instructions whether
+  or not their gate could pass, so with a narrow context most of the pool went
+  to instructions the gate then rejected, and admissible ones were crowded out.
+  The pool now holds the most similar instructions whose gate passes.
+  `Config.restore_ungated_pool=True` reproduces the old pool. Audit records
+  carry both settings, and a record without them replays the old way.
+
 ## [0.3.1] — 2026-10-28
 
 This release adds the tool-call gate to the library (`bear/`) and its test.
