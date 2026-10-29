@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import contextlib
 import contextvars
 import hashlib
 import json
@@ -41,7 +42,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Coroutine
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Iterable
 
 if TYPE_CHECKING:
     from bear.backends.llm.base import GenerateRequest, GenerateResponse
@@ -54,6 +55,15 @@ logger = logging.getLogger(__name__)
 TURN_SCHEMA = "bear.turn/1"
 CORPUS_SCHEMA = "bear.corpus/1"
 ITEMS_SCHEMA = "bear.items/1"
+# A tool-call decision from bear.gate, written the moment it is made, before
+# the tool runs, and the outcome written after. A decision with no outcome
+# reads as "dispatched, result unknown".
+DECISION_SCHEMA = "bear.decision/1"
+OUTCOME_SCHEMA = "bear.outcome/1"
+# Which tools a model request offered and why (bear.narrowing), and what one
+# model call cost (tokens, finish reason), for calls made outside bear.LLM.
+NARROWING_SCHEMA = "bear.narrowing/1"
+MODEL_CALL_SCHEMA = "bear.model_call/1"
 
 Sink = Callable[[dict], None]
 
@@ -111,16 +121,46 @@ def _outside_turn(fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
 # Retrieval trace — filled in by Retriever.retrieve while a turn is open
 # ---------------------------------------------------------------------------
 
-class _RetrievalTrace:
-    """Why each candidate was admitted or left out, for one retrieval."""
+class RetrievalTrace:
+    """Why each candidate was admitted or left out, for one retrieval.
+
+    :meth:`bear.retriever.Retriever.retrieve_with_trace` returns one beside
+    the results, and an audit turn records one for every retrieval.
+
+    Attributes:
+        admitted: Id to how it entered the candidates: ``search``,
+            ``required_tags``, ``mandatory`` or ``requires``. An instruction
+            admitted and later removed is in both this and ``excluded``.
+        excluded: Id to ``{"id", "reason", "similarity", "by"}``. The reasons
+            are ``gate``, ``threshold``, ``superseded``, ``conflict``,
+            ``prerequisite``, ``unrequired`` and ``top_k``. ``by`` names the
+            instruction that removed it, or the missing prerequisite.
+        missing_prerequisites: A mandatory instruction kept although
+            something it requires was unavailable, with the missing ids.
+        effective_query: The text that was searched.
+        context: The context of the retrieval.
+        top_k: The cut, after ``Retriever.ALL`` and the default resolve.
+        threshold: The threshold applied.
+        pool: How many of the most similar instructions the search ranked.
+        gated: Whether a gate applied, which makes the pool the whole corpus.
+
+    Instructions outside the pool are never candidates and are not listed. An
+    ungated search over a corpus that gates anything scans in similarity
+    order until the pool holds ``pool`` instructions that pass the gate, so
+    the gate-failing ones it scans past are listed as ``gate`` exclusions
+    with a similarity, though none of them took a place in the pool.
+    """
 
     def __init__(self) -> None:
         self.admitted: dict[str, str] = {}
         self.excluded: dict[str, dict] = {}
+        self.missing_prerequisites: dict[str, list[str]] = {}
         self.effective_query = ""
         self.context: Context | None = None
         self.top_k = 0
         self.threshold = 0.0
+        self.pool = 0
+        self.gated = False
 
     def admit(self, inst_id: str, how: str) -> None:
         # An instruction left out of the search results (below threshold,
@@ -137,6 +177,10 @@ class _RetrievalTrace:
                 "similarity": None if similarity is None else float(similarity),
                 "by": by,
             }
+
+
+# The name it had while it was private, kept for code that imported it.
+_RetrievalTrace = RetrievalTrace
 
 
 # ---------------------------------------------------------------------------
@@ -173,6 +217,9 @@ class Turn:
             "compositions": [],
             "actions": [],
             "generations": [],
+            # Ids of bear.decision/1 records made during this turn. The
+            # decisions themselves are written when made, not here.
+            "decision_ids": [],
         }
         self._snapshots: dict[str, list] = {}
         # Item changes, as deltas rather than snapshots. A snapshot per
@@ -196,9 +243,49 @@ class Turn:
         """Attach app data to the record. Non-JSON values are written with str()."""
         self._record["notes"][key] = value
 
-    # -- Context manager ------------------------------------------------------
+    # -- Explicit lifecycle ---------------------------------------------------
+    #
+    # For a turn that starts and ends in different threads or callbacks, as
+    # in an agent's hooks, where one ``with`` block cannot span the turn.
+    # Open it with Auditor.open_turn(), wrap the work that should record into
+    # it in ``with turn.activate():``, and finish with close().
 
-    def __enter__(self) -> Turn:
+    @contextlib.contextmanager
+    def activate(self):
+        """Make this the current turn for the body of a ``with`` block.
+
+        Retrievals, compositions and generations inside the block record into
+        this turn, in whatever thread runs the block.
+        """
+        if not self._opened:
+            raise RuntimeError("Open the turn with Auditor.open_turn() first.")
+        token = _TURN.set(self)
+        try:
+            yield self
+        finally:
+            _TURN.reset(token)
+
+    def close(self, *, response: str | None = None, status: str | None = None,
+              error: BaseException | None = None) -> None:
+        """Finish the turn and write it. A second call does nothing.
+
+        ``status`` replaces the default (``ok``, or ``error`` when ``error``
+        is given), for instance ``interrupted`` for a turn whose reply never
+        came.
+        """
+        if not self._opened:
+            raise RuntimeError("Open the turn with Auditor.open_turn() first.")
+        if self._closed:
+            return
+        if response is not None:
+            self.set_response(response)
+        self._finish(error, status=status)
+
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
+    def _open(self) -> None:
         if self._opened:
             raise RuntimeError("An audit turn can be opened only once.")
         self._opened = True
@@ -206,16 +293,10 @@ class Turn:
         self._record["parent_turn_id"] = parent.turn_id if parent else None
         self._record["started_at"] = _now_iso()
         self._t0 = time.perf_counter()
-        self._token = _TURN.set(self)
-        return self
 
-    def __exit__(self, exc_type, exc, tb) -> bool:
-        try:
-            _TURN.reset(self._token)
-        except ValueError:
-            # Closed in a different context from the one it was opened in.
-            _TURN.set(None)
-        self._closed = True
+    def _finish(self, exc: BaseException | None, *, status: str | None = None) -> None:
+        with self._lock:
+            self._closed = True
         from bear import __version__
 
         rec = self._record
@@ -225,7 +306,29 @@ class Turn:
         if exc is not None:
             rec["status"] = "error"
             rec["error"] = _error(exc)
+        if status is not None:
+            rec["status"] = status
         self._auditor._write(self, body_raised=exc is not None)
+
+    def _note_decision(self, decision_id: str) -> None:
+        with self._lock:
+            if not self._closed:
+                self._record["decision_ids"].append(decision_id)
+
+    # -- Context manager ------------------------------------------------------
+
+    def __enter__(self) -> Turn:
+        self._open()
+        self._token = _TURN.set(self)
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> bool:
+        try:
+            _TURN.reset(self._token)
+        except ValueError:
+            # Closed in a different context from the one it was opened in.
+            _TURN.set(None)
+        self._finish(exc)
         return False
 
     async def __aenter__(self) -> Turn:
@@ -246,7 +349,7 @@ class Turn:
             self._record[kind].append({"seq": self._seq, "at": at, **entry})
 
     def _record_retrieval(
-        self, retriever: Retriever, query: str, trace: _RetrievalTrace,
+        self, retriever: Retriever, query: str, trace: RetrievalTrace,
         results: list[ScoredInstruction], started: tuple[str, float],
     ) -> None:
         from bear.retriever import Embedder
@@ -256,7 +359,10 @@ class Turn:
             "embedding_backend", "embedding_model", "embedding_dim",
             "embedding_query_prefix", "embedding_passage_prefix",
             "default_top_k", "default_threshold", "priority_weight",
-            "mandatory_tags", "restore_below_threshold",
+            "mandatory_tags", "restore_below_threshold", "retrieval_pool",
+            "restore_pool_by_k", "restore_unchecked_requires",
+            "restore_ranked_resolution", "restore_ungated_pool",
+            "restore_removed_acting",
         })
         embedder_mode = None
         if isinstance(embedder, Embedder):
@@ -309,6 +415,8 @@ class Turn:
             ],
             "excluded": list(trace.excluded.values()),
         }
+        if trace.missing_prerequisites:
+            entry["missing_prerequisites"] = dict(trace.missing_prerequisites)
         self._add("retrievals", started[0], entry)
 
     def _record_composition(
@@ -409,6 +517,94 @@ class Auditor:
         return Turn(self, session_id=session_id, user_id=user_id,
                     agent_id=agent_id, notes=notes)
 
+    def open_turn(self, *, session_id: str = "", user_id: str = "",
+                  agent_id: str = "", notes: dict | None = None) -> Turn:
+        """A turn already open, for the explicit lifecycle.
+
+        Use it where one ``with`` block cannot span the turn. Record into it
+        inside ``with turn.activate():`` and finish it with ``turn.close()``.
+        """
+        turn = Turn(self, session_id=session_id, user_id=user_id,
+                    agent_id=agent_id, notes=notes)
+        turn._open()
+        return turn
+
+    def record_decision(self, record: dict, *, index_version: str = "",
+                        instructions: list | None = None,
+                        turn: Turn | None = None) -> str:
+        """Write one tool-call decision now, before the tool runs.
+
+        ``record`` holds the fields of a ``bear.decision/1`` record: the
+        call, the context, the gate's inputs and its decision. The schema, a
+        ``decision_id`` and ``decided_at`` are filled in if missing. If this auditor has not yet
+        written the corpus version the gate read, its snapshot is written
+        first, so the log alone can replay the decision. The id is also noted
+        on ``turn`` when given. Returns the decision id.
+
+        Raises :class:`AuditWriteError` if a sink fails and the auditor is
+        strict. A caller gating a tool should then refuse the call, since
+        the intent could not be recorded.
+        """
+        decision_id = record.get("decision_id") or uuid.uuid4().hex
+        full = {"schema": DECISION_SCHEMA, "decision_id": decision_id,
+                "decided_at": _now_iso(), "index_version": index_version, **record}
+        full["schema"] = DECISION_SCHEMA
+        full["decision_id"] = decision_id
+        records: list[dict] = []
+        new_versions: list[str] = []
+        with self._lock:
+            if (self._snapshot_corpus and index_version and instructions is not None
+                    and index_version not in self._written_versions):
+                new_versions.append(index_version)
+                records.append(_corpus_record(index_version, instructions))
+        records.append(full)
+        self._emit(records, new_versions, what=f"decision {decision_id}", raise_errors=True)
+        if turn is not None:
+            turn._note_decision(decision_id)
+        return decision_id
+
+    def record_outcome(self, record: dict) -> None:
+        """Write what happened to a decided call, joined by ``decision_id``."""
+        full = {"schema": OUTCOME_SCHEMA, "recorded_at": _now_iso(), **record}
+        full["schema"] = OUTCOME_SCHEMA
+        self._emit([full], [], what=f"outcome {record.get('decision_id', '')}",
+                   raise_errors=True)
+
+    def record_narrowing(self, record: dict, *,
+                         snapshots: Iterable[tuple[str, list]] = ()) -> str:
+        """Write one tool-narrowing decision (``bear.narrowing/1``) now.
+
+        ``snapshots`` are ``(index_version, instructions)`` pairs, for the
+        policy corpus and the tool corpus the selection read. Each is written
+        first if this auditor has not written it yet, so the log alone can
+        replay the selection. Fills in ``narrowing_id`` and ``recorded_at``
+        if missing and returns the id.
+        """
+        narrowing_id = record.get("narrowing_id") or uuid.uuid4().hex
+        full = {"schema": NARROWING_SCHEMA, "narrowing_id": narrowing_id,
+                "recorded_at": _now_iso(), **record}
+        full["schema"] = NARROWING_SCHEMA
+        full["narrowing_id"] = narrowing_id
+        records: list[dict] = []
+        new_versions: list[str] = []
+        with self._lock:
+            if self._snapshot_corpus:
+                for version, instructions in snapshots:
+                    if (version and version not in self._written_versions
+                            and version not in new_versions):
+                        new_versions.append(version)
+                        records.append(_corpus_record(version, instructions))
+        records.append(full)
+        self._emit(records, new_versions, what=f"narrowing {narrowing_id}", raise_errors=True)
+        return narrowing_id
+
+    def record_model_call(self, record: dict) -> None:
+        """Write the tokens and finish reason of one model call (``bear.model_call/1``)."""
+        full = {"schema": MODEL_CALL_SCHEMA, "recorded_at": _now_iso(), **record}
+        full["schema"] = MODEL_CALL_SCHEMA
+        self._emit([full], [], what=f"model call {record.get('api_request_id', '')}",
+                   raise_errors=False)
+
     def _write(self, turn: Turn, body_raised: bool) -> None:
         records: list[dict] = []
         new_versions: list[str] = []
@@ -418,17 +614,16 @@ class Auditor:
                     if version in self._written_versions:
                         continue
                     new_versions.append(version)
-                    records.append({
-                        "schema": CORPUS_SCHEMA,
-                        "index_version": version,
-                        "captured_at": _now_iso(),
-                        "instructions": [i.model_dump(mode="json") for i in instructions],
-                    })
+                    records.append(_corpus_record(version, instructions))
         for delta in turn._item_deltas:
             records.append({"schema": ITEMS_SCHEMA,
                             "captured_at": _now_iso(), **delta})
         records.append(turn._record)
+        self._emit(records, new_versions, what=f"turn {turn.turn_id}",
+                   raise_errors=not body_raised)
 
+    def _emit(self, records: list[dict], new_versions: list[str], *,
+              what: str, raise_errors: bool) -> None:
         # Normalize to plain JSON so every sink gets the same values.
         records = [json.loads(json.dumps(r, default=str)) for r in records]
         if self._redact is not None:
@@ -442,15 +637,24 @@ class Auditor:
                     sink(record)
                 except Exception as exc:  # a sink failure must not skip the others
                     errors.append(exc)
-                    logger.error("bear.audit: sink %r failed for turn %s: %s",
-                                 sink, turn.turn_id, exc)
+                    logger.error("bear.audit: sink %r failed for %s: %s",
+                                 sink, what, exc)
         if not errors:
             with self._lock:
                 self._written_versions.update(new_versions)
-        elif self._strict and not body_raised:
+        elif self._strict and raise_errors:
             raise AuditWriteError(
-                f"{len(errors)} audit write(s) failed for turn {turn.turn_id}"
+                f"{len(errors)} audit write(s) failed for {what}"
             ) from errors[0]
+
+
+def _corpus_record(version: str, instructions: list) -> dict:
+    return {
+        "schema": CORPUS_SCHEMA,
+        "index_version": version,
+        "captured_at": _now_iso(),
+        "instructions": [i.model_dump(mode="json") for i in instructions],
+    }
 
 
 class JsonlSink:
@@ -506,6 +710,35 @@ def _apply_redaction(record: dict, fn: Callable[[str], str]) -> None:
         for inst in record["instructions"]:
             inst["content"] = fn(inst.get("content", ""))
         return
+    if record.get("schema") == DECISION_SCHEMA:
+        record["calls"] = _redact_strings(record.get("calls", []), fn)
+        record["args"] = _redact_strings(record.get("args", {}), fn)
+        ctx = record.get("context") or {}
+        for key in ("query", "refined_query"):
+            if key in ctx:
+                ctx[key] = fn(ctx[key])
+        if "custom" in ctx:
+            ctx["custom"] = _redact_strings(ctx["custom"], fn)
+        record["redacted"] = True
+        return
+    if record.get("schema") == OUTCOME_SCHEMA:
+        if record.get("error_message"):
+            record["error_message"] = fn(record["error_message"])
+        record["redacted"] = True
+        return
+    if record.get("schema") == NARROWING_SCHEMA:
+        if isinstance(record.get("query"), str):
+            record["query"] = fn(record["query"])
+        ctx = record.get("context") or {}
+        for key in ("query", "refined_query"):
+            if key in ctx:
+                ctx[key] = fn(ctx[key])
+        if "custom" in ctx:
+            ctx["custom"] = _redact_strings(ctx["custom"], fn)
+        record["redacted"] = True
+        return
+    if record.get("schema") == MODEL_CALL_SCHEMA:
+        return
 
     for r in record["retrievals"]:
         r["query"] = fn(r["query"])
@@ -549,6 +782,12 @@ class AuditLog:
     # Items come as a delta log in the order written, because a snapshot per
     # change would write every item again each time.
     item_deltas: list[dict] = field(default_factory=list)
+    # Tool-call decisions and their outcomes, in the order written.
+    decisions: list[dict] = field(default_factory=list)
+    outcomes: list[dict] = field(default_factory=list)
+    # Tool narrowings and model calls, in the order written.
+    narrowings: list[dict] = field(default_factory=list)
+    model_calls: list[dict] = field(default_factory=list)
 
 
 def read_audit_log(path: str | Path) -> AuditLog:
@@ -567,6 +806,14 @@ def read_audit_log(path: str | Path) -> AuditLog:
                 log.corpora.setdefault(record["index_version"], record["instructions"])
             elif record.get("schema") == ITEMS_SCHEMA:
                 log.item_deltas.append(record)
+            elif schema == DECISION_SCHEMA:
+                log.decisions.append(record)
+            elif schema == OUTCOME_SCHEMA:
+                log.outcomes.append(record)
+            elif schema == NARROWING_SCHEMA:
+                log.narrowings.append(record)
+            elif schema == MODEL_CALL_SCHEMA:
+                log.model_calls.append(record)
             else:
                 logger.warning("bear.audit: %s line %d has unknown schema %r, skipped",
                                path, n, schema)
@@ -628,6 +875,16 @@ def _replay(turn: dict, record: dict, log: AuditLog,
     # with the backfill putting back what the threshold set aside, so it
     # replays that way.
     config.setdefault("restore_below_threshold", True)
+    # Likewise a record made before the pool stopped growing with top_k,
+    # before dependencies were checked for conflicts, before resolution had a
+    # canonical order, before the ungated pool held only gate-passing
+    # instructions, or before removed instructions stopped acting, replays
+    # the old way.
+    config.setdefault("restore_pool_by_k", True)
+    config.setdefault("restore_unchecked_requires", True)
+    config.setdefault("restore_ranked_resolution", True)
+    config.setdefault("restore_ungated_pool", True)
+    config.setdefault("restore_removed_acting", True)
     if record.get("embedder_mode") == "hash":
         # The recording ran on hash embeddings (explicitly or by fallback).
         config["embedding_model"] = "hash"
@@ -770,6 +1027,185 @@ def verify_item_deltas(path_or_log: "str | Path | AuditLog") -> list[ItemReplay]
     return results
 
 
+@dataclass
+class DecisionReplay:
+    """The outcome of re-deciding one recorded tool call.
+
+    ``status`` is ``match``, ``differs`` or ``skipped`` (``reason`` says why).
+    """
+
+    decision_id: str
+    tool: str
+    status: str
+    reason: str = ""
+    recorded: str = ""
+    replayed: str = ""
+
+
+def verify_decisions(path_or_log: "str | Path | AuditLog") -> list[DecisionReplay]:
+    """Re-run :func:`bear.gate.evaluate` for every recorded decision.
+
+    The gate is pure, so the corpus snapshot, the recorded context, the calls
+    and the recorded gate inputs must give the same action, reason and rules.
+    A decision whose arguments were redacted cannot be re-run and is skipped.
+    """
+    log = (path_or_log if isinstance(path_or_log, AuditLog)
+           else read_audit_log(path_or_log))
+    from bear.gate import ToolCall, evaluate_all
+    from bear.models import Context, Instruction
+
+    corpora: dict[str, list] = {}
+    results: list[DecisionReplay] = []
+    for rec in log.decisions:
+        result = DecisionReplay(decision_id=rec.get("decision_id", ""),
+                                tool=rec.get("tool", ""), status="skipped",
+                                recorded=_decision_key(rec))
+        version = rec.get("index_version", "")
+        if rec.get("redacted") or rec.get("args_redacted"):
+            result.reason = "arguments are redacted"
+        elif rec.get("reason") == "error":
+            result.reason = "the gate raised, so there is no decision to replay"
+        elif version not in log.corpora:
+            result.reason = f"no corpus snapshot for index version {version!r}"
+        else:
+            if version not in corpora:
+                corpora[version] = [Instruction.model_validate(d)
+                                    for d in log.corpora[version]]
+            inputs = rec.get("gate_inputs") or {}
+            try:
+                replayed = evaluate_all(
+                    [ToolCall(c["name"], c.get("args") or {}) for c in rec.get("calls", [])],
+                    Context(**(rec.get("context") or {})), corpora[version],
+                    unlisted=inputs.get("unlisted", "approve"),
+                    degraded=bool(inputs.get("degraded", False)),
+                    must_have_tag=inputs.get("must_have_tag", "must-have"),
+                )
+            except Exception as exc:
+                result.status = "differs"
+                result.reason = f"replay raised {type(exc).__name__}: {exc}"
+            else:
+                result.replayed = _decision_key(replayed.to_dict())
+                result.status = "match" if result.replayed == result.recorded else "differs"
+        results.append(result)
+    return results
+
+
+def _decision_key(d: dict) -> str:
+    return f"{d.get('action')}/{d.get('reason')}/{','.join(d.get('rule_ids') or [])}"
+
+
+@dataclass
+class NarrowingReplay:
+    """The outcome of re-deciding one recorded tool narrowing.
+
+    ``status`` is ``match`` (ranking and cut rerun), ``match_recorded`` (the
+    cut rerun from the recorded ranking, where the embedder cannot be rerun),
+    ``differs`` or ``skipped`` (``reason`` says why).
+    """
+
+    narrowing_id: str
+    status: str
+    reason: str = ""
+    recorded: str = ""
+    replayed: str = ""
+
+
+def verify_narrowings(path_or_log: "str | Path | AuditLog") -> list[NarrowingReplay]:
+    """Re-decide every computed narrowing from the log alone.
+
+    The withheld tools are re-decided by the gate from the policy snapshot and
+    the recorded context. The cut is rerun on the ranking. Under BM25 the
+    ranking itself is rerun from the tool-corpus snapshot. Otherwise, or when
+    the query was redacted, the recorded ranking is used, so the policy part
+    is still checked though the embedding is not. Records that reused an
+    earlier selection are skipped, since the one they reused is checked.
+    """
+    log = (path_or_log if isinstance(path_or_log, AuditLog)
+           else read_audit_log(path_or_log))
+    from bear.config import Config, EmbeddingBackend
+    from bear.corpus import Corpus
+    from bear.models import Context, Instruction
+    from bear.narrowing import annotate, cut, rank_tools, ranking_from_record, withheld_tools
+    from bear.retriever import Retriever
+
+    policies: dict[str, list] = {}
+    results: list[NarrowingReplay] = []
+    for rec in log.narrowings:
+        result = NarrowingReplay(narrowing_id=rec.get("narrowing_id", ""), status="skipped",
+                                 recorded=_narrowing_key(rec))
+        policy_version = rec.get("corpus_version", "")
+        if rec.get("reused_from"):
+            result.reason = f"reuses {rec['reused_from']}"
+        elif rec.get("status") != "ok":
+            result.reason = f"status {rec.get('status')!r}"
+        elif policy_version not in log.corpora:
+            result.reason = f"no policy snapshot for index version {policy_version!r}"
+        else:
+            if policy_version not in policies:
+                policies[policy_version] = [Instruction.model_validate(d)
+                                            for d in log.corpora[policy_version]]
+            s = rec.get("settings") or {}
+            names = list(rec.get("tools_before") or [])
+            bridge = list(s.get("bridge") or [])
+            try:
+                context = Context(**(rec.get("context") or {}))
+                withheld = withheld_tools(names, context, policies[policy_version],
+                                          unlisted=s.get("unlisted", "approve"),
+                                          must_have_tag=s.get("must_have_tag", "must-have"),
+                                          bridge=bridge)
+                recorded_ranking = ranking_from_record(rec.get("offered") or [],
+                                                       rec.get("ranked_out") or [])
+                ranking, full = recorded_ranking, False
+                tool_version = rec.get("index_version", "")
+                if (rec.get("backend") == "bm25" and not rec.get("redacted")
+                        and tool_version in log.corpora):
+                    retriever = Retriever(
+                        Corpus.from_dicts(log.corpora[tool_version]),
+                        config=Config(embedding_backend=EmbeddingBackend.BM25,
+                                      mandatory_tags=list(s.get("mandatory_tags") or []),
+                                      priority_weight=float(s.get("priority_weight", 0.3))))
+                    retriever.build_index()
+                    ranking = rank_tools(retriever, rec.get("query", ""), context, names)
+                    full = True
+                    if [(r.name, r.rule_id) for r in ranking] != \
+                            [(r.name, r.rule_id) for r in recorded_ranking]:
+                        result.status = "differs"
+                        result.reason = "the ranking differs"
+                        result.replayed = ",".join(r.name for r in ranking)
+                        result.recorded = ",".join(r.name for r in recorded_ranking)
+                        results.append(result)
+                        continue
+                k = rec.get("k")
+                sel = cut(names, ranking, withheld, k=None if k is None else int(k),
+                          threshold=float(rec.get("threshold", 0.0)),
+                          always_offer=s.get("always_offer") or (), bridge=bridge)
+            except Exception as exc:
+                result.status = "differs"
+                result.reason = f"replay raised {type(exc).__name__}: {exc}"
+            else:
+                result.replayed = _narrowing_key(sel.to_dict())
+                recorded_text = rec.get("annotation") or ""
+                replayed_text = (annotate(sel, rec.get("disclosure") or "counts",
+                                          s.get("withheld_names_max"))
+                                 if recorded_text else "")
+                if result.replayed != result.recorded:
+                    result.status = "differs"
+                elif replayed_text != recorded_text:
+                    result.status = "differs"
+                    result.reason = "the annotation text differs"
+                else:
+                    result.status = "match" if full else "match_recorded"
+        results.append(result)
+    return results
+
+
+def _narrowing_key(d: dict) -> str:
+    offered = ",".join(f"{p['name']}:{p['path']}" for p in d.get("offered") or [])
+    withheld = ",".join(f"{w['name']}:{w['reason']}" for w in d.get("withheld") or [])
+    out = ",".join(p["name"] for p in d.get("ranked_out") or [])
+    return f"offered[{offered}] withheld[{withheld}] out[{out}] admissible={d.get('admissible')}"
+
+
 def _verify_main(argv: list[str]) -> int:
     """``python -m bear verify-audit LOG`` — print a summary, non-zero if any differ."""
     if len(argv) != 1:
@@ -815,6 +1251,39 @@ def _verify_main(argv: list[str]) -> int:
     summary = ", ".join(f"{counts[s]} {s}" for s in
                         ("match", "reordered", "differs", "skipped") if s in counts)
     print(f"{len(results)} retrievals: {summary or 'none'}")
+
+    decisions = verify_decisions(argv[0])
+    dcounts: dict[str, int] = {}
+    for d in decisions:
+        dcounts[d.status] = dcounts.get(d.status, 0) + 1
+        if d.status != "match":
+            detail = f": {d.reason}" if d.reason else ""
+            print(f"{d.status:9} decision {d.decision_id} [{d.tool}]{detail}")
+            if d.status == "differs" and d.replayed:
+                print(f"          recorded {d.recorded}")
+                print(f"          replayed {d.replayed}")
+    if decisions:
+        dsummary = ", ".join(f"{dcounts[s]} {s}" for s in
+                             ("match", "differs", "skipped") if s in dcounts)
+        print(f"{len(decisions)} decisions: {dsummary}")
+
+    narrowings = verify_narrowings(argv[0])
+    ncounts: dict[str, int] = {}
+    for n in narrowings:
+        ncounts[n.status] = ncounts.get(n.status, 0) + 1
+        if n.status == "differs":
+            detail = f": {n.reason}" if n.reason else ""
+            print(f"{n.status:9} narrowing {n.narrowing_id}{detail}")
+            print(f"          recorded {n.recorded}")
+            print(f"          replayed {n.replayed}")
+    if narrowings:
+        nsummary = ", ".join(f"{ncounts[s]} {s}" for s in
+                             ("match", "match_recorded", "differs", "skipped") if s in ncounts)
+        print(f"{len(narrowings)} narrowings: {nsummary}")
+
     model_fault = len(models) > 1 or any(not u.agrees for u in models)
     item_fault = any(r.status == "differs" for r in items)
-    return 1 if (counts.get("differs") or model_fault or item_fault) else 0
+    decision_fault = bool(dcounts.get("differs"))
+    narrowing_fault = bool(ncounts.get("differs"))
+    return 1 if (counts.get("differs") or model_fault or item_fault
+                 or decision_fault or narrowing_fault) else 0

@@ -16,6 +16,35 @@ def _type_category(instruction: "Instruction") -> str:
     return instruction.type.value
 
 
+def _close(available: list, kept: list) -> list:
+    """Closure over ``requires`` for a composition.
+
+    ``available`` is what the strategy ordered and ``kept`` what the quotas
+    and cap left of it. Every prerequisite of a kept instruction that is
+    available comes back, in its place. Then an ordinary instruction whose
+    prerequisite is not kept is dropped, and the drop cascades. A mandatory
+    one stays whatever it requires.
+    """
+    by_id = {s.id: s for s in available}
+    keep = {s.id for s in kept}
+    pending = [r for s in kept for r in s.instruction.requires]
+    while pending:
+        rid = pending.pop()
+        if rid in keep or rid not in by_id:
+            continue
+        keep.add(rid)
+        pending.extend(by_id[rid].instruction.requires)
+    changed = True
+    while changed:
+        changed = False
+        for s in available:
+            if (s.id in keep and not s.mandatory
+                    and any(r not in keep for r in s.instruction.requires)):
+                keep.discard(s.id)
+                changed = True
+    return [s for s in available if s.id in keep]
+
+
 class CompositionStrategy(str, Enum):
     """Strategies for composing instructions into guidance."""
 
@@ -95,6 +124,7 @@ class Composer:
         tool_summary_header: str = "=== AVAILABLE TOOLS ===",
         tool_summary_footer: str = "=== END AVAILABLE TOOLS ===",
         tool_summary_max_chars: int = 80,
+        restore_unchecked_requires: bool = False,
     ):
         """Initialize the composer.
 
@@ -160,6 +190,13 @@ class Composer:
         tool_summary_max_chars : int
             Maximum characters per tool's description in the summary;
             longer descriptions are truncated with an ellipsis.
+        restore_unchecked_requires : bool
+            The old behaviour, kept to reproduce earlier runs. Off, the
+            composer keeps the prerequisites of every instruction it keeps,
+            as it keeps mandatory ones, whatever ``quotas`` and
+            ``max_instructions`` say, and drops an ordinary instruction whose
+            prerequisite is not among those it was given. On, ``requires`` is
+            ignored here.
         """
         self.strategy = strategy
         self.header = header
@@ -171,6 +208,7 @@ class Composer:
         self.tool_summary_max_chars = tool_summary_max_chars
         self.quotas = dict(quotas) if quotas else None
         self.category = category
+        self.restore_unchecked_requires = restore_unchecked_requires
 
     def compose(self, instructions: list[ScoredInstruction]) -> ComposedOutput:
         """Compose scored instructions into guidance text and tool schemas.
@@ -316,9 +354,13 @@ class Composer:
         In that order, and both after the ordering strategy has run, so the
         strategy decides the order, quotas thin each category within it, and
         ``max_instructions`` takes what is left. Within a category the
-        survivors are the ones the strategy ranked highest.
+        survivors are the ones the strategy ranked highest. Closure over
+        ``requires`` comes last (see :func:`_close`).
         """
-        return self._cap(self._quota(ordered))
+        trimmed = self._cap(self._quota(ordered))
+        if self.restore_unchecked_requires:
+            return trimmed
+        return _close(ordered, trimmed)
 
     def _quota(self, ordered: list[ScoredInstruction]) -> list[ScoredInstruction]:
         """Keep at most ``quotas[category]`` of each category, in order.

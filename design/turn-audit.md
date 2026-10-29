@@ -186,7 +186,7 @@ concurrent LLM calls inside one turn the two orders can differ.
 | `corpus_size` | int | Instructions in the index |
 | `embedder` | str | `"Embedder"` for the built-in one, else the class name of an injected embedder |
 | `embedder_mode` | str or null | How the built-in embedder produced vectors (`sentence_transformers`, `mlx`, `openai` or `hash`), or null if it was never loaded (BM25 and ITR) or is not the built-in one |
-| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`, `restore_below_threshold`. A record without `restore_below_threshold` was made before it existed and replays with it on. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
+| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`, `restore_below_threshold`, `retrieval_pool`, `restore_pool_by_k`, `restore_unchecked_requires`, `restore_ranked_resolution`, `restore_ungated_pool`, `restore_removed_acting`. A record without `restore_below_threshold` was made before it existed and replays with it on, and the same holds for the other five switches. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
 | `query` | str | The query argument as passed |
 | `effective_query` | str | The query actually searched (`context.refined_query` wins if set) |
 | `context` | object | The full `Context` as passed |
@@ -209,7 +209,8 @@ Each entry in `results`:
 
 Each entry in `excluded`: `{"id", "reason", "similarity", "by"}`. `similarity`
 is null where no score was computed. `by` names the other instruction for
-`superseded` and `conflict`, and is null otherwise.
+`superseded` and `conflict`, the missing prerequisite for `prerequisite`, and
+is null otherwise.
 
 | Reason | Meaning |
 |---|---|
@@ -218,6 +219,13 @@ is null where no score was computed. `by` names the other instruction for
 | `superseded` | Removed by `by`'s `supersedes` |
 | `conflict` | Lost a `conflicts_with` pair to `by` |
 | `top_k` | Admissible, but cut by the top-k limit |
+| `prerequisite` | It `requires` an instruction that is unavailable (gated out, displaced or not in the corpus), so it was dropped. `by` names that instruction |
+| `unrequired` | It was in only because another instruction required it, and nothing kept requires it any more |
+
+A mandatory instruction is never dropped for a missing prerequisite. A
+retrieval that keeps one without its prerequisites lists them in
+`missing_prerequisites`, `{id: [missing ids]}`. The key is absent when there is
+nothing to list.
 
 Instructions outside the search window are not listed. They were never
 candidates, and listing them would copy the corpus into every turn.

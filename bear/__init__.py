@@ -36,6 +36,7 @@ from bear.audit import (
     AuditWriteError,
     JsonlSink,
     ReplayResult,
+    RetrievalTrace,
     Turn,
     current_turn,
     detach,
@@ -119,7 +120,7 @@ from bear.marker_code import (
 )
 from bear.provenance import Provenance
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # Models
@@ -213,6 +214,7 @@ __all__ = [
     "AuditWriteError",
     "JsonlSink",
     "ReplayResult",
+    "RetrievalTrace",
     "Turn",
     "current_turn",
     "detach",

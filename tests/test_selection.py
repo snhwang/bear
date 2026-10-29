@@ -350,15 +350,22 @@ class TestTheGateIsNotBypassedByRequires:
         return {s.id for s in r.retrieve(query=context.query, context=context,
                                          top_k=Retriever.ALL)}
 
+    # Since dependency closure (2026-10-29), "shared" never appears without
+    # all three of its requirements, so wherever one is gated out it is
+    # dropped rather than shown without it. "ungated" is unscoped and is
+    # retrieved on its own merit.
+    FULL = ["legal", ITEM_FACET, owner_tag("katrin"), "class:family"]
+
     def test_an_empty_context_gets_no_gated_requirement(self):
-        assert self._got() == {"shared", "ungated"}
+        assert self._got() == {"ungated"}
 
     def test_an_unrelated_holder_gets_no_private_item(self):
-        assert self._got(tags=["jon"]) == {"shared", "ungated"}
+        assert self._got(tags=["jon"]) == {"ungated"}
 
     def test_a_requirement_arrives_when_the_context_satisfies_its_gate(self):
-        assert self._got(gate_tags=["legal"]) == {"shared", "ungated",
-                                                  "legal-only"}
+        assert self._got(gate_tags=["legal"]) == {"ungated", "legal-only"}
+        assert self._got(gate_tags=self.FULL) == {"shared", "ungated", "legal-only",
+                                                  "katrins-secret"}
 
     def test_a_held_item_arrives_for_its_holder(self):
         assert "katrins-secret" in self._got(
@@ -367,10 +374,13 @@ class TestTheGateIsNotBypassedByRequires:
     def test_selection_does_not_break_a_declared_dependency(self):
         """Unlike the gate. requires is a dependency the corpus declares, and
         selection is what one query asked for, so a narrowing does not strip a
-        requirement. The gate is not a preference and applies regardless."""
-        assert self._got(select_all=["speech"]) == {"shared", "ungated"}
-        assert self._got(select_all=["speech"], gate_tags=["legal"]) == {
-            "shared", "ungated", "legal-only"}
+        requirement. The gate is not a preference and applies regardless, so
+        where it withholds a requirement the dependent goes, and nothing the
+        selection left out is kept for it."""
+        assert self._got(select_all=["speech"], gate_tags=self.FULL) == {
+            "shared", "ungated", "legal-only", "katrins-secret"}
+        assert self._got(select_all=["speech"]) == set()
+        assert self._got(select_all=["speech"], gate_tags=["legal"]) == set()
 
 
 class TestOneGateFunction:

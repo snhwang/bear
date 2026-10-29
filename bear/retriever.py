@@ -11,7 +11,7 @@ from typing import Any, Callable
 
 import numpy as np
 
-from bear.audit import _RetrievalTrace, _start, current_turn
+from bear.audit import RetrievalTrace, _start, current_turn
 from bear.backends.embeddings.base import EmbeddingBackendBase, MetadataFilter
 from bear.backends.embeddings.numpy_backend import NumpyBackend
 from bear.config import Config, EmbeddingBackend
@@ -19,6 +19,7 @@ from bear.corpus import Corpus
 from bear.item_digest import ItemDigest, canonical_json
 from bear.logging import RetrievalEvent, emit_event
 from bear.models import Context, Instruction, InstructionType, ScoredInstruction
+from bear.scope import passes_gate
 
 logger = logging.getLogger(__name__)
 
@@ -98,27 +99,11 @@ def _get_embedding_backend(
     return factory(persist_directory=persist_directory)
 
 
-def _passes_gate(inst: Instruction, context: Context | None) -> bool:
-    """Whether a context satisfies everything an instruction demands.
-
-    Every ``required_tags`` entry must be in ``context.all_tags``, which is
-    its ``tags`` and ``gate_tags`` together. It fails closed: a context with
-    no tags at all satisfies nothing, so an instruction demanding anything is
-    refused rather than admitted.
-
-    One function because there are four places that gate, and a rule written
-    four times is a rule that drifts. One of them had already drifted, and it
-    let `requires` pull in an instruction the context could not hold.
-    """
-    required = inst.scope.required_tags
-    if not required:
-        return True
-    if context is None:
-        return False
-    admitted = context.all_tags
-    if not admitted:
-        return False
-    return all(t in admitted for t in required)
+# One function because there are four places that gate here, plus the tool
+# gate in bear.gate, and a rule written five times is a rule that drifts. One
+# copy here had already drifted, and it let `requires` pull in an instruction
+# the context could not hold.
+_passes_gate = passes_gate
 
 
 def _selects(inst: Instruction, context: Context | None) -> bool:
@@ -330,8 +315,10 @@ class Embedder:
             self._loaded = False
             raise RuntimeError(
                 f"Could not load embedding model {self.model_name!r} (see the "
-                "log for the cause). Install sentence-transformers and check "
-                "the model name and network access. To run on hash embeddings "
+                "log for the cause). Install sentence-transformers "
+                "(pip install 'bear[embeddings]') and check the model name and "
+                "network access, or use the BM25 backend, which needs no model. "
+                "To run on hash embeddings "
                 "instead, which carry no semantic signal, pass "
                 "model_name='hash', or allow the fallback with "
                 "allow_hash_fallback=True (BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1)."
@@ -405,7 +392,8 @@ class Embedder:
             logger.info("Loaded sentence-transformers model: %s (dim=%d)", self.model_name, self.dim)
             return True
         except ImportError:
-            logger.info("sentence-transformers not installed.")
+            logger.info("sentence-transformers not installed "
+                        "(pip install 'bear[embeddings]').")
         except Exception as exc:
             logger.warning("Could not load model %s (%s).", self.model_name, exc)
         return False
@@ -1160,10 +1148,34 @@ class Retriever:
         if turn is None:
             return self._retrieve(query, context, top_k, threshold, None)
         started = _start()
-        trace = _RetrievalTrace()
+        trace = RetrievalTrace()
         result = self._retrieve(query, context, top_k, threshold, trace)
         turn._record_retrieval(self, query, trace, result, started)
         return result
+
+    def retrieve_with_trace(
+        self,
+        query: str,
+        context: Context | None = None,
+        top_k: int | None = None,
+        threshold: float | None = None,
+    ) -> tuple[list[ScoredInstruction], RetrievalTrace]:
+        """:meth:`retrieve`, and why each candidate was admitted or left out.
+
+        Returns the same results :meth:`retrieve` would, with a
+        :class:`~bear.audit.RetrievalTrace` that names how each candidate came
+        in and the reason for each one left out, the pool the search ranked,
+        and any mandatory instruction kept without a prerequisite. Inside an
+        open audit turn the retrieval is recorded too, as :meth:`retrieve`
+        records it.
+        """
+        turn = current_turn()
+        started = _start()
+        trace = RetrievalTrace()
+        result = self._retrieve(query, context, top_k, threshold, trace)
+        if turn is not None:
+            turn._record_retrieval(self, query, trace, result, started)
+        return result, trace
 
     def _retrieve(
         self,
@@ -1171,7 +1183,7 @@ class Retriever:
         context: Context | None,
         top_k: int | None,
         threshold: float | None,
-        trace: _RetrievalTrace | None,
+        trace: RetrievalTrace | None,
     ) -> list[ScoredInstruction]:
         if not self._built:
             raise RuntimeError("Index not built. Call build_index() first.")
@@ -1219,7 +1231,20 @@ class Retriever:
         n = len(self._instruction_list)
         gated = (self._has_required_tags and context is not None
                  and bool(context.all_tags))
-        overfetch_k = n if (gated or want_all) else min(n, top_k * 3)
+        # An ungated search pools the most similar instructions whose gate
+        # passes. Where the corpus gates anything, it searches everything and
+        # Step 3 stops after that many pass, so instructions the gate rejects
+        # never take a place in the pool.
+        pool_cap: int | None = None
+        if gated or want_all:
+            overfetch_k = n
+        else:
+            overfetch_k = min(n, self._pool(top_k, 3))
+            if self._has_required_tags and not self._config.restore_ungated_pool:
+                overfetch_k, pool_cap = n, overfetch_k
+        if trace is not None:
+            trace.pool = pool_cap if pool_cap is not None else overfetch_k
+            trace.gated = gated
 
         if self._is_bm25:
             from bear.backends.embeddings.bm25_backend import BM25Backend
@@ -1242,7 +1267,10 @@ class Retriever:
                 # far fewer than top_k once gated, and nothing refills it:
                 # the injection scan skips items by design. Measured on a
                 # real store, one holder got 1 result where 5 were due.
-                search_k = n if (want_all or gated) else min(n, top_k * 2)
+                search_k = n if (want_all or gated) else min(n, self._pool(top_k, 2))
+                pool_cap = None  # the backend's filter already applied the gate
+                if trace is not None:
+                    trace.pool = search_k
                 raw_results = self._backend.search_with_filter(
                     query_embedding, search_k, metadata_filter=metadata_filter,
                 )
@@ -1279,6 +1307,10 @@ class Retriever:
                 if trace is not None:
                     trace.exclude(inst.id, "gate", similarity)
                 continue
+            if pool_cap is not None:
+                if pool_cap == 0:
+                    break
+                pool_cap -= 1
 
             # Selection, which a query demands of what it retrieves. Beside
             # the gate rather than inside it: the gate is what an instruction
@@ -1350,13 +1382,13 @@ class Retriever:
                 trace.admit(s.id, "mandatory")
 
         # Step 5: Handle instruction relationships
-        scored = self._resolve_relationships(scored, trace, context)
+        scored, required_only = self._resolve_relationships(scored, trace, context)
 
         # Step 6: Sort by final_score descending, then by priority
         scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
 
         # Step 7: Return top-k, with mandatory instructions exempt from the cut
-        result = self._top_k_keeping_mandatory(scored, top_k)
+        result = self._top_k_keeping_mandatory(scored, top_k, required_only)
         # Mark them, so the composer keeps them too.
         for s in result:
             s.mandatory = self._is_mandatory(s.instruction)
@@ -1364,7 +1396,10 @@ class Retriever:
             kept = {s.id for s in result}
             for s in scored:
                 if s.id not in kept:
-                    trace.exclude(s.id, "top_k", s.similarity)
+                    # One that was in only for a dependent the cut removed is
+                    # out because nothing kept requires it, not for its rank.
+                    trace.exclude(s.id, "unrequired" if s.id in required_only else "top_k",
+                                  s.similarity)
 
         # Emit retrieval event for observability / evolution hooks
         emit_event(RetrievalEvent(
@@ -1495,7 +1530,7 @@ class Retriever:
 
     def _get_mandatory_instructions(
         self, context: Context, already_seen: set[str],
-        trace: _RetrievalTrace | None = None,
+        trace: RetrievalTrace | None = None,
     ) -> list[ScoredInstruction]:
         """Get instructions with mandatory tags that must always be included."""
         if not self._config.mandatory_tags:
@@ -1537,10 +1572,14 @@ class Retriever:
 
     def _resolve_relationships(
         self, scored: list[ScoredInstruction],
-        trace: _RetrievalTrace | None = None,
+        trace: RetrievalTrace | None = None,
         context: Context | None = None,
-    ) -> list[ScoredInstruction]:
+    ) -> tuple[list[ScoredInstruction], set[str]]:
         """Handle conflicts_with, requires, and supersedes relationships.
+
+        Returns the resolved instructions and the ids of those that are there
+        only because another requires them, which the top-k cut must not give
+        a ranked slot.
 
         A required instruction is gated like any other. It used not to be:
         ``requires`` read it straight from the corpus and asserted
@@ -1562,8 +1601,23 @@ class Retriever:
             if trace is not None:
                 trace.exclude(inst_id, reason, id_map[inst_id].similarity, by)
 
-        for s in scored:
+        # Resolve in a canonical order (mandatory first, then priority
+        # descending, then id), so which instructions survive depends only on
+        # which were admitted, never on which happened to be most similar.
+        if self._config.restore_ranked_resolution:
+            def canonical(items: list[ScoredInstruction]) -> list[ScoredInstruction]:
+                return list(items)
+        else:
+            def canonical(items: list[ScoredInstruction]) -> list[ScoredInstruction]:
+                return sorted(items, key=lambda s: (not self._is_mandatory(s.instruction),
+                                                    -s.instruction.priority,
+                                                    s.instruction.id))
+
+        for s in canonical(scored):
             inst = s.instruction
+            # An instruction already removed is gone, so it removes nothing.
+            if inst.id in to_remove and not self._config.restore_removed_acting:
+                continue
             inst_mandatory = self._is_mandatory(inst)
 
             # supersedes: remove lower-priority instructions. Only a mandatory
@@ -1589,35 +1643,140 @@ class Retriever:
                         remove(conflict_id, "conflict", inst.id)
                     else:
                         remove(inst.id, "conflict", conflict_id)
+                        # It lost, so it is gone and acts no further.
+                        if not self._config.restore_removed_acting:
+                            break
 
-        # Add required instructions that are missing
-        required_to_add: list[ScoredInstruction] = []
-        for s in scored:
-            if s.instruction.id in to_remove:
-                continue
-            for req_id in s.instruction.requires:
-                if req_id not in id_map and req_id not in to_remove:
-                    req_inst = self.corpus.get(req_id)
-                    if req_inst and not _passes_gate(req_inst, context):
-                        if trace is not None:
-                            trace.exclude(req_inst.id, "gate", 0.0, s.instruction.id)
+        def add_required(of: list[ScoredInstruction]) -> list[ScoredInstruction]:
+            """The missing instructions that ``of`` requires, gated, each once."""
+            added_now: list[ScoredInstruction] = []
+            for s in of:
+                if s.instruction.id in to_remove:
+                    continue
+                for req_id in s.instruction.requires:
+                    if req_id not in id_map and req_id not in to_remove:
+                        req_inst = self.corpus.get(req_id)
+                        if req_inst and not _passes_gate(req_inst, context):
+                            if trace is not None:
+                                trace.exclude(req_inst.id, "gate", 0.0, s.instruction.id)
+                            continue
+                        if req_inst:
+                            added = ScoredInstruction(
+                                instruction=req_inst,
+                                similarity=0.0,
+                                scope_match=True,
+                                final_score=req_inst.priority / 100.0,
+                            )
+                            added_now.append(added)
+                            # Two instructions requiring the same one add it once.
+                            id_map[req_id] = added
+                            if trace is not None:
+                                trace.admit(req_id, "requires")
+            return added_now
+
+        def settle(held: ScoredInstruction, new: ScoredInstruction) -> None:
+            """Resolve supersedes and conflicts_with between a chosen and an added one.
+
+            The rules are the first pass's. A mandatory instruction can be
+            displaced only by another mandatory one, and in a conflict a
+            mandatory one wins, then the higher priority. On a tie the one
+            already chosen stays, so a dependency does not evict an equal.
+            """
+            a, b = held.instruction, new.instruction
+            a_mandatory, b_mandatory = self._is_mandatory(a), self._is_mandatory(b)
+            if b.id in a.supersedes and not (b_mandatory and not a_mandatory):
+                remove(b.id, "superseded", a.id)
+            elif a.id in b.supersedes and not (a_mandatory and not b_mandatory):
+                remove(a.id, "superseded", b.id)
+            elif b.id in a.conflicts_with or a.id in b.conflicts_with:
+                if a_mandatory != b_mandatory:
+                    a_wins = a_mandatory
+                else:
+                    a_wins = a.priority >= b.priority
+                if a_wins:
+                    remove(b.id, "conflict", a.id)
+                else:
+                    remove(a.id, "conflict", b.id)
+
+        if self._config.restore_unchecked_requires:
+            required_to_add = add_required(scored)
+        else:
+            # Added instructions meet the same relationships as retrieved
+            # ones, and their own requirements are added in turn, until
+            # nothing new is required. Each instruction is added at most once.
+            required_to_add = []
+            chosen = canonical([s for s in scored if s.instruction.id not in to_remove])
+            frontier = list(chosen)
+            while True:
+                added_now = canonical(add_required(frontier))
+                if not added_now:
+                    break
+                for new in added_now:
+                    for held in chosen:
+                        if held.instruction.id in to_remove:
+                            continue
+                        settle(held, new)
+                        if new.instruction.id in to_remove:
+                            break
+                    if new.instruction.id not in to_remove:
+                        chosen.append(new)
+                required_to_add.extend(added_now)
+                chosen = canonical(chosen)
+                frontier = [s for s in added_now if s.instruction.id not in to_remove]
+
+            # Closure: an instruction never appears without what it requires.
+            # One whose prerequisite is unavailable (gated out, displaced, or
+            # not in the corpus) is dropped, and the drop cascades to what
+            # required it. A mandatory one stays and its missing prerequisites
+            # are recorded. Members of a cycle stay together while all of
+            # them are available.
+            kept = [s for s in [*scored, *required_to_add]
+                    if s.instruction.id not in to_remove]
+            kept_ids = {s.instruction.id for s in kept}
+            changed = True
+            while changed:
+                changed = False
+                for s in kept:
+                    sid = s.instruction.id
+                    if sid not in kept_ids or self._is_mandatory(s.instruction):
                         continue
-                    if req_inst:
-                        added = ScoredInstruction(
-                            instruction=req_inst,
-                            similarity=0.0,
-                            scope_match=True,
-                            final_score=req_inst.priority / 100.0,
-                        )
-                        required_to_add.append(added)
-                        # Two instructions requiring the same one add it once.
-                        id_map[req_id] = added
-                        if trace is not None:
-                            trace.admit(req_id, "requires")
+                    missing = [r for r in s.instruction.requires if r not in kept_ids]
+                    if missing:
+                        remove(sid, "prerequisite", missing[0])
+                        kept_ids.discard(sid)
+                        changed = True
+            # An instruction that is here only because another required it
+            # stays only while a chain of requires from an instruction that
+            # is here on its own merit still reaches it. So dropping a
+            # dependent does not strand what was added for it, and added
+            # instructions that require each other do not keep each other.
+            added_ids = {s.instruction.id for s in required_to_add}
+            by_id = {s.instruction.id: s for s in kept}
+            reached = {sid for sid in kept_ids if sid not in added_ids}
+            pending = [r for sid in reached for r in by_id[sid].instruction.requires]
+            while pending:
+                rid = pending.pop()
+                if rid in reached or rid not in kept_ids:
+                    continue
+                reached.add(rid)
+                pending.extend(by_id[rid].instruction.requires)
+            for sid in sorted(added_ids & kept_ids - reached):
+                remove(sid, "unrequired", None)
+                kept_ids.discard(sid)
+            if trace is not None:
+                for s in kept:
+                    sid = s.instruction.id
+                    if sid in kept_ids and self._is_mandatory(s.instruction):
+                        missing = [r for r in s.instruction.requires if r not in kept_ids]
+                        if missing:
+                            trace.missing_prerequisites[sid] = missing
 
         result = [s for s in scored if s.instruction.id not in to_remove]
-        result.extend(required_to_add)
-        return result
+        result.extend(s for s in required_to_add if s.instruction.id not in to_remove)
+        if self._config.restore_unchecked_requires:
+            return result, set()
+        return result, {s.instruction.id for s in required_to_add
+                        if s.instruction.id not in to_remove}
 
     def _mandatory_rows(self) -> set[int]:
         """The rows carrying a mandatory tag.
@@ -1685,14 +1844,35 @@ class Retriever:
             return False
         return bool((set(inst.tags) | set(inst.scope.tags)) & set(mandatory_tags))
 
+    def _pool(self, top_k: int, ratio: int) -> int:
+        """How many candidates an ungated search ranks, for a cut of ``top_k``.
+
+        ``ratio`` is 3 for a plain search and 2 for a metadata-filtered one,
+        whose results are already selected. The pool is a fixed base (by
+        default three times ``default_top_k``, scaled by ``ratio / 3``), or
+        ``top_k`` when that is larger. It does not grow with ``top_k`` below
+        the base, so every cut up to it is a prefix of one ranking.
+        """
+        if self._config.restore_pool_by_k:
+            return top_k * ratio
+        base = self._config.retrieval_pool or self._config.default_top_k * 3
+        return max(base * ratio // 3, top_k)
+
     def _top_k_keeping_mandatory(
-        self, scored: list[ScoredInstruction], top_k: int
+        self, scored: list[ScoredInstruction], top_k: int,
+        required_only: set[str] | frozenset[str] = frozenset(),
     ) -> list[ScoredInstruction]:
         """Cut sorted ``scored`` to ``top_k`` without dropping a mandatory one.
 
         Mandatory instructions keep their place in the ranking and the rest
-        fill the remaining slots. The result is longer than ``top_k`` only
-        when there are more mandatory instructions than ``top_k``.
+        fill the remaining slots. An instruction in ``required_only`` is there
+        only because another requires it, so it never takes a slot. The
+        prerequisites of every kept instruction are then kept too, in their
+        place, as mandatory ones are, so the cut never leaves an instruction
+        without what it requires, nor keeps one that was there only for a
+        dependent it cut. The result is longer than ``top_k`` only when there
+        are more mandatory instructions than ``top_k`` or when prerequisites
+        were added.
         """
         n_mandatory = sum(1 for s in scored if self._is_mandatory(s.instruction))
         room = max(0, top_k - n_mandatory)
@@ -1700,10 +1880,25 @@ class Retriever:
         for s in scored:
             if self._is_mandatory(s.instruction):
                 result.append(s)
+            elif s.instruction.id in required_only:
+                continue
             elif room > 0:
                 result.append(s)
                 room -= 1
-        return result
+        if self._config.restore_unchecked_requires:
+            return result
+        by_id = {s.instruction.id: s for s in scored}
+        kept = {s.instruction.id for s in result}
+        pending = [r for s in result for r in s.instruction.requires]
+        while pending:
+            rid = pending.pop()
+            if rid in kept or rid not in by_id:
+                continue
+            kept.add(rid)
+            pending.extend(by_id[rid].instruction.requires)
+        if len(kept) == len(result):
+            return result
+        return [s for s in scored if s.instruction.id in kept]
 
     def _build_metadata_filter(self, context: Context) -> MetadataFilter | None:
         """Build a backend-agnostic :class:`MetadataFilter` from the context.

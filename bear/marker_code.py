@@ -421,7 +421,13 @@ def cross_encoder_nli(
         if not pairs:
             return np.zeros(0, dtype=np.float32)
         if "model" not in state:
-            from sentence_transformers import CrossEncoder
+            try:
+                from sentence_transformers import CrossEncoder
+            except ImportError as exc:
+                raise RuntimeError(
+                    "The entailment scorer needs sentence-transformers. "
+                    "Install it with: pip install 'bear[embeddings]'"
+                ) from exc
 
             state["model"] = CrossEncoder(model_name, device=device)
             state["column"] = _entailment_column(state["model"])

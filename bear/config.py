@@ -62,6 +62,44 @@ class Config(BaseModel):
     # ranks it first, so the threshold never filters a gated instruction.
     # Off, the threshold filters gated instructions as it does ungated ones.
     restore_below_threshold: bool = False
+    # How many of the most similar instructions an ungated search ranks before
+    # the cut. None means three times default_top_k, the pool the default k
+    # always had. A call asking for more than the pool gets a pool of top_k.
+    # Because the pool does not grow with k below that, the result for a
+    # smaller k is a prefix of the result for a larger one.
+    retrieval_pool: int | None = None
+    # The old pool, kept to reproduce runs made before it was fixed. When on,
+    # the pool is top_k * 3 (top_k * 2 on a metadata-filtering backend), so a
+    # larger k searched a larger pool, and an instruction in the top 1 could
+    # drop out of the top 2.
+    restore_pool_by_k: bool = False
+    # The old dependency handling, kept to reproduce runs made before it was
+    # fixed. When on, an instruction added because another `requires` it is
+    # not checked against conflicts_with or supersedes, so it can bring a
+    # conflicting pair into the result. Off, added instructions are resolved
+    # against everything already chosen, and their own requirements are added
+    # in turn.
+    restore_unchecked_requires: bool = False
+    # The old resolution order, kept to reproduce runs made before it was
+    # fixed. When on, conflicts_with and supersedes were resolved in the order
+    # the search ranked the candidates, so which instructions survived could
+    # depend on which was most similar. Off, they are resolved in a canonical
+    # order (mandatory first, then priority descending, then id), so the
+    # result depends only on which instructions were admitted.
+    restore_ranked_resolution: bool = False
+    # The old first pass, kept to reproduce runs made before it was fixed.
+    # When on, an instruction already removed by a conflict or a supersedes
+    # still applied its own conflicts_with and supersedes, so it could remove
+    # others although it was gone itself. Off, a removed instruction is
+    # skipped.
+    restore_removed_acting: bool = False
+    # The old ungated pool, kept to reproduce runs made before it was fixed.
+    # When on, an ungated search pooled the most similar instructions whether
+    # or not their gate could pass, so with a narrow context most of the pool
+    # went to instructions the gate then rejected and admissible ones were
+    # crowded out. Off, the pool holds the most similar instructions whose
+    # gate passes.
+    restore_ungated_pool: bool = False
 
     @classmethod
     def from_env(cls) -> Config:

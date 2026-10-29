@@ -33,14 +33,19 @@ LLM generates behavior-compliant response
 ## Installation
 
 ```bash
-# From the repository root:
-uv pip install -e .
+# From the repository root, with in-process semantic embeddings (the default
+# BAAI/bge-base-en-v1.5 model, which brings torch):
+uv pip install -e ".[embeddings]"
 ```
+
+The core install (`uv pip install -e .`) leaves out sentence-transformers and
+torch. It covers BM25 retrieval, remote embedders and the Hermes plugin. The
+default dense model then raises an error that names the missing extra.
 
 For local-only operation (no cloud required):
 
 ```bash
-uv pip install -e .
+uv pip install -e ".[embeddings]"
 # Install Ollama from https://ollama.com
 ollama pull llama3
 ```
@@ -48,6 +53,8 @@ ollama pull llama3
 Optional backends:
 
 ```bash
+uv pip install -e ".[embeddings]" # sentence-transformers for the default dense model
+uv pip install -e ".[hermes]"     # Hermes Agent plugin (see Hermes Agent Plugin below)
 uv pip install -e ".[faiss]"      # FAISS vector search
 uv pip install -e ".[chromadb]"   # ChromaDB (persistence + metadata filtering)
 uv pip install -e ".[openai]"     # OpenAI LLM backend
@@ -194,6 +201,32 @@ An instruction names the checks it answers with condition markers, such as `[!on
   supersedes: [directive-detailed]
 ```
 
+An instruction that `requires` another brings it in if its gate admits it.
+The added instruction then meets the same `conflicts_with` and `supersedes`
+rules as a retrieved one, so a dependency never brings a conflicting pair
+into the result, and its own requirements are added in turn. Conflicts and
+supersedes are resolved in a fixed order (mandatory first, then priority
+descending, then id), so which instructions survive depends only on which were
+admitted, never on which was most similar. An instruction that loses a
+conflict or is superseded is gone at once and removes nothing further.
+Resolution is a single pass, not a fixed point. An instruction removed
+stays removed even if what removed it is later superseded, cut by `top_k`
+or dropped for a missing prerequisite. Above the pool, where the pool grows
+with `top_k`, that is the one way a larger `top_k` can drop an instruction a
+smaller one returned.
+`restore_ranked_resolution=True` resolves in ranked order, and
+`restore_removed_acting=True` lets a removed instruction act, as before. An instruction
+never appears without what it requires. If a prerequisite is unavailable
+(gated out, displaced, or not in the corpus), the instruction is dropped, and
+so is anything that required it. A mandatory instruction stays, and the audit
+record lists what it is missing. An instruction that was in only because a
+dropped one required it leaves too. Prerequisites of a kept instruction are
+exempt from the `top_k` cut and from the composer's caps, as mandatory ones
+are, so a result can be longer than `top_k`. One that is in only because
+another requires it never takes a `top_k` slot of its own. `restore_unchecked_requires=True`
+(on `Config`, and on `Composer`) brings back the behavior before that was
+fixed, to reproduce earlier runs.
+
 ### Composition Strategies
 
 | Strategy | Behavior |
@@ -289,6 +322,42 @@ lint(corpus)   # [] when every rule can be read
 ```
 
 A must-have that forbids the call blocks it whatever else the corpus says. A tool with no allow rule gets the `unlisted` decision, approve by default. Otherwise the highest-priority allow rule whose `required_tags` the context satisfies decides, by its first matching argument rule or else its default. Scope is tested by `bear.scope.passes_gate`, the same test the retriever applies. The gate does no I/O, reads no clock and calls no model, so the same inputs always give the same decision, and a recorded decision can be checked by running it again. Each `Decision` carries the `action`, a `reason` and the ids of the rules that decided it.
+
+`Auditor.record_decision` writes a decision to the audit log before the tool runs, and `record_outcome` writes what happened after. `python -m bear verify-audit` runs every recorded decision again and reports any that no longer match. The Hermes Agent plugin records both for every tool call (see Hermes Agent Plugin below).
+
+### Hermes Agent Plugin (New in 0.4.0)
+
+`bear.integrations.hermes` runs BEAR inside [Hermes Agent](https://github.com/NousResearch/hermes-agent) (tested with v0.22.2). On every turn it composes the instructions that apply to the sender and adds them to the turn. Before every tool call it asks the tool-call gate, and it writes each decision to the audit log before the tool runs. Install BEAR into Hermes's Python environment with the `hermes` extra, which brings no torch, and Hermes finds the plugin through its `hermes_agent.plugins` entry point:
+
+```bash
+uv pip install --python /path/to/hermes-venv/bin/python -e "/path/to/bear[hermes]"
+```
+
+Then enable it in Hermes's `config.yaml`:
+
+```yaml
+plugins:
+  enabled: [bear]
+  entries:
+    bear:
+      settings:
+        corpus_dir: ~/bear-corpora/hermes   # guidance, an allow rule per tool, and must-haves
+        mode: observe                       # observe records only. enforce blocks and asks
+        users:
+          "platform:cli": ["role:operator"] # gate tags by sender id or platform
+        narrow: on                          # off, observe or on
+        narrow_top_k: 10                    # null offers every tool the gate admits
+        annotate_tools: false               # gate with reason
+        withheld_disclosure: counts         # names, counts or none
+```
+
+The corpus holds the gate's rules from the section above, one allow rule per Hermes tool name, and a tool no rule names gets the `unlisted` setting (ask a human, by default). Check a corpus with `python -m bear.integrations.hermes lint CORPUS_DIR`. A turn with no sender id is matched by its platform, and a turn with no platform is a CLI turn, as Hermes treats it. Retrieval uses BM25 by default. `embedding: remote:<url>` uses an OpenAI-compatible embedding service, and the record names the model the service reports.
+
+With `narrow: on` the plugin also cuts each model request's tool list to the tools this sender may use (`bear.narrowing`), ranked against the turn by Hermes's own tool descriptions, so a guest is never offered an operator tool. A tool is withheld when the gate would block every call to it. The ranking scores every admitted tool, so a larger `narrow_top_k` always offers a superset. `narrow: observe` sends Hermes's full list and records what narrowing would have offered.
+
+With `annotate_tools: true` the plugin also tells the model why. A block appended to the turn's message lists each offered tool with the rule that admitted it, and the unavailable tools with the reason. The tools sent are the same byte for byte with it on or off. Naming a withheld tool tells the user that it exists, so `withheld_disclosure` sets how much that part says, and `withheld_names_max` caps a list of names.
+
+Each request writes a `bear.narrowing/1` record (the tools before and after, the whole ranking with scores, the withheld tools and why, and the estimated schema tokens), and each model call writes a `bear.model_call/1` record with its tokens, cached tokens and finish reason. Tool-call decisions say whether the tool was offered and whether it was sent. `python -m bear verify-audit` replays every narrowing: fully under BM25, and from the recorded similarities under a remote embedder (`match_recorded`). Narrowing decides what the model is offered, not what runs. Hermes will still run a tool the model names without having been offered it, so the gate in `enforce` mode is what contains calls.
 
 ## Breeding & Evolution
 
@@ -414,6 +483,10 @@ config = Config(
 An item also carries an `importance` in `[0, 1]`, which is a floor on its effective significance: `max(importance, salience * 0.5 ** (age / half_life))`. It does not decay, so a memory that matters keeps mattering when it has not been mentioned for a year, and it defaults to `0.0`, which leaves fading exactly as it was. `Retriever.set_importance(ids, importance)` sets it, and `Retriever.adjust(ids, delta=…)` or `adjust(ids, scale=…)` revises salience either way without moving the clock, so a memory thought less of does not look freshly witnessed. Both take a mapping of id to value where the amount differs per item. Prefer `scale` for a judgement, since decay is multiplicative and an added amount means less the older the item is. Because `min_salience` tests the effective value, an item whose importance clears it stays retrievable however far its salience has fallen, which is what makes lowering recoverable. See `design/agent-memory.md`.
 
 `default_threshold` sets aside an instruction whose similarity to the query is below it, unless its scope matches the context. An instruction with no soft conditions (no `scope.tags`, roles, task types, domains, trigger patterns or session phase) always matches, so the threshold never sets it aside. That is how an instruction that must apply on every turn, such as a persona gated on its role, survives a query it has nothing to do with. Give it a soft tag the context lacks and it can drop out on exactly those queries. So keep it gate-only, give it a soft tag the context always carries, or make it mandatory. Parlor uses the third for gated instructions that need soft tags for ranking, with the role's own id as the tag. The soft match reads `Context.tags` alone, so a tag that arrives as a `gate_tags` entry does not satisfy it. An instruction that is set aside stays out, gated or not. `restore_below_threshold=True` brings back the behavior before that was fixed, when a gated instruction set aside was put back at a score of `priority / 100`, to reproduce earlier runs.
+
+When no gate applies, the retriever ranks a pool of the most similar instructions whose gate passes, re-scores them with their priority, and cuts to `top_k`. An instruction the gate rejects never takes a place in the pool, so a narrow context does not crowd out what it may use (`restore_ungated_pool=True` brings back the pool that counted them). The pool is `retrieval_pool` instructions, by default three times `default_top_k`, or `top_k` when a call asks for more. It does not grow with `top_k` below that, so for every `top_k` up to the pool the result is a prefix of one ranking, and asking for more never drops what a smaller `top_k` returned. A gated query ranks the whole corpus. `restore_pool_by_k=True` brings back the pool of `top_k * 3`, under which a larger `top_k` searched a larger pool and an instruction in the top 1 could fall out of the top 2.
+
+`Retriever.retrieve_with_trace(query, context, top_k, threshold)` returns what `retrieve` returns together with a `RetrievalTrace`: how each candidate came in (`admitted`), the reason each one was left out (`excluded`, with `gate`, `threshold`, `superseded`, `conflict`, `prerequisite`, `unrequired` or `top_k`), the size of the pool the search ranked and whether a gate applied, and any mandatory instruction kept without a prerequisite. Inside an audit turn it is recorded as `retrieve` is. The gate-failing instructions an ungated search scans past on its way to filling the pool appear as `gate` exclusions with a similarity, although none of them took a place in it.
 
 An instruction tagged with one of the `mandatory_tags` is always retrieved when its `required_tags` gate admits it. It is exempt from the `default_top_k` cut, and another instruction's `supersedes` or `conflicts_with` can remove it only if that instruction is mandatory too. The retriever marks it (`ScoredInstruction.mandatory`), and the composer keeps a marked instruction too. `max_instructions` fills the slots around it, and only another marked instruction can win a conflict with it. `LLMMemoryExtractor` never gives a generated memory one of these tags.
 
@@ -888,7 +961,7 @@ after the fact.
 Wrap a turn in an audit block and BEAR records everything that shaped the reply. The record includes:
 
 - the query and context
-- the instructions retrieved, and each candidate left out with the reason (`gate`, `threshold`, `superseded`, `conflict` or `top_k`)
+- the instructions retrieved, and each candidate left out with the reason (`gate`, `threshold`, `superseded`, `conflict`, `prerequisite`, `unrequired` or `top_k`)
 - the composed guidance, and which instructions it kept or dropped
 - the actions triggered
 - every LLM call with its full prompt, parameters and output

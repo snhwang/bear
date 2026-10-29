@@ -3,7 +3,8 @@
 The gate reads a proposed call, a :class:`~bear.models.Context` and the
 instructions, and returns allow, approve (ask a human) or block. It does no
 I/O, reads no clock and calls no model. The same inputs always give the same
-decision, so a recorded decision can be checked by running it again.
+decision, so a recorded decision can be checked by running it again
+(``python -m bear verify-audit``).
 
 Rules live in the corpus, in the instruction types that already exist.
 
