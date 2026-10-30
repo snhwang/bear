@@ -13,9 +13,9 @@ import random
 import numpy as np
 import pytest
 
-from bear.config import Config
+from bear.config import Config, EmbeddingBackend
 from bear.corpus import Corpus
-from bear.models import Instruction, InstructionType, ScopeCondition
+from bear.models import Context, Instruction, InstructionType, ScopeCondition
 from bear.retriever import Retriever
 
 
@@ -454,3 +454,98 @@ class TestRemovedInstructionsDoNotAct:
                 entry = trace.excluded[inst_id]
                 if entry["reason"] in ("conflict", "superseded"):
                     assert entry["by"] not in order[:n], (inst_id, entry)
+
+
+class TestBackfillScoresAtSimilarityZero:
+    """A gated instruction the search did not return counts as similarity 0,
+    so it meets the rule every other instruction meets: admitted where its
+    scope matches or the threshold is at most 0, at priority_weight *
+    priority / 100. BM25 returns no row that shares no term with the query,
+    so it is the backend that reaches this (paper-retrieval-governed-context,
+    2026-10-29)."""
+
+    QUERY = "alpha beta"
+    GATE = Context(gate_tags=["role:admin"])
+
+    def _corpus(self, none_scope=GATED["scope"]):
+        def d(id, content, scope=GATED["scope"]):
+            return Instruction(id=id, type=InstructionType.DIRECTIVE, priority=50,
+                               content=content, scope=scope)
+        return [d("strong", "alpha beta gamma"),
+                d("weak", "alpha comes up once in this long note about rotas, "
+                          "leave, rooms, parking, lunches and the printer"),
+                d("none", "zebra quokka", none_scope)]
+
+    def _bm25(self, corpus, **config):
+        config = {"embedding_backend": EmbeddingBackend.BM25, "mandatory_tags": [], **config}
+        r = Retriever(Corpus.from_dicts([i.model_dump(mode="json") for i in corpus]),
+                      config=Config(**config))
+        r.build_index()
+        return r
+
+    def _ranked(self, r, top_k=10, threshold=0.3):
+        return r.retrieve_with_trace(self.QUERY, self.GATE, top_k=top_k, threshold=threshold)
+
+    def test_a_zero_overlap_instruction_does_not_outrank_a_match(self):
+        results, trace = self._ranked(self._bm25(self._corpus()))
+        order = [s.id for s in results]
+        none = results[order.index("none")]
+        assert none.similarity == 0.0 and none.final_score == pytest.approx(0.3 * 0.5)
+        assert trace.admitted["none"] == "required_tags"
+        matched = [s for s in results if s.id != "none" and s.final_score > 0.3 * 0.5]
+        assert {s.id for s in matched} == {"strong", "weak"}
+        assert all(order.index(s.id) < order.index("none") for s in matched)
+
+    def test_the_switch_restores_the_flat_score(self):
+        results, _ = self._ranked(self._bm25(self._corpus(), restore_flat_backfill=True))
+        order = [s.id for s in results]
+        weak, none = results[order.index("weak")], results[order.index("none")]
+        assert none.final_score == pytest.approx(0.5)
+        # The case the fix is for: a match scoring under priority / 100.
+        assert weak.final_score < 0.5 and order.index("none") < order.index("weak")
+
+    def test_restore_below_threshold_implies_the_flat_score(self):
+        results, _ = self._ranked(self._bm25(self._corpus(), restore_below_threshold=True))
+        assert {s.id: s.final_score for s in results}["none"] == pytest.approx(0.5)
+
+    def test_the_threshold_applies_to_a_zero_overlap_instruction(self):
+        soft = ScopeCondition(required_tags=["role:admin"], tags=["evening"])
+        r = self._bm25(self._corpus(none_scope=soft))
+        results, trace = self._ranked(r)
+        assert "none" not in {s.id for s in results}
+        assert trace.excluded["none"]["reason"] == "threshold"
+        assert trace.excluded["none"]["similarity"] == 0.0
+        # At a threshold of 0 a similarity of 0 passes, as in the search step.
+        assert "none" in {s.id for s in self._ranked(r, threshold=0.0)[0]}
+        legacy = self._bm25(self._corpus(none_scope=soft), restore_flat_backfill=True)
+        assert "none" in {s.id for s in self._ranked(legacy)[0]}
+
+    def test_a_mandatory_instruction_keeps_its_score(self):
+        """Exempt from the cut, so its score only orders the result. Step 4
+        adds it at priority / 100, where the old backfill put it."""
+        corpus = self._corpus()
+        corpus[2] = corpus[2].model_copy(update={"tags": ["safety"]})
+        results, trace = self._ranked(self._bm25(corpus, mandatory_tags=["safety"]))
+        none = {s.id: s for s in results}["none"]
+        assert none.final_score == pytest.approx(0.5) and none.mandatory
+        assert trace.admitted["none"] == "mandatory"
+
+    def test_a_log_from_before_the_fix_replays_the_old_way(self, tmp_path):
+        import json
+
+        from bear.audit import Auditor, JsonlSink, verify_audit_log
+
+        r = self._bm25(self._corpus(), restore_flat_backfill=True)
+        path = tmp_path / "old.jsonl"
+        with Auditor([JsonlSink(path)]).turn():
+            old = [s.id for s in r.retrieve(self.QUERY, self.GATE, top_k=2, threshold=0.3)]
+        assert old == ["strong", "none"]
+        lines = [json.loads(line) for line in path.read_text().splitlines()]
+        for rec in lines:
+            for retrieval in rec.get("retrievals", []):
+                assert retrieval["config"].pop("restore_flat_backfill") is True
+        path.write_text("\n".join(json.dumps(rec) for rec in lines) + "\n")
+        assert [res.status for res in verify_audit_log(path)] == ["match"]
+        new = [s.id for s in self._bm25(self._corpus()).retrieve(
+            self.QUERY, self.GATE, top_k=2, threshold=0.3)]
+        assert new == ["strong", "weak"]

@@ -344,6 +344,32 @@ class TestReplay:
         log.narrowings[0]["k"] = 0
         assert verify_narrowings(log)[0].status == "differs"
 
+    def test_a_record_from_before_the_backfill_fix_replays_the_old_way(self, tmp_path):
+        """BM25 drops a tool that shares no term with the query. 0.4.0 ranked
+        a gated one at priority / 100, and a record without the switch
+        replays that way."""
+        def run(path, flat):
+            plugin, out = make(sinks=[JsonlSink(path)], narrow_top_k=3)
+            plugin._config = plugin._config.model_copy(update={"restore_flat_backfill": flat})
+            llm(plugin, message="web result snippets")
+            narrow(plugin)
+            plugin.on_post_llm_call(turn_id="t1", assistant_response="ok")
+            return records(out)[0]
+
+        old, new = run(tmp_path / "old.jsonl", True), run(tmp_path / "new.jsonl", False)
+        assert old["settings"]["restore_flat_backfill"] is True
+        assert new["settings"]["restore_flat_backfill"] is False
+        assert {p["name"] for p in old["offered"]} != {p["name"] for p in new["offered"]}
+        path = tmp_path / "old.jsonl"
+        lines = [json.loads(line) for line in path.read_text().splitlines()]
+        for rec in lines:
+            if rec.get("schema") == NARROWING_SCHEMA:
+                del rec["settings"]["restore_flat_backfill"]
+                del rec["settings"]["restore_below_threshold"]
+        path.write_text("\n".join(json.dumps(r) for r in lines) + "\n")
+        assert [r.status for r in verify_narrowings(path)] == ["match"]
+        assert [r.status for r in verify_narrowings(tmp_path / "new.jsonl")] == ["match"]
+
 
 class TestGateWithReason:
     def _send(self, **overrides):

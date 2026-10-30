@@ -12,6 +12,29 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-10-30
+
+This release fixes one retriever behaviour under BM25. It changes results,
+and a `Config` switch reproduces the old one.
+
+### Fixed
+
+- `Retriever`: the required-tags backfill added a gated instruction the
+  search had not returned at a score of `priority / 100`, whatever the
+  threshold. Only a search that drops rows reaches it, chiefly BM25, which
+  returns no row that shares no term with the query. So under BM25 a gated
+  instruction with nothing in common with the query scored 0.5 at priority 50
+  and outranked every matched instruction scoring less. Such an instruction
+  is now scored as similarity 0, at `priority_weight * priority / 100`, and
+  is admitted only where its scope matches or the threshold is at most 0, the
+  rule every other instruction meets. A mandatory one is still added at
+  `priority / 100`, since it is exempt from the cut and its score only orders
+  the result. Dense searches over a gated query rank every row, so they
+  never reached it. `Config.restore_flat_backfill=True` reproduces the old
+  backfill, and `restore_below_threshold=True` implies it. Audit records
+  carry the switch, and a retrieval or BM25 narrowing record without it
+  replays the old way.
+
 ## [0.4.0] — 2026-10-29
 
 This release adds the Hermes Agent plugin, tool narrowing and gate with
@@ -1417,7 +1440,10 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/snhwang/bear/releases/tag/v0.4.1
+[0.4.0]: https://github.com/snhwang/bear/releases/tag/v0.4.0
+[0.3.1]: https://github.com/snhwang/bear/releases/tag/v0.3.1
 [0.3.0]: https://github.com/snhwang/bear/releases/tag/v0.3.0
 [0.2.0]: https://github.com/snhwang/bear/releases/tag/v0.2.0
 [0.1.10]: https://github.com/snhwang/bear/releases/tag/v0.1.10

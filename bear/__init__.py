@@ -120,7 +120,7 @@ from bear.marker_code import (
 )
 from bear.provenance import Provenance
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 __all__ = [
     # Models

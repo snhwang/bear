@@ -1221,9 +1221,10 @@ class Retriever:
         # When a hard gate (required_tags) is active for this query, the scope
         # filter in Step 3 prunes the candidate pool.  With the default top_k*3
         # over-fetch, admissible items that rank just outside that window fall
-        # through to the flat-priority backfill in Step 3.5 — which, on large
-        # corpora, lets flat-scored items displace genuinely-similar matches and
-        # depresses retrieval quality.  Widen the over-fetch to the full corpus
+        # through to the backfill in Step 3.5. That once scored them at
+        # priority alone, so on large corpora they displaced genuinely-similar
+        # matches. It now scores them at similarity 0, which understates how
+        # close they are.  Widen the over-fetch to the full corpus
         # when gated so the admissible set is ranked by real similarity; the
         # backfill then becomes a no-op (every admissible item is already
         # scored or was set aside by the threshold, which the backfill skips).
@@ -1368,7 +1369,7 @@ class Retriever:
             required_matches: list[ScoredInstruction] = []
         else:
             required_matches = self._inject_required_tags_matches(
-                context, seen_ids, skip)
+                context, seen_ids, skip, threshold, priority_weight, trace)
         scored.extend(required_matches)
 
         # Step 4: Add mandatory instructions (e.g., safety) that aren't already included
@@ -1477,6 +1478,9 @@ class Retriever:
     def _inject_required_tags_matches(
         self, context: Context, already_seen: set[str],
         skip: set[str] | frozenset[str] = frozenset(),
+        threshold: float | None = None,
+        priority_weight: float | None = None,
+        trace: RetrievalTrace | None = None,
     ) -> list[ScoredInstruction]:
         """Inject instructions whose required_tags are satisfied by the context.
 
@@ -1486,15 +1490,31 @@ class Retriever:
         that path the scan adds nothing. It can still add an instruction
         where a search drops rows itself, as BM25 does with a zero score.
 
+        A row the search did not return matched nothing in the query, so it
+        is treated as a row of similarity 0 and meets Step 3's rule. It is
+        admitted only where its scope matches or ``threshold`` is at most 0,
+        and it scores ``priority_weight * priority / 100``. With
+        ``Config.restore_flat_backfill`` on, or ``restore_below_threshold``,
+        it is admitted whatever the threshold at ``priority / 100``, which
+        outranks every matched instruction scoring less, as before the fix.
+        A mandatory one is left to Step 4, which adds it at ``priority / 100``
+        as the old backfill did, since a mandatory instruction is exempt from
+        the cut and its score only orders the result.
+
         ``skip`` holds what the search returned and the threshold set aside.
-        Those were not missed, and injecting them at priority/100 would rank
-        them above what passed the threshold. With
+        Those were not missed, and are left out. With
         ``Config.restore_below_threshold`` on, ``skip`` is empty and the scan
         puts them back, as it did before the threshold fix.
         """
         if not context or not context.all_tags:
             return []
 
+        if threshold is None:
+            threshold = self._config.default_threshold
+        if priority_weight is None:
+            priority_weight = self._config.priority_weight
+        flat = (self._config.restore_flat_backfill
+                or self._config.restore_below_threshold)
         context_tags = set(context.all_tags)
         results: list[ScoredInstruction] = []
 
@@ -1514,15 +1534,26 @@ class Retriever:
                 continue
             if not inst.scope.required_tags:
                 continue
+            if not flat and self._is_mandatory(inst):
+                continue
             if not _selects(inst, context):
                 continue
             if _passes_gate(inst, context):
+                scope_match = inst.scope.matches(context)
                 priority_normalized = inst.priority / 100.0
+                if flat:
+                    final_score = priority_normalized
+                elif 0.0 < threshold and not scope_match:
+                    if trace is not None:
+                        trace.exclude(inst.id, "threshold", 0.0)
+                    continue
+                else:
+                    final_score = priority_weight * priority_normalized
                 results.append(ScoredInstruction(
                     instruction=inst,
                     similarity=0.0,
-                    scope_match=inst.scope.matches(context),
-                    final_score=priority_normalized,
+                    scope_match=scope_match,
+                    final_score=final_score,
                 ))
                 already_seen.add(inst.id)
 

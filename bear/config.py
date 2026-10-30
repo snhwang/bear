@@ -100,6 +100,16 @@ class Config(BaseModel):
     # crowded out. Off, the pool holds the most similar instructions whose
     # gate passes.
     restore_ungated_pool: bool = False
+    # The old backfill, kept to reproduce runs made before it was fixed. When
+    # on, a gated instruction the search did not return at all (BM25 returns
+    # no row that shares no term with the query) was added at a score of
+    # priority / 100 whatever the threshold, so it outranked every matched
+    # instruction scoring less. Off, it is scored as a row of similarity 0
+    # would be. It is admitted only where its scope matches or the threshold
+    # is at most 0, and it scores priority_weight * priority / 100.
+    # restore_below_threshold implies it, since every run made before that
+    # fix had this backfill too.
+    restore_flat_backfill: bool = False
 
     @classmethod
     def from_env(cls) -> Config:

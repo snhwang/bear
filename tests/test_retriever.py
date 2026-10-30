@@ -288,7 +288,9 @@ class TestGatedOverfetch:
     priority/100 = 0.5). On a large single-category corpus that flat score
     outranked genuinely-similar matches whose cosine was below ~0.5, displacing
     the true best result. The fix widens the over-fetch to the full corpus when
-    a gate is active so the admissible set is ranked by real similarity.
+    a gate is active so the admissible set is ranked by real similarity. The
+    backfill now scores what it adds at similarity 0, so the displacement also
+    needs ``restore_flat_backfill``.
     """
 
     @staticmethod
@@ -296,7 +298,7 @@ class TestGatedOverfetch:
         import numpy as np
         return np.array([sim, np.sqrt(max(0.0, 1.0 - sim * sim))], dtype=np.float32)
 
-    def _build(self):
+    def _build(self, **config_overrides):
         import numpy as np
         # gold has the highest similarity but a realistic low cosine (<0.5);
         # ten near-zero distractors sit outside the old top_k*3 window.
@@ -312,7 +314,7 @@ class TestGatedOverfetch:
         config = Config(
             embedding_backend=EmbeddingBackend.NUMPY, embedding_dim=2,
             priority_weight=0.3, default_threshold=0.0, default_top_k=1,
-            mandatory_tags=[],
+            mandatory_tags=[], **config_overrides,
         )
         retriever = Retriever(corpus, config=config)
         text_to_vec = {
@@ -343,11 +345,20 @@ class TestGatedOverfetch:
 
     def test_old_narrow_overfetch_reproduces_bug(self):
         # Sanity check that the test actually exercises the displacement: with
-        # the widening disabled, the flat-injected distractor wins.
-        retriever = self._build()
+        # the widening disabled and the old flat backfill, the flat-injected
+        # distractor wins.
+        retriever = self._build(restore_flat_backfill=True)
         retriever._has_required_tags = False
         results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
         assert results and results[0].instruction.id != "gold"
+
+    def test_the_backfill_alone_no_longer_displaces_the_best_match(self):
+        # With the widening disabled, the distractors still reach the backfill,
+        # which now scores them at similarity 0, below gold.
+        retriever = self._build()
+        retriever._has_required_tags = False
+        results = retriever.retrieve("q", Context(tags=["a"]), top_k=1)
+        assert [r.instruction.id for r in results] == ["gold"]
 
 
 class TestThresholdWithGates:

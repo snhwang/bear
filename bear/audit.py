@@ -362,7 +362,7 @@ class Turn:
             "mandatory_tags", "restore_below_threshold", "retrieval_pool",
             "restore_pool_by_k", "restore_unchecked_requires",
             "restore_ranked_resolution", "restore_ungated_pool",
-            "restore_removed_acting",
+            "restore_removed_acting", "restore_flat_backfill",
         })
         embedder_mode = None
         if isinstance(embedder, Embedder):
@@ -878,13 +878,15 @@ def _replay(turn: dict, record: dict, log: AuditLog,
     # Likewise a record made before the pool stopped growing with top_k,
     # before dependencies were checked for conflicts, before resolution had a
     # canonical order, before the ungated pool held only gate-passing
-    # instructions, or before removed instructions stopped acting, replays
-    # the old way.
+    # instructions, before removed instructions stopped acting, or before the
+    # backfill scored what the search did not return as similarity 0,
+    # replays the old way.
     config.setdefault("restore_pool_by_k", True)
     config.setdefault("restore_unchecked_requires", True)
     config.setdefault("restore_ranked_resolution", True)
     config.setdefault("restore_ungated_pool", True)
     config.setdefault("restore_removed_acting", True)
+    config.setdefault("restore_flat_backfill", True)
     if record.get("embedder_mode") == "hash":
         # The recording ran on hash embeddings (explicitly or by fallback).
         config["embedding_model"] = "hash"
@@ -1159,11 +1161,17 @@ def verify_narrowings(path_or_log: "str | Path | AuditLog") -> list[NarrowingRep
                 tool_version = rec.get("index_version", "")
                 if (rec.get("backend") == "bm25" and not rec.get("redacted")
                         and tool_version in log.corpora):
+                    # A record without the backfill switch was ranked before
+                    # the backfill scored a tool BM25 dropped as similarity 0.
                     retriever = Retriever(
                         Corpus.from_dicts(log.corpora[tool_version]),
                         config=Config(embedding_backend=EmbeddingBackend.BM25,
                                       mandatory_tags=list(s.get("mandatory_tags") or []),
-                                      priority_weight=float(s.get("priority_weight", 0.3))))
+                                      priority_weight=float(s.get("priority_weight", 0.3)),
+                                      restore_flat_backfill=bool(
+                                          s.get("restore_flat_backfill", True)),
+                                      restore_below_threshold=bool(
+                                          s.get("restore_below_threshold", False))))
                     retriever.build_index()
                     ranking = rank_tools(retriever, rec.get("query", ""), context, names)
                     full = True
