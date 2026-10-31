@@ -5,9 +5,11 @@ it, then allow rules decide by scope, priority and argument rules, and a
 degraded turn raises allow to approve.
 """
 
+import re
+
 import pytest
 
-from bear.corpus import Corpus
+from bear.corpus import Corpus, CorpusLoadError
 from bear.gate import (
     ACTIONS, REASONS, Decision, GateRuleError, ToolCall, combine, evaluate,
     evaluate_all, lint,
@@ -169,6 +171,21 @@ class TestContract:
         with pytest.raises(GateRuleError):
             evaluate(call("terminal"), OPERATOR, bad_decision)
 
+    @pytest.mark.parametrize("rules, where", [
+        # A misspelt match would make this argument rule match every call.
+        ([tool("t", "terminal", gate={"decision": "approve", "args": [
+            {"mach": {"command": "^git status"}, "decision": "allow"}]})], "gate.args[0]"),
+        # A misspelt decision would leave the default, allow.
+        ([tool("t", "terminal", gate={"decison": "approve"})], "actions.gate"),
+        # A misspelt args would forbid every call to the tool. Still a rule error.
+        ([tool("t", "terminal"), must_have("mh", [{"tool": "terminal", "arg": {"command": "rm"}}])],
+         "forbid[0]"),
+    ])
+    def test_an_unknown_key_in_a_gate_rule_raises(self, rules, where):
+        with pytest.raises(GateRuleError, match=rf"{re.escape(where)}: unknown key"):
+            evaluate(call("terminal", command="ls"), OPERATOR, rules)
+        assert [i.level for i in lint(rules) if where in i.message] == ["error"]
+
     def test_accepts_a_corpus(self):
         corpus = Corpus()
         corpus.add(tool("r", "read_file"))
@@ -192,8 +209,79 @@ class TestLint:
                     if i.level == "warning"}
         assert warnings == {"f", "g"}
 
+    def test_warns_about_an_actions_key_that_looks_misspelt(self):
+        rule = Instruction(id="mh", type=InstructionType.CONSTRAINT, content="x.",
+                           tags=["must-have"], actions={"forbd": [{"tool": "x"}],
+                                                        "parameters": {}, "description": "d"})
+        assert [(i.level, i.message) for i in lint([rule])] == [
+            ("warning", "has actions.forbd, which the gate ignores. Did you mean actions.forbid?")]
+
+    def test_warns_that_a_scoped_must_have_lifts_where_its_tags_are_missing(self):
+        scoped = must_have("mh", [{"tool": "terminal"}], required=["patient:p1"])
+        issues = lint([scoped, must_have("global", [{"tool": "terminal"}])])
+        assert [(i.level, i.instruction_id) for i in issues] == [("warning", "mh")]
+        assert "['patient:p1']" in issues[0].message
+        rules = [tool("t", "terminal"), scoped]
+        assert evaluate(call("terminal"), OPERATOR, rules).action == "allow"
+
     def test_warns_about_allow_rules_an_integration_could_widen(self):
         issues = lint([tool("t", "terminal", required=["platform:subagent"])],
                       widening_prefixes=("platform:",))
         assert [i.level for i in issues] == ["warning"]
 
+
+# A corpus file with an allow rule and a must-have, and the same file with
+# each fault that used to load as a weaker policy. The faults are bear-mri-sim
+# G6's two (a must-have that fails to parse, and a later rule reusing its id),
+# two misspelt keys, and MIRA's misspelt required_tag.
+ALLOW = """
+  - id: allow-terminal
+    type: tool
+    content: Run shell commands.
+    actions: {function: terminal}
+    scope: {%s: ['role:operator']}
+"""
+MUST_HAVE = """
+  - id: mh-no-rm
+    type: %s
+    tags: [must-have]
+    content: Never delete files.
+    %s: {forbid: [{tool: terminal, args: {command: 'rm '}}]}
+"""
+REUSE = """
+  - id: mh-no-rm
+    type: directive
+    content: Be careful.
+"""
+FAULTS = {
+    "must-have fails to parse": [ALLOW % "required_tags" + MUST_HAVE % ("constriant", "actions")],
+    "a later file reuses its id": [ALLOW % "required_tags" + MUST_HAVE % ("constraint", "actions"),
+                                   REUSE],
+    "misspelt actions": [ALLOW % "required_tags" + MUST_HAVE % ("constraint", "acitons")],
+    "misspelt required_tags": [ALLOW % "requried_tags" + MUST_HAVE % ("constraint", "actions")],
+    "required_tag": [ALLOW % "required_tag" + MUST_HAVE % ("constraint", "actions")],
+}
+
+
+def write_corpus(d, texts):
+    d.mkdir()
+    for n, text in enumerate(texts):
+        (d / f"{n}.yaml").write_text("instructions:" + text, encoding="utf-8")
+    return d
+
+
+class TestAMalformedCorpusDoesNotLoad:
+    def test_the_correct_corpus_blocks(self, tmp_path):
+        corpus = Corpus.from_directory(write_corpus(
+            tmp_path / "ok", [ALLOW % "required_tags" + MUST_HAVE % ("constraint", "actions")]))
+        rm = evaluate(call("terminal", command="rm -rf /data"), OPERATOR, corpus)
+        assert (rm.action, rm.reason) == ("block", "must_have")
+        guest = evaluate(call("terminal", command="ls"), GUEST, corpus)
+        assert (guest.action, guest.reason) == ("block", "out_of_scope")
+
+    # Each of these loaded before 0.4.3, and the gate then allowed the
+    # operator's rm or the guest's ls.
+    @pytest.mark.parametrize("fault", list(FAULTS))
+    def test_each_fault_raises_at_load(self, tmp_path, fault):
+        with pytest.raises(CorpusLoadError):
+            Corpus.from_directory(write_corpus(tmp_path / "bad", FAULTS[fault]))

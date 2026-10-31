@@ -30,6 +30,19 @@ class ValidationError:
         return f"ValidationError({self.severity}: {self.instruction_id}: {self.message})"
 
 
+class CorpusLoadError(ValueError):
+    """A corpus source holds a rule that cannot be loaded as written.
+
+    Raised for an instruction that fails to parse, an ``instructions`` value
+    that is not a list, a key the model does not define, and an id defined
+    twice. Each would otherwise load as a weaker policy than the one written.
+    """
+
+
+_ITEM_KEYS = frozenset(Instruction.model_fields)
+_SCOPE_KEYS = frozenset(ScopeCondition.model_fields)
+
+
 class Corpus:
     """A collection of behavioral instructions.
 
@@ -41,7 +54,11 @@ class Corpus:
 
     @classmethod
     def from_directory(cls, path: str | Path) -> Corpus:
-        """Load all YAML instruction files from a directory."""
+        """Load all YAML instruction files from a directory.
+
+        Raises :class:`CorpusLoadError` if any file holds a rule that cannot
+        be loaded as written, including an id that another file also defines.
+        """
         corpus = cls()
         dir_path = Path(path)
         if not dir_path.is_dir():
@@ -52,16 +69,20 @@ class Corpus:
             logger.warning("No YAML files found in %s", path)
             return corpus
 
+        seen: dict[str, str] = {}
         for yaml_file in yaml_files:
-            corpus._load_file(yaml_file)
+            corpus._load_file(yaml_file, seen)
 
         return corpus
 
     @classmethod
     def from_file(cls, path: str | Path) -> Corpus:
-        """Load instructions from a single YAML file."""
+        """Load instructions from a single YAML file.
+
+        Raises :class:`CorpusLoadError` as :meth:`from_directory` does.
+        """
         corpus = cls()
-        corpus._load_file(Path(path))
+        corpus._load_file(Path(path), {})
         return corpus
 
     @classmethod
@@ -70,11 +91,13 @@ class Corpus:
 
         Round-trips ``to_dicts()`` output, so it accepts either full
         ``Instruction.model_dump()`` dicts or the looser YAML-style dicts that
-        :func:`_parse_instruction` handles.
+        :func:`_parse_instruction` handles. Raises :class:`CorpusLoadError` as
+        :meth:`from_directory` does.
         """
         corpus = cls()
-        for item in dicts:
-            corpus.add(_parse_instruction(item))
+        seen: dict[str, str] = {}
+        for n, item in enumerate(dicts):
+            corpus._load_item(item, f"item {n}", seen)
         return corpus
 
     @classmethod
@@ -94,7 +117,7 @@ class Corpus:
         """Serialize the corpus to a JSON string (inverse of :meth:`from_json`)."""
         return json.dumps(self.to_dicts(), **json_kwargs)
 
-    def _load_file(self, path: Path) -> None:
+    def _load_file(self, path: Path, seen: dict[str, str]) -> None:
         """Parse a YAML file and add its instructions."""
         with open(path, encoding="utf-8") as f:
             data = yaml.safe_load(f)
@@ -104,15 +127,27 @@ class Corpus:
 
         instructions_data = data.get("instructions", [])
         if not isinstance(instructions_data, list):
-            logger.warning("Invalid format in %s: 'instructions' should be a list", path)
-            return
+            raise CorpusLoadError(f"{path}: 'instructions' should be a list, "
+                                  f"not {type(instructions_data).__name__}")
 
-        for item in instructions_data:
-            try:
-                instruction = _parse_instruction(item)
-                self.add(instruction)
-            except Exception as e:
-                logger.warning("Failed to parse instruction in %s: %s", path, e)
+        for n, item in enumerate(instructions_data):
+            self._load_item(item, f"{path}, instruction {n}", seen)
+
+    def _load_item(self, item: Any, where: str, seen: dict[str, str]) -> None:
+        """Parse one loaded item and add it. ``seen`` maps each id loaded so
+        far to where it came from, so a second definition is caught."""
+        if isinstance(item, dict) and isinstance(item.get("id"), str):
+            where = f"{where} ({item['id']})"
+        try:
+            _check_keys(item)
+            instruction = _parse_instruction(item)
+        except Exception as e:
+            raise CorpusLoadError(f"{where}: {e}") from e
+        if instruction.id in seen:
+            raise CorpusLoadError(f"{where}: id {instruction.id!r} is already "
+                                  f"defined at {seen[instruction.id]}")
+        seen[instruction.id] = where
+        self.add(instruction)
 
     def add(self, instruction: Instruction) -> None:
         """Add an instruction to the corpus, replacing any with the same id."""
@@ -238,6 +273,20 @@ def _coerce_to_list(value: object) -> list[str]:
     if isinstance(value, str):
         return [t.strip().strip('"').strip("'") for t in value.split(",") if t.strip()]
     return []
+
+
+def _check_keys(data: Any) -> None:
+    """Reject a key an instruction or its scope does not define. The model
+    ignores one, so a misspelt ``actions`` or ``required_tags`` would load a
+    rule without the part it was meant to set."""
+    if not isinstance(data, dict):
+        raise TypeError(f"an instruction must be a mapping, not {type(data).__name__}")
+    unknown = sorted(str(k) for k in set(data) - _ITEM_KEYS)
+    scope = data.get("scope")
+    if isinstance(scope, dict):
+        unknown += sorted(f"scope.{k}" for k in set(scope) - _SCOPE_KEYS)
+    if unknown:
+        raise ValueError(f"unknown key(s) {', '.join(unknown)}")
 
 
 def _parse_instruction(data: dict) -> Instruction:

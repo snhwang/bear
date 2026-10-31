@@ -12,6 +12,36 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.3] — 2026-10-31
+
+### Fixed
+
+- `Corpus`: a rule that could not be loaded as written was left out or
+  weakened, with no error, so the gate could allow what the corpus forbade.
+  `from_file` and `from_directory` skipped an instruction that failed to
+  parse, and a file whose `instructions` was not a list, with a warning.
+  Every loader, `from_dicts` included, let a later instruction replace an
+  earlier one with the same id, and ignored a key the model does not
+  define, in an instruction or its scope. So a misspelt `actions` left a
+  must-have that forbade nothing, and a misspelt `required_tags` made an
+  allow rule apply in every context. Each now raises `CorpusLoadError`, a
+  `ValueError` exported from `bear`. The message names the file, the
+  instruction's position and its id, and for a duplicate it names both
+  places. `Corpus.add` still replaces. A corpus that overrode a rule by
+  reusing its id in a later file now raises.
+- `gate`: a key the gate does not define in a `forbid` entry, in
+  `actions.gate` or in an `actions.gate.args` entry was ignored. A misspelt
+  `match` made an argument rule match every call, and a misspelt `decision`
+  left the default, allow. Each is now a rule error, so `evaluate` raises
+  `GateRuleError` and `lint` reports it.
+
+### Added
+
+- `gate.lint` warns about an `actions` key that looks like a misspelt
+  `function`, `gate` or `forbid`. It also warns about a must-have scoped by
+  `required_tags`, since a context without those tags is not restricted by
+  it. The gate's docstring now says so.
+
 ## [0.4.2] — 2026-10-31
 
 This release fixes two retriever behaviours. Under BM25 an instruction
@@ -1487,7 +1517,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/snhwang/bear/releases/tag/v0.4.3
 [0.4.2]: https://github.com/snhwang/bear/releases/tag/v0.4.2
 [0.4.1]: https://github.com/snhwang/bear/releases/tag/v0.4.1
 [0.4.0]: https://github.com/snhwang/bear/releases/tag/v0.4.0

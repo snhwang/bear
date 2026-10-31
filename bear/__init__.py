@@ -14,7 +14,7 @@ from bear.models import (
     SessionState,
     collect_actions,
 )
-from bear.corpus import Corpus
+from bear.corpus import Corpus, CorpusLoadError
 from bear.config import Config, EmbeddingBackend, LLMBackend
 from bear.retriever import Retriever, register_embedding_backend
 from bear.composer import Composer, ComposedOutput, CompositionStrategy
@@ -120,7 +120,7 @@ from bear.marker_code import (
 )
 from bear.provenance import Provenance
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 __all__ = [
     # Models
@@ -138,6 +138,7 @@ __all__ = [
     "collect_actions",
     # Corpus
     "Corpus",
+    "CorpusLoadError",
     # Config
     "Config",
     "EmbeddingBackend",

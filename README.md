@@ -111,6 +111,8 @@ async def handle(user_message: str, context: Context) -> str:
     return response.content
 ```
 
+Loading raises `CorpusLoadError` for an instruction that cannot be loaded as written. That covers one that fails to parse, a key the model does not define, and an id that another instruction in the load already uses. Each would otherwise load a weaker policy than the one written. YAML files without an `instructions` key are skipped, so other YAML can sit in the same directory.
+
 ### 3. Same Query, Different Context, Different Behavior
 
 ```python
@@ -318,10 +320,12 @@ evaluate(ToolCall("terminal", {"command": "rm -rf build"}), operator, corpus)   
 evaluate(ToolCall("terminal", {"command": "cat audit.jsonl"}), operator, corpus)  # block: must_have
 evaluate(ToolCall("terminal", {"command": "git status"}),
          Context(tags=["role:guest"]), corpus)                                     # block: out_of_scope
-lint(corpus)   # [] when every rule can be read
+lint(corpus)   # [] when every rule can be read and none needs a warning
 ```
 
 A must-have that forbids the call blocks it whatever else the corpus says. A tool with no allow rule gets the `unlisted` decision, approve by default. Otherwise the highest-priority allow rule whose `required_tags` the context satisfies decides, by its first matching argument rule or else its default. Scope is tested by `bear.scope.passes_gate`, the same test the retriever applies. The gate does no I/O, reads no clock and calls no model, so the same inputs always give the same decision, and a recorded decision can be checked by running it again. Each `Decision` carries the `action`, a `reason` and the ids of the rules that decided it.
+
+`required_tags` cut both ways. An allow rule whose tags a context lacks permits nothing, so a missing tag fails closed. A must-have whose tags a context lacks forbids nothing, so a missing tag lifts it, and `lint` warns about each must-have scoped this way. An unknown key in a `forbid` entry, `actions.gate` or a `gate.args` entry is a rule error, since a misspelt `match` would match every call.
 
 `Auditor.record_decision` writes a decision to the audit log before the tool runs, and `record_outcome` writes what happened after. `python -m bear verify-audit` runs every recorded decision again and reports any that no longer match. The Hermes Agent plugin records both for every tool call (see Hermes Agent Plugin below).
 

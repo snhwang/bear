@@ -33,7 +33,15 @@ Rules live in the corpus, in the instruction types that already exist.
 Argument patterns are regexes applied with ``re.search`` to the string form
 of the named argument (JSON for anything that is not a string). A pattern
 matches only if every argument it names is present and matches. ``tool`` in a
-``forbid`` entry is an ``fnmatch`` glob.
+``forbid`` entry is an ``fnmatch`` glob. A ``forbid`` entry, ``actions.gate``
+and an ``actions.gate.args`` entry take only the keys shown, plus ``message``
+in the last two. Any other key is a rule error, since a misspelt ``match``
+would otherwise match every call.
+
+A scope's ``required_tags`` cut both ways. An allow rule whose tags a context
+lacks permits nothing, so a missing tag fails closed. A must-have whose tags a
+context lacks forbids nothing, so a missing tag lifts it. :func:`lint` warns
+about each must-have scoped this way.
 
 Decision order:
 
@@ -51,6 +59,7 @@ and the guidance that goes with it are admitted on the same terms.
 
 from __future__ import annotations
 
+import difflib
 import fnmatch
 import json
 import re
@@ -74,6 +83,11 @@ REASONS: tuple[str, ...] = (
 
 _RANK = {a: n for n, a in enumerate(ACTIONS)}
 _REASON_FOR = {"allow": "allowed", "approve": "rule_approve", "block": "rule_block"}
+
+_GATE_ACTIONS = ("function", "gate", "forbid")
+_FORBID_KEYS = frozenset({"tool", "args"})
+_GATE_KEYS = frozenset({"decision", "args", "message"})
+_ARG_RULE_KEYS = frozenset({"match", "decision", "message"})
 
 
 class GateRuleError(ValueError):
@@ -144,6 +158,12 @@ def _args_match(want: Any, args: Mapping[str, Any], where: str) -> bool:
     return True
 
 
+def _known_keys(spec: Mapping, known: frozenset, where: str) -> None:
+    unknown = sorted(str(k) for k in set(spec) - known)
+    if unknown:
+        raise GateRuleError(f"{where}: unknown key(s) {', '.join(unknown)}")
+
+
 def _decision_value(value: Any, where: str) -> str:
     action = str(value).strip().lower()
     if action not in _RANK:
@@ -160,9 +180,10 @@ def _forbids(inst: Instruction, call: ToolCall) -> bool:
     entries = (inst.actions or {}).get("forbid") or []
     if not isinstance(entries, list):
         raise GateRuleError(f"{inst.id}: actions.forbid must be a list")
-    for entry in entries:
+    for n, entry in enumerate(entries):
         if not isinstance(entry, Mapping) or not entry.get("tool"):
             raise GateRuleError(f"{inst.id}: each forbid entry needs a tool")
+        _known_keys(entry, _FORBID_KEYS, f"{inst.id} forbid[{n}]")
         if (fnmatch.fnmatchcase(call.name, str(entry["tool"]))
                 and _args_match(entry.get("args"), call.args, inst.id)):
             return True
@@ -173,6 +194,7 @@ def _gate_spec(inst: Instruction) -> Mapping:
     spec = (inst.actions or {}).get("gate") or {}
     if not isinstance(spec, Mapping):
         raise GateRuleError(f"{inst.id}: actions.gate must be a mapping")
+    _known_keys(spec, _GATE_KEYS, f"{inst.id} actions.gate")
     return spec
 
 
@@ -180,6 +202,8 @@ def _arg_rules(inst: Instruction) -> list[Mapping]:
     rules = _gate_spec(inst).get("args") or []
     if not isinstance(rules, list) or not all(isinstance(r, Mapping) for r in rules):
         raise GateRuleError(f"{inst.id}: actions.gate.args must be a list of mappings")
+    for n, rule in enumerate(rules):
+        _known_keys(rule, _ARG_RULE_KEYS, f"{inst.id} gate.args[{n}]")
     return rules
 
 
@@ -296,16 +320,26 @@ def lint(instructions: Iterable[Instruction], *,
          must_have_tag: str = MUST_HAVE_TAG) -> list[LintIssue]:
     """Problems with the gate rules in a corpus, found before a call is.
 
-    Errors are rules :func:`evaluate` cannot read. A warning names an allow
-    rule whose ``required_tags`` include a tag starting with one of
-    ``widening_prefixes``. An integration that adds such tags itself, such as
-    a ``platform:`` tag for the channel a message came from, would otherwise
-    let that addition widen what a context may do.
+    Errors are rules :func:`evaluate` cannot read. Warnings name rules the
+    gate ignores, an ``actions`` key that looks like a misspelt gate key, and
+    a must-have scoped by ``required_tags``, which a context without those
+    tags escapes. A warning also names an allow rule whose ``required_tags``
+    include a tag starting with one of ``widening_prefixes``. An integration
+    that adds such tags itself, such as a ``platform:`` tag for the channel a
+    message came from, would otherwise let that addition widen what a context
+    may do.
     """
     issues: list[LintIssue] = []
     probe = ToolCall(name="\0", args={})
     for inst in instructions:
         actions = inst.actions or {}
+        for key in actions:
+            near = ([] if key in _GATE_ACTIONS else
+                    difflib.get_close_matches(str(key), _GATE_ACTIONS, n=1, cutoff=0.75))
+            if near:
+                issues.append(LintIssue("warning", inst.id,
+                                        f"has actions.{key}, which the gate ignores. "
+                                        f"Did you mean actions.{near[0]}?"))
         try:
             if "forbid" in actions:
                 _forbids(inst, probe)
@@ -333,6 +367,12 @@ def lint(instructions: Iterable[Instruction], *,
                         _compiled(str(pattern))
         except GateRuleError as exc:
             issues.append(LintIssue("error", inst.id, str(exc)))
+        if ("forbid" in actions and is_must_have(inst, must_have_tag)
+                and inst.scope.required_tags):
+            issues.append(LintIssue("warning", inst.id,
+                                    f"forbids only where the context has "
+                                    f"{list(inst.scope.required_tags)}, so a context "
+                                    "without them is not restricted"))
         if inst.type == InstructionType.TOOL and widening_prefixes:
             widening = [t for t in inst.scope.required_tags
                         if t.startswith(widening_prefixes)]
