@@ -491,7 +491,9 @@ class TestBackfillScoresAtSimilarityZero:
         order = [s.id for s in results]
         none = results[order.index("none")]
         assert none.similarity == 0.0 and none.final_score == pytest.approx(0.3 * 0.5)
-        assert trace.admitted["none"] == "required_tags"
+        # BM25 returns it at similarity 0 since 0.4.2. Before, the backfill
+        # added it, at the same score.
+        assert trace.admitted["none"] == "search"
         matched = [s for s in results if s.id != "none" and s.final_score > 0.3 * 0.5]
         assert {s.id for s in matched} == {"strong", "weak"}
         assert all(order.index(s.id) < order.index("none") for s in matched)
@@ -520,12 +522,19 @@ class TestBackfillScoresAtSimilarityZero:
         legacy = self._bm25(self._corpus(none_scope=soft), restore_flat_backfill=True)
         assert "none" in {s.id for s in self._ranked(legacy)[0]}
 
-    def test_a_mandatory_instruction_keeps_its_score(self):
-        """Exempt from the cut, so its score only orders the result. Step 4
-        adds it at priority / 100, where the old backfill put it."""
+    def test_a_mandatory_instruction_is_scored_as_a_dense_search_scores_it(self):
+        """Exempt from the cut, so its score only orders the result. BM25
+        returns it at similarity 0 since 0.4.2, and it is scored there as a
+        dense search scores a mandatory row it returns. Before, the search
+        dropped it and Step 4 added it at priority / 100."""
         corpus = self._corpus()
         corpus[2] = corpus[2].model_copy(update={"tags": ["safety"]})
         results, trace = self._ranked(self._bm25(corpus, mandatory_tags=["safety"]))
+        none = {s.id: s for s in results}["none"]
+        assert none.final_score == pytest.approx(0.3 * 0.5) and none.mandatory
+        assert trace.admitted["none"] == "search"
+        results, trace = self._ranked(self._bm25(corpus, mandatory_tags=["safety"],
+                                                 restore_dropped_rows=True))
         none = {s.id: s for s in results}["none"]
         assert none.final_score == pytest.approx(0.5) and none.mandatory
         assert trace.admitted["none"] == "mandatory"
@@ -549,3 +558,217 @@ class TestBackfillScoresAtSimilarityZero:
         new = [s.id for s in self._bm25(self._corpus()).retrieve(
             self.QUERY, self.GATE, top_k=2, threshold=0.3)]
         assert new == ["strong", "weak"]
+
+
+class TestBM25ReturnsEveryRow:
+    """An instruction whose scope matches is admitted at any similarity. BM25
+    returned no row that shared no term with the query, and the backfill
+    added back only instructions with required_tags, so under BM25 one
+    without them was never admitted, gated or not, where a dense search
+    admits it (paper-retrieval-governed-context, 2026-10-30). BM25 now
+    returns every row, one that shares no term at similarity 0, after every
+    row that does."""
+
+    QUERY = "alpha beta"
+    GATE = Context(gate_tags=["role:admin"])
+
+    def _corpus(self, gated=True):
+        def d(id, content, scope=None):
+            return Instruction(id=id, type=InstructionType.DIRECTIVE, priority=50,
+                               content=content, scope=scope or ScopeCondition())
+        corpus = [d("plain", "alpha delta"),
+                  d("open", "zebra quokka"),
+                  d("soft", "walrus narwhal", ScopeCondition(tags=["evening"]))]
+        if gated:
+            corpus.append(d("key", "alpha beta gamma",
+                            ScopeCondition(required_tags=["role:admin"])))
+        return corpus
+
+    def _build(self, corpus, **config):
+        config = {"embedding_backend": EmbeddingBackend.BM25, "mandatory_tags": [], **config}
+        r = Retriever(Corpus.from_dicts([i.model_dump(mode="json") for i in corpus]),
+                      config=Config(**config))
+        r.build_index()
+        return r
+
+    def test_a_gated_query_admits_a_matching_scope_that_shares_no_term(self):
+        results, trace = self._build(self._corpus()).retrieve_with_trace(
+            self.QUERY, self.GATE, top_k=10, threshold=0.3)
+        by_id = {s.id: s for s in results}
+        assert set(by_id) == {"key", "plain", "open"}
+        assert by_id["open"].similarity == 0.0
+        assert by_id["open"].final_score == pytest.approx(0.3 * 0.5)
+        assert trace.admitted["open"] == "search"
+        # A scope that does not match meets the threshold, at similarity 0.
+        assert trace.excluded["soft"]["reason"] == "threshold"
+        assert trace.excluded["soft"]["similarity"] == 0.0
+
+    def test_the_switch_restores_dropped_rows(self):
+        for switch in ("restore_dropped_rows", "restore_flat_backfill",
+                       "restore_below_threshold"):
+            r = self._build(self._corpus(), **{switch: True})
+            gated = r.retrieve(self.QUERY, self.GATE, top_k=10, threshold=0.3)
+            assert "open" not in {s.id for s in gated}, switch
+
+    def test_bm25_admits_what_a_dense_search_admits(self):
+        """Membership on a gated query, with a threshold no similarity clears,
+        so only the scope decides. Hash embeddings rank every row."""
+        def admitted(r):
+            return {s.id for s in r.retrieve(self.QUERY, self.GATE,
+                                             top_k=Retriever.ALL, threshold=0.99)}
+
+        dense = admitted(self._build(self._corpus(), embedding_backend=EmbeddingBackend.NUMPY,
+                                     embedding_model="hash"))
+        assert dense == {"key", "plain", "open"}
+        assert admitted(self._build(self._corpus())) == dense
+        assert admitted(self._build(self._corpus(),
+                                    restore_dropped_rows=True)) == {"key", "plain"}
+
+    def test_top_k_all_admits_it_without_a_gate(self):
+        r = self._build(self._corpus(gated=False))
+        every = r.retrieve(self.QUERY, Context(), top_k=Retriever.ALL, threshold=0.3)
+        assert {s.id for s in every} == {"plain", "open"}
+
+    def test_an_ungated_pool_fills_after_every_row_that_shares_a_term(self):
+        r = self._build(self._corpus(gated=False))
+        pooled = r.retrieve(self.QUERY, Context(), top_k=5, threshold=0.3)
+        assert [s.id for s in pooled] == ["plain", "open"]
+        old = self._build(self._corpus(gated=False), restore_dropped_rows=True)
+        assert [s.id for s in old.retrieve(self.QUERY, Context(), top_k=5,
+                                           threshold=0.3)] == ["plain"]
+
+    def test_the_smallest_case(self):
+        """The paper's minimal reproduction: one instruction with an empty
+        scope, no context tags, and a query that shares no term."""
+        r = self._build([Instruction(id="greeting", type=InstructionType.DIRECTIVE,
+                                     priority=50, content="Open every conversation politely.")])
+        assert [s.id for s in r.retrieve("refund an invoice", Context(), top_k=5,
+                                         threshold=0.3)] == ["greeting"]
+
+    def test_the_pool_takes_zero_rows_by_priority_then_id(self):
+        """Every row that shares no term ties at 0, so which reach a pool
+        smaller than them is decided as resolution would decide it."""
+        def d(id, priority):
+            return Instruction(id=id, type=InstructionType.DIRECTIVE, priority=priority,
+                               content=f"zebra note {id}")
+        r = self._build([d("c", 50), d("b", 70), d("a", 50), d("d", 30)],
+                        retrieval_pool=2)
+        pooled = r.retrieve(self.QUERY, Context(), top_k=2, threshold=0.3)
+        assert [s.id for s in pooled] == ["b", "a"]
+
+    def test_a_log_from_before_the_fix_replays_the_old_way(self, tmp_path):
+        import json
+
+        from bear.audit import Auditor, JsonlSink, verify_audit_log
+
+        r = self._build(self._corpus(), restore_dropped_rows=True)
+        path = tmp_path / "old.jsonl"
+        with Auditor([JsonlSink(path)]).turn():
+            old = {s.id for s in r.retrieve(self.QUERY, self.GATE, top_k=10, threshold=0.3)}
+        assert old == {"key", "plain"}
+        lines = [json.loads(line) for line in path.read_text().splitlines()]
+        for rec in lines:
+            for retrieval in rec.get("retrievals", []):
+                assert retrieval["config"].pop("restore_dropped_rows") is True
+        path.write_text("\n".join(json.dumps(rec) for rec in lines) + "\n")
+        assert [res.status for res in verify_audit_log(path)] == ["match"]
+
+
+class TestTiesHaveAFixedOrder:
+    """Exact ties kept the order the backend returned them in, and numpy's
+    argpartition and argsort order ties differently between versions, so a
+    ToolBench query ranked differently on Windows and WSL
+    (paper-retrieval-governed-context, 2026-10-30). Ties are now broken by
+    priority and then id, as resolution breaks them."""
+
+    QUERY = "alpha beta"
+
+    def _twins(self):
+        # Inserted out of id order, so a fixed order is not the insertion one.
+        return [Instruction(id=id, type=InstructionType.DIRECTIVE, priority=50,
+                            content="alpha beta gamma") for id in ("c", "a", "b")]
+
+    def _build(self, corpus, **config):
+        config = {"mandatory_tags": [], **config}
+        r = Retriever(Corpus.from_dicts([i.model_dump(mode="json") for i in corpus]),
+                      config=Config(**config))
+        r.build_index()
+        return r
+
+    def _order(self, r, top_k=10):
+        return [s.id for s in r.retrieve(self.QUERY, Context(), top_k=top_k, threshold=0.0)]
+
+    def _exact_twins(self, **config):
+        """Dense rows whose cosine is exactly 1.0 by any arithmetic path.
+        Identical texts are not enough: float32 BLAS can score the same
+        vector a last bit apart by its place in the matrix, so they do not
+        tie at all."""
+        return retriever([inst(id, 1.0) for id in ("c", "a", "b")],
+                         mandatory_tags=[], **config)
+
+    def test_tied_rows_rank_by_id(self):
+        bm25 = self._build(self._twins(), embedding_backend=EmbeddingBackend.BM25)
+        assert self._order(bm25) == ["a", "b", "c"]
+        assert self._order(self._exact_twins()) == ["a", "b", "c"]
+
+    def test_the_order_the_backend_returns_ties_in_no_longer_matters(self):
+        """What a different numpy build does, simulated: the same scores with
+        the tied rows in another order, here the last row first."""
+        def reordered(r):
+            search = r._backend.search_bm25
+            r._backend.search_bm25 = lambda q, k: sorted(search(q, k),
+                                                         key=lambda h: (-h[1], -h[0]))
+            return r
+
+        bm25 = {"embedding_backend": EmbeddingBackend.BM25}
+        assert self._order(reordered(self._build(self._twins(), **bm25))) == ["a", "b", "c"]
+        legacy = reordered(self._build(self._twins(), restore_tie_order=True, **bm25))
+        assert self._order(legacy) == ["b", "a", "c"]
+
+    def test_bm25_picks_tied_rows_for_the_pool_by_id(self):
+        r = self._build(self._twins(), embedding_backend=EmbeddingBackend.BM25,
+                        retrieval_pool=1)
+        assert self._order(r, top_k=1) == ["a"]
+
+    def test_numpy_keeps_and_orders_tied_rows_as_told(self):
+        """Which tied rows survive the cut, and the order of every run of
+        equal values, come from the tie order, here highest row first."""
+        from bear.backends.embeddings.numpy_backend import _top_k
+
+        def last_first(rows):
+            return sorted(rows, reverse=True)
+
+        values = np.array([0.5, 0.9, 0.5, 0.9, 0.5, 0.1])
+        assert _top_k(values, 3, last_first).tolist() == [3, 1, 4]
+        assert _top_k(values, 6, last_first).tolist() == [3, 1, 4, 2, 0, 5]
+        assert _top_k(values, 6, sorted).tolist() == [1, 3, 0, 2, 4, 5]
+        assert _top_k(values, 0, sorted).tolist() == []
+        # With no order the old selection runs, and the values still come out
+        # highest first.
+        assert values[_top_k(values, 3)].tolist() == [0.9, 0.9, 0.5]
+
+    def test_a_tie_at_the_pool_edge_keeps_the_lowest_id_on_numpy(self):
+        """A pool of one over three tied rows inserted out of id order."""
+        assert self._order(self._exact_twins(retrieval_pool=1), top_k=1) == ["a"]
+
+    def test_the_switch_reaches_the_backend(self):
+        assert self._build(self._twins(), embedding_model="hash")._backend.tie_order
+        assert self._build(self._twins(), embedding_model="hash",
+                           restore_tie_order=True)._backend.tie_order is None
+
+    def test_a_log_from_before_the_fix_replays_the_old_way(self, tmp_path):
+        import json
+
+        from bear.audit import Auditor, JsonlSink, verify_audit_log
+
+        r = self._build(self._twins(), embedding_backend=EmbeddingBackend.BM25,
+                        restore_tie_order=True)
+        path = tmp_path / "old.jsonl"
+        with Auditor([JsonlSink(path)]).turn():
+            r.retrieve(self.QUERY, Context(), top_k=10, threshold=0.0)
+        lines = [json.loads(line) for line in path.read_text().splitlines()]
+        for rec in lines:
+            for retrieval in rec.get("retrievals", []):
+                assert retrieval["config"].pop("restore_tie_order") is True
+        path.write_text("\n".join(json.dumps(rec) for rec in lines) + "\n")
+        assert [res.status for res in verify_audit_log(path)] == ["match"]

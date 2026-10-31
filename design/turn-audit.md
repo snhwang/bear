@@ -186,7 +186,7 @@ concurrent LLM calls inside one turn the two orders can differ.
 | `corpus_size` | int | Instructions in the index |
 | `embedder` | str | `"Embedder"` for the built-in one, else the class name of an injected embedder |
 | `embedder_mode` | str or null | How the built-in embedder produced vectors (`sentence_transformers`, `mlx`, `openai` or `hash`), or null if it was never loaded (BM25 and ITR) or is not the built-in one |
-| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`, `restore_below_threshold`, `retrieval_pool`, `restore_pool_by_k`, `restore_unchecked_requires`, `restore_ranked_resolution`, `restore_ungated_pool`, `restore_removed_acting`, `restore_flat_backfill`. A record without `restore_below_threshold` was made before it existed and replays with it on, and the same holds for the other six switches. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
+| `config` | object | The retriever's embedding and scoring settings: `embedding_backend`, `embedding_model`, `embedding_dim`, `embedding_query_prefix`, `embedding_passage_prefix`, `default_top_k`, `default_threshold`, `priority_weight`, `mandatory_tags`, `restore_below_threshold`, `retrieval_pool`, `restore_pool_by_k`, `restore_unchecked_requires`, `restore_ranked_resolution`, `restore_ungated_pool`, `restore_removed_acting`, `restore_flat_backfill`, `restore_dropped_rows`, `restore_tie_order`. A record without `restore_below_threshold` was made before it existed and replays with it on, and the same holds for the other eight switches. For the built-in embedder the model, dimension and prefixes are read from the embedder itself, since an injected or shared embedder can differ from the retriever's config. |
 | `query` | str | The query argument as passed |
 | `effective_query` | str | The query actually searched (`context.refined_query` wins if set) |
 | `context` | object | The full `Context` as passed |
@@ -204,6 +204,7 @@ Each entry in `results`:
 |---|---|
 | `search` | Returned by similarity search and passed the gate and threshold |
 | `required_tags` | Its `required_tags` gate matched the context, and it was injected after search missed it |
+| `backfill` | It has no `required_tags`, and it was injected after search missed it, on a gated query or one for `Retriever.ALL`. No backend in bear leaves one out since BM25 returns every row |
 | `mandatory` | Carries a mandatory tag and was injected after search missed it |
 | `requires` | Pulled in by another result's `requires` |
 

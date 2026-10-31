@@ -370,6 +370,39 @@ class TestReplay:
         assert [r.status for r in verify_narrowings(path)] == ["match"]
         assert [r.status for r in verify_narrowings(tmp_path / "new.jsonl")] == ["match"]
 
+    def test_a_record_from_before_bm25_returned_every_tool_replays_the_old_way(
+            self, tmp_path):
+        """0.4.1's BM25 dropped a tool that shared no term with the request,
+        and only a gated one was added back, so a tool without required_tags
+        was appended last, unranked. It is now ranked at similarity 0. A
+        record without the switch replays the old way."""
+        def run(path, dropped):
+            plugin, out = make(sinks=[JsonlSink(path)], narrow_top_k=3)
+            plugin._config = plugin._config.model_copy(
+                update={"restore_dropped_rows": dropped})
+            llm(plugin, message="web result snippets")
+            narrow(plugin)
+            plugin.on_post_llm_call(turn_id="t1", assistant_response="ok")
+            return records(out)[0]
+
+        old, new = run(tmp_path / "old.jsonl", True), run(tmp_path / "new.jsonl", False)
+        assert old["settings"]["restore_dropped_rows"] is True
+        assert new["settings"]["restore_dropped_rows"] is False
+
+        def unranked(rec):
+            return {p["name"] for p in rec["offered"] + rec["ranked_out"] if not p["retrieved"]}
+
+        assert unranked(old) == {"read_file", "search_files", "clarify", "cronjob"}
+        assert unranked(new) == set()
+        path = tmp_path / "old.jsonl"
+        lines = [json.loads(line) for line in path.read_text().splitlines()]
+        for rec in lines:
+            if rec.get("schema") == NARROWING_SCHEMA:
+                del rec["settings"]["restore_dropped_rows"]
+        path.write_text("\n".join(json.dumps(r) for r in lines) + "\n")
+        assert [r.status for r in verify_narrowings(path)] == ["match"]
+        assert [r.status for r in verify_narrowings(tmp_path / "new.jsonl")] == ["match"]
+
 
 class TestGateWithReason:
     def _send(self, **overrides):

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -61,6 +62,15 @@ class MetadataFilter:
 
 class EmbeddingBackendBase(ABC):
     """Abstract base for vector index backends."""
+
+    # How a search orders rows of exactly equal similarity: a function from
+    # a list of rows to the same rows in order, or None to leave them as the
+    # backend's library orders them, which can differ between versions. The
+    # retriever sets it, unless Config.restore_tie_order, to the order
+    # resolution uses, so the same query returns the same rows on every
+    # machine. A backend whose library orders ties itself, as FAISS and
+    # ChromaDB do, ignores it.
+    tie_order: Callable[[list[int]], list[int]] | None = None
 
     @abstractmethod
     def build_index(self, embeddings: np.ndarray) -> None:

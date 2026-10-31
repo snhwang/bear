@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
 
 from bear.backends.embeddings.base import EmbeddingBackendBase, MetadataFilter
@@ -26,6 +28,43 @@ def _salience_of(inst) -> tuple[float, float, float, float, float]:
             float(half) if half is not None else float("nan"),
             1.0,
             float(meta.get("importance", 0.0)))
+
+
+def _top_k(values: np.ndarray, k: int,
+           tie_order: Callable[[list[int]], list[int]] | None = None) -> np.ndarray:
+    """Indices of the ``k`` largest values, highest first.
+
+    With no ``tie_order``, exact ties come in whatever order ``argpartition``
+    and the default ``argsort`` leave them, which differs between numpy
+    versions, so two machines could rank one query differently. With one,
+    which of the values equal to the k-th largest are kept, and the order of
+    every run of equal values, are what it says. Only tied indices are passed
+    to it, so this stays linear in the corpus, as ``argpartition`` was.
+    """
+    if k <= 0:
+        return np.empty(0, dtype=np.intp)
+    kth = np.partition(values, -k)[-k] if tie_order is not None else np.nan
+    if np.isnan(kth):
+        # NaN compares equal to nothing, so it falls back to the plain order.
+        top = np.argpartition(values, -k)[-k:]
+        return top[np.argsort(values[top])[::-1]]
+    above = np.flatnonzero(values > kth)
+    tied = np.flatnonzero(values == kth)
+    if len(tied) > k - len(above):
+        tied = np.asarray(tie_order(tied.tolist())[:k - len(above)], dtype=np.intp)
+    top = np.concatenate([above, tied])
+    top = top[np.argsort(-values[top], kind="stable")]
+    ranked = values[top]
+    # Runs of equal values, each put in the tie order.
+    same = np.flatnonzero(ranked[1:] == ranked[:-1]).tolist()
+    start = None
+    for j, i in enumerate(same):
+        if start is None:
+            start = i
+        if j + 1 == len(same) or same[j + 1] != i + 1:
+            top[start:i + 2] = tie_order(top[start:i + 2].tolist())
+            start = None
+    return top
 
 
 class NumpyBackend(EmbeddingBackendBase):
@@ -272,8 +311,14 @@ class NumpyBackend(EmbeddingBackendBase):
 
         # Get top-k indices
         k = min(top_k, len(similarities))
-        top_indices = np.argpartition(similarities, -k)[-k:]
-        top_indices = top_indices[np.argsort(similarities[top_indices])[::-1]]
+        order = self.tie_order
+        if order is not None and rows is not None:
+            # The search ran over a subset, so its indices are positions in
+            # rows, and the tie order is over the corpus's own rows.
+            def order(local: list[int], _order=order) -> list[int]:
+                back = {rows[i]: i for i in local}
+                return [back[row] for row in _order(list(back))]
+        top_indices = _top_k(similarities, k, order)
 
         if rows is None:
             return [(int(idx), float(similarities[idx])) for idx in top_indices]

@@ -98,15 +98,20 @@ prefilter.
 
 ### The required-tags injection scan skips items
 
-`Retriever._inject_required_tags_matches` runs on every retrieve. It scans the
-whole `_instruction_list` and injects every instruction whose required tags
+`Retriever._backfill_unreturned` (once `_inject_required_tags_matches`) runs
+on every retrieve. It scans the whole `_instruction_list` and injects every
+instruction whose required tags
 are all in the context, at `final_score = priority / 100`, whatever its
 similarity. Since the threshold fix, it skips what the search returned and the
 threshold set aside, unless `Config.restore_below_threshold` is on. After
 0.4.0 it scores a row the search did not return as similarity 0. Such a row is
 admitted only where its scope matches or the threshold is at most 0, at
 `priority_weight * priority / 100`, unless `Config.restore_flat_backfill` is
-on. That guarantees a hard-gated instruction is never missed because
+on. After 0.4.1 it covers every instruction the search did not return on a
+gated query or one for `Retriever.ALL`, with `required_tags` or without,
+and BM25 returns every row, so no backend in bear leaves it anything to
+add. `Config.restore_dropped_rows` brings back both old behaviors. Items
+stay out either way. That guarantees a hard-gated instruction is never missed because
 of the over-fetch ratio (bear-dev-78's review, the blocker). A memory question
 carries `item` and the holder's owner tag, which every item that agent owns demands. So
 without a change, all of them would be injected at a flat score, which would

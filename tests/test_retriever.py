@@ -808,8 +808,8 @@ class TestTheMaintainedCandidateSets:
         by_row = {row: inst.id for row, inst
                   in enumerate(r._instruction_list)}
         assert {by_row[x] for x in r._mandatory_rows()} == {"safe"}
-        # the item has required_tags but is an item, so it is not injectable
-        assert {by_row[x] for x in r._injectable_rows()} == {"gated"}
+        # every instruction is injectable but the item, whatever its tags
+        assert {by_row[x] for x in r._injectable_rows()} == {"safe", "plain", "gated"}
 
 
 class TestTheQueryEmbeddingCache:

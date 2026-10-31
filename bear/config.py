@@ -110,6 +110,24 @@ class Config(BaseModel):
     # restore_below_threshold implies it, since every run made before that
     # fix had this backfill too.
     restore_flat_backfill: bool = False
+    # Rows a search does not return, treated as they were before 0.4.2, kept
+    # to reproduce earlier runs. When on, BM25 returns no row that shares no
+    # term with the query, and the backfill adds back only instructions with
+    # required_tags. So under BM25 an instruction without them that shares
+    # no term with the query is never admitted, though its scope matches and
+    # a dense search would admit it. Off, BM25 returns every row, one that
+    # shares no term at similarity 0, and the backfill covers every
+    # instruction a search left out on a gated query or one for ALL.
+    # restore_flat_backfill and restore_below_threshold imply it.
+    restore_dropped_rows: bool = False
+    # Exact ties ordered as before 0.4.2, kept to reproduce earlier runs.
+    # When on, instructions with the same final score and priority keep the
+    # order the backend returned them in, and the numpy and BM25 backends
+    # pick which tied rows reach the pool however the numpy build orders
+    # them, which differs between versions. So one query could rank
+    # differently on two machines. Off, ties are broken by id, as resolution
+    # breaks them, and those backends pick tied rows in a fixed order.
+    restore_tie_order: bool = False
 
     @classmethod
     def from_env(cls) -> Config:

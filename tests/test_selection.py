@@ -269,7 +269,7 @@ class TestTheInjectionScanSkipsItems:
     def _injected(self, r, gate, **ctx):
         """What the scan itself injects, isolated from similarity search."""
         context = Context(domain="conversation", gate_tags=gate, **ctx)
-        return {s.id for s in r._inject_required_tags_matches(context, set())}
+        return {s.id for s in r._backfill_unreturned(context, set())}
 
     def test_the_scan_injects_no_item_even_when_its_gate_is_satisfied(self):
         """The items here pass both the gate and the selection, so only the
@@ -297,10 +297,12 @@ class TestTheInjectionScanSkipsItems:
                 == {"gated"})
 
     def test_the_scan_still_injects_what_it_is_for(self):
-        """A hard-gated instruction the over-fetch would have missed."""
+        """Every instruction that passes and that the search left out, gated
+        or not. Called with nothing seen, that is all of them here."""
+        noise = [f"noise{n}" for n in range(30)]
         r = _retriever([_inst("gated", required=["legal"]),
-                        *[_inst(f"noise{n}") for n in range(30)]])
-        assert self._injected(r, ["legal"]) == {"gated"}
+                        *[_inst(n) for n in noise]])
+        assert self._injected(r, ["legal"]) == {"gated", *noise}
         assert "gated" in _ids(r, gate_tags=["legal"], query="utterly unrelated")
 
     def test_the_scan_respects_selection(self):

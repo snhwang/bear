@@ -442,6 +442,8 @@ class BearHermesPlugin:
                          "mandatory_tags": list(self._config.mandatory_tags),
                          "priority_weight": self._tool_config().priority_weight,
                          "restore_flat_backfill": self._config.restore_flat_backfill,
+                         "restore_dropped_rows": self._config.restore_dropped_rows,
+                         "restore_tie_order": self._config.restore_tie_order,
                          "restore_below_threshold": self._config.restore_below_threshold},
             "backend": self._backend_name(), "embedder": narrowed.embedder,
             "index_version": narrowed.index_version,

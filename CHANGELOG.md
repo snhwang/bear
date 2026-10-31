@@ -12,6 +12,53 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.2] — 2026-10-31
+
+This release fixes two retriever behaviours. Under BM25 an instruction
+that shared no term with the query was never admitted, and exact ties
+ranked in an order that depended on the numpy version. Both change
+results, and each has a `Config` switch that reproduces the old one.
+
+### Fixed
+
+- `Retriever`: under BM25 an instruction whose scope matched, but that
+  shared no term with the query, was never admitted, gated or not. An
+  instruction whose scope matches is admitted at any similarity, and a dense
+  search admits it. But BM25 returns no row that shares no term with the
+  query, and the backfill added back only instructions with
+  `required_tags`. BM25 now returns every row, one that shares no term at
+  similarity 0, after every row that does. So the pool and the admission
+  rule treat it as a dense search treats its least similar rows. In an
+  ungated pool such rows come after every row that shares a term, by
+  priority and then id. A mandatory one is now scored where the search
+  returns it, as a dense search scores it, at
+  `priority_weight * priority / 100`. Before, it was added at
+  `priority / 100`. It is still exempt from the cut. Under BM25, tool
+  narrowing now ranks a tool that shares no term with the request at
+  similarity 0, where it was appended last, unranked. The backfill also
+  covers every instruction, not only those with `required_tags`, on a
+  gated query or one for `Retriever.ALL`, so the rule holds whatever a
+  backend returns. It admits such an instruction as `backfill` in the trace.
+  `Config.restore_dropped_rows=True` reproduces the old behavior, and
+  `restore_flat_backfill` and `restore_below_threshold` imply it.
+- `Retriever`: instructions with the same final score and priority kept
+  the order the backend returned them in. The numpy backend's
+  `argpartition` and `argsort` order exact ties differently between numpy
+  versions, so one query could rank differently on two machines. Ties now
+  rank by id, as resolution orders them. The numpy and BM25 backends also
+  pick tied rows for the pool in that order, through
+  `EmbeddingBackendBase.tie_order`, which the retriever sets. FAISS and
+  ChromaDB order ties themselves. This covers exact ties, which includes
+  every BM25 tie. On a dense backend two identical texts can score a last
+  bit apart, by where they sit in the index and by the BLAS build, and then
+  they do not tie. `Config.restore_tie_order=True`
+  reproduces the backend's order. So a fresh run can list exactly tied
+  rows in a different order from a run recorded before this release, with
+  no other cause. Verifying the older record with `bear.audit` is
+  unaffected, since a record without the switch replays with it on.
+- Audit records carry both switches, and a retrieval or BM25 narrowing
+  record without them replays the old way.
+
 ## [0.4.1] — 2026-10-30
 
 This release fixes one retriever behaviour under BM25. It changes results,
@@ -1440,7 +1487,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/snhwang/bear/releases/tag/v0.4.2
 [0.4.1]: https://github.com/snhwang/bear/releases/tag/v0.4.1
 [0.4.0]: https://github.com/snhwang/bear/releases/tag/v0.4.0
 [0.3.1]: https://github.com/snhwang/bear/releases/tag/v0.3.1

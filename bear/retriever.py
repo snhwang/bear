@@ -599,6 +599,8 @@ class Retriever:
             self._config.embedding_backend,
             persist_directory=persist_directory,
         )
+        if not self._config.restore_tie_order:
+            self._backend.tie_order = self._in_tie_order
         # Suppress hash warning for backends that handle their own embeddings
         _suppress = self._config.embedding_backend in (
             EmbeddingBackend.BM25, EmbeddingBackend.ITR,
@@ -611,8 +613,8 @@ class Retriever:
         # _mandatory_rows for why, and _note_mandatory for the maintenance.
         self._mandatory: set[int] = set()
         self._mandatory_for: tuple[str, ...] | None = None
-        # Rows the required-tags backfill could ever return: a non-item
-        # carrying required_tags. Its first two tests, in list order.
+        # Rows the backfill could ever return: every non-item, its first
+        # test, in list order.
         self._injectable: set[int] = set()
         self._built = False
         self._cache_dir: Path | None = None
@@ -1248,9 +1250,7 @@ class Retriever:
             trace.gated = gated
 
         if self._is_bm25:
-            from bear.backends.embeddings.bm25_backend import BM25Backend
-            assert isinstance(self._backend, BM25Backend)
-            raw_results = self._backend.search_bm25(query_text, overfetch_k)
+            raw_results = self._search_bm25(query_text, overfetch_k)
         elif self._is_itr:
             from bear.backends.embeddings.itr_backend import ITRBackend
             assert isinstance(self._backend, ITRBackend)
@@ -1350,13 +1350,14 @@ class Retriever:
                 final_score=final_score,
             ))
 
-        # Step 3.5: Inject instructions whose required_tags match the context
-        # but were not returned by the search (analogous to mandatory
-        # injection). A gated query over-fetches the whole corpus, so on the
-        # dense path this adds nothing, as Step 2's comment says. What the
-        # search did return and the threshold set aside was not missed, so it
-        # stays out, unless the config restores the old behavior to reproduce
-        # earlier runs.
+        # Step 3.5: Add back what passes but the search did not return
+        # (analogous to mandatory injection). A gated query, or one for ALL,
+        # ranks every instruction that passes, so on the dense path this adds
+        # nothing, as Step 2's comment says. An ungated one ranks a pool, and
+        # what is outside it was not missed. What the search did return and
+        # the threshold set aside was not missed either, so it stays out,
+        # unless the config restores the old behavior to reproduce earlier
+        # runs.
         skip = set() if self._config.restore_below_threshold else below_threshold
         # Skipped where it provably cannot return anything: if the search
         # returned every row then every gate-passing instruction was already
@@ -1368,8 +1369,9 @@ class Retriever:
         if len(raw_results) >= n and not self._config.restore_below_threshold:
             required_matches: list[ScoredInstruction] = []
         else:
-            required_matches = self._inject_required_tags_matches(
-                context, seen_ids, skip, threshold, priority_weight, trace)
+            required_matches = self._backfill_unreturned(
+                context, seen_ids, skip, threshold, priority_weight, trace,
+                ranks_all=gated or want_all)
         scored.extend(required_matches)
 
         # Step 4: Add mandatory instructions (e.g., safety) that aren't already included
@@ -1378,15 +1380,21 @@ class Retriever:
 
         if trace is not None:
             for s in required_matches:
-                trace.admit(s.id, "required_tags")
+                trace.admit(s.id, "required_tags" if s.instruction.scope.required_tags
+                            else "backfill")
             for s in mandatory:
                 trace.admit(s.id, "mandatory")
 
         # Step 5: Handle instruction relationships
         scored, required_only = self._resolve_relationships(scored, trace, context)
 
-        # Step 6: Sort by final_score descending, then by priority
-        scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
+        # Step 6: Sort by final_score descending, then by priority, then by
+        # id, as resolution orders them, so exact ties rank the same on every
+        # machine rather than in whatever order the backend returned them.
+        if self._config.restore_tie_order:
+            scored.sort(key=lambda s: (s.final_score, s.priority), reverse=True)
+        else:
+            scored.sort(key=lambda s: (-s.final_score, -s.priority, s.id))
 
         # Step 7: Return top-k, with mandatory instructions exempt from the cut
         result = self._top_k_keeping_mandatory(scored, top_k, required_only)
@@ -1475,20 +1483,74 @@ class Retriever:
 
         return results
 
-    def _inject_required_tags_matches(
+    def _restores_dropped_rows(self) -> bool:
+        """Whether rows a search does not return are treated as before 0.4.2.
+
+        ``Config.restore_dropped_rows`` says so, and so do the two older
+        backfill switches, since every run made before them was made before
+        this too.
+        """
+        return (self._config.restore_dropped_rows
+                or self._config.restore_flat_backfill
+                or self._config.restore_below_threshold)
+
+    def _search_bm25(self, query_text: str, k: int) -> list[tuple[int, float]]:
+        """BM25's ranking of the corpus, cut to ``k`` rows like any search.
+
+        BM25 scores 0 a row that shares no term with the query and returns no
+        such row. Here it is a row of similarity 0 like any other, ranked
+        after every row that shares a term, so the pool and the admission
+        rule treat it as a dense search would treat its least similar rows.
+        BM25 gives exact ties often, and they are ordered by priority and
+        then id, rather than however the numpy build ordered them, so a query
+        ranks the same on every machine. ``Config.restore_dropped_rows`` and
+        ``Config.restore_tie_order`` bring back each old behavior.
+        """
+        from bear.backends.embeddings.bm25_backend import BM25Backend
+        assert isinstance(self._backend, BM25Backend)
+        every = not self._restores_dropped_rows()
+        canonical = not self._config.restore_tie_order
+        if not (every or canonical):
+            return self._backend.search_bm25(query_text, k)
+        insts = self._instruction_list
+        n = len(insts)
+        # Every row that shares a term, so no tie at the cut is decided by
+        # the backend's own selection.
+        hits = self._backend.search_bm25(query_text, n)
+        if canonical:
+            hits.sort(key=lambda h: (-h[1], -insts[h[0]].priority, insts[h[0]].id))
+        if every and len(hits) < k:
+            returned = {row for row, _ in hits}
+            rest = [row for row in range(n) if row not in returned]
+            if canonical:
+                rest = self._in_tie_order(rest)
+            hits.extend((row, 0.0) for row in rest[:k - len(hits)])
+        return hits[:k]
+
+    def _in_tie_order(self, rows: list[int]) -> list[int]:
+        """Rows of equal similarity in the order they rank: priority
+        descending, then id, as resolution orders them. Equal similarity and
+        priority give an equal final score, so the final sort keeps this."""
+        insts = self._instruction_list
+        return sorted(rows, key=lambda row: (-insts[row].priority, insts[row].id))
+
+    def _backfill_unreturned(
         self, context: Context, already_seen: set[str],
         skip: set[str] | frozenset[str] = frozenset(),
         threshold: float | None = None,
         priority_weight: float | None = None,
         trace: RetrievalTrace | None = None,
+        ranks_all: bool = True,
     ) -> list[ScoredInstruction]:
-        """Inject instructions whose required_tags are satisfied by the context.
+        """Add the instructions that pass but that the search did not return.
 
-        This guarantees that a gate-passing instruction is not lost because
-        the search left it out of its pool. Since a gated query over-fetches
-        the whole corpus (Step 2), the dense path leaves nothing out, so on
-        that path the scan adds nothing. It can still add an instruction
-        where a search drops rows itself, as BM25 does with a zero score.
+        ``ranks_all`` says the query ranks every instruction that passes, as a
+        gated one or one for ALL does. Such a query over-fetches the whole
+        corpus (Step 2), so the dense path leaves nothing out and the scan
+        adds nothing there. It can still add an instruction where a search
+        drops rows itself, as BM25 does with a zero score. An ungated query
+        ranks a pool of the most similar, and what is outside it was not
+        missed, so without ``ranks_all`` the scan adds nothing.
 
         A row the search did not return matched nothing in the query, so it
         is treated as a row of similarity 0 and meets Step 3's rule. It is
@@ -1501,29 +1563,38 @@ class Retriever:
         as the old backfill did, since a mandatory instruction is exempt from
         the cut and its score only orders the result.
 
+        With ``Config.restore_dropped_rows`` on, or either switch above, it
+        adds only instructions with required_tags, and only when the context
+        has tags, as before it covered every instruction. BM25 now returns
+        every row itself (:meth:`_search_bm25`), so with that switch off no
+        backend in bear leaves anything here for the scan to add. It remains
+        so the rule holds whatever a backend returns.
+
         ``skip`` holds what the search returned and the threshold set aside.
         Those were not missed, and are left out. With
         ``Config.restore_below_threshold`` on, ``skip`` is empty and the scan
         puts them back, as it did before the threshold fix.
         """
-        if not context or not context.all_tags:
-            return []
-
         if threshold is None:
             threshold = self._config.default_threshold
         if priority_weight is None:
             priority_weight = self._config.priority_weight
         flat = (self._config.restore_flat_backfill
                 or self._config.restore_below_threshold)
-        context_tags = set(context.all_tags)
+        required_only = self._restores_dropped_rows()
+        if required_only:
+            if not context or not context.all_tags:
+                return []
+        elif not ranks_all:
+            return []
         results: list[ScoredInstruction] = []
 
         for row in sorted(self._injectable_rows()):
             inst = self._instruction_list[row]
             if inst.id in already_seen or inst.id in skip:
                 continue
-            # An item is never injected. The scan exists so a hard-gated
-            # instruction is not missed because of the over-fetch ratio, and
+            # An item is never injected. The scan exists so an instruction
+            # that passes is not missed where the search left it out, and
             # an item's gate is its facet and its owner, which a question
             # about what an agent holds carries. So every item that agent owns
             # would be injected at a flat score on every query, ignoring
@@ -1532,7 +1603,7 @@ class Retriever:
             # similarity within the selection, or not at all.
             if inst.type == InstructionType.ITEM:
                 continue
-            if not inst.scope.required_tags:
+            if required_only and not inst.scope.required_tags:
                 continue
             if not flat and self._is_mandatory(inst):
                 continue
@@ -1826,14 +1897,13 @@ class Retriever:
         return self._mandatory
 
     def _injectable_rows(self) -> set[int]:
-        """The rows the required-tags backfill could ever return.
+        """The rows the backfill could ever return.
 
-        Its first two tests are that the instruction is not an item, since an
-        item is never injected, and that it carries required_tags. Both are
-        properties of the instruction, so the candidates are maintained here
-        rather than rediscovered by walking the corpus on every query.
-        Measured at 86,944 items, that walk was 58% of a query once the
-        mandatory scan was gone, and it returned nothing.
+        Its first test is that the instruction is not an item, since an item
+        is never injected. That is a property of the instruction, so the
+        candidates are maintained here rather than rediscovered by walking
+        the corpus on every query. Measured at 86,944 items, that walk was 58%
+        of a query once the mandatory scan was gone, and it returned nothing.
         """
         self._build_row_sets()
         return self._injectable
@@ -1862,8 +1932,7 @@ class Retriever:
                 self._mandatory.add(row)
             else:
                 self._mandatory.discard(row)
-            if (inst.type != InstructionType.ITEM
-                    and inst.scope.required_tags):
+            if inst.type != InstructionType.ITEM:
                 self._injectable.add(row)
             else:
                 self._injectable.discard(row)

@@ -129,8 +129,11 @@ class RetrievalTrace:
 
     Attributes:
         admitted: Id to how it entered the candidates: ``search``,
-            ``required_tags``, ``mandatory`` or ``requires``. An instruction
-            admitted and later removed is in both this and ``excluded``.
+            ``required_tags``, ``backfill``, ``mandatory`` or ``requires``.
+            ``required_tags`` and ``backfill`` are both instructions the
+            search did not return, added back at similarity 0, with and
+            without required_tags. An instruction admitted and later
+            removed is in both this and ``excluded``.
         excluded: Id to ``{"id", "reason", "similarity", "by"}``. The reasons
             are ``gate``, ``threshold``, ``superseded``, ``conflict``,
             ``prerequisite``, ``unrequired`` and ``top_k``. ``by`` names the
@@ -363,6 +366,7 @@ class Turn:
             "restore_pool_by_k", "restore_unchecked_requires",
             "restore_ranked_resolution", "restore_ungated_pool",
             "restore_removed_acting", "restore_flat_backfill",
+            "restore_dropped_rows", "restore_tie_order",
         })
         embedder_mode = None
         if isinstance(embedder, Embedder):
@@ -878,15 +882,18 @@ def _replay(turn: dict, record: dict, log: AuditLog,
     # Likewise a record made before the pool stopped growing with top_k,
     # before dependencies were checked for conflicts, before resolution had a
     # canonical order, before the ungated pool held only gate-passing
-    # instructions, before removed instructions stopped acting, or before the
-    # backfill scored what the search did not return as similarity 0,
-    # replays the old way.
+    # instructions, before removed instructions stopped acting, before the
+    # backfill scored what the search did not return as similarity 0, before
+    # BM25 returned every row, or before ties had a fixed order, replays the
+    # old way.
     config.setdefault("restore_pool_by_k", True)
     config.setdefault("restore_unchecked_requires", True)
     config.setdefault("restore_ranked_resolution", True)
     config.setdefault("restore_ungated_pool", True)
     config.setdefault("restore_removed_acting", True)
     config.setdefault("restore_flat_backfill", True)
+    config.setdefault("restore_dropped_rows", True)
+    config.setdefault("restore_tie_order", True)
     if record.get("embedder_mode") == "hash":
         # The recording ran on hash embeddings (explicitly or by fallback).
         config["embedding_model"] = "hash"
@@ -1161,8 +1168,12 @@ def verify_narrowings(path_or_log: "str | Path | AuditLog") -> list[NarrowingRep
                 tool_version = rec.get("index_version", "")
                 if (rec.get("backend") == "bm25" and not rec.get("redacted")
                         and tool_version in log.corpora):
-                    # A record without the backfill switch was ranked before
-                    # the backfill scored a tool BM25 dropped as similarity 0.
+                    # A record without one of these switches was ranked
+                    # before that fix, so it replays the old way. Before the
+                    # backfill fix, a tool BM25 dropped was not scored as
+                    # similarity 0. Before BM25 returned every row, one
+                    # without required_tags was appended last, unranked.
+                    # Before ties had a fixed order, they kept the backend's.
                     retriever = Retriever(
                         Corpus.from_dicts(log.corpora[tool_version]),
                         config=Config(embedding_backend=EmbeddingBackend.BM25,
@@ -1170,6 +1181,10 @@ def verify_narrowings(path_or_log: "str | Path | AuditLog") -> list[NarrowingRep
                                       priority_weight=float(s.get("priority_weight", 0.3)),
                                       restore_flat_backfill=bool(
                                           s.get("restore_flat_backfill", True)),
+                                      restore_dropped_rows=bool(
+                                          s.get("restore_dropped_rows", True)),
+                                      restore_tie_order=bool(
+                                          s.get("restore_tie_order", True)),
                                       restore_below_threshold=bool(
                                           s.get("restore_below_threshold", False))))
                     retriever.build_index()

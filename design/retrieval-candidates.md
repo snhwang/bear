@@ -44,7 +44,9 @@ Both sets are maintained rather than rediscovered.
 
 `_mandatory_rows()` holds the rows carrying a mandatory tag. `_injectable_rows()`
 holds the rows that are not items and carry `required_tags`, which are the
-backfill's own first two tests. Both are built once and updated where
+backfill's own first two tests. After 0.4.1 the backfill covers every
+instruction, so it holds every row that is not an item, and the cost still
+does not grow with items. Both are built once and updated where
 `_instruction_list` changes: a full rebuild in `build_index`, the new rows on
 an incremental add, and the one row on a revision.
 
