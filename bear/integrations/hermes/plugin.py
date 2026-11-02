@@ -6,6 +6,8 @@ One Hermes user turn, in order:
    composes, and returns the guidance. Hermes appends it to the user message.
 2. ``pre_tool_call`` decides each proposed call with :mod:`bear.gate`, writes
    the decision before the tool runs, and returns nothing, approve or block.
+   With ``call_annotator`` set, a function first adds derived arguments for
+   the rules to match, and the gate decides the annotated call.
 3. ``post_tool_call`` writes the outcome against the decision.
 4. ``post_llm_call`` closes the audit turn with the reply.
 
@@ -26,6 +28,7 @@ from __future__ import annotations
 import contextlib
 import fnmatch
 import hashlib
+import importlib
 import json
 import logging
 import threading
@@ -113,6 +116,7 @@ class BearHermesPlugin:
         self._session_narrowed: dict[str, tuple[_Narrowed, float]] = {}
         self._session_first: dict[str, tuple[str, float]] = {}
         self._narrowing_of_request: dict[str, tuple[str, frozenset, float]] = {}
+        self._call_annotator: Any = None
         self._lock = threading.Lock()
         self._retrieve_lock = threading.Lock()
         if self.load_error is None:
@@ -130,6 +134,8 @@ class BearHermesPlugin:
             corpus = Corpus.from_directory(s.corpus_path)
         if len(corpus) == 0:
             raise ValueError(f"no instructions found in {s.corpus_path}")
+        if s.call_annotator:
+            self._call_annotator = _load_call_annotator(s.call_annotator)
         self.lint_issues = lint(corpus, widening_prefixes=("platform:",),
                                 must_have_tag=s.must_have_tag)
         for issue in self.lint_issues:
@@ -579,21 +585,39 @@ class BearHermesPlugin:
             degraded, audit = False, None
 
         calls = normalize(tool_name, args, tool_call_id)
+        # The calls the gate decides: the model's, or the annotator's version.
+        gate_calls, call_annotation = calls, None
         if self.load_error:
             decision = Decision("block", "error", (), f"BEAR failed to start ({self.load_error}).")
         else:
-            try:
-                decision = evaluate_all(calls, context, self.instructions,
-                                        unlisted=s.unlisted, degraded=degraded,
-                                        must_have_tag=s.must_have_tag)
-            except Exception as exc:
-                logger.exception("bear: gate failed for %s", tool_name)
-                decision = Decision("block", "error", (),
-                                    f"BEAR could not evaluate this call ({type(exc).__name__}).")
+            decision = None
+            if self._call_annotator is not None:
+                call_annotation = {"annotator": s.call_annotator}
+                try:
+                    gate_calls, call_annotation["calls"] = _annotate_calls(
+                        self._call_annotator, calls, context)
+                except Exception as exc:
+                    logger.exception("bear: call annotator failed for %s", tool_name)
+                    gate_calls = calls
+                    call_annotation["error"] = f"{type(exc).__name__}: {exc}"
+                    decision = Decision("block", "error", (),
+                                        f"BEAR could not annotate this call ({type(exc).__name__}).")
+            if decision is None:
+                try:
+                    decision = evaluate_all(gate_calls, context, self.instructions,
+                                            unlisted=s.unlisted, degraded=degraded,
+                                            must_have_tag=s.must_have_tag)
+                except Exception as exc:
+                    logger.exception("bear: gate failed for %s", tool_name)
+                    decision = Decision("block", "error", (),
+                                        f"BEAR could not evaluate this call ({type(exc).__name__}).")
 
         if self.auditor is not None:
             try:
-                redacted_calls, redacted_keys = _redact_calls(calls, s.redact_arg_keys)
+                redacted_calls, redacted_keys = _redact_calls(gate_calls, s.redact_arg_keys)
+                if call_annotation is not None:
+                    raw_calls, raw_keys = _redact_calls(calls, s.redact_arg_keys)
+                    redacted_keys = list(dict.fromkeys(redacted_keys + raw_keys))
                 record = {
                     "session_id": session_id,
                     "turn_id": audit.turn_id if audit is not None else "",
@@ -608,6 +632,9 @@ class BearHermesPlugin:
                     **decision.to_dict(),
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
                 }
+                if call_annotation is not None:
+                    record["raw_calls"] = [{"name": c.name, "args": c.args} for c in raw_calls]
+                    record["call_annotation"] = call_annotation
                 if s.narrow != "off":
                     with self._lock:
                         entry = (self._narrowing_of_request.get(api_request_id)
@@ -722,6 +749,49 @@ def _directive(decision: Decision, tool_name: str) -> dict | None:
         return {"action": "approve", "message": message,
                 "rule_key": f"bear:{rule}:{tool_name}"}
     return {"action": "block", "message": message}
+
+
+def _load_call_annotator(spec: str) -> Any:
+    """Import the ``module:function`` the call_annotator setting names."""
+    module_name, _, name = spec.partition(":")
+    fn = getattr(importlib.import_module(module_name), name)
+    if not callable(fn):
+        raise TypeError(f"call_annotator {spec!r} is not callable")
+    return fn
+
+
+def _annotate_calls(annotator: Any, calls: list, context: Context) -> tuple[list, list[dict]]:
+    """The calls the gate decides, and what the annotator did to each.
+
+    The annotator may add arguments and remove the ones it names, but every
+    other argument must keep its value, so the gate decides the command the
+    tool runs. Raises ValueError when a result breaks that.
+    """
+    from bear.gate import ToolCall
+
+    gate_calls, notes = [], []
+    for c in calls:
+        result = annotator(c.name, dict(c.args), context)
+        if not (isinstance(result, tuple) and len(result) == 3):
+            raise ValueError("a call annotator returns (args, stripped_keys, extra)")
+        args, stripped, extra = result
+        if not isinstance(args, Mapping):
+            raise ValueError("annotated args must be a mapping")
+        stripped = [str(k) for k in (stripped or [])]
+        unknown = [k for k in stripped if k not in c.args]
+        if unknown:
+            raise ValueError(f"stripped keys {unknown} are not arguments of the call")
+        changed = [k for k, v in c.args.items()
+                   if k not in stripped and (k not in args or args[k] != v)]
+        if changed:
+            raise ValueError(f"the annotator changed or dropped {changed} without stripping them")
+        if extra is not None and not isinstance(extra, Mapping):
+            raise ValueError("extra must be a mapping or None")
+        extra = None if extra is None else dict(extra)
+        json.dumps(extra)
+        gate_calls.append(ToolCall(c.name, dict(args), c.call_id))
+        notes.append({"stripped_keys": stripped, "extra": extra})
+    return gate_calls, notes
 
 
 def _redact_calls(calls: list, patterns: list[str]) -> tuple[list, list[str]]:

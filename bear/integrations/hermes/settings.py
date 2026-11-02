@@ -68,6 +68,9 @@ class Settings:
     registry_toolsets: list[str] | None = None
     registry_disabled_toolsets: list[str] = field(default_factory=list)
     embedding_revision: str = ""
+    # "module:function" called on each tool call before the gate, to add
+    # derived arguments the rules match.
+    call_annotator: str = ""
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> Settings:
@@ -143,6 +146,12 @@ class Settings:
             if self.withheld_names_max < 0:
                 raise ValueError("withheld_names_max must be 0 or more, or null for no cap")
         self.embedding_revision = str(self.embedding_revision)
+        self.call_annotator = str(self.call_annotator).strip()
+        if self.call_annotator:
+            module, _, name = self.call_annotator.partition(":")
+            if not module or not name:
+                raise ValueError(f"call_annotator must be module:function, "
+                                 f"not {self.call_annotator!r}")
 
     @property
     def remote_embedding_url(self) -> str:

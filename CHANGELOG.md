@@ -12,6 +12,23 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.4] — 2026-11-02
+
+### Added
+
+- Hermes plugin: `call_annotator` names a function, `module:function`, that
+  is called on each tool call before the gate. It returns the arguments the
+  gate decides, the argument names it removed, and an optional dict to
+  record. Gate rules match text and do no arithmetic, so this is how a rule
+  can depend on a value computed outside the model, such as whether a
+  scanner setting is under its limit. The function may add arguments and
+  remove the ones it names. Every other argument must keep its value, so the
+  gate decides the command the tool will run, and the tool still receives
+  the model's arguments. A function that raises or breaks that rule blocks
+  the call with reason `error`, and one that cannot be imported blocks every
+  call. Decision records keep the annotated `calls`, which `verify-audit`
+  replays, and add `raw_calls` and `call_annotation`.
+
 ## [0.4.3] — 2026-10-31
 
 ### Fixed
@@ -1517,7 +1534,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/snhwang/bear/releases/tag/v0.4.4
 [0.4.3]: https://github.com/snhwang/bear/releases/tag/v0.4.3
 [0.4.2]: https://github.com/snhwang/bear/releases/tag/v0.4.2
 [0.4.1]: https://github.com/snhwang/bear/releases/tag/v0.4.1

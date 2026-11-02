@@ -363,6 +363,8 @@ With `annotate_tools: true` the plugin also tells the model why. A block appende
 
 Each request writes a `bear.narrowing/1` record (the tools before and after, the whole ranking with scores, the withheld tools and why, and the estimated schema tokens), and each model call writes a `bear.model_call/1` record with its tokens, cached tokens and finish reason. Tool-call decisions say whether the tool was offered and whether it was sent. `python -m bear verify-audit` replays every narrowing: fully under BM25, and from the recorded similarities under a remote embedder (`match_recorded`). Narrowing decides what the model is offered, not what runs. Hermes will still run a tool the model names without having been offered it, so the gate in `enforce` mode is what contains calls.
 
+Gate rules match argument text and do no arithmetic. When a rule needs a derived value, such as whether a scanner setting is under its limit, `call_annotator: module:function` names a function the plugin calls on each tool call before the gate (new in 0.4.4). It gets the tool name, a copy of the arguments and the Context, and returns the arguments the gate decides, the argument names it removed, and an optional dict to record. It may add arguments and remove the ones it names, but every other argument must keep its value, so the gate decides the command the tool will run. The tool still receives the model's arguments. A function that raises or breaks that rule blocks the call, and one that cannot be imported blocks every call. Decision records keep the annotated `calls`, which `verify-audit` replays, and the model's `raw_calls`.
+
 ## Breeding & Evolution
 
 BEAR supports behavioral inheritance: two parent corpora can be combined to produce an offspring corpus.
