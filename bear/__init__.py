@@ -70,6 +70,7 @@ from bear.population import (
     AgentFitness,
     extract_answer,
 )
+from bear.panel import Panel, PanelResponse
 from bear.references import (
     ContentReferences,
     EntityRef,
@@ -260,4 +261,7 @@ __all__ = [
     "ExamResult",
     "AgentFitness",
     "extract_answer",
+    # Panel
+    "Panel",
+    "PanelResponse",
 ]
