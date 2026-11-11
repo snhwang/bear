@@ -31,6 +31,7 @@ import hashlib
 import importlib
 import json
 import logging
+import math
 import threading
 import time
 import uuid
@@ -117,6 +118,7 @@ class BearHermesPlugin:
         self._session_first: dict[str, tuple[str, float]] = {}
         self._narrowing_of_request: dict[str, tuple[str, frozenset, float]] = {}
         self._call_annotator: Any = None
+        self._units: dict[str, str] | None = None
         self._lock = threading.Lock()
         self._retrieve_lock = threading.Lock()
         if self.load_error is None:
@@ -136,8 +138,9 @@ class BearHermesPlugin:
             raise ValueError(f"no instructions found in {s.corpus_path}")
         if s.call_annotator:
             self._call_annotator = _load_call_annotator(s.call_annotator)
+            self._units = _declared_units(self._call_annotator, s.call_annotator)
         self.lint_issues = lint(corpus, widening_prefixes=("platform:",),
-                                must_have_tag=s.must_have_tag)
+                                must_have_tag=s.must_have_tag, units=self._units)
         for issue in self.lint_issues:
             log = logger.error if issue.level == "error" else logger.warning
             log("bear lint %s [%s]: %s", issue.level, issue.instruction_id, issue.message)
@@ -606,7 +609,7 @@ class BearHermesPlugin:
                 try:
                     decision = evaluate_all(gate_calls, context, self.instructions,
                                             unlisted=s.unlisted, degraded=degraded,
-                                            must_have_tag=s.must_have_tag)
+                                            must_have_tag=s.must_have_tag, units=self._units)
                 except Exception as exc:
                     logger.exception("bear: gate failed for %s", tool_name)
                     decision = Decision("block", "error", (),
@@ -627,7 +630,8 @@ class BearHermesPlugin:
                     "args_redacted": redacted_keys,
                     "context": context.model_dump(mode="json"),
                     "gate_inputs": {"unlisted": s.unlisted, "degraded": degraded,
-                                    "must_have_tag": s.must_have_tag},
+                                    "must_have_tag": s.must_have_tag,
+                                    **({"units": self._units} if self._units is not None else {})},
                     "mode": s.mode, "unattended": state is None,
                     **decision.to_dict(),
                     "latency_ms": round((time.perf_counter() - t0) * 1000, 2),
@@ -760,6 +764,24 @@ def _load_call_annotator(spec: str) -> Any:
     return fn
 
 
+def _declared_units(annotator: Any, spec: str) -> dict[str, str] | None:
+    """The annotator's ``units`` attribute, argument name to unit, or None."""
+    units = getattr(annotator, "units", None)
+    if units is None:
+        return None
+    if not (isinstance(units, Mapping)
+            and all(isinstance(k, str) and isinstance(v, str) for k, v in units.items())):
+        raise TypeError(f"call_annotator {spec!r} has units that are not a "
+                        "mapping of argument name to unit string")
+    return dict(units)
+
+
+def _same(a: Any, b: Any) -> bool:
+    """Equal, counting a NaN as equal to itself, so passing one on is no change."""
+    return a is b or a == b or (isinstance(a, float) and isinstance(b, float)
+                                and math.isnan(a) and math.isnan(b))
+
+
 def _annotate_calls(annotator: Any, calls: list, context: Context) -> tuple[list, list[dict]]:
     """The calls the gate decides, and what the annotator did to each.
 
@@ -782,7 +804,7 @@ def _annotate_calls(annotator: Any, calls: list, context: Context) -> tuple[list
         if unknown:
             raise ValueError(f"stripped keys {unknown} are not arguments of the call")
         changed = [k for k, v in c.args.items()
-                   if k not in stripped and (k not in args or args[k] != v)]
+                   if k not in stripped and (k not in args or not _same(args[k], v))]
         if changed:
             raise ValueError(f"the annotator changed or dropped {changed} without stripping them")
         if extra is not None and not isinstance(extra, Mapping):

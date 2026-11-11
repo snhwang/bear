@@ -327,6 +327,52 @@ A must-have that forbids the call blocks it whatever else the corpus says. A too
 
 `required_tags` cut both ways. An allow rule whose tags a context lacks permits nothing, so a missing tag fails closed. A must-have whose tags a context lacks forbids nothing, so a missing tag lifts it, and `lint` warns about each must-have scoped this way. An unknown key in a `forbid` entry, `actions.gate` or a `gate.args` entry is a rule error, since a misspelt `match` would match every call.
 
+Rules can also compare numbers. An argument pattern may be a numeric condition instead of a regex, a mapping of `lt`, `le`, `gt`, `ge` or `eq` to a bound, with an optional `unit`. An argument rule may hold `bands` in place of a `decision`. Each band list maps one argument to a decision by rising upper bounds. Its last step has no bound and takes everything above, so a band list has no gaps. Several band lists in one rule give the most severe of their decisions.
+
+```yaml
+  - id: tool-set-protocol
+    type: tool
+    priority: 70
+    content: "Change the acquisition protocol."
+    scope:
+      required_tags: [role:protocol]
+    actions:
+      function: set_protocol
+      gate:
+        decision: block              # a call without slew_Tms
+        args:
+          - bands:
+              - arg: slew_Tms
+                unit: T/m/s
+                steps:
+                  - {le: 160, decision: allow}
+                  - {le: 200, decision: approve}
+                  - {decision: block}  # everything above 200
+
+  - id: slew-hard-limit
+    type: constraint
+    priority: 100
+    tags: [must-have]
+    content: "Never exceed 250 T/m/s."
+    actions:
+      forbid:
+        - tool: "*"
+          args: {slew_Tms: {gt: 250, unit: T/m/s}}
+```
+
+```python
+protocol = Context(tags=["role:protocol"])
+evaluate(ToolCall("set_protocol", {"slew_Tms": 160}), protocol, corpus)     # allow
+evaluate(ToolCall("set_protocol", {"slew_Tms": 172.4}), protocol, corpus)   # approve
+evaluate(ToolCall("set_protocol", {"slew_Tms": 260}), protocol, corpus)     # block: must_have
+evaluate(ToolCall("set_protocol", {"slew_Tms": "172"}), protocol, corpus)   # block: invalid
+lint(corpus, units={"slew_Tms": "mT/m/ms"})   # two errors: the rules are in T/m/s
+```
+
+Comparison is exact, and only a finite int or float is a number. If an argument that the deciding allow rule's numeric conditions or bands name is a string, a bool, NaN or infinity, the call gets `actions.gate.invalid` (block by default, or approve) with reason `invalid`, whichever argument rule would have matched. Infinity is never compared with a bound, so the infinite slew of a zero-length ramp is decided as invalid, not as over the limit. A must-have that might forbid such a value blocks it the same way. If another must-have forbids the call outright, the reason stays `must_have`, and the message also names each must-have that could not read its value. A numpy `float64` is a Python float and counts, but numpy's `float32` and `int64` do not, so an annotator built on numpy converts its values with `float()` or `int()`. In YAML, write a bound in exponent form with a decimal point and a signed exponent (`4.0e-12`, `1.0e+3`). PyYAML reads `4e-12` as a string, and `lint` reports it.
+
+`units` passed to `evaluate` and `lint` maps each argument to the unit the caller's numbers are in. Every argument a numeric rule names must then be listed, which also catches a misspelt name, and each rule's `unit` must match. The gate never converts units. `lint` also reports one argument given two units, a gap between numeric argument rules, and an argument rule that can never decide. A budget or a window, such as RF dose over the last ten seconds, is state, so the caller computes the running value and passes it as an argument. The gate stays pure, and the record holds the value, so `verify-audit` replays the decision.
+
 `Auditor.record_decision` writes a decision to the audit log before the tool runs, and `record_outcome` writes what happened after. `python -m bear verify-audit` runs every recorded decision again and reports any that no longer match. The Hermes Agent plugin records both for every tool call (see Hermes Agent Plugin below).
 
 ### Hermes Agent Plugin (New in 0.4.0)

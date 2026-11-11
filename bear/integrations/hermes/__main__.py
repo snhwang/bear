@@ -49,11 +49,15 @@ def install(home: Path, force: bool = False) -> Path:
     return target
 
 
-def lint_dir(path: Path) -> int:
+def lint_dir(path: Path, call_annotator: str = "") -> int:
     from bear.corpus import Corpus
     from bear.gate import lint
 
-    issues = lint(Corpus.from_directory(path), widening_prefixes=("platform:",))
+    units = None
+    if call_annotator:
+        from .plugin import _declared_units, _load_call_annotator
+        units = _declared_units(_load_call_annotator(call_annotator), call_annotator)
+    issues = lint(Corpus.from_directory(path), widening_prefixes=("platform:",), units=units)
     for i in issues:
         print(f"{i.level:7} [{i.instruction_id}] {i.message}")
     errors = sum(1 for i in issues if i.level == "error")
@@ -69,6 +73,8 @@ def main(argv: list[str] | None = None) -> int:
     p_install.add_argument("--force", action="store_true")
     p_lint = sub.add_parser("lint", help="check a corpus's gate rules")
     p_lint.add_argument("corpus_dir", type=Path)
+    p_lint.add_argument("--call-annotator", default="",
+                        help="module:function whose units the numeric rules must match")
     args = parser.parse_args(argv)
     if args.cmd == "install":
         target = install(args.hermes_home or hermes_home(), force=args.force)
@@ -76,7 +82,7 @@ def main(argv: list[str] | None = None) -> int:
         print("Next: add bear to plugins.enabled in Hermes's config.yaml and set "
               "plugins.entries.bear.settings.corpus_dir.")
         return 0
-    return lint_dir(args.corpus_dir)
+    return lint_dir(args.corpus_dir, args.call_annotator)
 
 
 if __name__ == "__main__":

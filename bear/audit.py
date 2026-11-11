@@ -1088,6 +1088,7 @@ def verify_decisions(path_or_log: "str | Path | AuditLog") -> list[DecisionRepla
                     unlisted=inputs.get("unlisted", "approve"),
                     degraded=bool(inputs.get("degraded", False)),
                     must_have_tag=inputs.get("must_have_tag", "must-have"),
+                    units=inputs.get("units"),
                 )
             except Exception as exc:
                 result.status = "differs"

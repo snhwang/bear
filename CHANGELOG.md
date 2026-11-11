@@ -12,6 +12,46 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.5] — 2026-11-11
+
+### Added
+
+- Gate: numeric conditions. Where an argument pattern goes, a mapping of
+  `lt`, `le`, `gt`, `ge` or `eq` to a bound compares the argument as a
+  number, with an optional `unit`. Comparison is exact between ints and
+  floats. Regex patterns match as before.
+- Gate: `bands` in an argument rule, in place of `decision`. Each band list
+  maps one argument to allow, approve or block by rising upper bounds, and
+  its last step takes everything above, so it has no gaps. Several lists in
+  one rule give the most severe decision. A missing banded argument falls to
+  the next rule.
+- Gate: reason `invalid`. When an argument that a numeric condition or band
+  of the deciding allow rule names is present but is not a finite int or
+  float (a string, a bool, NaN, infinity), the call gets
+  `actions.gate.invalid`, block by default or approve, whichever argument
+  rule would have matched. A must-have that might forbid such a value blocks
+  it with reason `invalid`. When another must-have forbids the call outright,
+  the reason is `must_have` and the message names each must-have that could
+  not read its value. These decisions replay.
+- Gate: units. `evaluate` and `lint` take `units`, a mapping from argument
+  to unit. When it is given, every argument a numeric rule names must be
+  listed and each rule's `unit` must match, otherwise the rule is an error.
+  The gate never converts units.
+- Gate lint: errors for a malformed numeric condition or band list and for
+  one argument given two units. Warnings for a gap between numeric argument
+  rules and for an argument rule that can never decide.
+- Hermes plugin: a call annotator may declare `units` as an attribute of the
+  function. The plugin lints the corpus with them, refuses to start on a
+  mismatch, passes them to the gate and records them in `gate_inputs`, and
+  `verify-audit` passes them back. `python -m bear.integrations.hermes lint`
+  takes `--call-annotator` to check the same.
+
+### Fixed
+
+- Hermes plugin: a NaN argument that a call annotator passed on unchanged
+  counted as a changed argument, since NaN is not equal to itself. The call
+  was blocked with reason `error` instead of reaching the gate.
+
 ## [0.4.4] — 2026-11-02
 
 ### Added
@@ -1534,7 +1574,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.5...HEAD
+[0.4.5]: https://github.com/snhwang/bear/releases/tag/v0.4.5
 [0.4.4]: https://github.com/snhwang/bear/releases/tag/v0.4.4
 [0.4.3]: https://github.com/snhwang/bear/releases/tag/v0.4.3
 [0.4.2]: https://github.com/snhwang/bear/releases/tag/v0.4.2
