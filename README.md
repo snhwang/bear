@@ -32,6 +32,20 @@ LLM generates behavior-compliant response
 
 ## Installation
 
+BEAR is on PyPI as **bear-governed**. The name `bear` there belongs to an
+unrelated package. The import name is still `bear`.
+
+```bash
+pip install bear-governed                 # core: corpus, scope, gate, audit, BM25
+pip install "bear-governed[embeddings]"   # adds the default dense embedding model
+```
+
+```python
+import bear
+```
+
+To work from a clone of this repository:
+
 ```bash
 # From the repository root, with in-process semantic embeddings (the default
 # BAAI/bge-base-en-v1.5 model, which brings torch):

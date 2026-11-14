@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bear"
-version = "0.4.5"
+name = "bear-governed"
+version = "0.4.6"
 description = "Behavioral Evolution And Retrieval (BEAR) — a framework for retrieving and composing behavioral instructions to shape LLM behavior"
 readme = "README.md"
 license = "LicenseRef-OCVSAL-1.0"

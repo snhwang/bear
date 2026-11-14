@@ -43,7 +43,7 @@ class ChromaDBBackend(EmbeddingBackendBase):
         except ImportError:
             raise ImportError(
                 "ChromaDB backend requires chromadb. "
-                "Install with: pip install bear[chromadb]"
+                "Install with: pip install 'bear-governed[chromadb]'"
             )
 
     def _ensure_client(self) -> None:

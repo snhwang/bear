@@ -316,7 +316,7 @@ class Embedder:
             raise RuntimeError(
                 f"Could not load embedding model {self.model_name!r} (see the "
                 "log for the cause). Install sentence-transformers "
-                "(pip install 'bear[embeddings]') and check the model name and "
+                "(pip install 'bear-governed[embeddings]') and check the model name and "
                 "network access, or use the BM25 backend, which needs no model. "
                 "To run on hash embeddings "
                 "instead, which carry no semantic signal, pass "
@@ -393,7 +393,7 @@ class Embedder:
             return True
         except ImportError:
             logger.info("sentence-transformers not installed "
-                        "(pip install 'bear[embeddings]').")
+                        "(pip install 'bear-governed[embeddings]').")
         except Exception as exc:
             logger.warning("Could not load model %s (%s).", self.model_name, exc)
         return False

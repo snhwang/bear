@@ -2,7 +2,7 @@
 
 Writes ``<hermes home>/plugins/bear/`` with a ``plugin.yaml`` manifest and an
 ``__init__.py`` that imports :func:`bear.integrations.hermes.register`. Use it
-only where ``bear[hermes]`` cannot be pip-installed into Hermes's environment,
+only where ``bear-governed[hermes]`` cannot be pip-installed into Hermes's environment,
 since the pip install registers the plugin through an entry point already.
 BEAR must still be importable from that environment. Hermes loads the plugin
 only once ``plugins.enabled`` in its ``config.yaml`` lists ``bear``.

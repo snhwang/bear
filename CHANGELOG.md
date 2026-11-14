@@ -12,6 +12,21 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.4.6] — 2026-11-14
+
+### Changed
+
+- Packaging: the distribution name is now `bear-governed`, so BEAR can be
+  installed from PyPI with `pip install bear-governed`. The name `bear` on
+  PyPI belongs to an unrelated package. The import name is still `bear`.
+  The only code change is in four install hints (two missing-embeddings
+  errors in the retriever, one in marker_code, the ChromaDB backend error)
+  and a Hermes docstring, which now name `bear-governed[...]`, since
+  `pip install bear[...]` would fetch the unrelated package. A clone
+  installed earlier as `bear` should be uninstalled (`pip uninstall bear`)
+  before installing `bear-governed`, since both own the `bear` package
+  directory.
+
 ## [0.4.5] — 2026-11-11
 
 ### Added
@@ -1574,7 +1589,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.5...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.6...HEAD
+[0.4.6]: https://github.com/snhwang/bear/releases/tag/v0.4.6
 [0.4.5]: https://github.com/snhwang/bear/releases/tag/v0.4.5
 [0.4.4]: https://github.com/snhwang/bear/releases/tag/v0.4.4
 [0.4.3]: https://github.com/snhwang/bear/releases/tag/v0.4.3

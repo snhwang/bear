@@ -426,7 +426,7 @@ def cross_encoder_nli(
             except ImportError as exc:
                 raise RuntimeError(
                     "The entailment scorer needs sentence-transformers. "
-                    "Install it with: pip install 'bear[embeddings]'"
+                    "Install it with: pip install 'bear-governed[embeddings]'"
                 ) from exc
 
             state["model"] = CrossEncoder(model_name, device=device)
