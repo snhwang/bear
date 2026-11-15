@@ -573,6 +573,7 @@ The embedding model determines the quality of semantic retrieval. This matters: 
 | Mode | When to use |
 |------|-------------|
 | Sentence-transformers (e.g. `BAAI/bge-base-en-v1.5`) | **All production use.** Semantic similarity accurately reflects meaning — instructions surface based on conceptual relevance to the query. |
+| An embedding service (`Config(embedding_base_url=...)`) | A model too large to load in each process, or one shared across projects. Queries and passages are sent on their own sides, which a model trained with both needs. Nothing is loaded locally, so the service must be up. |
 | `"hash"` | **Development and testing only.** Hash-based embeddings carry no semantic signal; retrieval ranking is effectively arbitrary. Use when you need zero-dependency startup and retrieval quality does not matter. |
 
 > **Important:** Hash mode is a footgun. The pipeline appears to work — scope filtering, priority scoring, and composition all operate normally — but the instruction *selection* step is not driven by meaning. You will get different instructions retrieved for "tell me about your family" and "what do you like to eat" only if they match different scope tags, not because of any semantic understanding. Always use a real embedding model in production.
@@ -585,7 +586,18 @@ cfg = Config(embedding_model="BAAI/bge-base-en-v1.5")
 
 # Development only — fast startup, no semantic signal
 cfg = Config(embedding_model="hash")
+
+# A served model, by the name the service serves it under
+cfg = Config(embedding_model="nemotron-embed-vl",
+             embedding_base_url="http://localhost:8360/v1")
 ```
+
+A service is selected by its base URL (`BEAR_EMBEDDING_BASE_URL`), and the
+model's vector width is taken from its first reply rather than from
+`embedding_dim`. The service is expected to be OpenAI-shaped, at
+`<base_url>/embeddings`, and to accept a `kind` of `query` or `document`. One
+whose model has a single side may ignore that field. BGE-style instruction
+prefixes are not sent, as they are not sent to `openai:` models either.
 
 A named model that fails to load (not installed, wrong name, no network and no cached copy) raises `RuntimeError`. BEAR does not quietly switch to hash mode. If you want that fallback anyway, set `BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1` or `Config(embedding_allow_hash_fallback=True)`. The fallback is logged as a warning.
 

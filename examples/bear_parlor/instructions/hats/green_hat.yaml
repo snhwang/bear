@@ -100,3 +100,5 @@ instructions:
     scope:
       required_tags: [green-hat, knowledge-diffusion]
     tags: [green-hat, knowledge-diffusion, facet]
+    metadata:
+      gene_category: memory-lens

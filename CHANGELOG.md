@@ -12,6 +12,122 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-11-15
+
+This release publishes the `bear_parlor` example at its current state, so the
+Parlor entries of 0.3.0 to 0.4.6 now describe code that ships here. The design
+notes it cites are published with it (`design/parlor-items.md`,
+`design/source-rule.md`, `design/own-statements.md` and
+`design/split-replies.md`). The papers' PDFs are not included, as before. See
+`examples/bear_parlor/KNOWLEDGE_BASE.md`. The `evolutionary_ecosystem` example
+and `tests/test_ecosystem_scope.py` are still held back.
+
+**Provenance for the knowledge-flow experiments.** Those sessions ran at
+development commit `c774fbb` (tag `knowledge-flow-rerun` in the development
+repository). Compared with it, and setting comments and docstrings aside,
+this release's `bear/` and `examples/bear_parlor/` differ in five Python files
+and nothing else. Four carry packaging only (the version, and the install
+hints in `chromadb_backend.py`, `marker_code.py` and `retriever.py`, from
+0.4.6). The fifth is `parlor.py`, with two help strings and one fix: a failed
+rolling-summary call now measures the messages it lost from the start of its
+batch (see Fixed). A session with no failed summary call runs exactly as at
+`c774fbb`. Parlor's data files are identical. The PDFs and two backup files
+are left out.
+
+### Fixed
+
+- `bear_parlor`: the rolling summary advances for the whole session. The
+  history keeps the last 50 messages, cut from the front, and the summary kept
+  its place as an index into that list. Once the cut began, the index pointed
+  past the messages it meant and the summary never advanced again. It now
+  counts from the session start. A message cut before the summary took it in
+  is counted in the session stats as `messages_dropped_unsummarized`.
+  `--restore-frozen-summary` brings the old behaviour back, so runs made
+  before the fix reproduce. `run_info` records the switch and a
+  `run_info_schema` (2), so a key missing from an older run reads as not yet
+  existing rather than as its default.
+- `bear_parlor`: a failed rolling-summary call is counted in the session stats
+  as `summary_errors`. Messages cut from the history while the call was out
+  are counted as lost, measured from the start of the failed batch, and the
+  summary resumes from the oldest message still held.
+- `bear_parlor`: a lens reply of plain strings keeps its notes. Some models
+  return JSON arrays of strings where the lens prompt asks for objects, and
+  each such item was dropped without a log line. A string is now taken as the
+  note's content, and anything still unusable is counted and printed.
+- `bear_parlor`: the instructions follow the knowledge store's embedder, so
+  `--embed-model` and `--embed-url` serve both. Instruction retrieval used
+  `BAAI/bge-base-en-v1.5` whatever the store used.
+- `bear_parlor`: under `--keep-own-statements`, a self-note carries the source
+  the record holds for its numbers, and renders as the agent's own
+  (`from: yourself`) rather than as a report by another panelist.
+- `Embedder`: a missing embedding service fails within `PROBE_TIMEOUT` seconds
+  (10) with a message naming what to start. It used to wait for a TCP connect
+  timeout of over two minutes per call. A real call keeps its 300 s.
+- Tests: the Parlor and ChromaDB tests skip when `chromadb` or `fastapi` is not
+  installed, instead of failing.
+
+### Added
+
+- `bear.evidence`: how the holder of an item came to have each number in it
+  (`design/parlor-items.md` section 4). `assess(text, holder, parents)` gives
+  each checked number a status: read in a passage, heard from a panelist (with
+  the hops), given by a prompt or the holder's instructions, relayed, or
+  introduced. `stacks(...)` gives each number its source stacks, and
+  `label(...)` writes one with arrows ("40 ← Synthesis ← paper").
+- `bear.sources`: the source rule's claims, citations and checks
+  (`design/source-rule.md` section 5). `split_claims` reads the reference
+  markers a reply's sentences end with, `accept_citations` keeps only items
+  the speaker was shown, and `check_citation` decides a citation by its
+  numbers. `missing_citation`, `attribution`, `check_attribution`,
+  `violations` and `to_provenance` complete it.
+- `Auditor.record_items`: item changes an application makes itself, written
+  at once as `bear.items/1` records that `bear.item_digest.replay_items`
+  reads. Redaction covers item content.
+- `Embedder` takes a `base_url` (`Config.embedding_base_url`,
+  `BEAR_EMBEDDING_BASE_URL`), an OpenAI-shaped embedding service used instead
+  of a model loaded in process. Queries and passages are sent on their own
+  sides (`kind`), and the vector width is taken from the first reply.
+- `GenerateResponse.finish_reason`: why the model stopped, as the provider
+  reports it (OpenAI `finish_reason`, Anthropic `stop_reason`, Ollama
+  `done_reason`). A reply cut at its token limit can now be told from a short
+  one.
+- `bear_parlor`: every prompt, statement, note and summary is a BEAR item,
+  kept per session in `<session>.items.jsonl` and sent to the audit
+  (`design/parlor-items.md`). Golden prompts for a scripted session
+  (`tests/test_parlor_golden.py`) show the items change no prompt.
+- `bear_parlor`: `--item-rendering prose|fields|cards` sets how retrieved
+  items are shown. `--label-heard` labels each number a listener hears with
+  its source.
+- `bear_parlor`: the source probe, `POST /probe_sources`, asks each role alone
+  where each number it stated came from, and records the answer beside the
+  number's status in the record.
+- `bear_parlor`: `--source-rule record|annotate|flag` and
+  `--source-similarity` (`design/source-rule.md`). `record`, the default,
+  changes nothing an agent sees.
+- `bear_parlor`: `--keep-own-statements` keeps each agent's own statements in
+  its own store, cited `said by me`. Off by default
+  (`design/own-statements.md`).
+- `bear_parlor`: `--note-attribution speaker|lens|none` chooses who names the
+  source of a note. `speaker` is the default. `--lens-attribution` remains as
+  the alias for `lens`.
+- `bear_parlor`: `--embed-url` and `--embed-model` choose the knowledge
+  store's embedder. Without them a run uses BEAR's configured embedder, and
+  `chroma-default` (alias `chroma`) asks for Chroma's built-in model, for
+  reproducing older runs. The embedder is part of the collection name, and
+  `run_info` records it. A dedup skip logs the text it was judged a duplicate
+  of.
+- `bear_parlor`: `--summary-max-tokens N` (150 by default) and
+  `--rag-skip-sections NAMES`, which keeps passages of the named sections
+  (such as `references,front`) out of what a reply retrieves.
+- `bear_parlor`: a probe answer records `finish_reason` and `used_reasoning`.
+
+### Changed
+
+- `bear_parlor`: the system names the speaker a note was heard from ("heard
+  from <speaker>"). `--lens-attribution` keeps the old way.
+- `bear_parlor`: whom a reply addresses is read from the names in it, with a
+  vocative winning. `--legacy-addressee` keeps the old reading.
+
 ## [0.4.6] — 2026-11-14
 
 ### Changed
@@ -1589,7 +1705,8 @@ published here.
   artifacts repositories in the family. All numeric results in the
   *Retrieval-Governed Context* manuscript are reproduced against this tag.
 
-[Unreleased]: https://github.com/snhwang/bear/compare/v0.4.6...HEAD
+[Unreleased]: https://github.com/snhwang/bear/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/snhwang/bear/releases/tag/v0.5.0
 [0.4.6]: https://github.com/snhwang/bear/releases/tag/v0.4.6
 [0.4.5]: https://github.com/snhwang/bear/releases/tag/v0.4.5
 [0.4.4]: https://github.com/snhwang/bear/releases/tag/v0.4.4

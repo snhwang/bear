@@ -29,11 +29,18 @@ _LOCAL_PLACEHOLDER_KEY = "not-needed"
 # OpenAI's reasoning models take no sampling parameters (temperature / top_p):
 # GPT-5.5 answers 400 to any temperature but the default (2026-10-01). A local
 # server is sent them whatever its model is called.
-_NO_SAMPLING_PREFIXES = ("gpt-5", "o1", "o3", "o4")
+#
+# gpt-6 added 2026-10-23, measured: gpt-6-sol, gpt-6-luna and gpt-6.1-sol all
+# answer 400 to temperature 0.85, so every call failed without this. The
+# exception is gpt-5.4-mini, which does accept a temperature despite the
+# gpt-5 prefix, so it is sent one.
+_NO_SAMPLING_PREFIXES = ("gpt-5", "gpt-6", "o1", "o3", "o4")
+_SAMPLING_EXCEPTIONS = ("gpt-5.4-mini", "gpt-5.4-nano")
 
 
 def _accepts_sampling(model: str) -> bool:
-    return not model.startswith(_NO_SAMPLING_PREFIXES)
+    return (model.startswith(_SAMPLING_EXCEPTIONS)
+            or not model.startswith(_NO_SAMPLING_PREFIXES))
 
 
 class OpenAIBackend(LLMBackendBase):
@@ -279,6 +286,7 @@ class OpenAIBackend(LLMBackendBase):
                     },
                     tool_calls=tool_calls,
                     used_reasoning=used_reasoning,
+                    finish_reason=getattr(response.choices[0], "finish_reason", "") or "",
                 )
             except Exception as e:
                 last_exc = e

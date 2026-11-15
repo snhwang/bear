@@ -20,23 +20,25 @@ class _Message:
 
 
 class _Response:
-    def __init__(self, message):
-        self.choices = [types.SimpleNamespace(message=message)]
+    def __init__(self, message, finish_reason=None):
+        self.choices = [types.SimpleNamespace(message=message,
+                                              finish_reason=finish_reason)]
         self.usage = None
 
 
 class _FakeOpenAIClient:
     """Stands in for AsyncOpenAI, recording the kwargs it was called with."""
 
-    def __init__(self, message):
+    def __init__(self, message, finish_reason=None):
         self.message = message
+        self.finish_reason = finish_reason
         self.calls = []
         outer = self
 
         class _Completions:
             async def create(self, **kwargs):
                 outer.calls.append(kwargs)
-                return _Response(outer.message)
+                return _Response(outer.message, outer.finish_reason)
 
         self.chat = types.SimpleNamespace(completions=_Completions())
 
@@ -45,6 +47,42 @@ def _backend(message):
     backend = OpenAIBackend(model="test-model", base_url="http://localhost:1234/v1")
     backend._client = _FakeOpenAIClient(message)
     return backend
+
+
+def _cloud_backend(model, message=_Message("ok")):
+    """A backend talking to OpenAI itself, so the model's own rules apply."""
+    backend = OpenAIBackend(model=model)
+    backend._client = _FakeOpenAIClient(message)
+    return backend
+
+
+@pytest.mark.parametrize("model, sends", [
+    # Measured against the API on 2026-10-23: each of these answers 400 to a
+    # temperature other than the default, so sending one fails every call.
+    ("gpt-6-luna", False),
+    ("gpt-6.1-sol", False),
+    ("gpt-6-sol", False),
+    ("gpt-5", False),
+    ("o3", False),
+    # and these take one, despite sharing a prefix with those that do not
+    ("gpt-5.4-mini", True),
+    ("gpt-4o", True),
+    ("gpt-4.1", True),
+])
+def test_only_the_models_that_take_a_temperature_are_sent_one(model, sends):
+    backend = _cloud_backend(model)
+    asyncio.run(backend.generate(GenerateRequest(user="hello", temperature=0.85)))
+    sent = backend._client.calls[0]
+    assert ("temperature" in sent) is sends
+    # the newer models want the limit under its newer name
+    assert "max_tokens" not in sent or not model.startswith(("gpt-5", "gpt-6"))
+
+
+def test_a_local_server_is_sent_a_temperature_whatever_its_model_is_called():
+    backend = OpenAIBackend(model="gpt-6-luna", base_url="http://localhost:1234/v1")
+    backend._client = _FakeOpenAIClient(_Message("ok"))
+    asyncio.run(backend.generate(GenerateRequest(user="hello", temperature=0.85)))
+    assert backend._client.calls[0]["temperature"] == 0.85
 
 
 def test_reasoning_fills_empty_content_by_default():
@@ -491,3 +529,47 @@ def test_an_unknown_format_is_refused():
         structured_output(GenerateRequest(response_format={"type": "xml"}), "x")
     with pytest.raises(ValueError):
         structured_output(GenerateRequest(response_format={"type": "json_schema"}), "x")
+
+
+# -------------------------------------------------- why the model stopped
+
+def test_why_the_model_stopped_is_reported():
+    """A reply cut at the limit is a different thing from a short one, and
+    nothing downstream could tell them apart. It matters most for a model
+    that thinks before answering: gemma4:e2b returned empty content with
+    finish_reason "length" at 200 tokens, having spent the budget on
+    reasoning, and a probe answer taken from that is broken rather than
+    terse."""
+    backend = OpenAIBackend(model="test-model", base_url="http://localhost:1234/v1")
+    backend._client = _FakeOpenAIClient(_Message("cut off here"), finish_reason="length")
+    out = asyncio.run(backend.generate(GenerateRequest(user="hi")))
+    assert out.finish_reason == "length"
+
+
+def test_a_normal_stop_is_reported_too():
+    backend = OpenAIBackend(model="test-model", base_url="http://localhost:1234/v1")
+    backend._client = _FakeOpenAIClient(_Message("all done"), finish_reason="stop")
+    out = asyncio.run(backend.generate(GenerateRequest(user="hi")))
+    assert out.finish_reason == "stop"
+    assert out.used_reasoning is False
+
+
+def test_a_provider_that_says_nothing_gives_an_empty_reason_not_an_error():
+    backend = OpenAIBackend(model="test-model", base_url="http://localhost:1234/v1")
+    backend._client = _FakeOpenAIClient(_Message("fine"))
+    out = asyncio.run(backend.generate(GenerateRequest(user="hi")))
+    assert out.finish_reason == ""
+
+
+def test_thinking_that_fills_the_budget_is_visible_as_both_signals():
+    """Empty content plus a length stop is the shape to drop. The fallback
+    still fills content from the reasoning, so without finish_reason a
+    scorer would read a chain of thought as the answer."""
+    backend = OpenAIBackend(model="test-model", base_url="http://localhost:1234/v1")
+    backend._client = _FakeOpenAIClient(
+        _Message("", reasoning="Thinking Process: 1. Analyze the request"),
+        finish_reason="length")
+    out = asyncio.run(backend.generate(GenerateRequest(user="hi")))
+    assert out.finish_reason == "length"
+    assert out.used_reasoning is True
+    assert out.content.startswith("Thinking Process")

@@ -818,3 +818,56 @@ class TestItemsAreLoggedAsDeltas:
 
         asyncio.run(turn())
         assert verify_item_deltas(read_audit_log(path)) == []
+
+
+# ---------------------------------------------------------------------------
+# Item changes an application makes itself
+# ---------------------------------------------------------------------------
+
+
+class TestRecordItems:
+    """Auditor.record_items, for items kept outside a retriever."""
+
+    @staticmethod
+    def _deltas(*contents):
+        from bear.item_digest import ItemDigest
+        from bear.items import item
+
+        digest, out = ItemDigest(), [{"kind": "baseline", "items": [],
+                                      "item_version": "", "item_buckets": 1024}]
+        for n, text in enumerate(contents):
+            it = item(text, "skeptic", id=f"N{n + 1}", kind="note")
+            digest.set(it)
+            out.append({"kind": "add", "items": [it.model_dump(mode="json")],
+                        "item_version": digest.version, "item_buckets": digest.buckets})
+        return out
+
+    def test_written_at_once_outside_any_turn_and_replayable(self, tmp_path):
+        from bear.item_digest import replay_items
+
+        path = tmp_path / "audit.jsonl"
+        auditor = Auditor([JsonlSink(path)])
+        deltas = self._deltas("Synthesis said 33.", "Stats said 1.8.")
+        auditor.record_items(deltas[:2])
+        with auditor.turn(agent_id="a"):
+            pass
+        auditor.record_items(deltas[2:])
+        log = read_audit_log(path)
+        assert len(log.turns) == 1
+        assert [d["kind"] for d in log.item_deltas] == ["baseline", "add", "add"]
+        assert [i.id for i in replay_items(log.item_deltas)] == ["N1", "N2"]
+
+    def test_an_item_record_is_redacted_without_failing(self):
+        records = []
+        auditor = Auditor([records.append], redact=lambda s: s.replace("33", "[x]"))
+        auditor.record_items(self._deltas("Synthesis said 33."))
+        assert "said 33" not in json.dumps(records)     # not the timestamp
+        assert records[1]["items"][0]["content"] == "Synthesis said [x]."
+
+    def test_a_strict_sink_failure_raises(self):
+        def bad(record):
+            raise OSError("disk full")
+
+        with pytest.raises(AuditWriteError):
+            Auditor([bad]).record_items(self._deltas("a note"))
+        Auditor([bad], strict=False).record_items(self._deltas("a note"))

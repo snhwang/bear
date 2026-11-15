@@ -1,0 +1,23 @@
+# Gene loci for BEAR Parlor roles. Load with
+#   LocusRegistry.from_yaml(Path("loci.yaml").read_text())
+# and breed with
+#   BreedingConfig(locus_key="gene_category", locus_registry=registry)
+#
+# An instruction belongs to a locus through its metadata, for example
+#   metadata:
+#     gene_category: memory-lens
+# Metadata never reaches the prompt or the retrieval embedding. It only tells
+# breeding which instructions are alleles of the same gene.
+
+loci:
+  - name: memory-lens
+    dominance: dominant
+    description: >-
+      What a role retains from material it absorbs: its knowledge-diffusion
+      lens. Each role's lens is one allele. A child carries one allele from
+      each parent. The allele with the higher metadata.dominance score (default
+      1.0) is expressed, and tied alleles are both expressed, so a child whose
+      parents' lenses both score 1.0 absorbs through both. The lens keeps its
+      knowledge-diffusion scope when inherited (BreedingConfig
+      .preserve_required_tags), so it acts only while the child absorbs,
+      never while it speaks.

@@ -114,6 +114,14 @@ class GenerateResponse:
     # True when ``content`` came from the model's reasoning field because the
     # reply itself was empty (see GenerateRequest.reasoning_fallback).
     used_reasoning: bool = False
+    # Why the model stopped, as the provider reports it: "stop", "length",
+    # "refusal", "max_tokens", and so on. Recorded because a reply cut at the
+    # limit is a different thing from a short one, and nothing downstream
+    # could tell them apart: a measurement taken from a truncated answer is
+    # broken rather than terse. It matters most for a model that thinks
+    # first, where the budget can go entirely on reasoning and leave the
+    # answer empty.
+    finish_reason: str = ""
 
 
 class LLMBackendBase(ABC):

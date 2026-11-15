@@ -626,6 +626,19 @@ class Auditor:
         self._emit(records, new_versions, what=f"turn {turn.turn_id}",
                    raise_errors=not body_raised)
 
+    def record_items(self, deltas: list[dict]) -> None:
+        """Write item changes an application made itself, as they happen.
+
+        A retriever's item changes reach the log through the next audited
+        retrieval. An application that keeps its own items, such as Parlor's
+        item registry, makes them between turns and after the last one, so
+        they are written here at once, in the order given, as ``bear.items/1``
+        records that :func:`bear.item_digest.replay_items` reads.
+        """
+        records = [{"schema": ITEMS_SCHEMA, "captured_at": _now_iso(), **d}
+                   for d in deltas]
+        self._emit(records, [], what="item changes", raise_errors=True)
+
     def _emit(self, records: list[dict], new_versions: list[str], *,
               what: str, raise_errors: bool) -> None:
         # Normalize to plain JSON so every sink gets the same values.
@@ -742,6 +755,12 @@ def _apply_redaction(record: dict, fn: Callable[[str], str]) -> None:
         record["redacted"] = True
         return
     if record.get("schema") == MODEL_CALL_SCHEMA:
+        return
+    if record.get("schema") == ITEMS_SCHEMA:
+        # An item's content is free text like an instruction's. Redacting it
+        # means a replay can no longer reproduce the recorded item_version.
+        for inst in record.get("items") or ():
+            inst["content"] = fn(inst.get("content", ""))
         return
 
     for r in record["retrievals"]:

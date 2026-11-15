@@ -1,5 +1,7 @@
 """Tests for incremental indexing — Retriever.add, remove, size and ALL."""
 
+import gc
+
 import numpy as np
 import pytest
 
@@ -349,6 +351,11 @@ class TestTheCacheIsWrittenWhenAsked:
         r = _retriever([_item(0)], cache=tmp_path)
         r.add(_item(1), cache_dir=tmp_path)
         r.flush_cache()
+        # A retriever sits in a reference cycle, so one that another test left
+        # unflushed warns whenever the collector next runs. Collect those now,
+        # so only this retriever can speak below.
+        gc.collect()
+        caplog.clear()
         with caplog.at_level("WARNING"):
             r.__del__()
         assert not any("never written" in m for m in caplog.messages)

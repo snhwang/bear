@@ -172,10 +172,15 @@ class OllamaBackend(LLMBackendBase):
                     arguments=func.get("arguments", {}),
                 ))
 
+        # Ollama calls it done_reason ("stop", "length"), on the object or in
+        # the mapping depending on the client version.
+        done = (getattr(response, "done_reason", None) if hasattr(response, "message")
+                else response.get("done_reason")) or ""
         return GenerateResponse(
             content=content or "",
             model=self.model,
             tool_calls=tool_calls,
+            finish_reason=done,
         )
 
     def is_available(self) -> bool:

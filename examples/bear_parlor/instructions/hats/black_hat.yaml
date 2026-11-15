@@ -97,3 +97,5 @@ instructions:
     scope:
       required_tags: [black-hat, knowledge-diffusion]
     tags: [black-hat, knowledge-diffusion, facet]
+    metadata:
+      gene_category: memory-lens

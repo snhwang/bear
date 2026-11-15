@@ -38,6 +38,10 @@ class Config(BaseModel):
     embedding_query_prefix: str = "Represent this sentence for retrieving relevant documents: "
     embedding_passage_prefix: str = ""
     embedding_device: str | None = None
+    # An OpenAI-shaped embedding service, as "http://localhost:8360/v1". Set,
+    # it is used instead of loading a model in process, and queries and
+    # passages are sent on their own sides where the model has both.
+    embedding_base_url: str = ""
     embedding_model_kwargs: dict = Field(default_factory=dict)
     embedding_tokenizer_kwargs: dict = Field(default_factory=dict)
     embedding_trust_remote_code: bool = False
@@ -141,6 +145,7 @@ class Config(BaseModel):
             "EMBEDDING_DIM": "embedding_dim",
             "EMBEDDING_QUERY_PREFIX": "embedding_query_prefix",
             "EMBEDDING_PASSAGE_PREFIX": "embedding_passage_prefix",
+            "EMBEDDING_BASE_URL": "embedding_base_url",
             "EMBEDDING_ALLOW_HASH_FALLBACK": "embedding_allow_hash_fallback",
             "LLM_BACKEND": "llm_backend",
             "LLM_MODEL": "llm_model",

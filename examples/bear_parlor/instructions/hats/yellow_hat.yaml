@@ -96,3 +96,5 @@ instructions:
     scope:
       required_tags: [yellow-hat, knowledge-diffusion]
     tags: [yellow-hat, knowledge-diffusion, facet]
+    metadata:
+      gene_category: memory-lens

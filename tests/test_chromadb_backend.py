@@ -8,6 +8,8 @@ import pytest
 from bear.backends.embeddings.base import MetadataFilter
 from bear.backends.embeddings.chromadb_backend import ChromaDBBackend
 from bear.config import EmbeddingBackend
+
+pytest.importorskip("chromadb")
 from bear.corpus import Corpus
 from bear.models import (
     Context,

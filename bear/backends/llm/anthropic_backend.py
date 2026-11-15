@@ -138,6 +138,7 @@ class AnthropicBackend(LLMBackendBase):
                         "output_tokens": response.usage.output_tokens,
                     },
                     tool_calls=tool_calls,
+                    finish_reason=getattr(response, "stop_reason", "") or "",
                 )
             except Exception as e:
                 last_exc = e

@@ -593,6 +593,101 @@ class TestHashFallback:
         retriever = Retriever(medical_corpus, config=cfg)
         retriever.build_index()
         assert retriever.retrieve("diagnosis")
+class TestEmbeddingService:
+    """An OpenAI-shaped embedding service, selected by a base URL.
+
+    The model is not loaded in process, so queries and passages reach the
+    service on their own sides, which a model trained with both needs. The
+    service here is a fake, so nothing starts a server.
+    """
+
+    @staticmethod
+    def _service(monkeypatch, *, dim: int = 4, short: bool = False):
+        import json
+        import urllib.request
+
+        calls: list[dict] = []
+
+        class _Reply:
+            def __init__(self, body):
+                self._body = body
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read(self):
+                return self._body
+
+        def urlopen(request, timeout=None):
+            sent = json.loads(request.data)
+            calls.append({"url": request.full_url, "kind": sent.get("kind"),
+                          "model": sent.get("model"), "input": sent["input"]})
+            n = len(sent["input"]) - (1 if short else 0)
+            data = [{"index": i, "embedding": [float(i)] * dim} for i in range(n)]
+            data.reverse()                       # the reply order is not the input order
+            return _Reply(json.dumps({"data": data}).encode("utf-8"))
+
+        monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+        return calls
+
+    def _embedder(self, monkeypatch, **kw):
+        self.calls = self._service(monkeypatch, **kw)
+        return Embedder(model_name="nemotron-embed-vl",
+                        base_url="http://localhost:8360/v1")
+
+    def test_a_base_url_selects_the_service_and_takes_its_width(self, monkeypatch):
+        e = self._embedder(monkeypatch, dim=2048)
+        vecs = e.embed(["a passage"])
+        assert e._mode == "service"
+        assert e.dim == 2048 and vecs.shape == (1, 2048)
+        assert self.calls[0]["url"] == "http://localhost:8360/v1/embeddings"
+        assert self.calls[0]["model"] == "nemotron-embed-vl"
+
+    def test_a_query_and_a_passage_go_to_their_own_sides(self, monkeypatch):
+        e = self._embedder(monkeypatch)
+        e.embed(["x"], is_query=True)
+        e.embed(["x"], is_query=False)
+        # the first call is the width probe, which asks the passage side
+        assert [c["kind"] for c in self.calls] == ["document", "query", "document"]
+
+    def test_vectors_are_paired_by_index_not_by_arrival(self, monkeypatch):
+        e = self._embedder(monkeypatch)
+        out = e.embed(["a", "b", "c"])
+        assert [v[0] for v in out] == [0.0, 1.0, 2.0]
+
+    def test_bge_prefixes_are_not_sent_to_the_service(self, monkeypatch):
+        self.calls = self._service(monkeypatch)
+        e = Embedder(model_name="nemotron-embed-vl", base_url="http://localhost:8360/v1",
+                     query_prefix="Represent this sentence: ")
+        e.embed(["plain text"], is_query=True)
+        assert all("Represent this sentence" not in t
+                   for c in self.calls for t in c["input"])
+
+    def test_an_empty_text_goes_as_a_space(self, monkeypatch):
+        e = self._embedder(monkeypatch)
+        e.embed(["", "real"])
+        assert self.calls[-1]["input"] == [" ", "real"]
+
+    def test_a_short_reply_raises_rather_than_mispairing(self, monkeypatch):
+        e = self._embedder(monkeypatch, short=True)
+        with pytest.raises(RuntimeError, match="vectors for"):
+            e.embed(["a", "b", "c"])
+
+    def test_the_config_and_the_environment_reach_the_embedder(self, monkeypatch):
+        cfg = Config(embedding_model="nemotron-embed-vl",
+                     embedding_base_url="http://localhost:8360/v1")
+        assert Embedder.from_config(cfg).base_url == "http://localhost:8360/v1"
+        assert Embedder.from_config(Config()).base_url == ""
+        monkeypatch.setenv("BEAR_EMBEDDING_BASE_URL", "http://elsewhere:9/v1")
+        assert Config.from_env().embedding_base_url == "http://elsewhere:9/v1"
+
+    def test_no_base_url_leaves_every_other_mode_alone(self):
+        assert Embedder(model_name="hash", _suppress_hash_warning=True)._mode == "hash"
+
+
 class TestGateTagsDoNotSteerRanking:
     """The reason Context.gate_tags exists.
 
@@ -960,3 +1055,71 @@ class TestTheQueryCacheReportsItself:
         e = self._embedder(query_cache=0)
         e.embed_single("a", is_query=True)
         assert e.query_cache_stats()["hit_rate"] is None
+
+
+
+
+def test_a_missing_embedding_service_fails_fast_and_says_what_to_start():
+    """A service call allows 300 s, which a long batch on a loaded GPU can
+    need. The opening probe must not: before this, a service that was not
+    running stalled over two minutes per path and raised a bare URLError, so
+    a campaign crawled instead of stopping."""
+    import time
+
+    from bear.config import Config
+    from bear.retriever import Embedder
+
+    started = time.time()
+    with pytest.raises(RuntimeError) as caught:
+        Embedder.from_config(Config(
+            embedding_model="nemotron-embed-vl",
+            embedding_base_url="http://127.0.0.1:9/v1",   # discard port
+        )).embed(["x"])
+    assert time.time() - started < Embedder.PROBE_TIMEOUT + 10
+    said = str(caught.value)
+    assert "no embedding service answered" in said
+    assert "http://127.0.0.1:9/v1" in said
+    assert "embed in process" in said
+
+
+def test_the_probe_is_short_but_a_real_call_keeps_its_long_budget():
+    """The two budgets are deliberately different, so a slow batch is not
+    mistaken for an absent service."""
+    import inspect
+
+    from bear.retriever import Embedder
+
+    assert Embedder.PROBE_TIMEOUT <= 30
+    default = inspect.signature(Embedder._embed_service).parameters["timeout"].default
+    assert default >= 300
+
+
+def test_a_service_that_answers_badly_keeps_its_own_message(monkeypatch):
+    """The fast-fail wrapper must not swallow a protocol error. A service
+    that is running but returns the wrong number of vectors is a different
+    fault from one that is not running, and "no service answered" would send
+    the reader hunting for a process that is up."""
+    import json as _json
+    from bear.config import Config
+    from bear.retriever import Embedder
+
+    class _Reply:
+        def __init__(self, body):
+            self.body = body
+
+        def read(self):
+            return self.body
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def short(request, timeout=None):      # one vector for however many texts
+        return _Reply(_json.dumps({"data": [{"index": 0, "embedding": [0.1, 0.2]}]}).encode())
+
+    monkeypatch.setattr("urllib.request.urlopen", short)
+    with pytest.raises(RuntimeError, match="vectors for"):
+        Embedder.from_config(Config(embedding_model="nemotron-embed-vl",
+                                    embedding_base_url="http://localhost:8360/v1")).embed(["a", "b"])

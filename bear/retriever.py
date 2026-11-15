@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from urllib.error import HTTPError
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Callable
@@ -180,8 +181,13 @@ def _index_version(instructions: list[Instruction]) -> str:
 class Embedder:
     """Generates text embeddings using a pluggable model.
 
-    Supports four embedding modes (auto-detected in order):
+    Supports five embedding modes (auto-detected in order):
 
+    0. **Service** — An OpenAI-shaped embedding service, triggered by
+       ``base_url`` (``BEAR_EMBEDDING_BASE_URL``), with ``model_name`` the
+       name the service serves.  Queries and passages are sent on their own
+       sides, which a model trained with both needs.  Nothing is loaded in
+       process, so the service must be up.
     1. **OpenAI** — Cloud API via the ``openai`` package.  Triggered when
        ``model_name`` starts with ``openai:`` (e.g. ``openai:text-embedding-3-small``).
        Requires ``OPENAI_API_KEY`` in the environment.  Good fit for
@@ -213,6 +219,7 @@ class Embedder:
         query_prefix: str = "",
         passage_prefix: str = "",
         device: str | None = None,
+        base_url: str = "",
         model_kwargs: dict | None = None,
         tokenizer_kwargs: dict | None = None,
         trust_remote_code: bool = False,
@@ -225,13 +232,14 @@ class Embedder:
         self.query_prefix = query_prefix
         self.passage_prefix = passage_prefix
         self.device = device
+        self.base_url = base_url
         self.model_kwargs = model_kwargs or {}
         self.tokenizer_kwargs = tokenizer_kwargs or {}
         self.trust_remote_code = trust_remote_code
         self.allow_hash_fallback = allow_hash_fallback
         self._model: Any = None
         self._tokenizer: Any = None
-        self._mode: str = "hash"  # "openai" | "mlx" | "sentence_transformers" | "hash"
+        self._mode: str = "hash"  # "service" | "openai" | "mlx" | "sentence_transformers" | "hash"
         self._openai_model: str = ""
         self._loaded = False
         # Embedding one text is a pure function of the text, the model and
@@ -270,6 +278,7 @@ class Embedder:
             query_prefix=config.embedding_query_prefix,
             passage_prefix=config.embedding_passage_prefix,
             device=config.embedding_device,
+            base_url=config.embedding_base_url,
             model_kwargs=config.embedding_model_kwargs,
             tokenizer_kwargs=config.embedding_tokenizer_kwargs,
             trust_remote_code=config.embedding_trust_remote_code,
@@ -293,6 +302,13 @@ class Embedder:
         if self._loaded:
             return
         self._loaded = True
+
+        # An embedding service, requested by giving a base URL. Tried first,
+        # since it is the most explicit thing a caller can ask for, and it
+        # fails hard rather than quietly loading a different model in process.
+        if self.base_url:
+            self._load_service()
+            return
 
         # OpenAI cloud API — requested explicitly via ``openai:`` prefix.
         # Fail hard if unavailable so the user isn't silently downgraded.
@@ -329,6 +345,60 @@ class Embedder:
             self.model_name,
         )
         self._mode = "hash"
+
+    # A service call allows 300 s, which a long batch on a loaded GPU can
+    # need. The opening probe must not: a service that is not running would
+    # then stall five minutes before saying so, and every later call the same,
+    # so a run crawls rather than stopping. The probe gets its own short
+    # budget and a message naming what to start.
+    PROBE_TIMEOUT = 10.0
+
+    def _load_service(self) -> None:
+        """Probe the embedding service and take its vector width from it."""
+        logger.info("Using embedding service at %s (model %s) ...",
+                    self.base_url, self.model_name)
+        self._mode = "service"
+        try:
+            self.dim = self._embed_service(["test"], is_query=False,
+                                           timeout=self.PROBE_TIMEOUT).shape[1]
+        except RuntimeError as exc:
+            # Only a failure to reach it. A service that answers badly, say
+            # with the wrong number of vectors or an HTTP error, keeps its own
+            # message: "no service answered" would send the reader looking for
+            # a process that is in fact running. RemoteEmbedder raises
+            # RuntimeError for both, with the URLError or socket timeout (both
+            # OSErrors) as the cause when nothing answered.
+            cause = exc.__cause__
+            if not isinstance(cause, OSError) or isinstance(cause, HTTPError):
+                raise
+            raise RuntimeError(
+                f"no embedding service answered at {self.base_url} within "
+                f"{self.PROBE_TIMEOUT:.0f}s ({type(cause).__name__}). Start it, or "
+                f"leave embedding_base_url empty to embed in process."
+            ) from cause
+        logger.info("Embedding service ready: %s (dim=%d)", self.model_name, self.dim)
+
+    def _embed_service(self, texts: list[str], is_query: bool,
+                       timeout: float = 300.0) -> np.ndarray:
+        """Embed texts through an OpenAI-shaped embedding service.
+
+        ``kind`` asks for the query or the passage side. A model trained with
+        both (``nvidia/llama-nemotron-embed-vl-1b-v2``) needs it to reach its
+        stated accuracy, and a service whose model has one side ignores the
+        field. Empty strings go as a space, as the other backends do, since
+        the API rejects them.
+
+        The call itself is :class:`bear.remote_embedder.RemoteEmbedder`'s, so
+        the library has one way to reach a service. Vectors are taken as the
+        service sends them (``normalize=False``), 64 texts to a request, as
+        this path always did.
+        """
+        from bear.remote_embedder import RemoteEmbedder
+
+        safe = [t if t and t.strip() else " " for t in texts]
+        remote = RemoteEmbedder(self.base_url, model=self.model_name,
+                                timeout=timeout, batch_size=64, normalize=False)
+        return remote.embed(safe, is_query=is_query)
 
     def _load_openai(self) -> None:
         """Initialize the OpenAI embeddings client. Raises on missing deps / key."""
@@ -410,6 +480,8 @@ class Embedder:
         # OpenAI models don't use BGE-style instruction prefixes — skip them.
         if prefix and self._mode in ("sentence_transformers", "mlx"):
             texts = [prefix + t for t in texts]
+        if self._mode == "service":
+            return self._embed_service(texts, is_query)
         if self._mode == "openai":
             return self._embed_openai(texts)
         elif self._mode == "mlx":
