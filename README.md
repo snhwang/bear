@@ -458,6 +458,8 @@ Instructions are tagged with a locus via their `metadata` dict:
     gene_category: combat
 ```
 
+**Names travel with inherited instructions.** `breed()` adds the child's name to the tags of every instruction the child inherits, and keeps the tags the instruction already had. After several generations, an instruction carries the name of every corpus it was bred into. `bear.genetics.genes_to_corpus` also tags each founder instruction with the founder's name. The semantic retriever embeds an instruction's tags together with its content, so these names take part in retrieval. When two instructions match a query about equally well, the names can decide which one is retrieved. The effect grows with the number of generations. Keep this in mind when you compare lineages or read why an instruction was chosen.
+
 ### Breeding Modes
 
 | Config | Behavior |
