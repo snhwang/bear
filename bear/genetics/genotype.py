@@ -68,6 +68,7 @@ def genes_to_corpus(
     locus_key: str = DEFAULT_LOCUS_KEY,
     instruction_type: InstructionType = InstructionType.DIRECTIVE,
     priority: int = 60,
+    name_tag: bool = False,
 ) -> Corpus:
     """Build a haploid genotype corpus: one instruction per (non-empty) locus.
 
@@ -75,6 +76,11 @@ def genes_to_corpus(
     ``metadata['dominance']`` (per-allele dominance score, default 1.0) — all
     that :func:`bear.evolution.breed` / :func:`bear.evolution.express` require.
     Loci are taken from ``genes`` keys, so this is not tied to any fixed schema.
+
+    ``name`` is in each id. It is a tag as well only with ``name_tag=True``,
+    as in 0.5.0 and earlier, because tags are part of the text the retriever
+    embeds and a name would move which gene is retrieved. See
+    :attr:`bear.evolution.BreedingConfig.name_tags`.
     """
     corpus = Corpus()
     doms = dominances or {}
@@ -88,7 +94,7 @@ def genes_to_corpus(
                 priority=priority,
                 content=text,
                 scope=ScopeCondition(tags=[locus]),
-                tags=[name, locus, f"cat:{locus}"],
+                tags=([name] if name_tag else []) + [locus, f"cat:{locus}"],
                 metadata={locus_key: locus, "dominance": float(doms.get(locus, 1.0))},
             )
         )

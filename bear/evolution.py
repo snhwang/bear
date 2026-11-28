@@ -668,7 +668,23 @@ class BreedingConfig(BaseModel):
         default_factory=list,
         description=(
             "Extra tags applied to every child instruction. "
-            "The child_name is always added as a tag automatically."
+            "The child's name is added too only when name_tags is True."
+        ),
+    )
+    name_tags: bool = Field(
+        default=False,
+        description=(
+            "If True, every child instruction is tagged with the child's name "
+            "and keeps its parent's name, as in 0.5.0 and earlier. A gene copy then "
+            "carries the name of every creature it passed through, and since "
+            "tags are part of the text the retriever embeds, the names move "
+            "which gene is retrieved, more so in later generations. If False "
+            "(the default), the "
+            "child's name is not added, and the parent's name and the child's "
+            "are removed from the tags an inherited instruction carries. The "
+            "names stay in ids and metadata (inherited_from, bred_from), and "
+            "scope_to_child still gates by the child's name, which is not "
+            "embedded. The persona's text is the caller's and is not changed."
         ),
     )
     scope_to_child: bool = Field(
@@ -810,12 +826,18 @@ def _make_child_instruction(
 ) -> Instruction:
     """Build a child instruction from a parent instruction."""
     new_id = f"{child_name}-{inst.id}"
+    inherited = inst.tags
+    if not config.name_tags:
+        # Names are lineage, not description, and tags are embedded with the
+        # gene (see BreedingConfig.name_tags). A founder tagged with its own
+        # name passes the name on here unless it is removed.
+        inherited = [t for t in inst.tags if t not in (parent_name, child_name)]
     update: dict[str, Any] = {
         "id": new_id,
         # Order-preserving dedupe. A set would order the tags by string
         # hash, which changes with PYTHONHASHSEED. The tags feed the
         # embedded text and the index version, so they must not.
-        "tags": list(dict.fromkeys(inst.tags + base_tags)),
+        "tags": list(dict.fromkeys(inherited + base_tags)),
         "metadata": {
             **inst.metadata,
             "inherited_from": parent_name,
@@ -1462,8 +1484,9 @@ def breed(
     seed = config.seed if config.seed is not None else hash(child_name)
     rng = random.Random(seed)
 
-    # Base tags for all child instructions
-    base_tags = [child_name] + list(config.child_tags)
+    # Base tags for all child instructions. The child's name only on request,
+    # since tags are embedded with the gene (BreedingConfig.name_tags).
+    base_tags = ([child_name] if config.name_tags else []) + list(config.child_tags)
 
     # Build persona
     if custom_persona is not None:
@@ -1688,7 +1711,10 @@ def express(
     -------
     list[Instruction]
         The expressed (phenotype) instructions.  Non-locus instructions
-        are included as-is.
+        are included as-is.  So is an instruction at a diploid locus whose
+        metadata has no ``allele`` of ``"a"`` or ``"b"``.  Dominance applies
+        only to allele-tagged instructions, so an untagged one is expressed
+        whatever the locus's dominance.
     """
     # Cache check
     # blend_fn is part of the key because the phenotype depends on it. One

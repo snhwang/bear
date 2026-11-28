@@ -242,6 +242,8 @@ class Embedder:
         self._mode: str = "hash"  # "service" | "openai" | "mlx" | "sentence_transformers" | "hash"
         self._openai_model: str = ""
         self._loaded = False
+        # True once the configured model failed to load and hash took over.
+        self._fell_back = False
         # Embedding one text is a pure function of the text, the model and
         # the prefix, so a repeated query can be answered from memory. Only
         # embed_single caches: that is the query path, and a document batch
@@ -345,6 +347,26 @@ class Embedder:
             self.model_name,
         )
         self._mode = "hash"
+        self._fell_back = True
+
+    @property
+    def model_id(self) -> str:
+        """What computes this embedder's vectors, which names cached ones.
+
+        The configured model, unless it failed to load and the hash fallback
+        took over. Then it is ``"hash"``, because hash vectors filed under
+        the model's name would be read back as that model's by the next run
+        that loads it, at the same width and with nothing to notice. A run
+        that falls back would likewise read the model's cached vectors while
+        embedding its queries with hash.
+
+        Reading it loads the model, since only loading says whether the
+        fallback happens. A build whose vectors are all cached therefore
+        loads the model at build time rather than at the first query, and a
+        model that cannot load raises there.
+        """
+        self._ensure_loaded()
+        return "hash" if self._fell_back else self.model_name
 
     # A service call allows 300 s, which a long batch on a loaded GPU can
     # need. The opening probe must not: a service that is not running would
@@ -589,6 +611,13 @@ class Embedder:
 
         Uses SHA-256 to create a pseudo-random but deterministic embedding.
         Produces reasonable cosine similarities for similar texts via shingling.
+
+        The shingles are summed in sorted order, so a text gets the same
+        vector bit for bit in every process. Summing them in set order did
+        not: a set of strings iterates in an order set by
+        ``PYTHONHASHSEED``, and float32 addition rounds differently in a
+        different order. Cosine similarities then moved by about 3e-8
+        between processes, enough to flip a tie at a threshold.
         """
         embeddings = []
         for text in texts:
@@ -599,9 +628,9 @@ class Embedder:
             for i in range(len(text_lower) - n + 1):
                 shingles.add(text_lower[i:i + n])
 
-            # Hash each shingle and accumulate
+            # Hash each shingle and accumulate, in a fixed order (see above)
             vec = np.zeros(self.dim, dtype=np.float32)
-            for shingle in shingles:
+            for shingle in sorted(shingles):
                 h = hashlib.sha256(shingle.encode()).digest()
                 # Use hash bytes to set vector values
                 for j in range(min(self.dim, len(h))):
@@ -2200,7 +2229,8 @@ class Retriever:
         that distinguishes two models behind one class. Bear's own
         :class:`Embedder` carries the configured model as its ``model_name``,
         so the default file keeps the name it already had and an existing
-        cache stays valid.
+        cache stays valid. Its ``model_id`` is that same name, except after a
+        hash fallback, when it is ``"hash"`` (see :attr:`Embedder.model_id`).
         """
         slug = self._embedder_slug()
         for bad in ("/", "\\", ":"):

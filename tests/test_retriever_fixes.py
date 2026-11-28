@@ -772,3 +772,45 @@ class TestTiesHaveAFixedOrder:
                 assert retrieval["config"].pop("restore_tie_order") is True
         path.write_text("\n".join(json.dumps(rec) for rec in lines) + "\n")
         assert [res.status for res in verify_audit_log(path)] == ["match"]
+
+
+class TestHashEmbeddingIsTheSameInEveryProcess:
+    """The hash embedder summed a text's shingles in set order. A set of
+    strings iterates in an order that PYTHONHASHSEED sets, and float32
+    addition rounds differently in a different order, so a text got a
+    slightly different vector in each process. Cosine similarities moved by
+    about 3e-8 (17 Nov 2026), enough to move a result at a threshold. The
+    shingles are now summed in sorted order. There is no switch back, since
+    the old vectors were not reproducible to begin with."""
+
+    TEXTS = [
+        "Never run a destructive command without asking the user first.",
+        "Prefer the dedicated file tools over shell commands when one fits.",
+        "Summarise the retrieved instructions before answering the question.",
+    ]
+    SCRIPT = (
+        "import sys\n"
+        "from bear.retriever import Embedder\n"
+        "e = Embedder(model_name='hash', dim=64, _suppress_hash_warning=True)\n"
+        "print(e.embed(sys.argv[1:]).tobytes().hex())\n"
+    )
+
+    def _vectors_under_seed(self, seed):
+        import os
+        import subprocess
+        import sys
+        from pathlib import Path
+
+        import bear
+
+        env = dict(os.environ, PYTHONHASHSEED=str(seed))
+        root = str(Path(bear.__file__).resolve().parent.parent)
+        env["PYTHONPATH"] = os.pathsep.join(
+            p for p in (root, env.get("PYTHONPATH", "")) if p)
+        out = subprocess.run([sys.executable, "-c", self.SCRIPT, *self.TEXTS],
+                             env=env, capture_output=True, text=True, check=True)
+        return out.stdout.strip()
+
+    def test_the_vectors_match_bit_for_bit_across_hash_seeds(self):
+        seen = {self._vectors_under_seed(seed) for seed in (0, 1, 2, 3, 4)}
+        assert len(seen) == 1

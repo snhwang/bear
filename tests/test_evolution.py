@@ -1380,9 +1380,38 @@ class TestBreed:
         cfg = BreedingConfig(crossover_rate=1.0, seed=1, child_tags=["hybrid", "gen-2"])
         result = breed(_parent_a_corpus(), _parent_b_corpus(), "child", config=cfg)
         for inst in result.child:
-            assert "child" in inst.tags
+            assert "child" not in inst.tags
             assert "hybrid" in inst.tags
             assert "gen-2" in inst.tags
+
+    def test_name_tags_adds_the_childs_name(self):
+        """The behavior up to 0.5.0, kept behind name_tags."""
+        cfg = BreedingConfig(crossover_rate=1.0, seed=1, child_tags=["hybrid"],
+                             name_tags=True)
+        result = breed(_parent_a_corpus(), _parent_b_corpus(), "child", config=cfg)
+        for inst in result.child:
+            assert "child" in inst.tags and "hybrid" in inst.tags
+
+    def test_names_leave_the_embedded_text(self):
+        """A gene copy carried the name of every creature it passed through, and
+        tags are embedded with the gene."""
+        founder = Corpus()
+        founder.add(Instruction(id="g", type=InstructionType.DIRECTIVE, content="Flee.",
+                                tags=["ann", "defense"]))
+        kid = breed(founder, founder, "bob", "ann", "ann",
+                    config=BreedingConfig(crossover_rate=1.0, seed=1)).child
+        grandkid = breed(kid, kid, "cy", "bob", "bob",
+                         config=BreedingConfig(crossover_rate=1.0, seed=2)).child
+        gene = next(i for i in grandkid if i.type == InstructionType.DIRECTIVE)
+        assert gene.tags == ["defense"]
+        text = Retriever(grandkid, embedding_model="hash")._instruction_text(gene)
+        assert not any(name in text for name in ("ann", "bob", "cy"))
+        old = BreedingConfig(crossover_rate=1.0, seed=2, name_tags=True)
+        kid_old = breed(founder, founder, "bob", "ann", "ann",
+                        config=BreedingConfig(crossover_rate=1.0, seed=1, name_tags=True)).child
+        gene_old = next(i for i in breed(kid_old, kid_old, "cy", "bob", "bob", config=old).child
+                        if i.type == InstructionType.DIRECTIVE)
+        assert gene_old.tags == ["ann", "defense", "bob", "cy"]
 
     def test_seed_used_in_result(self):
         result = breed(_parent_a_corpus(), _parent_b_corpus(), "child", config=BreedingConfig(seed=999))
@@ -3053,12 +3082,17 @@ class TestAccessPolicyDedupe:
             corpus, name = result.child, child
 
     def test_siblings_pass_on_one_policy(self):
-        """Each sibling's copy carries its own name, which is not policy."""
+        """Each sibling's copy carries its own name, which is not policy.
+
+        Names are tags only with name_tags (off by default), so this sets it."""
         p = _access_parent("comms", ["public"], ["exploit-detail"])
-        s1 = breed(p, p, "sib-1", "comms", "comms", config=BreedingConfig(seed=1)).child
-        s2 = breed(p, p, "sib-2", "comms", "comms", config=BreedingConfig(seed=2)).child
+        s1 = breed(p, p, "sib-1", "comms", "comms",
+                   config=BreedingConfig(seed=1, name_tags=True)).child
+        s2 = breed(p, p, "sib-2", "comms", "comms",
+                   config=BreedingConfig(seed=2, name_tags=True)).child
         assert "sib-1" in _policies(s1)[0].tags and "sib-2" in _policies(s2)[0].tags
-        result = breed(s1, s2, "grandchild", "sib-1", "sib-2", config=BreedingConfig(seed=3))
+        result = breed(s1, s2, "grandchild", "sib-1", "sib-2",
+                       config=BreedingConfig(seed=3, name_tags=True))
         (pol,) = _policies(result.child)
         assert pol.metadata["inherited_from"] == "sib-1"
 
@@ -3205,10 +3239,10 @@ class TestBreedAcrossProcesses:
         assert first["tags"] == second["tags"]
         assert first["text"] == second["text"]
         assert first["index_version"] == second["index_version"]
-        # parent tags first, in their order, then the child's name and child_tags
+        # parent tags first, in their order, less the parent's name, then
+        # child_tags (name_tags is off, so the child's name is not added)
         assert first["tags"]["liaison-comms-method"] == [
-            "comms", "method", "evidence", "review", "tone", "press",
-            "liaison", "gen-1", "bred"]
+            "method", "evidence", "review", "tone", "press", "gen-1", "bred"]
 
     def test_tags_keep_parent_order_without_duplicates(self):
         c = Corpus()
@@ -3216,6 +3250,10 @@ class TestBreedAcrossProcesses:
                           tags=["zeta", "gen", "alpha", "liaison"]))
         cfg = BreedingConfig(crossover_rate=1.0, seed=1, child_tags=["gen", "bred"])
         child = breed(c, Corpus(), "liaison", "a", "b", config=cfg).child
+        # The child's own name is a name, so it is removed (name_tags is off).
+        assert child.get("liaison-m").tags == ["zeta", "gen", "alpha", "bred"]
+        named = cfg.model_copy(update={"name_tags": True})
+        child = breed(c, Corpus(), "liaison", "a", "b", config=named).child
         assert child.get("liaison-m").tags == ["zeta", "gen", "alpha", "liaison", "bred"]
 
     def test_child_tags_are_parent_order_then_names(self, capsys):
@@ -3230,18 +3268,20 @@ class TestBreedAcrossProcesses:
 
         exec(compile(_BREED_ONCE, "breed_once", "exec"), {})
         out = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
-        names = ["liaison", "gen-1", "bred"]
+        # name_tags is off, so the parents' names ("comms", "legal") leave the
+        # inherited tags and the child's ("liaison") is not added.
+        names = ["gen-1", "bred"]
         assert out["tags"] == {
             "liaison-persona": [*names, "personality"],
             "liaison-comms-method": [
-                "comms", "method", "evidence", "review", "tone", "press", *names],
+                "method", "evidence", "review", "tone", "press", *names],
             "liaison-legal-method": [
-                "legal", "method", "evidence", "review", "tone", "counsel", *names],
+                "method", "evidence", "review", "tone", "counsel", *names],
             "liaison-comms-access": [
-                "comms", "knowledge-diffusion", "facet", "access", "allow:public",
+                "knowledge-diffusion", "facet", "access", "allow:public",
                 "allow:timeline", "deny:privileged", "press", *names],
             "liaison-legal-access": [
-                "legal", "knowledge-diffusion", "facet", "access", "allow:public",
+                "knowledge-diffusion", "facet", "access", "allow:public",
                 "allow:timeline", "deny:privileged", "counsel", *names],
         }
 

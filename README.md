@@ -458,7 +458,7 @@ Instructions are tagged with a locus via their `metadata` dict:
     gene_category: combat
 ```
 
-**Names travel with inherited instructions.** `breed()` adds the child's name to the tags of every instruction the child inherits, and keeps the tags the instruction already had. After several generations, an instruction carries the name of every corpus it was bred into. `bear.genetics.genes_to_corpus` also tags each founder instruction with the founder's name. The semantic retriever embeds an instruction's tags together with its content, so these names take part in retrieval. When two instructions match a query about equally well, the names can decide which one is retrieved. The effect grows with the number of generations. Keep this in mind when you compare lineages or read why an instruction was chosen.
+**Names stay out of retrieval.** The retriever embeds an instruction's tags together with its content, so a tag takes part in which instruction is retrieved. `breed()` therefore does not tag inherited instructions with names. It adds no child name, and it removes the parent's and the child's names from the tags an instruction inherits. Names stay in ids and metadata (`inherited_from`, `bred_from`), and `scope_to_child` still gates by the child's name, which is not embedded. `bear.genetics.genes_to_corpus` leaves the name out of the tags too. Up to 0.5.0, `breed()` added the child's name to every inherited instruction and kept the tags it already had. After several generations an instruction carried the name of every corpus it passed through, and the names could decide between two instructions that matched about equally well. Set `BreedingConfig(name_tags=True)` and `genes_to_corpus(..., name_tag=True)` to keep that behavior, for example to reproduce a run made with 0.5.0.
 
 ### Breeding Modes
 
@@ -601,7 +601,7 @@ model's vector width is taken from its first reply rather than from
 whose model has a single side may ignore that field. BGE-style instruction
 prefixes are not sent, as they are not sent to `openai:` models either.
 
-A named model that fails to load (not installed, wrong name, no network and no cached copy) raises `RuntimeError`. BEAR does not quietly switch to hash mode. If you want that fallback anyway, set `BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1` or `Config(embedding_allow_hash_fallback=True)`. The fallback is logged as a warning.
+A named model that fails to load (not installed, wrong name, no network and no cached copy) raises `RuntimeError`. BEAR does not quietly switch to hash mode. If you want that fallback anyway, set `BEAR_EMBEDDING_ALLOW_HASH_FALLBACK=1` or `Config(embedding_allow_hash_fallback=True)`. The fallback is logged as a warning. Its vectors are cached as `hash`, never under the model's name, so a later run that loads the model does not read them.
 
 ## Vector Backends
 

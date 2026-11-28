@@ -183,6 +183,56 @@ class TestCacheIsolation:
         assert len(embedder.embedded) == 1
 
 
+class _FailsToLoad(CountingEmbedder):
+    """A model's name whose model will not load, with the hash fallback on."""
+
+    def __init__(self):
+        Embedder.__init__(self, model_name="pretend/model-a",
+                          allow_hash_fallback=True)
+        self.embedded = []
+
+    def _try_load_sentence_transformers(self):
+        return False
+
+
+class _Loads(CountingEmbedder):
+    """The same model's name, on a run where the model loads."""
+
+    def __init__(self):
+        super().__init__()
+        self.model_name = "pretend/model-a"
+
+
+class TestHashFallbackKeepsItsOwnFile:
+    """A model that failed to load fell back to hash and filed the hash
+    vectors under the model's name. The next run that loaded the model read
+    them as its own, at the same width and with nothing to notice. Found
+    2026-11-17 while fixing the hash embedder's summation order."""
+
+    def test_the_fallback_names_itself_hash(self):
+        assert _FailsToLoad().model_id == "hash"
+        assert _Loads().model_id == "pretend/model-a"
+
+    def test_a_run_that_loads_the_model_does_not_read_fallback_vectors(
+            self, corpus, tmp_path):
+        make(corpus, _FailsToLoad()).build_index(cache_dir=tmp_path)
+        version = Retriever._EMBEDDING_FORMAT_VERSION
+        assert [p.name for p in tmp_path.glob("*.npz")] == [
+            f"embeddings_v{version}_hash.npz"]
+
+        loaded = _Loads()
+        make(corpus, loaded).build_index(cache_dir=tmp_path)
+        assert len(loaded.embedded) == 2
+
+    def test_a_run_that_falls_back_does_not_read_the_models_vectors(
+            self, corpus, tmp_path):
+        make(corpus, _Loads()).build_index(cache_dir=tmp_path)
+
+        fallback = _FailsToLoad()
+        make(corpus, fallback).build_index(cache_dir=tmp_path)
+        assert len(fallback.embedded) == 2
+
+
 class TestCacheRobustness:
     def test_a_corrupt_cache_file_does_not_fail_the_build(self, corpus, tmp_path):
         r = make(corpus, CountingEmbedder())

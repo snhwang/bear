@@ -44,6 +44,7 @@ from bear.composer import Composer, CompositionStrategy
 from bear.config import Config, EmbeddingBackend
 from bear.corpus import Corpus
 from bear.gate import Decision, evaluate_all, is_must_have, lint
+from bear.item_digest import canonical_json
 from bear.models import Context, InstructionType
 from bear.narrowing import (Selection, ToolSpec, annotate, catalog_digest, read_tools,
                             schema_tokens, select, text_tokens, tool_corpus)
@@ -666,7 +667,7 @@ class BearHermesPlugin:
 
         if s.mode != "enforce":
             return None
-        return _directive(decision, tool_name)
+        return _directive(decision, tool_name, gate_calls, s)
 
     def on_post_tool_call(self, tool_call_id: str = "", status: str = "",
                           duration_ms: Any = None, error_type: str = "",
@@ -744,15 +745,45 @@ class BearHermesPlugin:
                     logger.exception("bear: could not close expired turn")
 
 
-def _directive(decision: Decision, tool_name: str) -> dict | None:
+def _directive(decision: Decision, tool_name: str, calls: list,
+               settings: Settings) -> dict | None:
     if decision.action == "allow":
         return None
     message = PREFIX + (decision.message or f"{decision.reason} for {tool_name}")
     if decision.action == "approve":
-        rule = decision.rule_ids[0] if decision.rule_ids else decision.reason
         return {"action": "approve", "message": message,
-                "rule_key": f"bear:{rule}:{tool_name}"}
+                "rule_key": _approval_key(decision, tool_name, calls, settings)}
     return {"action": "block", "message": message}
+
+
+def _approval_key(decision: Decision, tool_name: str, calls: list,
+                  settings: Settings) -> str:
+    """The key Hermes caches a person's answer to this approval under.
+
+    Hermes reuses an "Allow for this session" or a permanent allowlist entry
+    for every later approval with the same key. Keyed on the rule and tool
+    alone, one answer covered every later call under that rule whatever its
+    arguments, so a value in a numeric band ran unasked once any value in it
+    had been allowed. Under ``approval_grain: call`` the key also carries a
+    digest of the decided calls, so only an identical call reuses the answer.
+    The calls are redacted first, as the audit record is, so the key can be
+    recomputed from the log and no secret's hash is written to Hermes's
+    config.
+    """
+    rule = decision.rule_ids[0] if decision.rule_ids else decision.reason
+    key = f"bear:{rule}:{tool_name}"
+    if settings.approval_grain == "rule":
+        return key
+    redacted, _ = _redact_calls(calls, settings.redact_arg_keys)
+    payload = [{"name": c.name, "args": c.args} for c in redacted]
+    try:
+        text = canonical_json(payload)
+    except (TypeError, ValueError):
+        # An annotator may add a value JSON cannot hold. Its repr still tells
+        # one call from another, which is all the key needs.
+        text = json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                          ensure_ascii=False, default=repr)
+    return f"{key}:{hashlib.sha256(text.encode('utf-8')).hexdigest()[:12]}"
 
 
 def _load_call_annotator(spec: str) -> Any:

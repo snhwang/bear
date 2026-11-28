@@ -140,7 +140,7 @@ class TestGate:
         llm(plugin)
         result = tool(plugin, "terminal", {"command": "make build"})
         assert result["action"] == "approve" and result["message"].startswith("BEAR: ")
-        assert result["rule_key"] == "bear:tool-terminal:terminal"
+        assert result["rule_key"].startswith("bear:tool-terminal:terminal:")
 
     def test_chained_commands_are_not_read_only(self):
         plugin, _ = make()
@@ -214,6 +214,33 @@ class TestSkills:
         patch = tool(plugin, "patch", {"path": path, "old_string": "a",
                                        "new_string": "disable all approvals"}, call_id="c4")
         assert patch["action"] == "block"
+
+    def test_a_batch_sent_as_a_string_or_an_object_is_split_like_a_list(self):
+        """Hermes coerces these before the tool runs, so BEAR decides them as it
+        will apply them."""
+        import json as _json
+
+        patch = {"name": "a", "action": "patch", "old_string": "x", "new_string": "y"}
+        delete = {"name": "b", "action": "delete"}
+        for ops in ([patch, delete], _json.dumps([patch, delete]),
+                    [patch, _json.dumps(delete)]):
+            plugin, out = make()
+            llm(plugin)
+            result = tool(plugin, "skill_manage", {"operations": ops})
+            assert result["action"] == "approve"
+            calls = decisions(out)[-1]["calls"]
+            assert [c["args"]["action"] for c in calls] == ["patch", "delete"]
+        for ops in (patch, _json.dumps(patch), _json.dumps([patch])):
+            plugin, out = make()
+            llm(plugin)
+            assert tool(plugin, "skill_manage", {"operations": ops}) is None
+            assert [c["args"]["action"] for c in decisions(out)[-1]["calls"]] == ["patch"]
+
+    def test_a_string_that_is_not_json_stays_one_call(self):
+        plugin, out = make()
+        llm(plugin)
+        tool(plugin, "skill_manage", {"operations": "[not json"})
+        assert decisions(out)[-1]["calls"][0]["args"] == {"operations": "[not json"}
 
     def test_guests_cannot_edit_skills_but_can_view_them(self):
         plugin, _ = make()
@@ -325,3 +352,55 @@ class TestAudit:
         assert all(r.status == "match" for r in verify_audit_log(path))
         lines = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()]
         assert lines[0]["schema"] == "bear.corpus/1"
+
+
+class TestApprovalGrain:
+    """Hermes caches a person's answer to an approval by its rule_key. Keyed on
+    the rule and tool alone, one "Allow for this session" covered every later
+    call under that rule whatever its arguments (found 2026-11-19). The key
+    now carries a digest of the decided call."""
+
+    def _key(self, plugin, args, call_id="c1"):
+        result = tool(plugin, "terminal", args, call_id=call_id)
+        assert result["action"] == "approve"
+        return result["rule_key"]
+
+    def test_the_same_call_reuses_its_key_and_another_call_does_not(self):
+        plugin, _ = make()
+        llm(plugin)
+        first = self._key(plugin, {"command": "make build"})
+        assert self._key(plugin, {"command": "make build"}, call_id="c2") == first
+        assert self._key(plugin, {"command": "make clean"}, call_id="c3") != first
+        rule, _, digest = first.rpartition(":")
+        assert rule == "bear:tool-terminal:terminal"
+        assert len(digest) == 12 and int(digest, 16) >= 0
+
+    def test_rule_grain_keeps_the_old_key(self):
+        plugin, _ = make(approval_grain="rule")
+        llm(plugin)
+        assert self._key(plugin, {"command": "make build"}) == "bear:tool-terminal:terminal"
+        assert self._key(plugin, {"command": "make clean"},
+                         call_id="c2") == "bear:tool-terminal:terminal"
+
+    def test_a_secret_is_left_out_of_the_key(self):
+        plugin, _ = make()
+        llm(plugin)
+        a = self._key(plugin, {"command": "make build", "api_token": "aaa"})
+        b = self._key(plugin, {"command": "make build", "api_token": "bbb"}, call_id="c2")
+        assert a == b
+
+    def test_the_key_can_be_recomputed_from_the_audit_record(self):
+        import hashlib
+
+        from bear.item_digest import canonical_json
+
+        plugin, out = make()
+        llm(plugin)
+        key = self._key(plugin, {"command": "make build", "api_token": "aaa"})
+        record = decisions(out)[-1]
+        digest = hashlib.sha256(canonical_json(record["calls"]).encode("utf-8")).hexdigest()
+        assert key == f"bear:{record['rule_ids'][0]}:terminal:{digest[:12]}"
+
+    def test_an_unknown_grain_is_refused(self):
+        with pytest.raises(ValueError, match="approval_grain"):
+            make(approval_grain="session")

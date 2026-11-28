@@ -13,6 +13,7 @@ NARROW_MODES = ("off", "observe", "on")
 NARROW_SCOPES = ("turn", "session")
 NARROW_QUERIES = ("message", "first_plus_message")
 DISCLOSURES = ("names", "counts", "none")
+APPROVAL_GRAINS = ("call", "rule")
 _NULL_IS_A_VALUE = frozenset({"narrow_top_k"})
 
 
@@ -71,6 +72,9 @@ class Settings:
     # "module:function" called on each tool call before the gate, to add
     # derived arguments the rules match.
     call_annotator: str = ""
+    # What one human approval covers in Hermes's approval cache: "call", the
+    # identical call only, or "rule", every call of the tool under the rule.
+    approval_grain: str = "call"
 
     @classmethod
     def from_mapping(cls, data: Mapping[str, Any]) -> Settings:
@@ -100,6 +104,9 @@ class Settings:
             raise ValueError(f"mode must be one of {MODES}, not {self.mode!r}")
         if self.unlisted not in ("allow", "approve", "block"):
             raise ValueError(f"unlisted must be allow, approve or block, not {self.unlisted!r}")
+        if self.approval_grain not in APPROVAL_GRAINS:
+            raise ValueError(f"approval_grain must be one of {APPROVAL_GRAINS}, "
+                             f"not {self.approval_grain!r}")
         if self.embedding not in EMBEDDINGS and not self.remote_embedding_url:
             raise ValueError(f"embedding must be one of {EMBEDDINGS} or remote:<url>, "
                              f"not {self.embedding!r}")

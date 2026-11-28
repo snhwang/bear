@@ -12,6 +12,74 @@ the initial submission of the *Retrieval-Governed Context* paper.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-27
+
+### Added
+
+- `Embedder.model_id`, naming what computes the embedder's vectors. It is the
+  configured model, or `"hash"` after the hash fallback took over. The
+  embedding cache names its files and keys by it (see Fixed).
+- The Hermes plugin setting `approval_grain`, `call` (the default) or `rule`.
+  It sets what one approval covers in Hermes's approval cache (see Fixed).
+- `BreedingConfig.name_tags` and `genes_to_corpus(..., name_tag=...)`, both off
+  by default. On, they restore the name tags described under Changed.
+
+### Changed
+
+- **Names no longer enter the text a bred gene is retrieved by.** `breed()`
+  tagged every child instruction with the child's name and kept the parent's,
+  so a gene copy carried the name of every creature it passed through. Tags
+  are part of the text the retriever embeds, so the names moved which gene was
+  retrieved. In one study they changed a small share of decisions, more in
+  later generations. Now `breed()` adds no
+  name and removes the parents' and the child's names from inherited tags, and
+  `bear.genetics.genes_to_corpus` no longer tags with the name. Names stay in
+  ids and metadata, and `scope_to_child` still gates by the child's name,
+  which is not embedded. Set `name_tags=True` (`name_tag=True`) for the old
+  tags. Bred texts, index versions and so retrieval can differ from 0.5.0.
+
+### Fixed
+
+- The Hermes plugin splits a `skill_manage` batch that arrives as a JSON
+  string, or as a single object, as it splits a list. Hermes coerces these
+  before the tool runs, but the plugin saw them first and decided the batch
+  as one call with no `action`, so a rule's default decided it (a patch
+  refused with a rule's delete message, in one pilot). An operation that is a
+  JSON object in a string is parsed too. A string that is not JSON stays one
+  call, as before.
+- Hash embeddings are now the same bit for bit in every process. `Embedder`
+  in hash mode summed a text's character 3-grams in set order, which
+  `PYTHONHASHSEED` sets, and float32 rounding then differed from one process
+  to the next. Cosine similarities moved by about 3e-8, enough to move a
+  result that sits at a threshold. The 3-grams are now summed in sorted
+  order. Hash vectors change in their last bits, so a result computed with
+  hash embeddings can differ at a tie from 0.5.0 and earlier. There is no
+  switch back, since the old vectors were not reproducible either. A cache
+  file written in hash mode before this fix keeps its old vectors until it
+  is deleted (`embeddings_v2_hash.npz`).
+- A model that failed to load and fell back to hash embeddings filed the hash
+  vectors in the embedding cache under the model's name. The next run that
+  loaded the model read them as its own, at the same width and with no
+  warning. A run that fell back likewise read the model's cached vectors
+  while embedding its queries with hash. The fallback now files its vectors
+  as `hash`. Reading `model_id` loads the model, so a build whose vectors
+  are all cached now loads the model at build time rather than at the first
+  query, and a model that cannot load raises there. The fallback is off
+  unless `allow_hash_fallback` is set. If a run with it set ever fell back
+  while using a cache directory, delete that directory's
+  `embeddings_v2_<model>.npz`.
+- The Hermes plugin's approvals now cover one call. Hermes caches a person's
+  answer to an approval under the plugin's `rule_key`, which was
+  `bear:<rule>:<tool>`. So one "Allow for this session", or a permanent
+  allowlist entry, covered every later call of that tool under that rule,
+  whatever its arguments. Once any value in a numeric band had been allowed,
+  a different value in the band ran with nobody asked. The audit still
+  recorded each decision as `approve`. The key now ends in a 12-digit
+  SHA-256 digest of the decided calls, with arguments redacted as in the
+  audit record, so only an identical call reuses an answer. Set
+  `approval_grain: rule` for the old key. Permanent allowlist entries written
+  under the old key no longer match under `call`, so those calls ask again.
+
 ## [0.5.0] — 2026-11-15
 
 This release publishes the `bear_parlor` example at its current state, so the
